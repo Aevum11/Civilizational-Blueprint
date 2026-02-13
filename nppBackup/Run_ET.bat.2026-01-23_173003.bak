@@ -1,0 +1,81 @@
+@echo off
+setlocal EnableDelayedExpansion
+
+:: --- CONFIGURATION ---
+:: Ensure this matches your filename EXACTLY
+set "JSX_FILE=ET_Periodic_Omniverse.jsx"
+set "APP_FILE=ET_Application.html"
+
+if not exist "%JSX_FILE%" (
+    echo.
+    echo [ERROR] Could not find: %JSX_FILE%
+    echo Please make sure this batch file is in the same folder as your JSX file.
+    echo.
+    pause
+    exit /b
+)
+
+echo Building ET Application Viewer (Robust Mode)...
+
+:: 1. Write HTML Header with CSS Fixes
+(
+    echo ^<!DOCTYPE html^>
+    echo ^<html lang="en"^>
+    echo ^<head^>
+    echo     ^<meta charset="UTF-8"^>
+    echo     ^<meta name="viewport" content="width=device-width, initial-scale=1.0"^>
+    echo     ^<meta name="referrer" content="no-referrer" /^>
+    echo     ^<title^>ET Periodic Table Omniverse^</title^>
+    echo     ^<style^>
+    echo         /* --- CRITICAL FALLBACK CSS --- */
+    echo         /* This ensures the app looks correct even if Tailwind is blocked */
+    echo         body { background-color: #0f172a; color: #e2e8f0; font-family: system-ui, -apple-system, sans-serif; margin: 0; }
+    echo         .bg-slate-900 { background-color: #0f172a; }
+    echo         .text-white { color: #ffffff; }
+    echo         /* Scrollbars */
+    echo         ::-webkit-scrollbar { width: 8px; height: 8px; }
+    echo         ::-webkit-scrollbar-track { background: #1e293b; }
+    echo         ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+    echo     ^</style^>
+    echo     ^<!-- Tailwind CSS with CrossOrigin to prevent blocking --^>
+    echo     ^<script src="https://cdn.tailwindcss.com" crossorigin="anonymous"^>^</script^>
+    echo     ^<!-- React Dependencies --^>
+    echo     ^<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"^>^</script^>
+    echo     ^<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"^>^</script^>
+    echo     ^<script src="https://unpkg.com/@babel/standalone/babel.min.js"^>^</script^>
+    echo ^</head^>
+    echo ^<body^>
+    echo     ^<div id="root"^>^</div^>
+    echo     ^<script type="text/babel"^>
+    echo         // --- POLYFILLS ---
+    echo         const { useState, useMemo, useEffect } = React;
+    echo         // Icon Polyfill to prevent crashes if Lucide is missing
+    echo         const Icon = ^(p^) =^> ^<svg {...p} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"^>^<rect x="2" y="2" width="20" height="20" rx="5" ry="5"^>^</rect^>^</svg^>;
+    echo         const ChevronLeft=Icon; const ChevronRight=Icon; const Home=Icon; const Atom=Icon; 
+    echo         const Layers=Icon; const Zap=Icon; const Activity=Icon; const Target=Icon; 
+    echo         const Clock=Icon; const Shield=Icon; const AlertTriangle=Icon; const Info=Icon;
+    echo.
+) > "%APP_FILE%"
+
+:: 2. Inject Code (Robust Regex removes imports/exports)
+powershell -Command "Get-Content '%JSX_FILE%' -Encoding UTF8 | Where-Object { $_ -notmatch '^\s*import' -and $_ -notmatch '^\s*export default' } | Add-Content '%APP_FILE%'"
+
+:: 3. Write Footer
+(
+    echo.
+    echo         // --- LAUNCHER ---
+    echo         try {
+    echo             const root = ReactDOM.createRoot^(document.getElementById^('root'^)^);
+    echo             root.render^(^<App /^>^);
+    echo         } catch ^(e^) {
+    echo             console.error^(e^);
+    echo             document.body.innerHTML = '^<div style="padding:20px; color: #ff5555"^>^<h2^>Startup Error^</h2^>^<pre^>' + e.message + '^</pre^>^<p^>Check Console (F12) for details.^</p^>^</div^>';
+    echo         }
+    echo     ^</script^>
+    echo ^</body^>
+    echo ^</html^>
+) >> "%APP_FILE%"
+
+echo Launching...
+start "" "%APP_FILE%"
+endlocal

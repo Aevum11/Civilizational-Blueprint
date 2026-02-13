@@ -1,0 +1,88 @@
+import sys
+import os
+import time
+import traceback
+
+# --- CONFIGURATION ---
+# I put your specific filename here so you don't need arguments
+INPUT_FILENAME = "COM_CMB_IQU-smica_2048_R3.00_full.fits"
+OUTPUT_FILENAME = "pure_cmb_intensity.bin"
+
+def keep_window_open():
+    print("\n" + "!"*60)
+    print("SCRIPT FINISHED. PRESS ENTER TO CLOSE THIS WINDOW.")
+    print("!"*60)
+    try:
+        input()
+    except:
+        pass
+
+try:
+    print("Initializing...")
+    
+    # 1. FIX THE DIRECTORY (Crucial Step)
+    # This forces the script to work in its own folder, NOT System32
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    os.chdir(script_dir)
+    
+    print(f"--- WORKING DIRECTORY FIXED TO: {os.getcwd()} ---")
+
+    # 2. CHECK FILES
+    if not os.path.exists(INPUT_FILENAME):
+        print(f"\nCRITICAL ERROR: Could not find '{INPUT_FILENAME}' in this folder.")
+        print(f"Folder content: {os.listdir(script_dir)}")
+        keep_window_open()
+        sys.exit(1)
+
+    print("Loading libraries...")
+    from astropy.io import fits
+    import numpy as np
+
+    # 3. OPEN FITS
+    print(f"\nOpening {INPUT_FILENAME}...")
+    with fits.open(INPUT_FILENAME, memmap=True) as hdul:
+        hdul.info()
+        
+        target_data = None
+        
+        # 4. FIND DATA (Prioritize I_STOKES)
+        for i, hdu in enumerate(hdul):
+            if hasattr(hdu, 'columns'):
+                names = hdu.columns.names
+                if 'I_STOKES' in names:
+                    print(f"Found 'I_STOKES' in Extension {i}")
+                    target_data = hdu.data['I_STOKES']
+                    break
+                elif 'TEMPERATURE' in names:
+                    target_data = hdu.data['TEMPERATURE']
+                    break
+            elif hdu.data is not None and i > 0:
+                target_data = hdu.data
+                break
+
+        if target_data is None:
+            print("ERROR: No Intensity data found (I_STOKES/TEMPERATURE).")
+            keep_window_open()
+            sys.exit(1)
+
+        # 5. PROCESS AND SAVE
+        print("Flattening and converting to float32...")
+        # Force float32 (standard raw format)
+        data_out = np.asarray(target_data, dtype=np.float32).flatten()
+        
+        print(f"Writing {OUTPUT_FILENAME}...")
+        data_out.tofile(OUTPUT_FILENAME)
+
+    # 6. VERIFY
+    if os.path.exists(OUTPUT_FILENAME):
+        print("\n" + "#"*60)
+        print(f"SUCCESS! Output saved to:")
+        print(f"{os.path.join(script_dir, OUTPUT_FILENAME)}")
+        print("#"*60)
+    else:
+        print("Error: Write failed.")
+
+except Exception:
+    traceback.print_exc()
+
+keep_window_open()

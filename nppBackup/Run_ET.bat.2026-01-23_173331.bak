@@ -1,0 +1,82 @@
+@echo off
+setlocal
+
+set "JSX_FILE=ET_Periodic_Omniverse.jsx"
+set "APP_FILE=ET_Application.html"
+
+if not exist "%JSX_FILE%" (
+    echo [ERROR] %JSX_FILE% not found.
+    pause
+    exit /b
+)
+
+echo Packaging ET Omniverse...
+
+:: 1. Write the HTML Header and CSS
+(
+    echo ^<!DOCTYPE html^>
+    echo ^<html lang="en"^>
+    echo ^<head^>
+    echo     ^<meta charset="UTF-8"^>
+    echo     ^<title^>ET Omniverse^</title^>
+    echo     ^<script src="https://cdn.tailwindcss.com"^>^</script^>
+    echo     ^<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"^>^</script^>
+    echo     ^<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"^>^</script^>
+    echo     ^<script src="https://unpkg.com/@babel/standalone/babel.min.js"^>^</script^>
+    echo     ^<style^>
+    echo         body { background: #0f172a; color: white; font-family: sans-serif; }
+    echo         #loading { padding: 20px; text-align: center; color: #38bdf8; }
+    echo     ^</style^>
+    echo ^</head^>
+    echo ^<body^>
+    echo     ^<div id="root"^>^</div^>
+    echo     ^<div id="loading"^>Loading Manifold...^</div^>
+    echo.
+    echo     ^<!-- RAW CODE CONTAINER --^>
+    echo     ^<textarea id="raw-code" style="display:none;"^>
+) > "%APP_FILE%"
+
+:: 2. DUMP THE RAW JSX FILE (No processing, just copy)
+type "%JSX_FILE%" >> "%APP_FILE%"
+
+:: 3. Write the JS Loader to clean and run the code
+(
+    echo     ^</textarea^>
+    echo.
+    echo     ^<script type="text/babel"^>
+    echo         // --- ENVIRONMENT POLYFILLS ---
+    echo         const { useState, useMemo, useEffect, useRef } = React;
+    echo         const Icon = ^(p^) =^> ^<svg {...p} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"^>^<rect x="2" y="2" width="20" height="20" rx="5" ry="5"^>^</rect^>^</svg^>;
+    echo         const ChevronLeft=Icon; const ChevronRight=Icon; const Home=Icon; const Atom=Icon; 
+    echo         const Layers=Icon; const Zap=Icon; const Activity=Icon; const Target=Icon; 
+    echo         const Clock=Icon; const Shield=Icon; const AlertTriangle=Icon; const Info=Icon;
+    echo.
+    echo         // --- DYNAMIC LOADER ---
+    echo         try {
+    echo             // 1. Get raw code
+    echo             let code = document.getElementById^('raw-code'^).value;
+    echo.
+    echo             // 2. Clean imports/exports using JS (Robust)
+    echo             code = code.replace^(/^\s*import .*$/gm, '// import removed'^);
+    echo             code = code.replace^(/^\s*export default/gm, '// export removed'^);
+    echo.
+    echo             // 3. Transform and Run
+    echo             const compiled = Babel.transform^(code, { presets: ['react'] }^).code;
+    echo             eval^(compiled^);
+    echo.
+    echo             // 4. Render
+    echo             const root = ReactDOM.createRoot^(document.getElementById^('root'^)^);
+    echo             root.render^(^<App /^>^);
+    echo             document.getElementById^('loading'^).style.display = 'none';
+    echo         } catch ^(err^) {
+    echo             document.body.innerHTML = '^<div style="color:red; padding:20px"^>^<h2^>Compile Error^</h2^>^<pre^>' + err.message + '^</pre^>^</div^>';
+    echo             console.error^(err^);
+    echo         }
+    echo     ^</script^>
+    echo ^</body^>
+    echo ^</html^>
+) >> "%APP_FILE%"
+
+echo Launching...
+start "" "%APP_FILE%"
+endlocal

@@ -1,0 +1,12 @@
+from astropy.io import fits
+import numpy as np
+
+# Open FITS and extract intensity array (usually column 0)
+hdul = fits.open('COM_CMB_IQU-smica_2048_R3.00.fits')
+data = hdul[1].data['I_STOKES']  # Intensity field (float32 array)
+hdul.close()
+
+# Save as pure raw bytes (no header)
+data.astype(np.float32).tofile('raw_planck_smica_intensity.bin')
+
+print("Pure raw binary saved: ~50-100 MB float32 array")

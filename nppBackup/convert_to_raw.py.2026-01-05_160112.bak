@@ -1,0 +1,110 @@
+import sys
+import os
+import traceback
+
+# force_pause ensures the window stays open so you can read the output
+def force_pause():
+    print("\n" + "="*40)
+    input("Press ENTER to close this window...")
+    sys.exit(1)
+
+try:
+    # Import inside try-block in case astropy isn't installed, so we can see the error
+    from astropy.io import fits
+    import numpy as np
+
+    # 1. Check Arguments
+    if len(sys.argv) != 3:
+        print("Usage: python convert_to_raw_pause.py <input.fits> <output.bin>")
+        print(f"Current arguments: {sys.argv}")
+        force_pause()
+
+    input_file = sys.argv[1]
+    output_file = sys.argv[2]
+
+    # 2. Check File Existence
+    if not os.path.exists(input_file):
+        print(f"CRITICAL ERROR: Input file not found: {input_file}")
+        print(f"Current working directory: {os.getcwd()}")
+        force_pause()
+
+    print(f"Opening {input_file}...")
+    
+    # 3. Open FITS
+    with fits.open(input_file, memmap=True, ignore_missing_end=True) as hdul:
+        print("\n--- FITS Structure ---")
+        hdul.info()
+        print("----------------------")
+
+        target_data = None
+        
+        # Iterate to find the table/image
+        for i, hdu in enumerate(hdul):
+            # Skip empty Primary HDU
+            if i == 0 and hdu.data is None:
+                continue
+
+            # Case: Binary Table (Expected for COM_CMB_IQU-smica...)
+            if hasattr(hdu, 'columns'):
+                print(f"\nChecking Extension {i} (Table)...")
+                col_names = hdu.columns.names
+                print(f"Columns found: {col_names}")
+
+                # Planck SMICA maps usually use 'I_STOKES' for intensity
+                priority_names = ['I_STOKES', 'TEMPERATURE', 'I', 'TEMP', 'SIGNAL']
+                
+                target_col = None
+                for name in priority_names:
+                    if name in col_names:
+                        print(f"-> MATCH: Found intensity column '{name}'")
+                        target_col = hdu.data[name]
+                        break
+                
+                # Fallback to first column if names don't match
+                if target_col is None:
+                    print(f"-> WARNING: No standard name matched. Using first column '{col_names[0]}'")
+                    target_col = hdu.data[col_names[0]]
+
+                target_data = target_col
+                break
+
+            # Case: Image HDU
+            elif hdu.data is not None:
+                print(f"\nFound Image Data in Extension {i}")
+                target_data = hdu.data
+                break
+
+        if target_data is None:
+            print("\nERROR: Could not find any data payload in the file.")
+            force_pause()
+
+        # 4. Process Data
+        print("\nProcessing array...")
+        
+        # Flatten
+        if target_data.ndim > 1:
+            target_data = target_data.flatten()
+        
+        # Float32 conversion
+        if target_data.dtype != np.float32:
+            print(f"Converting {target_data.dtype} -> float32")
+            target_data = target_data.astype(np.float32)
+
+        print(f"Final Data Stats -> Min: {target_data.min()}, Max: {target_data.max()}")
+
+        # 5. Save
+        print(f"\nWriting to {output_file}...")
+        target_data.tofile(output_file)
+        
+        print("\nSUCCESS!")
+        print(f"File created: {output_file}")
+        
+    # Final pause on success
+    print("\n" + "="*40)
+    input("Done. Press ENTER to close...")
+
+except Exception:
+    # This catches ANY crash (syntax, library missing, logic error)
+    print("\n!!!!!!!!!! SCRIPT CRASHED !!!!!!!!!!!")
+    traceback.print_exc() # Prints the actual red error text
+    force_pause()

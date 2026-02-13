@@ -1,0 +1,150 @@
+@echo off
+setlocal
+
+:: --- FORCE WINDOW TO STAY OPEN ---
+if "%~1"=="__run__" goto :main
+cmd /c ""%~f0" __run__"
+pause
+exit /b
+
+:main
+set "SOURCE_FILE=ET_Periodic_Omniverse.jsx"
+set "PROJECT_DIR=et_runtime"
+
+:: --- STEP 1: PRE-FLIGHT CHECKS ---
+echo [1/6] Checking Environment...
+
+if not exist "%SOURCE_FILE%" (
+    echo [CRITICAL ERROR] Could not find %SOURCE_FILE%
+    goto :error
+)
+
+where node >nul 2>nul
+if %errorlevel% neq 0 (
+    echo [CRITICAL ERROR] Node.js is not found.
+    goto :error
+)
+
+where npm >nul 2>nul
+if %errorlevel% neq 0 (
+    echo [CRITICAL ERROR] NPM is not found.
+    goto :error
+)
+
+echo Environment OK.
+
+:: --- STEP 2: PROJECT SCAFFOLDING ---
+echo [2/6] Creating Project Structure...
+
+if not exist "%PROJECT_DIR%" mkdir "%PROJECT_DIR%"
+cd "%PROJECT_DIR%" || goto :error
+
+:: Create package.json
+echo { > package.json
+echo   "name": "et-omniverse", >> package.json
+echo   "private": true, >> package.json
+echo   "version": "1.0.0", >> package.json
+echo   "type": "module", >> package.json
+echo   "scripts": { >> package.json
+echo     "dev": "vite", >> package.json
+echo     "build": "vite build", >> package.json
+echo     "preview": "vite preview" >> package.json
+echo   }, >> package.json
+echo   "dependencies": { >> package.json
+echo     "react": "18.2.0", >> package.json
+echo     "react-dom": "18.2.0", >> package.json
+echo     "lucide-react": "0.300.0" >> package.json
+echo   }, >> package.json
+echo   "devDependencies": { >> package.json
+echo     "@vitejs/plugin-react": "4.2.1", >> package.json
+echo     "vite": "5.0.0" >> package.json
+echo   } >> package.json
+echo } >> package.json
+
+:: Create vite.config.js (Set clearScreen to false to keep terminal errors visible)
+echo import { defineConfig } from 'vite' > vite.config.js
+echo import react from '@vitejs/plugin-react' >> vite.config.js
+echo export default defineConfig({ >> vite.config.js
+echo   plugins: [react()], >> vite.config.js
+echo   clearScreen: false, >> vite.config.js
+echo   server: { open: true } >> vite.config.js
+echo }) >> vite.config.js
+
+:: Create index.html
+echo ^<!doctype html^> > index.html
+echo ^<html lang="en"^> >> index.html
+echo   ^<head^> >> index.html
+echo     ^<meta charset="UTF-8" /^> >> index.html
+echo     ^<meta name="viewport" content="width=device-width, initial-scale=1.0" /^> >> index.html
+echo     ^<title^>ET Omniverse^</title^> >> index.html
+echo     ^<script src="https://cdn.tailwindcss.com"^>^</script^> >> index.html
+echo   ^</head^> >> index.html
+echo   ^<body^> >> index.html
+echo     ^<div id="root"^>^</div^> >> index.html
+echo     ^<script type="module" src="/src/main.jsx"^>^</script^> >> index.html
+echo   ^</body^> >> index.html
+echo ^</html^> >> index.html
+
+:: --- STEP 3: SOURCE CODE PREP ---
+echo [3/6] Preparing Source Code...
+
+if not exist "src" mkdir "src"
+
+:: Create Entry Point (main.jsx) - PURE CONSOLE LOGGING
+echo import React from 'react' > src\main.jsx
+echo import { createRoot } from 'react-dom/client' >> src\main.jsx
+echo. >> src\main.jsx
+echo // Global Shims >> src\main.jsx
+echo window.React = React; >> src\main.jsx
+echo window.ReactDOM = { createRoot }; >> src\main.jsx
+echo. >> src\main.jsx
+echo // Load User Script with Console Catch >> src\main.jsx
+echo import('./UserScript.jsx') >> src\main.jsx
+echo   .then(() =^> console.log("ET Script Loaded Successfully")) >> src\main.jsx
+echo   .catch(err =^> console.error("CRITICAL LOAD ERROR:", err)); >> src\main.jsx
+
+:: Copy User Script
+echo Copying Source...
+copy /Y "..\ET_Periodic_Omniverse.jsx" "src\UserScript.jsx" >nul
+if %errorlevel% neq 0 (
+    echo [ERROR] Failed to copy source file.
+    goto :error
+)
+
+:: --- STEP 4: DEPENDENCY INSTALLATION ---
+echo [4/6] Installing Dependencies...
+call npm install
+if %errorlevel% neq 0 (
+    echo [ERROR] npm install failed.
+    goto :error
+)
+
+:: --- STEP 5: LAUNCH ---
+echo [5/6] Launching Server...
+echo.
+echo =======================================
+echo  ET OMNIVERSE RUNNING
+echo  Errors will appear in this window
+echo  OR in the Browser Console (F12).
+echo =======================================
+echo.
+
+call npm run dev
+if %errorlevel% neq 0 (
+    echo [ERROR] Vite failed to start.
+    goto :error
+)
+
+goto :end
+
+:error
+echo.
+echo =======================================
+echo  EXECUTION FAILED
+echo =======================================
+echo.
+pause
+exit /b 1
+
+:end
+pause

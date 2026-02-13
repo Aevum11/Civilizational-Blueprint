@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir:*)",
+      "Bash(wc:*)",
+      "Bash(powershell -Command:*)",
+      "Bash(powershell:*)",
+      "Bash(del \"C:\\\\Users\\\\aevum\\\\Desktop\\\\Civilizational Blueprint\\\\scan_dirs.ps1\")",
+      "Bash(python -c:*)"
+    ]
+  }
+}

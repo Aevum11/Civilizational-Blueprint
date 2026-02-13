@@ -1,0 +1,96 @@
+@echo off
+setlocal
+
+set "SOURCE_FILE=ET_Periodic_Omniverse.jsx"
+set "PROJECT_DIR=et_runtime"
+
+:: 1. Check for Source File
+if not exist "%SOURCE_FILE%" (
+    echo [ERROR] Could not find %SOURCE_FILE%
+    pause
+    exit /b
+)
+
+:: 2. Check for Node.js
+where node >nul 2>nul
+if %errorlevel% neq 0 (
+    echo [ERROR] Node.js is not found in your PATH.
+    pause
+    exit /b
+)
+
+echo Initializing Exception Theory Runtime Environment...
+
+:: 3. Create Project Structure
+if not exist "%PROJECT_DIR%" mkdir "%PROJECT_DIR%"
+cd "%PROJECT_DIR%"
+
+:: 4. Create package.json
+(
+echo {
+echo   "name": "et-omniverse",
+echo   "private": true,
+echo   "version": "0.0.0",
+echo   "type": "module",
+echo   "scripts": {
+echo     "dev": "vite",
+echo     "build": "vite build",
+echo     "preview": "vite preview"
+echo   },
+echo   "dependencies": {
+echo     "react": "^18.2.0",
+echo     "react-dom": "^18.2.0",
+echo     "lucide-react": "^0.300.0"
+echo   },
+echo   "devDependencies": {
+echo     "@vitejs/plugin-react": "^4.2.1",
+echo     "vite": "^5.0.0"
+echo   }
+echo }
+) > package.json
+
+:: 5. Create vite.config.js
+(
+echo import { defineConfig } from 'vite'
+echo import react from '@vitejs/plugin-react'
+echo export default defineConfig({
+echo   plugins: [react()],
+echo   server: { open: true }
+echo })
+) > vite.config.js
+
+:: 6. Create index.html (With Tailwind CDN for speed)
+(
+echo ^<!doctype html^>
+echo ^<html lang="en"^>
+echo   ^<head^>
+echo     ^<meta charset="UTF-8" /^>
+echo     ^<meta name="viewport" content="width=device-width, initial-scale=1.0" /^>
+echo     ^<title^>ET Omniverse^</title^>
+echo     ^<script src="https://cdn.tailwindcss.com"^>^</script^>
+echo   ^</head^>
+echo   ^<body^>
+echo     ^<div id="root"^>^</div^>
+echo     ^<script type="module" src="/src/main.jsx"^>^</script^>
+echo   ^</body^>
+echo ^</html^>
+) > index.html
+
+:: 7. Prepare Source Folder
+if not exist "src" mkdir "src"
+
+:: 8. Inject ReactDOM shim and copy user code to main.jsx
+:: We create a shim so ReactDOM.createRoot works as expected in React 18
+(
+echo import { createRoot } from 'react-dom/client';
+echo const ReactDOM = { createRoot };
+) > src\main.jsx
+type "..\%SOURCE_FILE%" >> src\main.jsx
+
+:: 9. Install and Run
+echo.
+echo Installing dependencies (First run only)...
+call npm install
+echo.
+echo Launching...
+call npm run dev

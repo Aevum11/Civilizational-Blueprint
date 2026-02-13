@@ -1,0 +1,38 @@
+@echo off
+cd /d "%~dp0"
+title ET COMPENDIUM EXTRACTOR
+color 0A
+
+echo ========================================================
+echo   EXCEPTION THEORY DATA EXTRACTION UTILITY
+echo   Target: ET_Math_Compendium.pdf
+echo   Output: /compendium_extracted/
+echo ========================================================
+echo.
+
+REM Check for Python
+python --version >nul 2>&1
+if %errorlevel% neq 0 (
+    echo [ERROR] Python is not installed or not in PATH.
+    echo This tool requires Python to read the PDF structure.
+    echo.
+    echo Please install Python from python.org or the Microsoft Store.
+    pause
+    exit
+)
+
+echo [STATUS] Python detected. Starting extraction...
+python extract_compendium.py
+
+if %errorlevel% neq 0 (
+    echo.
+    echo [ERROR] The script encountered an issue.
+    pause
+    exit
+)
+
+echo.
+echo ========================================================
+echo   DONE. Files are in the 'compendium_extracted' folder.
+echo ========================================================
+pause

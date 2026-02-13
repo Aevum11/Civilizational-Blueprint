@@ -1,0 +1,173 @@
+2026-02-04 07:55:57,141 - INFO - ================================================================================
+2026-02-04 07:55:57,141 - INFO - ET Web Archiver - COMPLETE ALL PHASES INTEGRATED - FIXED VERSION
+2026-02-04 07:55:57,141 - INFO - ================================================================================
+2026-02-04 07:55:57,141 - INFO - Working directory: C:\Users\aevum\Desktop\Exception Theory\ET Python Library\ET Python Library
+2026-02-04 07:55:57,207 - INFO - Tkinter imported successfully.
+2026-02-04 07:55:57,794 - WARNING - Installing beautifulsoup4...
+2026-02-04 07:56:00,295 - INFO - External libraries imported successfully.
+2026-02-04 07:56:02,217 - INFO - ET components imported successfully.
+2026-02-04 07:56:02,217 - INFO - ET mathematics instantiated - ALL PHASES VERSION.
+2026-02-04 07:56:02,217 - INFO - ================================================================================
+2026-02-04 07:56:02,217 - INFO - ET METHOD AVAILABILITY CHECK:
+2026-02-04 07:56:02,218 - INFO - Phase 1: Bloom=True, Merkle=True, Entropy=True, KComplexity=True, Manifold=True
+2026-02-04 07:56:02,218 - INFO - Phase 2: PhaseTransition=True, Variance=True, Density=True, Effort=True, Substantiation=True
+2026-02-04 07:56:02,218 - INFO - Phase 3: Teleological=True, RecursiveSearch=False, Recurrence=True, Differentiation=True, Gap=False
+2026-02-04 07:56:02,218 - INFO - Phase 4: Fractal=True, DomainClass=True
+2026-02-04 07:56:02,218 - INFO - ET Constants: BASE_VARIANCE=0.08333333333333333, MANIFOLD_SYMMETRY=12, PHI=1.61803398875, KOIDE=0.6666666666666666
+2026-02-04 07:56:02,218 - INFO - ================================================================================
+2026-02-04 07:57:14,421 - INFO - Initialized ETBloomFilter: size=20000, hash_count=3
+2026-02-04 07:57:14,421 - INFO - Initialized ETDownloadQueue with phase transition management
+2026-02-04 07:57:14,430 - INFO - Initialized ETQualityOptimizer: target=0.0
+2026-02-04 07:57:14,431 - INFO - Initialized ETTeleologicalSorter
+2026-02-04 07:57:14,442 - INFO - Initialized ETPatternDiscoverer
+2026-02-04 07:57:14,451 - INFO - Initialized ETStateRecurrenceDetector (history=100)
+2026-02-04 07:57:14,453 - INFO - Initialized ETGapAnalyzer
+2026-02-04 07:57:14,461 - INFO - Initialized ETFractalGenerator
+2026-02-04 07:57:14,464 - INFO - Initialized ETDomainClassifier
+2026-02-04 07:57:14,471 - INFO - Initialized ETArchiveExporter
+2026-02-04 07:57:14,478 - INFO - Initialized COMPLETE ETWebArchiver for https://bluemoonfalls.com/
+2026-02-04 07:57:14,478 - INFO - All phases integrated and ready
+2026-02-04 07:57:15,025 - ERROR - Traversal error at https://bluemoonfalls.com/: ETMathV2Descriptor.descriptor_domain_classification() got an unexpected keyword argument 'manifold_symmetry'
+2026-02-04 07:57:15,025 - ERROR - Archive failed: Failed to download: https://bluemoonfalls.com/
+2026-02-04 08:18:44,874 - INFO - ================================================================================
+2026-02-04 08:18:44,874 - INFO - ET Web Archiver - COMPLETE ALL PHASES INTEGRATED - FIXED VERSION
+2026-02-04 08:18:44,874 - INFO - ================================================================================
+2026-02-04 08:18:44,874 - INFO - Working directory: C:\Users\aevum\Desktop\Exception Theory\ET Python Library\ET Python Library
+2026-02-04 08:18:44,886 - INFO - Tkinter imported successfully.
+2026-02-04 08:18:44,982 - WARNING - Installing beautifulsoup4...
+2026-02-04 08:18:45,810 - INFO - External libraries imported successfully.
+2026-02-04 08:18:46,111 - INFO - ET components imported successfully.
+2026-02-04 08:18:46,111 - INFO - ET mathematics instantiated - ALL PHASES VERSION.
+2026-02-04 08:18:46,111 - INFO - ================================================================================
+2026-02-04 08:18:46,111 - INFO - ET METHOD AVAILABILITY CHECK:
+2026-02-04 08:18:46,111 - INFO - Phase 1: Bloom=True, Merkle=True, Entropy=True, KComplexity=True, Manifold=True
+2026-02-04 08:18:46,111 - INFO - Phase 2: PhaseTransition=True, Variance=True, Density=True, Effort=True, Substantiation=True
+2026-02-04 08:18:46,111 - INFO - Phase 3: Teleological=True, RecursiveSearch=False, Recurrence=True, Differentiation=True, Gap=False
+2026-02-04 08:18:46,112 - INFO - Phase 4: Fractal=True, DomainClass=True
+2026-02-04 08:18:46,112 - INFO - ET Constants: BASE_VARIANCE=0.08333333333333333, MANIFOLD_SYMMETRY=12, PHI=1.61803398875, KOIDE=0.6666666666666666
+2026-02-04 08:18:46,112 - INFO - ================================================================================
+2026-02-04 08:24:46,670 - INFO - ================================================================================
+2026-02-04 08:24:46,670 - INFO - ET Web Archiver - COMPLETE ALL PHASES INTEGRATED - FIXED VERSION
+2026-02-04 08:24:46,670 - INFO - ================================================================================
+2026-02-04 08:24:46,671 - INFO - Working directory: C:\Users\aevum\Desktop\Exception Theory\ET Python Library\ET Python Library
+2026-02-04 08:24:46,682 - INFO - Tkinter imported successfully.
+2026-02-04 08:24:46,777 - WARNING - Installing beautifulsoup4...
+2026-02-04 08:24:47,650 - INFO - External libraries imported successfully.
+2026-02-04 08:24:47,952 - INFO - ET components imported successfully.
+2026-02-04 08:24:47,952 - INFO - ET mathematics instantiated - ALL PHASES VERSION.
+2026-02-04 08:24:47,953 - INFO - ================================================================================
+2026-02-04 08:24:47,953 - INFO - ET METHOD AVAILABILITY CHECK:
+2026-02-04 08:24:47,953 - INFO - Phase 1: Bloom=True, Merkle=True, Entropy=True, KComplexity=True, Manifold=True
+2026-02-04 08:24:47,953 - INFO - Phase 2: PhaseTransition=True, Variance=True, Density=True, Effort=True, Substantiation=True
+2026-02-04 08:24:47,953 - INFO - Phase 3: Teleological=True, RecursiveSearch=False, Recurrence=True, Differentiation=True, Gap=False
+2026-02-04 08:24:47,953 - INFO - Phase 4: Fractal=True, DomainClass=True
+2026-02-04 08:24:47,953 - INFO - ET Constants: BASE_VARIANCE=0.08333333333333333, MANIFOLD_SYMMETRY=12, PHI=1.61803398875, KOIDE=0.6666666666666666
+2026-02-04 08:24:47,954 - INFO - ================================================================================
+2026-02-04 08:25:05,795 - INFO - ================================================================================
+2026-02-04 08:25:05,795 - INFO - ET Web Archiver - COMPLETE ALL PHASES INTEGRATED - FIXED VERSION
+2026-02-04 08:25:05,796 - INFO - ================================================================================
+2026-02-04 08:25:05,796 - INFO - Working directory: C:\Users\aevum\Desktop\Exception Theory\ET Python Library\ET Python Library
+2026-02-04 08:25:05,806 - INFO - Tkinter imported successfully.
+2026-02-04 08:25:05,897 - WARNING - Installing beautifulsoup4...
+2026-02-04 08:25:06,667 - INFO - External libraries imported successfully.
+2026-02-04 08:25:06,991 - INFO - ET components imported successfully.
+2026-02-04 08:25:06,991 - INFO - ET mathematics instantiated - ALL PHASES VERSION.
+2026-02-04 08:25:06,992 - INFO - ================================================================================
+2026-02-04 08:25:06,992 - INFO - ET METHOD AVAILABILITY CHECK:
+2026-02-04 08:25:06,992 - INFO - Phase 1: Bloom=True, Merkle=True, Entropy=True, KComplexity=True, Manifold=True
+2026-02-04 08:25:06,992 - INFO - Phase 2: PhaseTransition=True, Variance=True, Density=True, Effort=True, Substantiation=True
+2026-02-04 08:25:06,992 - INFO - Phase 3: Teleological=True, RecursiveSearch=False, Recurrence=True, Differentiation=True, Gap=False
+2026-02-04 08:25:06,992 - INFO - Phase 4: Fractal=True, DomainClass=True
+2026-02-04 08:25:06,992 - INFO - ET Constants: BASE_VARIANCE=0.08333333333333333, MANIFOLD_SYMMETRY=12, PHI=1.61803398875, KOIDE=0.6666666666666666
+2026-02-04 08:25:06,992 - INFO - ================================================================================
+2026-02-04 08:25:40,062 - INFO - Initialized ETBloomFilter: size=20000, hash_count=3
+2026-02-04 08:25:40,062 - INFO - Initialized ETDownloadQueue with phase transition management
+2026-02-04 08:25:40,069 - INFO - Initialized ETQualityOptimizer: target=0.0
+2026-02-04 08:25:40,069 - INFO - Initialized ETTeleologicalSorter
+2026-02-04 08:25:40,073 - INFO - Initialized ETPatternDiscoverer
+2026-02-04 08:25:40,074 - INFO - Initialized ETStateRecurrenceDetector (history=100)
+2026-02-04 08:25:40,074 - INFO - Initialized ETGapAnalyzer
+2026-02-04 08:25:40,074 - INFO - Initialized ETFractalGenerator
+2026-02-04 08:25:40,075 - INFO - Initialized ETDomainClassifier
+2026-02-04 08:25:40,075 - INFO - Initialized ETArchiveExporter
+2026-02-04 08:25:40,075 - INFO - Initialized COMPLETE ETWebArchiver for https://bluemoonfalls.com/
+2026-02-04 08:25:40,075 - INFO - All phases integrated and ready
+2026-02-04 08:25:40,561 - ERROR - Traversal error at https://bluemoonfalls.com/: ETMathV2Descriptor.descriptor_domain_classification() got an unexpected keyword argument 'manifold_symmetry'
+2026-02-04 08:25:40,561 - ERROR - Archive failed: Failed to download: https://bluemoonfalls.com/
+2026-02-04 08:28:33,559 - INFO - ================================================================================
+2026-02-04 08:28:33,560 - INFO - ET Web Archiver - COMPLETE ALL PHASES INTEGRATED - FIXED VERSION
+2026-02-04 08:28:33,560 - INFO - ================================================================================
+2026-02-04 08:28:33,560 - INFO - Working directory: C:\Users\aevum\Desktop\Exception Theory\ET Python Library\ET Python Library
+2026-02-04 08:28:33,571 - INFO - Tkinter imported successfully.
+2026-02-04 08:28:33,666 - WARNING - Installing beautifulsoup4...
+2026-02-04 08:28:34,512 - INFO - External libraries imported successfully.
+2026-02-04 08:28:34,814 - INFO - ET components imported successfully.
+2026-02-04 08:28:34,814 - INFO - ET mathematics instantiated - ALL PHASES VERSION.
+2026-02-04 08:28:34,814 - INFO - ================================================================================
+2026-02-04 08:28:34,815 - INFO - ET METHOD AVAILABILITY CHECK:
+2026-02-04 08:28:34,815 - INFO - Phase 1: Bloom=True, Merkle=True, Entropy=True, KComplexity=True, Manifold=True
+2026-02-04 08:28:34,815 - INFO - Phase 2: PhaseTransition=True, Variance=True, Density=True, Effort=True, Substantiation=True
+2026-02-04 08:28:34,815 - INFO - Phase 3: Teleological=True, RecursiveSearch=False, Recurrence=True, Differentiation=True, Gap=False
+2026-02-04 08:28:34,815 - INFO - Phase 4: Fractal=True, DomainClass=True
+2026-02-04 08:28:34,815 - INFO - ET Constants: BASE_VARIANCE=0.08333333333333333, MANIFOLD_SYMMETRY=12, PHI=1.61803398875, KOIDE=0.6666666666666666
+2026-02-04 08:28:34,815 - INFO - ================================================================================
+2026-02-04 08:48:45,093 - INFO - ================================================================================
+2026-02-04 08:48:45,094 - INFO - ET Web Archiver - COMPLETE ALL PHASES INTEGRATED - FIXED VERSION
+2026-02-04 08:48:45,094 - INFO - ================================================================================
+2026-02-04 08:48:45,094 - INFO - Working directory: C:\Users\aevum\Desktop\Exception Theory\ET Python Library\ET Python Library
+2026-02-04 08:48:45,105 - INFO - Tkinter imported successfully.
+2026-02-04 08:48:45,200 - WARNING - Installing beautifulsoup4...
+2026-02-04 08:48:46,025 - INFO - External libraries imported successfully.
+2026-02-04 08:48:46,361 - INFO - ET components imported successfully.
+2026-02-04 08:48:46,361 - INFO - ET mathematics instantiated - ALL PHASES VERSION.
+2026-02-04 08:48:46,362 - INFO - ================================================================================
+2026-02-04 08:48:46,362 - INFO - ET METHOD AVAILABILITY CHECK:
+2026-02-04 08:48:46,362 - INFO - Phase 1: Bloom=True, Merkle=True, Entropy=True, KComplexity=True, Manifold=True
+2026-02-04 08:48:46,362 - INFO - Phase 2: PhaseTransition=True, Variance=True, Density=True, Effort=True, Substantiation=True
+2026-02-04 08:48:46,362 - INFO - Phase 3: Teleological=True, RecursiveSearch=False, Recurrence=True, Differentiation=True, Gap=False
+2026-02-04 08:48:46,362 - INFO - Phase 4: Fractal=True, DomainClass=True
+2026-02-04 08:48:46,362 - INFO - ET Constants: BASE_VARIANCE=0.08333333333333333, MANIFOLD_SYMMETRY=12, PHI=1.61803398875, KOIDE=0.6666666666666666
+2026-02-04 08:48:46,362 - INFO - ================================================================================
+2026-02-04 08:50:09,990 - CRITICAL - Fatal error: name 'threading' is not defined
+Traceback (most recent call last):
+  File "C:\Users\aevum\Desktop\Exception Theory\ET Python Library\ET Python Library\et_web_archiver_FIXED_COMPLETE.py", line 1724, in <module>
+    main()
+    ~~~~^^
+  File "C:\Users\aevum\Desktop\Exception Theory\ET Python Library\ET Python Library\et_web_archiver_FIXED_COMPLETE.py", line 1720, in main
+    run_main_gui()
+    ~~~~~~~~~~~~^^
+  File "C:\Users\aevum\Desktop\Exception Theory\ET Python Library\ET Python Library\et_web_archiver_FIXED_COMPLETE.py", line 1718, in run_main_gui
+    threading.Thread(target=archive_thread, daemon=True).start()
+    ^^^^^^^^^
+NameError: name 'threading' is not defined. Did you forget to import 'threading'?
+2026-02-04 13:37:46,422 - INFO - ================================================================================
+2026-02-04 13:37:46,423 - INFO - ET Web Archiver - COMPLETE ALL PHASES INTEGRATED - FIXED VERSION
+2026-02-04 13:37:46,423 - INFO - ================================================================================
+2026-02-04 13:37:46,423 - INFO - Working directory: C:\Users\aevum\Desktop\Exception Theory\ET Python Library\ET Python Library
+2026-02-04 13:37:46,490 - INFO - Tkinter imported successfully.
+2026-02-04 13:37:47,085 - WARNING - Installing beautifulsoup4...
+2026-02-04 13:37:49,582 - INFO - External libraries imported successfully.
+2026-02-04 13:37:51,384 - INFO - ET components imported successfully.
+2026-02-04 13:37:51,384 - INFO - ET mathematics instantiated - ALL PHASES VERSION.
+2026-02-04 13:37:51,385 - INFO - ================================================================================
+2026-02-04 13:37:51,385 - INFO - ET METHOD AVAILABILITY CHECK:
+2026-02-04 13:37:51,385 - INFO - Phase 1: Bloom=True, Merkle=True, Entropy=True, KComplexity=True, Manifold=True
+2026-02-04 13:37:51,385 - INFO - Phase 2: PhaseTransition=True, Variance=True, Density=True, Effort=True, Substantiation=True
+2026-02-04 13:37:51,385 - INFO - Phase 3: Teleological=True, RecursiveSearch=False, Recurrence=True, Differentiation=True, Gap=False
+2026-02-04 13:37:51,385 - INFO - Phase 4: Fractal=True, DomainClass=True
+2026-02-04 13:37:51,385 - INFO - ET Constants: BASE_VARIANCE=0.08333333333333333, MANIFOLD_SYMMETRY=12, PHI=1.61803398875, KOIDE=0.6666666666666666
+2026-02-04 13:37:51,386 - INFO - ================================================================================
+2026-02-04 13:38:09,683 - INFO - Initialized ETBloomFilter: size=20000, hash_count=3
+2026-02-04 13:38:09,683 - INFO - Initialized ETDownloadQueue with phase transition management
+2026-02-04 13:38:09,684 - INFO - Initialized ETQualityOptimizer: target=0.0
+2026-02-04 13:38:09,684 - INFO - Initialized ETTeleologicalSorter
+2026-02-04 13:38:09,684 - INFO - Initialized ETPatternDiscoverer
+2026-02-04 13:38:09,684 - INFO - Initialized ETStateRecurrenceDetector (history=100)
+2026-02-04 13:38:09,684 - INFO - Initialized ETGapAnalyzer
+2026-02-04 13:38:09,685 - INFO - Initialized ETFractalGenerator
+2026-02-04 13:38:09,691 - INFO - Initialized ETDomainClassifier
+2026-02-04 13:38:09,694 - INFO - Initialized ETArchiveExporter
+2026-02-04 13:38:09,694 - INFO - Initialized COMPLETE ETWebArchiver for https://bluemoonfalls.com/
+2026-02-04 13:38:09,694 - INFO - All phases integrated and ready
+2026-02-04 13:38:10,218 - ERROR - Traversal error at https://bluemoonfalls.com/: ETMathV2Descriptor.descriptor_domain_classification() got an unexpected keyword argument 'manifold_symmetry'
+2026-02-04 13:38:10,218 - ERROR - Archive failed: Failed to download: https://bluemoonfalls.com/

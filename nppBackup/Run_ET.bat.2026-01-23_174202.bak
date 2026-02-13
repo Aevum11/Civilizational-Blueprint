@@ -1,0 +1,72 @@
+@echo off
+setlocal
+
+:: CONFIGURATION
+set "JSX_FILE=ET_Periodic_Omniverse.jsx"
+set "APP_FILE=ET_Application.html"
+
+if not exist "%JSX_FILE%" (
+    echo [ERROR] %JSX_FILE% not found.
+    pause
+    exit /b
+)
+
+echo Building robust viewer...
+
+:: 1. Create HTML Header
+(
+    echo ^<!DOCTYPE html^>
+    echo ^<html lang="en"^>
+    echo ^<head^>
+    echo     ^<meta charset="UTF-8"^>
+    echo     ^<title^>ET Periodic Table^</title^>
+    echo     ^<style^>body{background:#0f172a;color:white;font-family:sans-serif}#err{display:none;padding:20px;background:#450a0a;border:1px solid red;color:#fca5a5;white-space:pre-wrap}^</style^>
+    echo     ^<script src="https://unpkg.com/react@18/umd/react.production.min.js"^>^</script^>
+    echo     ^<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"^>^</script^>
+    echo     ^<script src="https://unpkg.com/@babel/standalone/babel.min.js"^>^</script^>
+    echo     ^<script src="https://cdn.tailwindcss.com"^>^</script^>
+    echo ^</head^>
+    echo ^<body^>
+    echo     ^<div id="err"^>^</div^>
+    echo     ^<div id="root"^>^</div^>
+    echo     ^<textarea id="raw" style="display:none;"^>
+) > "%APP_FILE%"
+
+:: 2. Inject Code (Using PowerShell to prevent encoding/character issues)
+powershell -Command "Get-Content '%JSX_FILE%' | Add-Content '%APP_FILE%'"
+
+:: 3. Create Footer/Loader
+(
+    echo     ^</textarea^>
+    echo     ^<script type="text/babel"^>
+    echo         window.onerror = function(m,u,l) {
+    echo             const el = document.getElementById('err');
+    echo             el.style.display = 'block';
+    echo             el.innerHTML = '^<strong^>Error:^</strong^> ' + m + '\nLine: ' + l;
+    echo         };
+    echo         
+    echo         if (typeof React === 'undefined') {
+    echo             throw new Error("React failed to load. Check internet connection.");
+    echo         }
+    echo.
+    echo         // Mock Icons
+    echo         const {useState,useEffect,useMemo}=React;
+    echo         const Icon=p=^>^<svg {...p} width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2"^>^<rect width="24" height="24" opacity="0.1"/^>^<path d="M12 2L2 22h20L12 2z"/^>^</svg^>;
+    echo         const ChevronLeft=Icon;const ChevronRight=Icon;const Home=Icon;const Atom=Icon;const Layers=Icon;const Zap=Icon;const Activity=Icon;const Target=Icon;const Clock=Icon;const Shield=Icon;const AlertTriangle=Icon;const Info=Icon;
+    echo.
+    echo         // Load and Run
+    echo         try {
+    echo             let raw = document.getElementById('raw').value;
+    echo             raw = raw.replace(/^\s*import .*$/gm, '').replace(/^\s*export default/gm, '');
+    echo             const compiled = Babel.transform(raw, {presets: ['react']}).code;
+    echo             eval(compiled);
+    echo             const root = ReactDOM.createRoot(document.getElementById('root'));
+    echo             root.render(^<App/^>);
+    echo         } catch (e) { throw e; }
+    echo     ^</script^>
+    echo ^</body^>
+    echo ^</html^>
+) >> "%APP_FILE%"
+
+echo Launching...
+start "" "%APP_FILE%"

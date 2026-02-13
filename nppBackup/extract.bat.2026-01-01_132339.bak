@@ -1,0 +1,101 @@
+@echo off & cd /d "%~dp0" & title ET ARCHIVE EXTRACTOR & echo [STATUS] Analyzing File Structure... & python -x "%~f0" %* & pause & goto :eof
+import os
+import sys
+import zipfile
+import io
+
+# --- ET ARCHIVE EXTRACTOR (BRUTE FORCE MODE) ---
+# TARGET: ET Math Compendium.pdf (Disguised/Embedded ZIP)
+# STRATEGY: Offset scanning for PK headers to handle polyglot/offset archives.
+
+sys.stdout.reconfigure(encoding='utf-8')
+
+def main():
+    target_file = "ET Math Compendium.pdf"
+    output_dir = "compendium_extracted"
+    
+    # 1. SETUP
+    if not os.path.exists(target_file):
+        print(f"[!] ERROR: Target file '{target_file}' not found.")
+        sys.exit(1)
+
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    print(f"[*] Target: {target_file}")
+    print(f"[*] Output: {output_dir}")
+
+    extracted_count = 0
+
+    # 2. READ BINARY DATA
+    try:
+        with open(target_file, "rb") as f:
+            file_data = f.read()
+    except Exception as e:
+        print(f"[!] Failed to read file: {e}")
+        sys.exit(1)
+
+    # 3. SCAN FOR ZIP SIGNATURES (PK\x03\x04)
+    # Standard tools like unzip -o are good at finding the start. 
+    # Python's zipfile is strict, so we manually find the start offset.
+    print("[*] Scanning binary for ZIP headers...")
+    
+    # Find all occurrences of the Local File Header signature
+    pk_signature = b'PK\x03\x04'
+    offsets = []
+    start = 0
+    while True:
+        idx = file_data.find(pk_signature, start)
+        if idx == -1:
+            break
+        offsets.append(idx)
+        start = idx + 1
+
+    if not offsets:
+        print("[!] No ZIP signatures (PK\\x03\\x04) found in file.")
+        sys.exit(1)
+
+    print(f"[*] Found candidate ZIP start offsets: {offsets}")
+
+    # 4. ATTEMPT EXTRACTION AT EACH OFFSET
+    success = False
+    for offset in offsets:
+        try:
+            print(f"[*] Attempting extraction from offset {offset}...")
+            
+            # Create a file-like object from the offset
+            stream = io.BytesIO(file_data[offset:])
+            
+            with zipfile.ZipFile(stream, 'r') as z:
+                # Check for expected content (txt/jpg)
+                namelist = z.namelist()
+                txt_count = len([n for n in namelist if n.endswith('.txt')])
+                img_count = len([n for n in namelist if n.endswith(('.jpg','.jpeg','.png'))])
+                
+                print(f"    > Valid ZIP structure found.")
+                print(f"    > Files: {len(namelist)} (Txt: {txt_count}, Img: {img_count})")
+                
+                # If it looks substantial, extract it
+                if len(namelist) > 0:
+                    z.extractall(output_dir)
+                    extracted_count = len(namelist)
+                    success = True
+                    print(f"[+] SUCCESS. Extracted contents to '{output_dir}'.")
+                    break # Stop after first successful extraction
+                    
+        except zipfile.BadZipFile:
+            print(f"    [x] Offset {offset}: Bad Zip File (Header mismatch or incomplete).")
+        except Exception as e:
+            print(f"    [x] Offset {offset}: Error - {e}")
+
+    # 5. RESULT REPORT
+    if success:
+        print("\n[SUMMARY] Extraction Successful.")
+        print(f"Total files: {extracted_count}")
+        print("Please check the 'compendium_extracted' folder.")
+    else:
+        print("\n[FAILURE] Could not extract valid ZIP data from any offset.")
+        print("Suggestion: Try renaming the file to .zip manually and using Windows Explorer.")
+
+if __name__ == "__main__":
+    main()

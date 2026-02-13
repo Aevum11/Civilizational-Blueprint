@@ -1,0 +1,142 @@
+"""
+FITS Column Diagnostic Tool
+----------------------------
+Run this on your Planck FITS file to see EXACTLY what columns exist.
+This will help identify why some expected columns might be missing.
+
+Usage: python diagnose_fits.py your_file.fits
+"""
+
+import sys
+from astropy.io import fits
+import numpy as np
+
+if len(sys.argv) < 2:
+    print("Usage: python diagnose_fits.py <fits_file>")
+    sys.exit(1)
+
+fits_file = sys.argv[1]
+
+print("="*80)
+print(f"FITS FILE DIAGNOSTIC: {fits_file}")
+print("="*80)
+
+with fits.open(fits_file, memmap=True) as hdul:
+    print(f"\nTotal HDUs (Header Data Units): {len(hdul)}")
+    print("\n" + "="*80)
+    
+    all_columns_found = []
+    
+    for i, hdu in enumerate(hdul):
+        print(f"\n--- HDU {i} ---")
+        print(f"Type: {type(hdu).__name__}")
+        
+        # Show header info
+        if hasattr(hdu, 'header'):
+            if 'EXTNAME' in hdu.header:
+                print(f"Extension Name: {hdu.header['EXTNAME']}")
+            if 'NAXIS' in hdu.header:
+                print(f"NAXIS: {hdu.header['NAXIS']}")
+        
+        # Binary Table
+        if hasattr(hdu, 'columns') and hdu.columns:
+            print(f"\n  Binary Table with {len(hdu.columns.names)} columns:")
+            print(f"  {'Column Name':<25} {'Format':<10} {'Shape':<20} {'Bytes':<15}")
+            print(f"  {'-'*25} {'-'*10} {'-'*20} {'-'*15}")
+            
+            for col_name in hdu.columns.names:
+                all_columns_found.append(col_name)
+                col = hdu.columns[col_name]
+                
+                # Get actual data info
+                try:
+                    data = hdu.data[col_name]
+                    shape = data.shape
+                    dtype = data.dtype
+                    size_bytes = data.size * data.dtype.itemsize
+                    size_mb = size_bytes / (1024*1024)
+                    
+                    print(f"  {col_name:<25} {col.format:<10} {str(shape):<20} {size_mb:>10.2f} MB")
+                except Exception as e:
+                    print(f"  {col_name:<25} {col.format:<10} {'ERROR':<20} {str(e)}")
+        
+        # Image data
+        elif hdu.data is not None:
+            if i == 0 and hdu.data.size < 2:
+                print("  Empty Primary HDU (no data)")
+            else:
+                print(f"\n  Image Data:")
+                print(f"    Shape: {hdu.data.shape}")
+                print(f"    dtype: {hdu.data.dtype}")
+                size_mb = (hdu.data.size * hdu.data.dtype.itemsize) / (1024*1024)
+                print(f"    Size: {size_mb:.2f} MB")
+        else:
+            print("  No data (header only)")
+    
+    # Summary
+    print("\n" + "="*80)
+    print("COLUMN SUMMARY")
+    print("="*80)
+    print(f"\nTotal columns found: {len(all_columns_found)}")
+    
+    if all_columns_found:
+        print("\nAll column names (sorted):")
+        for name in sorted(all_columns_found):
+            print(f"  - {name}")
+        
+        # Check against expected Planck columns
+        expected_planck = {
+            'Stokes': ['I_STOKES', 'Q_STOKES', 'U_STOKES'],
+            'Coverage': ['HITS'],
+            'Covariances': ['II_COV', 'QQ_COV', 'UU_COV', 'IQ_COV', 'IU_COV', 'QU_COV'],
+            'Variances': ['I_VAR', 'Q_VAR', 'U_VAR'],
+        }
+        
+        print("\n" + "="*80)
+        print("EXPECTED PLANCK COLUMNS CHECK")
+        print("="*80)
+        
+        for category, expected in expected_planck.items():
+            found = [col for col in expected if col in all_columns_found]
+            missing = [col for col in expected if col not in all_columns_found]
+            
+            print(f"\n{category}:")
+            if found:
+                for col in found:
+                    print(f"  ✓ {col} - FOUND")
+            if missing:
+                for col in missing:
+                    print(f"  ✗ {col} - MISSING")
+        
+        # Additional columns not in expected list
+        expected_all = []
+        for cols in expected_planck.values():
+            expected_all.extend(cols)
+        
+        additional = [col for col in all_columns_found if col not in expected_all]
+        if additional:
+            print(f"\nAdditional columns (not in standard Planck list):")
+            for col in additional:
+                print(f"  + {col}")
+    
+    print("\n" + "="*80)
+    print("\nDIAGNOSTIC COMPLETE")
+    print("="*80)
+    
+    if len(all_columns_found) < 3:
+        print("\n⚠️  WARNING: Very few columns found!")
+        print("This may indicate:")
+        print("  - Wrong FITS extension (try other files in same directory)")
+        print("  - Incomplete download")
+        print("  - Non-standard FITS format")
+    elif len(all_columns_found) < 7:
+        print("\n⚠️  NOTE: Fewer columns than expected for full Planck data")
+        print("Possible reasons:")
+        print("  - Lower frequency data (30-70 GHz lacks Q/U)")
+        print("  - Simplified/processed map (covariances removed)")
+        print("  - Specific data product (not full frequency map)")
+    else:
+        print("\n✓ Column count looks reasonable for Planck data")
+    
+    print("\nTo extract all columns:")
+    print(f"  python convert_to_raw_enhanced.py {fits_file} all")

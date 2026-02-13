@@ -1,0 +1,126 @@
+import sys
+import os
+import traceback
+import time
+
+def keep_window_open():
+    print("\n" + "!"*60)
+    print("SCRIPT FINISHED. PRESS ENTER TO CLOSE THIS WINDOW.")
+    print("!"*60)
+    try:
+        input()
+    except:
+        pass
+
+# Wrap everything in a big try-block so crashes don't close the window
+try:
+    print("Loading libraries (this may take a moment)...")
+    from astropy.io import fits
+    import numpy as np
+
+    # 1. SETUP PATHS
+    # Get the directory where this script is running
+    current_dir = os.getcwd()
+    print(f"\n--- WORKING DIRECTORY: {current_dir} ---")
+
+    if len(sys.argv) != 3:
+        print("ERROR: Missing arguments.")
+        print("Usage: python convert_explicit.py <input.fits> <output.bin>")
+        keep_window_open()
+        sys.exit(1)
+
+    input_filename = sys.argv[1]
+    output_filename = sys.argv[2]
+
+    # Force the file to be looked for/saved in the CURRENT directory to avoid confusion
+    full_input_path = os.path.abspath(input_filename)
+    full_output_path = os.path.abspath(output_filename)
+
+    print(f"INPUT READ PATH:  {full_input_path}")
+    print(f"OUTPUT SAVE PATH: {full_output_path}")
+
+    if not os.path.exists(full_input_path):
+        print(f"\nFATAL ERROR: The input file does not exist at: {full_input_path}")
+        keep_window_open()
+        sys.exit(1)
+
+    # 2. OPEN FITS FILE
+    print(f"\nOpening FITS file...")
+    # memmap=True prevents loading the whole file into RAM at once (good for big files)
+    with fits.open(full_input_path, memmap=True) as hdul:
+        print("FITS file opened successfully.")
+        hdul.info()
+        
+        target_data = None
+        found_name = "NONE"
+
+        # 3. LOCATE DATA
+        # We loop through every extension to find the Planck data table
+        for i, hdu in enumerate(hdul):
+            # Check for Table Data (Standard Planck format)
+            if hasattr(hdu, 'columns'):
+                col_names = hdu.columns.names
+                print(f"\nExtension {i} is a Table with columns: {col_names}")
+                
+                # Planck SMICA maps store intensity in 'I_STOKES'
+                # We check for that first, then fallbacks
+                if 'I_STOKES' in col_names:
+                    print("--> FOUND 'I_STOKES' (Intensity) column.")
+                    target_data = hdu.data['I_STOKES']
+                    found_name = 'I_STOKES'
+                    break
+                elif 'TEMPERATURE' in col_names:
+                    print("--> FOUND 'TEMPERATURE' column.")
+                    target_data = hdu.data['TEMPERATURE']
+                    found_name = 'TEMPERATURE'
+                    break
+                elif 'I' in col_names:
+                    print("--> FOUND 'I' column.")
+                    target_data = hdu.data['I']
+                    found_name = 'I'
+                    break
+            
+            # Check for Image Data (Older format or non-Planck)
+            elif hdu.data is not None and i > 0:
+                print(f"\nExtension {i} is an Image Array.")
+                target_data = hdu.data
+                found_name = "IMAGE_ARRAY"
+                break
+
+        if target_data is None:
+            print("\nFATAL ERROR: Could not find I_STOKES or TEMPERATURE data in this file.")
+            keep_window_open()
+            sys.exit(1)
+
+        # 4. CONVERT AND SAVE
+        print(f"\nExtracting data from [{found_name}]...")
+        
+        # Flatten to 1D array
+        print("Flattening data...")
+        raw_array = target_data.flatten()
+        
+        # Ensure it is float32 (Standard for raw processing)
+        if raw_array.dtype != np.float32:
+            print(f"Converting from {raw_array.dtype} to float32...")
+            raw_array = raw_array.astype(np.float32)
+
+        print(f"Data stats: Min={raw_array.min()}, Max={raw_array.max()}")
+        
+        print(f"Writing raw binary to: {full_output_path}")
+        raw_array.tofile(full_output_path)
+        
+        # Double check the file exists
+        if os.path.exists(full_output_path):
+             size_mb = os.path.getsize(full_output_path) / (1024*1024)
+             print(f"\nSUCCESS! File written. Size: {size_mb:.2f} MB")
+        else:
+             print("\nERROR: File write completed but file not found on disk.")
+
+except Exception as e:
+    print("\n" + "X"*50)
+    print("AN ERROR OCCURRED:")
+    traceback.print_exc()
+    print("X"*50)
+
+# 5. MANDATORY PAUSE
+keep_window_open()

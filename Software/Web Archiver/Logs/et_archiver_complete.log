@@ -1,0 +1,129 @@
+2026-02-03 22:47:11,026 - INFO - ================================================================================
+2026-02-03 22:47:11,026 - INFO - ET Web Archiver - COMPLETE ALL PHASES INTEGRATED
+2026-02-03 22:47:11,027 - INFO - ================================================================================
+2026-02-03 22:47:11,027 - INFO - Working directory: C:\Users\aevum\Desktop\Exception Theory\ET Python Library\ET Python Library
+2026-02-03 22:47:11,039 - INFO - Tkinter imported successfully.
+2026-02-03 22:47:11,152 - WARNING - Installing beautifulsoup4...
+2026-02-03 22:47:12,026 - INFO - External libraries imported successfully.
+2026-02-03 22:47:12,346 - INFO - ET components imported successfully.
+2026-02-03 22:47:12,346 - INFO - ET mathematics instantiated - ALL PHASES VERSION.
+2026-02-03 22:47:12,346 - INFO - ================================================================================
+2026-02-03 22:47:12,346 - INFO - ET METHOD AVAILABILITY CHECK:
+2026-02-03 22:47:12,346 - INFO - Phase 1: Bloom=True, Merkle=True, Entropy=True, KComplexity=True, Manifold=True
+2026-02-03 22:47:12,346 - INFO - Phase 2: PhaseTransition=True, Variance=True, Density=True, Effort=True, Substantiation=True
+2026-02-03 22:47:12,347 - INFO - Phase 3: Teleological=True, RecursiveSearch=False, Recurrence=True, Differentiation=True, Gap=False
+2026-02-03 22:47:12,347 - INFO - Phase 4: Fractal=True, DomainClass=True
+2026-02-03 22:47:12,347 - INFO - ET Constants: BASE_VARIANCE=0.08333333333333333, MANIFOLD_SYMMETRY=12, PHI=1.61803398875, KOIDE=0.6666666666666666
+2026-02-03 22:47:12,347 - INFO - ================================================================================
+2026-02-03 22:47:50,977 - INFO - Initialized ETBloomFilter: size=20000, hash_count=3
+2026-02-03 22:47:50,977 - INFO - Initialized ETDownloadQueue with phase transition management
+2026-02-03 22:47:50,979 - INFO - Initialized ETQualityOptimizer: target=0.0
+2026-02-03 22:47:50,979 - INFO - Initialized ETTeleologicalSorter
+2026-02-03 22:47:50,980 - INFO - Initialized ETPatternDiscoverer
+2026-02-03 22:47:50,980 - INFO - Initialized ETStateRecurrenceDetector (history=100)
+2026-02-03 22:47:50,981 - INFO - Initialized ETGapAnalyzer
+2026-02-03 22:47:50,982 - INFO - Initialized ETFractalGenerator
+2026-02-03 22:47:50,983 - INFO - Initialized ETDomainClassifier
+2026-02-03 22:47:50,983 - INFO - Initialized ETArchiveExporter
+2026-02-03 22:47:50,985 - INFO - Initialized COMPLETE ETWebArchiver for https://bluemoonfalls.com/
+2026-02-03 22:47:50,985 - INFO - All phases integrated and ready
+2026-02-03 22:47:51,530 - ERROR - Traversal error at https://bluemoonfalls.com/: 'dict' object has no attribute 'lower'
+2026-02-03 22:47:51,531 - ERROR - Archive failed: Failed to download: https://bluemoonfalls.com/
+Traceback (most recent call last):
+  File "C:\Users\aevum\Desktop\Exception Theory\ET Python Library\ET Python Library\et_web_archiver_COMPLETE_ALL_PHASES.py", line 1205, in archive_website
+    raise RuntimeError(f"Failed to download: {base_url}")
+RuntimeError: Failed to download: https://bluemoonfalls.com/
+2026-02-03 22:47:51,559 - ERROR - Error: Failed to download: https://bluemoonfalls.com/
+Traceback (most recent call last):
+  File "C:\Users\aevum\Desktop\Exception Theory\ET Python Library\ET Python Library\et_web_archiver_COMPLETE_ALL_PHASES.py", line 1647, in run_download_gui
+    report, main_page = archiver.archive_website(url, root_output_dir, progress_callback=update_progress)
+                        ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\aevum\Desktop\Exception Theory\ET Python Library\ET Python Library\et_web_archiver_COMPLETE_ALL_PHASES.py", line 1205, in archive_website
+    raise RuntimeError(f"Failed to download: {base_url}")
+RuntimeError: Failed to download: https://bluemoonfalls.com/
+2026-02-03 23:12:46,812 - INFO - ================================================================================
+2026-02-03 23:12:46,812 - INFO - ET Web Archiver - COMPLETE ALL PHASES INTEGRATED
+2026-02-03 23:12:46,812 - INFO - ================================================================================
+2026-02-03 23:12:46,813 - INFO - Working directory: C:\Users\aevum\Desktop\Exception Theory\ET Python Library\ET Python Library
+2026-02-03 23:12:46,824 - INFO - Tkinter imported successfully.
+2026-02-03 23:12:46,919 - WARNING - Installing beautifulsoup4...
+2026-02-03 23:12:47,758 - INFO - External libraries imported successfully.
+2026-02-03 23:12:48,096 - INFO - ET components imported successfully.
+2026-02-03 23:12:48,096 - INFO - ET mathematics instantiated - ALL PHASES VERSION.
+2026-02-03 23:12:48,096 - INFO - ================================================================================
+2026-02-03 23:12:48,096 - INFO - ET METHOD AVAILABILITY CHECK:
+2026-02-03 23:12:48,096 - INFO - Phase 1: Bloom=True, Merkle=True, Entropy=True, KComplexity=True, Manifold=True
+2026-02-03 23:12:48,097 - INFO - Phase 2: PhaseTransition=True, Variance=True, Density=True, Effort=True, Substantiation=True
+2026-02-03 23:12:48,097 - INFO - Phase 3: Teleological=True, RecursiveSearch=False, Recurrence=True, Differentiation=True, Gap=False
+2026-02-03 23:12:48,097 - INFO - Phase 4: Fractal=True, DomainClass=True
+2026-02-03 23:12:48,097 - INFO - ET Constants: BASE_VARIANCE=0.08333333333333333, MANIFOLD_SYMMETRY=12, PHI=1.61803398875, KOIDE=0.6666666666666666
+2026-02-03 23:12:48,097 - INFO - ================================================================================
+2026-02-03 23:14:36,608 - INFO - Initialized ETBloomFilter: size=20000, hash_count=3
+2026-02-03 23:14:36,608 - INFO - Initialized ETDownloadQueue with phase transition management
+2026-02-03 23:14:36,610 - INFO - Initialized ETQualityOptimizer: target=0.0
+2026-02-03 23:14:36,611 - INFO - Initialized ETTeleologicalSorter
+2026-02-03 23:14:36,612 - INFO - Initialized ETPatternDiscoverer
+2026-02-03 23:14:36,613 - INFO - Initialized ETStateRecurrenceDetector (history=100)
+2026-02-03 23:14:36,616 - INFO - Initialized ETGapAnalyzer
+2026-02-03 23:14:36,617 - INFO - Initialized ETFractalGenerator
+2026-02-03 23:14:36,617 - INFO - Initialized ETDomainClassifier
+2026-02-03 23:14:36,618 - INFO - Initialized ETArchiveExporter
+2026-02-03 23:14:36,618 - INFO - Initialized COMPLETE ETWebArchiver for https://bluemoonfalls.com/
+2026-02-03 23:14:36,620 - INFO - All phases integrated and ready
+2026-02-03 23:14:37,077 - ERROR - Traversal error at https://bluemoonfalls.com/: 'dict' object has no attribute 'lower'
+2026-02-03 23:14:37,077 - ERROR - Archive failed: Failed to download: https://bluemoonfalls.com/
+Traceback (most recent call last):
+  File "C:\Users\aevum\Desktop\Exception Theory\ET Python Library\ET Python Library\et_web_archiver_COMPLETE_ALL_PHASES.py", line 1221, in archive_website
+    raise RuntimeError(f"Failed to download: {base_url}")
+RuntimeError: Failed to download: https://bluemoonfalls.com/
+2026-02-03 23:14:37,091 - ERROR - Error: Failed to download: https://bluemoonfalls.com/
+Traceback (most recent call last):
+  File "C:\Users\aevum\Desktop\Exception Theory\ET Python Library\ET Python Library\et_web_archiver_COMPLETE_ALL_PHASES.py", line 1663, in run_download_gui
+    report, main_page = archiver.archive_website(url, root_output_dir, progress_callback=update_progress)
+                        ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\aevum\Desktop\Exception Theory\ET Python Library\ET Python Library\et_web_archiver_COMPLETE_ALL_PHASES.py", line 1221, in archive_website
+    raise RuntimeError(f"Failed to download: {base_url}")
+RuntimeError: Failed to download: https://bluemoonfalls.com/
+2026-02-03 23:20:41,652 - INFO - ================================================================================
+2026-02-03 23:20:41,652 - INFO - ET Web Archiver - COMPLETE ALL PHASES INTEGRATED
+2026-02-03 23:20:41,652 - INFO - ================================================================================
+2026-02-03 23:20:41,652 - INFO - Working directory: C:\Users\aevum\Desktop\Exception Theory\ET Python Library\ET Python Library
+2026-02-03 23:20:41,663 - INFO - Tkinter imported successfully.
+2026-02-03 23:20:41,756 - WARNING - Installing beautifulsoup4...
+2026-02-03 23:20:42,584 - INFO - External libraries imported successfully.
+2026-02-03 23:20:42,879 - INFO - ET components imported successfully.
+2026-02-03 23:20:42,879 - INFO - ET mathematics instantiated - ALL PHASES VERSION.
+2026-02-03 23:20:42,879 - INFO - ================================================================================
+2026-02-03 23:20:42,879 - INFO - ET METHOD AVAILABILITY CHECK:
+2026-02-03 23:20:42,879 - INFO - Phase 1: Bloom=True, Merkle=True, Entropy=True, KComplexity=True, Manifold=True
+2026-02-03 23:20:42,879 - INFO - Phase 2: PhaseTransition=True, Variance=True, Density=True, Effort=True, Substantiation=True
+2026-02-03 23:20:42,880 - INFO - Phase 3: Teleological=True, RecursiveSearch=False, Recurrence=True, Differentiation=True, Gap=False
+2026-02-03 23:20:42,880 - INFO - Phase 4: Fractal=True, DomainClass=True
+2026-02-03 23:20:42,880 - INFO - ET Constants: BASE_VARIANCE=0.08333333333333333, MANIFOLD_SYMMETRY=12, PHI=1.61803398875, KOIDE=0.6666666666666666
+2026-02-03 23:20:42,880 - INFO - ================================================================================
+2026-02-03 23:20:59,803 - INFO - Initialized ETBloomFilter: size=20000, hash_count=3
+2026-02-03 23:20:59,803 - INFO - Initialized ETDownloadQueue with phase transition management
+2026-02-03 23:20:59,805 - INFO - Initialized ETQualityOptimizer: target=0.0
+2026-02-03 23:20:59,807 - INFO - Initialized ETTeleologicalSorter
+2026-02-03 23:20:59,808 - INFO - Initialized ETPatternDiscoverer
+2026-02-03 23:20:59,809 - INFO - Initialized ETStateRecurrenceDetector (history=100)
+2026-02-03 23:20:59,812 - INFO - Initialized ETGapAnalyzer
+2026-02-03 23:20:59,813 - INFO - Initialized ETFractalGenerator
+2026-02-03 23:20:59,813 - INFO - Initialized ETDomainClassifier
+2026-02-03 23:20:59,814 - INFO - Initialized ETArchiveExporter
+2026-02-03 23:20:59,814 - INFO - Initialized COMPLETE ETWebArchiver for https://bluemoonfalls.com/
+2026-02-03 23:20:59,819 - INFO - All phases integrated and ready
+2026-02-03 23:21:00,384 - ERROR - Traversal error at https://bluemoonfalls.com/: 'dict' object has no attribute 'lower'
+2026-02-03 23:21:00,385 - ERROR - Archive failed: Failed to download: https://bluemoonfalls.com/
+Traceback (most recent call last):
+  File "C:\Users\aevum\Desktop\Exception Theory\ET Python Library\ET Python Library\et_web_archiver_COMPLETE_ALL_PHASES.py", line 1247, in archive_website
+    raise RuntimeError(f"Failed to download: {base_url}")
+RuntimeError: Failed to download: https://bluemoonfalls.com/
+2026-02-03 23:21:00,419 - ERROR - Error: Failed to download: https://bluemoonfalls.com/
+Traceback (most recent call last):
+  File "C:\Users\aevum\Desktop\Exception Theory\ET Python Library\ET Python Library\et_web_archiver_COMPLETE_ALL_PHASES.py", line 1689, in run_download_gui
+    report, main_page = archiver.archive_website(url, root_output_dir, progress_callback=update_progress)
+                        ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\aevum\Desktop\Exception Theory\ET Python Library\ET Python Library\et_web_archiver_COMPLETE_ALL_PHASES.py", line 1247, in archive_website
+    raise RuntimeError(f"Failed to download: {base_url}")
+RuntimeError: Failed to download: https://bluemoonfalls.com/

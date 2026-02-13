@@ -1,0 +1,92 @@
+@echo off
+setlocal
+
+:: CONFIGURATION
+set "JSX_SOURCE=ET_Periodic_Omniverse.jsx"
+set "HTML_OUT=ET_Viewer.html"
+
+:: Check for file
+if not exist "%JSX_SOURCE%" (
+    echo.
+    echo [ERROR] Could not find: %JSX_SOURCE%
+    echo Please ensure this batch file is in the same folder as your code.
+    echo.
+    pause
+    exit /b
+)
+
+echo Generating Viewer...
+
+:: 1. Write Top of HTML
+(
+    echo ^<!DOCTYPE html^>
+    echo ^<html lang="en"^>
+    echo ^<head^>
+    echo     ^<meta charset="UTF-8"^>
+    echo     ^<meta name="viewport" content="width=device-width, initial-scale=1.0"^>
+    echo     ^<title^>ET Omniverse^</title^>
+    echo     ^<script src="https://unpkg.com/react@18/umd/react.production.min.js"^>^</script^>
+    echo     ^<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"^>^</script^>
+    echo     ^<script src="https://unpkg.com/@babel/standalone/babel.min.js"^>^</script^>
+    echo     ^<script src="https://cdn.tailwindcss.com"^>^</script^>
+    echo     ^<style^>
+    echo         body { background-color: #0f172a; color: #e2e8f0; font-family: sans-serif; }
+    echo         #error-box { display:none; background:#450a0a; color:#fca5a5; padding:20px; border:2px solid red; white-space:pre-wrap; margin:20px; }
+    echo     ^</style^>
+    echo ^</head^>
+    echo ^<body^>
+    echo     ^<div id="error-box"^>^</div^>
+    echo     ^<div id="root"^>^</div^>
+    echo     ^<!-- RAW CODE CONTAINER --^>
+    echo     ^<script id="raw-code" type="text/plain"^>
+) > "%HTML_OUT%"
+
+:: 2. Embed the JSX Code (Safe Copy)
+type "%JSX_SOURCE%" >> "%HTML_OUT%"
+
+:: 3. Write Bottom of HTML (The Loader Logic)
+(
+    echo     ^</script^>
+    echo     ^<script type="text/babel"^>
+    echo         // --- GLOBAL ERROR HANDLER ---
+    echo         window.onerror = function(msg, url, line) {
+    echo             const el = document.getElementById('error-box');
+    echo             el.style.display = 'block';
+    echo             el.innerText = 'ERROR: ' + msg + '\nLine: ' + line;
+    echo             return false;
+    echo         };
+    echo.
+    echo         try {
+    echo             // 1. Get Code
+    echo             let code = document.getElementById('raw-code').innerHTML;
+    echo.
+    echo             // 2. Clean Imports/Exports (Browsers hate these)
+    echo             code = code.replace(/^\s*import .*$/gm, '');
+    echo             code = code.replace(/^\s*export default/gm, '');
+    echo.
+    echo             // 3. Polyfill Icons
+    echo             const Icon = p =^> ^<svg {...p} width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"^>^<path d="M12 2L2 22h20L12 2z"/^>^</svg^>;
+    echo             const {useState,useEffect,useMemo} = React;
+    echo             const ChevronLeft=Icon;const ChevronRight=Icon;const Home=Icon;const Atom=Icon;const Layers=Icon;
+    echo             const Zap=Icon;const Activity=Icon;const Target=Icon;const Clock=Icon;const Shield=Icon;const AlertTriangle=Icon;const Info=Icon;
+    echo.
+    echo             // 4. Append Render Trigger
+    echo             code += "\n\nconst root = ReactDOM.createRoot(document.getElementById('root')); root.render(<App />);";
+    echo.
+    echo             // 5. Compile & Run
+    echo             const compiled = Babel.transform(code, { presets: ['react'] }).code;
+    echo             eval(compiled);
+    echo.
+    echo         } catch (e) {
+    echo             const el = document.getElementById('error-box');
+    echo             el.style.display = 'block';
+    echo             el.innerText = 'LOADER ERROR: ' + e.message;
+    echo             console.error(e);
+    echo         }
+    echo     ^</script^>
+    echo ^</body^>
+    echo ^</html^>
+) >> "%HTML_OUT%"
+
+echo Launching Viewer...
+start "" "%HTML_OUT%"

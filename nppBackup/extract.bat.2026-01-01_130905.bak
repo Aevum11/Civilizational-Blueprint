@@ -1,0 +1,107 @@
+@echo off & cd /d "%~dp0" & title ET COMPENDIUM EXTRACTOR (HIGH PRECISION) & echo [STATUS] Launching PyMuPDF Extraction Engine... & python -x "%~f0" %* & pause & goto :eof
+import os
+import sys
+import subprocess
+import importlib.util
+
+# --- EXCEPTION THEORY EXTRACTOR (PyMuPDF ENGINE) ---
+
+# Force UTF-8 for console output to prevent crashes
+sys.stdout.reconfigure(encoding='utf-8')
+
+def install_and_import(package, import_name):
+    """Checks for a library and installs it if missing."""
+    if importlib.util.find_spec(import_name) is None:
+        print(f"[*] Dependency '{package}' not found. Installing via pip...")
+        try:
+            subprocess.check_call([sys.executable, "-m", "pip", "install", package])
+            print(f"[*] '{package}' installed.")
+        except subprocess.CalledProcessError:
+            print(f"[!] ERROR: Could not install '{package}'. Check your internet connection.")
+            sys.exit(1)
+    return importlib.import_module(import_name)
+
+def main():
+    # 1. SETUP
+    pdf_filename = "ET Math Compendium.pdf"
+    output_dir = "compendium_extracted"
+    
+    print(f"[*] Target File: {pdf_filename}")
+    
+    if not os.path.exists(pdf_filename):
+        print(f"[!] CRITICAL ERROR: '{pdf_filename}' is missing!")
+        print(f"    Current Folder: {os.getcwd()}")
+        sys.exit(1)
+
+    # 2. LOAD LIBRARIES (Switching to PyMuPDF for correct symbol decoding)
+    try:
+        # Install pymupdf, import as fitz
+        fitz = install_and_import("pymupdf", "fitz")
+    except Exception as e:
+        print(f"[!] Python Environment Error: {e}")
+        sys.exit(1)
+
+    # 3. PREPARE OUTPUT
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+        print(f"[*] Created output directory: {output_dir}")
+
+    # 4. EXECUTE EXTRACTION
+    try:
+        doc = fitz.open(pdf_filename)
+        total_pages = doc.page_count
+        print(f"[*] PDF Loaded via PyMuPDF. Total Pages: {total_pages}")
+        print(f"[*] Extracting discrete Descriptor files (Visual Reading Order)...")
+        
+        # LOOP THROUGH PAGES
+        for i, page in enumerate(doc):
+            page_num = i + 1
+            
+            # 'text' flag in PyMuPDF preserves layout and reading order significantly better
+            # than standard pypdf extraction.
+            text = page.get_text("text")
+            
+            if text.strip():
+                # Create individual filename
+                page_filename = f"ET_Compendium_Page_{page_num:02d}.txt"
+                page_path = os.path.join(output_dir, page_filename)
+                
+                # CRITICAL: USE 'utf-8-sig' FOR WINDOWS COMPATIBILITY
+                with open(page_path, "w", encoding="utf-8-sig") as f:
+                    f.write(text)
+                
+                print(f"   [+] Saved: {page_filename}")
+            else:
+                print(f"   [!] Page {page_num} appears empty.")
+
+        # 5. HANDLE ATTACHMENTS (Embedded Files)
+        if doc.embfile_count() > 0:
+            print(f"\n[*] Found {doc.embfile_count()} embedded attachments. Extracting...")
+            for i in range(doc.embfile_count()):
+                try:
+                    props = doc.embfile_info(i)
+                    filename = props["name"]
+                    data = doc.embfile_get(i)
+                    
+                    safe_filename = os.path.basename(filename)
+                    out_path = os.path.join(output_dir, f"ATTACHMENT_{safe_filename}")
+                    
+                    with open(out_path, "wb") as f:
+                        f.write(data)
+                    print(f"   [+] Extracted Attachment: {safe_filename}")
+                except Exception as att_err:
+                    print(f"   [!] Failed to extract attachment index {i}: {att_err}")
+        else:
+             print("\n[*] No embedded attachments found.")
+
+        doc.close()
+        print("\n[SUCCESS] Extraction Complete.")
+        print(f"[*] Data located in: {os.path.abspath(output_dir)}")
+
+    except Exception as e:
+        print(f"\n[!] EXTRACTION FAILED: {e}")
+        import traceback
+        traceback.print_exc()
+
+if __name__ == "__main__":
+    main()
