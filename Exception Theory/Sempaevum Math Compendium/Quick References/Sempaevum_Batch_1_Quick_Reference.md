@@ -33,16 +33,17 @@
 - **Python Class:** `Traverser`, `TraverserManifold`, `IndeterminateForm`
 
 ### 1.5: Intrinsic Binding Principle (Mediation Constancy)
-- **Core:** M(B,I) ≡ B ≡ I ∧ ∀_(p,d) : strength(p ∘ d) = const
+- **Core:** M ≡ B ≡ I ∧ ∀p ∈ P, ∀d ∈ D : strength(p ∘ d) = const
 - **Function:** Unifies binding and interaction, constant strength
 - **Key Concept:** Mediation constancy, T mobility without collapse
 - **Python Class:** `Mediation`, `MediatedEntity`, `MediationValidator`
 
 ### 1.6: The Exception and Substantiation (Grounded Moment)
-- **Core:** E = (P ∘ D ∘ T) ∧ ∀t : ∃! E_t | E_t ≡ current(t)
+- **Core:** E = (P ∘ D ∘ T) ∧ ∀τ : ∃! E_τ | E_τ ≡ current(τ)
 - **Function:** Defines the unique substantiated moment
 - **Key Concept:** Exception uniqueness, shared reality, immutability
-- **Python Class:** `Exception`, `ExceptionManager`
+- **Python Class:** `ETException`, `ExceptionManager`
+- **Note:** τ (tau) = T-time (Traverser time), distinct from D-time and lowercase t (Traverser elements)
 
 ### 1.7: Incoherence Classification (Prohibited Regions)
 - **Core:** I = {(P ∘ D) | D self-defeating} ∧ ∀t ∈ T, ∀i ∈ I : ¬(t ∘ i)
@@ -57,7 +58,7 @@
 - **Python Class:** `Something`, `SomethingMember`, `Entity`
 
 ### 1.9: Primitive Set Definitions (Categorical Foundations)
-- **Core:** P ≡ {p | |{p}| = Ω} ∧ D ≡ {d | |{d}| = n} ∧ T ≡ {t | |{t}| = 0/0}
+- **Core:** P ≡ {p | p is a Point}, |P| = Ω ∧ D ≡ {d | d is a Descriptor}, |D| = n ∧ T ≡ {t | t is a Traverser}, |T| = 0/0
 - **Function:** Formal set-theoretic definitions with cardinality
 - **Key Concept:** Complete axiomatic foundation
 - **Python Class:** `PrimitiveSetDefinition`, `PrimitiveFoundation`
@@ -113,11 +114,12 @@
 
 ## Usefulness Ratings Summary
 
-### Programming Applications (Average: 4.7/5)
-- Highest: Equations 1.1, 1.2, 1.3, 1.7, 1.9, 1.10 (5.0/5)
-- High: Equations 1.4, 1.5, 1.6 (4.0-4.5/5)
+### Programming Applications (Average: 4.75/5)
+- Highest: Equations 1.1, 1.2, 1.3, 1.6, 1.7, 1.9, 1.10 (5.0/5)
+- High: Equations 1.4, 1.5 (4.0-4.5/5)
+- Good: Equation 1.8 (4.0/5)
 
-### Physical Applications (Average: 4.6/5)
+### Physical Applications (Average: 4.65/5)
 - Highest: Equations 1.3, 1.4, 1.5, 1.6, 1.8, 1.10 (5.0/5)
 - High: Equations 1.1, 1.7, 1.9 (4.0-4.5/5)
 

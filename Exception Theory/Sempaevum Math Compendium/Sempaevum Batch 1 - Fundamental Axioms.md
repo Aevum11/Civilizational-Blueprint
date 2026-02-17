@@ -364,7 +364,7 @@ Equation 1.2: Point Cardinality and Substrate Potential
 Production-ready implementation for ET Sovereign
 """
 
-from typing import Set, Optional, List
+from typing import Any, Set, Optional, List
 import math
 from dataclasses import dataclass, field
 
@@ -454,7 +454,7 @@ class ETDescriptor:
     Part of the finite set D.
     """
     identifier: str
-    value: any = None
+    value: Any = None
     bound_points: Set[ETPoint] = field(default_factory=set)
     
     def __repr__(self):
@@ -695,7 +695,6 @@ Production-ready implementation for ET Sovereign
 
 from typing import Set, List, Callable, Any, Optional, Dict
 from dataclasses import dataclass, field
-import numpy as np
 from abc import ABC, abstractmethod
 
 
@@ -1069,7 +1068,6 @@ Production-ready implementation for ET Sovereign
 from typing import Any, Callable, Optional, List, Set
 from dataclasses import dataclass
 from enum import Enum, auto
-import numpy as np
 from abc import ABC, abstractmethod
 
 
@@ -1382,7 +1380,7 @@ if __name__ == "__main__":
 
 ### Core Equation
 
-$$M(B, I) \equiv B \equiv I \quad \land \quad \forall_{(p,d)} : \text{strength}(p \circ d) = \text{const}$$
+$$M \equiv B \equiv I \quad \land \quad \forall p \in \mathbb{P},\, \forall d \in \mathbb{D} : \text{strength}(p \circ d) = \text{const}$$
 
 ### What it is
 
@@ -1751,11 +1749,13 @@ if __name__ == "__main__":
 
 ### Core Equation
 
-$$E = (P \circ D \circ T) \quad \land \quad \forall t : \exists! E_t \mid E_t \equiv \text{current}(t)$$
+$$E = (P \circ D \circ T) \quad \land \quad \forall \tau : \exists! E_\tau \mid E_\tau \equiv \text{current}(\tau)$$
+
+> **Notation:** τ (tau) denotes T-time (Traverser time / true agential time), distinct from D-time (Descriptor time / global ordering). Lowercase t elsewhere in ET refers to individual Traverser elements (t ∈ T).
 
 ### What it is
 
-The Exception Equation defines the grounding factor of Exception Theory. The Exception (E) is the maximally described Point with agency—the current substantiated moment that cannot be otherwise while it IS. There is exactly one Exception at any given moment, but multiple Traversers can share it (explaining shared reality). When (P∘D) has T bound to it, the configuration becomes substantiated—the Exception. Any interaction causes T to traverse to a different (P∘D), creating a new Exception. The Exception is "impossible" not because it doesn't exist, but because it cannot be different while it IS substantiated.
+The Exception Equation defines the grounding factor of Exception Theory. The Exception (E) is the maximally described Point with agency—the current substantiated moment that cannot be otherwise while it IS. There is exactly one Exception at any given T-time moment (τ), but multiple Traversers can share it (explaining shared reality). When (P∘D) has T bound to it, the configuration becomes substantiated—the Exception. Any interaction causes T to traverse to a different (P∘D), creating a new Exception. The Exception is "impossible" not because it doesn't exist, but because it cannot be different while it IS substantiated.
 
 ### What it Can Do
 
@@ -1797,11 +1797,11 @@ All three must be bound together
 
 **Step 2: Establish Uniqueness**
 ```
-For any moment in time t:
-  ∃! E_t (there exists exactly one Exception)
+For any T-time moment τ:
+  ∃! E_τ (there exists exactly one Exception)
 
 Proof of uniqueness:
-  Assume: Two Exceptions E₁ and E₂ at time t
+  Assume: Two Exceptions E₁ and E₂ at T-time τ
   Both are "the current substantiated moment"
   But "current moment" is singular by definition
   Therefore: E₁ = E₂ (only one Exception exists)
@@ -1873,10 +1873,12 @@ class PointDescriptor:
 
 
 @dataclass
-class Exception:
+class ETException:
     """
     The Exception - Grounded substantiated moment.
     E = (P ∘ D ∘ T)
+    
+    Named ETException to avoid shadowing Python's built-in Exception class.
     
     Properties:
     - Unique at any given moment
@@ -1891,10 +1893,10 @@ class Exception:
     is_substantiated: bool = True
     
     def __post_init__(self):
-        """Verify Exception has at least one Traverser."""
+        """Verify ETException has at least one Traverser."""
         if not self.bound_traversers:
             raise ValueError(
-                "Exception must have at least one Traverser bound. "
+                "ETException must have at least one Traverser bound. "
                 "E = (P ∘ D ∘ T) requires T."
             )
     
@@ -1904,7 +1906,7 @@ class Exception:
         Multiple T can share the same Exception (shared reality).
         """
         if not self.is_substantiated:
-            raise ValueError(f"Cannot bind Traverser to unsubstantiated Exception")
+            raise ValueError(f"Cannot bind Traverser to unsubstantiated ETException")
         self.bound_traversers.add(traverser_id)
     
     def unbind_traverser(self, traverser_id: str) -> None:
@@ -1937,19 +1939,19 @@ class Exception:
 
 class ExceptionManager:
     """
-    Manages the singular Exception at any given moment.
+    Manages the singular ETException at any given moment.
     Ensures uniqueness: ∃! E (exactly one Exception exists).
     """
     
     def __init__(self):
-        self.current_exception: Optional[Exception] = None
-        self.exception_history: List[Exception] = []
+        self.current_exception: Optional[ETException] = None
+        self.exception_history: List[ETException] = []
         self._lock = threading.Lock()  # Thread safety for Exception transitions
     
     def create_exception(self, 
                         point_id: str, 
                         descriptors: List[str], 
-                        traverser_ids: Set[str]) -> Exception:
+                        traverser_ids: Set[str]) -> ETException:
         """
         Create new Exception (substantiate a configuration).
         Ensures uniqueness - only one Exception exists at a time.
@@ -1966,7 +1968,7 @@ class ExceptionManager:
             )
             
             # Create new Exception with Traverser(s) bound
-            new_exception = Exception(
+            new_exception = ETException(
                 configuration=configuration,
                 bound_traversers=traverser_ids.copy()
             )
@@ -1977,7 +1979,7 @@ class ExceptionManager:
     def transition_exception(self, 
                            new_point_id: str,
                            new_descriptors: List[str],
-                           traverser_ids: Set[str]) -> Exception:
+                           traverser_ids: Set[str]) -> ETException:
         """
         Transition to new Exception (T traverses to new configuration).
         Old Exception becomes unsubstantiated (moves to past).
@@ -2010,7 +2012,7 @@ class ExceptionManager:
             self.current_exception.is_substantiated = False
             # Note: Traversers are already unbound by transition
     
-    def get_current_exception(self) -> Optional[Exception]:
+    def get_current_exception(self) -> Optional[ETException]:
         """Return the current (unique) Exception."""
         return self.current_exception
     
@@ -2611,7 +2613,7 @@ Equation 1.8: Something Definition
 Production-ready implementation for ET Sovereign
 """
 
-from typing import Any, Set, Optional
+from typing import Any, List, Set, Optional
 from dataclasses import dataclass
 from abc import ABC, abstractmethod
 
@@ -2896,7 +2898,7 @@ if __name__ == "__main__":
 
 ### Core Equation
 
-$$\mathbb{P} \equiv \{p \mid |\{p\}| = \Omega\} \quad \land \quad \mathbb{D} \equiv \{d \mid |\{d\}| = n\} \quad \land \quad \mathbb{T} \equiv \{t \mid |\{t\}| = \frac{0}{0}\}$$
+$$\mathbb{P} \equiv \{p \mid p \text{ is a Point}\},\; |\mathbb{P}| = \Omega \quad \land \quad \mathbb{D} \equiv \{d \mid d \text{ is a Descriptor}\},\; |\mathbb{D}| = n \quad \land \quad \mathbb{T} \equiv \{t \mid t \text{ is a Traverser}\},\; |\mathbb{T}| = \frac{0}{0}$$
 
 ### What it is
 
@@ -2931,33 +2933,33 @@ Extremely important for theoretical foundations and metaphysical rigor. Provides
 **Step 1: Define Point Set P**
 ```
 P = {p | p is a Point}
-Where: Each Point has intrinsic property |{p}| = Ω
+Where: |P| = Ω (Absolute Infinity)
 
 Formally:
   P = Set of all Points
-  For any p ∈ P: cardinality of {p} as substrate = Ω
+  For any p ∈ P: p carries infinite substrate potential
   |P| = Ω (Absolute Infinity)
 ```
 
 **Step 2: Define Descriptor Set D**
 ```
 D = {d | d is a Descriptor}
-Where: Each Descriptor has intrinsic property |{d}| = n (finite)
+Where: |D| = n (finite)
 
 Formally:
   D = Set of all Descriptors
-  For any d ∈ D: cardinality of {d} as constraint = n
+  For any d ∈ D: d imposes finite constraint
   |D| = n (Absolute Finite)
 ```
 
 **Step 3: Define Traverser Set T**
 ```
 T = {t | t is a Traverser}
-Where: Each Traverser has intrinsic property |{t}| = 0/0 (indeterminate)
+Where: |T| = 0/0 (indeterminate)
 
 Formally:
   T = Set of all Traversers
-  For any t ∈ T: cardinality of {t} as agency = 0/0 = ∞/∞
+  For any t ∈ T: t exhibits indeterminate agency = 0/0 = ∞/∞
   |T| = 0/0 (Absolute Indeterminate)
 ```
 
@@ -2973,9 +2975,9 @@ The three sets are categorically distinct
 **Step 5: Combine Definitions**
 ```
 Complete axiomatic foundation:
-  P ≡ {p | |{p}| = Ω}      (Infinite substrate)
-  D ≡ {d | |{d}| = n}      (Finite constraints)
-  T ≡ {t | |{t}| = 0/0}    (Indeterminate agency)
+  P ≡ {p | p is a Point},      |P| = Ω   (Infinite substrate)
+  D ≡ {d | d is a Descriptor}, |D| = n   (Finite constraints)
+  T ≡ {t | t is a Traverser},  |T| = 0/0 (Indeterminate agency)
 
   P ∩ D = ∅, D ∩ T = ∅, T ∩ P = ∅
 
@@ -3182,9 +3184,9 @@ class PrimitiveFoundation:
     def get_formal_definitions(self) -> dict:
         """Return formal mathematical definitions of sets."""
         return {
-            'P': f"P ≡ {{p | |{{p}}| = {self.P.cardinality}}}",
-            'D': f"D ≡ {{d | |{{d}}| = {self.D.cardinality}}}",
-            'T': f"T ≡ {{t | |{{t}}| = {self.T.cardinality}}}",
+            'P': f"P ≡ {{p | p is a Point}}, |P| = {self.P.cardinality}",
+            'D': f"D ≡ {{d | d is a Descriptor}}, |D| = {self.D.cardinality}",
+            'T': f"T ≡ {{t | t is a Traverser}}, |T| = {self.T.cardinality}",
             'Disjointness': "P ∩ D = ∅, D ∩ T = ∅, T ∩ P = ∅"
         }
     

@@ -1,0 +1,83 @@
+BATCH 6
+
+====================
+
+1. Testing and Falsifiability
+
+### Empirical Predictions
+
+Exception Theory makes testable predictions:
+
+1. **Indeterminate forms in data**: Wherever T is active, 0/0 or ∞/∞ signatures should appear
+2. **Variance patterns**: Exception should show zero variance; all else positive
+3. **Asymptotic precision**: No measurement can be infinitely precise
+4. **Gravity anomalies**: Edge galaxy rotation without dark matter
+5. **Mathematical consistency**: Complete descriptor sets yield consistent math
+
+### The Scanner (v5.0)
+
+From the Scanner tool referenced in the integration context:
+
+**Purpose**: Detect Exception Theory signatures in empirical data
+
+**Method:**
+- Scan astronomical data (FITS files, Kepler data, etc.)
+- Compute temporal and entropy metrics
+- Calculate dτ/dt (agential time / descriptor time ratio)
+- Identify binding strength patterns
+- Look for T-signatures in variance
+
+**Metrics:**
+- High values (>2.0) indicate strong T binding (agency-dominant)
+- Low values (<0.5) indicate weak D_time binding (T-dominant)
+- Identify anomalies matching ET predictions
+
+**Application Example - KIC 8462852 (Tabby's Star):**
+- Anomalous brightness patterns
+- Standard astrophysics struggles to explain
+- ET prediction: Should show T-signature in data
+- Scan reveals binding strength variations
+- Anomalies match ET framework
+
+### How to Verify/Arrive at Predictions
+
+**Step-by-Step Reasoning:**
+
+1. **Map Math Concept to ET**: Take L'Hôpital's rule. Recognize indeterminate forms (0/0) as T. Derivatives are descriptor changes. Resolution via rule is navigation in P space.
+
+2. **Test on Example**: lim (x→0) sin(x)/x = 1. Traverser approaches 0, navigates gradients (cos(x)/1), substantiates 1.
+
+3. **Run Scanner**: Use code structure - import dependencies, set global states, register signals. Scan file with numpy for time/entropy metrics. Compute dτ/dt as T_time / D_time rate ratio.
+
+4. **Apply to Data**: Download similar FITS file (public Kepler data). Run scan, compare outputs. Anomalies in real-world data should show ET signatures.
+
+5. **Logical Deduction**: Start from Rule 1 (exception paradox). Derive P/D/T as primitives. Map to math via indeterminates. Empirical scan confirms predictions.
+
+### Falsification Criteria
+
+Exception Theory would be falsified if:
+
+1. A truly empty Point (no Descriptors) is found
+2. A Descriptor exists without binding to any Point
+3. Infinite precision is achieved
+4. Mathematics works with fewer than three primitives
+5. The Exception has positive variance
+6. Something exists that is neither P, D, nor T
+7. An observation doesn't displace the observed Exception
+
+These are specific, testable claims.
+
+### Current Status
+
+As of theory development:
+- Mathematical consistency achieved
+- No internal contradictions found
+- Empirical testing underway (Scanner)
+- Gravity as T explains galaxy rotation
+- Time dual-nature predicted by framework
+- All observations consistent with ET
+
+Ongoing work: More extensive empirical validation across domains.
+
+====================
+
