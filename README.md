@@ -1,4 +1,5 @@
-Attribution-NonCommercial-NoDerivatives 4.0 International
+Attribution-NonCommercial 4.0 International
+CC BY-NC 4.0
 
 # Civilizational Blueprint
 A Collection of my work.
