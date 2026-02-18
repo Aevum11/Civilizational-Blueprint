@@ -1,3 +1,5 @@
+Attribution-NonCommercial-NoDerivatives 4.0 International
+
 # Civilizational Blueprint
 A Collection of my work.
 
