@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
+requires = ["setuptools>=45", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -10,8 +10,8 @@ readme = "README.md"
 requires-python = ">=3.7"
 license = {text = "MIT"}
 authors = [
-    {name = "M.J.M.", email = ""},
-    {name = "ET Development Team", email = ""}
+    {name = "M.J.M."},
+    {name = "ET Development Team"}
 ]
 keywords = [
     "mathematics",
@@ -49,6 +49,9 @@ dev = [
     "flake8>=6.0.0",
     "mypy>=1.0.0",
 ]
+
+[tool.setuptools.packages.find]
+where = ["."]
 
 [tool.pytest.ini_options]
 testpaths = ["exception_theory/tests"]

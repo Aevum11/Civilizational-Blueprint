@@ -521,6 +521,83 @@ class ETSovereign:
         
         return info
     
+    def calibrate(self) -> dict:
+        """
+        Public platform calibration façade — ET Descriptor Binding (Eq 207, 223).
+
+        Satisfies the ETPLCompiler contract:
+            cal = self.sovereign.calibrate()
+            self.host_platform = cal['platform']
+            self.host_arch     = cal['arch']
+
+        Returns a fully-grounded ET descriptor dict whose keys match the
+        bootstrap stub in ETPL.py exactly, augmented with the memory-geometry
+        offsets that the full Sovereign has already probed via ETBeaconField
+        in _load_geometry() / _calibrate_all() during __init__.
+
+        ET Derivation:
+          P ∘ D ∘ T = EIM = S  (Master Equation)
+          The host machine is a Point (P) — the substrate.
+          Its OS, architecture, and memory geometry are Descriptors (D) —
+          finite constraints that differentiate this configuration from all
+          others (Eq 201, Descriptor Finitude).
+          calibrate() is the Traverser (T) that binds P and D into a single
+          grounded, manifest configuration dict (Eq 207, Descriptor Binding).
+          All keys are finite, well-typed, and fully resolved — no gaps
+          (Eq 223, Descriptor Completeness).
+
+        The geometry in self.offsets was already probed by ETBeaconField
+        (calibration.py) during __init__; this method is O(1) — it simply
+        surfaces what is already known rather than re-probing.
+        """
+        bits = 64 if self.is_64bit else 32
+        arch = platform.machine()       # e.g. 'AMD64', 'x86_64', 'arm64'
+        os_name = self.os_type.lower()  # e.g. 'windows', 'linux', 'darwin'
+
+        # TAUTOLOGICAL_FORM is defined in ETPL.py (line 1448) but is NOT
+        # exported from constants.py, so it is NOT in this module's namespace
+        # via the star import.  Define it locally to match its canonical value.
+        # It is the pure tautological identity of ET: P∘D∘T = EIM = S → 3=3=3=Σ
+        _tautological_form = "3=3=3=Σ"
+
+        # D-constraint: a Descriptor that validates host identity queries.
+        # Any string equal to the OS name or the arch name is grounded (True).
+        # All others are not descriptors of this host (False).
+        # Eq 202 (Descriptor How-Ontology): a Descriptor answers "how" a Point
+        # is configured — here it answers "what OS/arch is this host?".
+        host_descriptor = Descriptor(
+            name='host_platform',
+            constraint=lambda x: x in (os_name, arch),
+            metadata={
+                'bits': bits,
+                'os': os_name,
+                'arch': arch,
+                'formula': 'P∘D=host',
+                # Include the probed memory geometry as descriptor metadata.
+                # Eq 203 (Configuration Differentiation): offsets differentiate
+                # Python runtime instances across OS/arch/build configurations.
+                'offsets': self.offsets,
+            }
+        )
+
+        return {
+            # ── Keys required by ETPLCompiler (bootstrap contract) ──────────
+            'platform':          os_name,
+            'arch':              arch,
+            'bits':              bits,
+            'python':            sys.version,
+            'et_descriptor':     host_descriptor,
+            'manifold_symmetry': MANIFOLD_SYMMETRY,
+            'tautological_form': _tautological_form,
+            # ── Additional full-Sovereign geometry (superset of bootstrap) ──
+            # These keys are absent from the bootstrap stub but present here
+            # because the full engine has already probed them.  ETPLCompiler
+            # ignores unknown keys, so this is additive and non-breaking.
+            'offsets':           self.offsets,
+            'ptr_size':          self.ptr_size,
+            'pid':               self.pid,
+        }
+
     def _calibrate_all(self):
         """Full geometry calibration."""
         logger.info("[Calibrate] Starting fresh geometry calibration...")

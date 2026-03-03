@@ -1,0 +1,52 @@
+// @ETPL:trace-c-extension time
+// C extension module "time" — no Python source available.
+// Interface (constants, flags, type stubs) inlined as P/D bindings.
+// Callable implementations are native C — cannot be source-translated.
+// @ETPL:c-extension-caveat callables bound as P stubs (C ABI required)
+// @ETPL:module-start time
+P altzone = 14400
+// @ETPL:preload asctime time.asctime
+P asctime = P  // [ET:callable:time.asctime]
+// @ETPL:preload ctime time.ctime
+P ctime = P  // [ET:callable:time.ctime]
+P daylight = 1
+// @ETPL:preload get_clock_info time.get_clock_info
+P get_clock_info = P  // [ET:callable:time.get_clock_info]
+// @ETPL:preload gmtime time.gmtime
+P gmtime = P  // [ET:callable:time.gmtime]
+// @ETPL:preload localtime time.localtime
+P localtime = P  // [ET:callable:time.localtime]
+// @ETPL:preload mktime time.mktime
+P mktime = P  // [ET:callable:time.mktime]
+// @ETPL:preload monotonic time.monotonic
+P monotonic = P  // [ET:callable:time.monotonic]
+// @ETPL:preload monotonic_ns time.monotonic_ns
+P monotonic_ns = P  // [ET:callable:time.monotonic_ns]
+// @ETPL:preload perf_counter time.perf_counter
+P perf_counter = P  // [ET:callable:time.perf_counter]
+// @ETPL:preload perf_counter_ns time.perf_counter_ns
+P perf_counter_ns = P  // [ET:callable:time.perf_counter_ns]
+// @ETPL:preload process_time time.process_time
+P process_time = P  // [ET:callable:time.process_time]
+// @ETPL:preload process_time_ns time.process_time_ns
+P process_time_ns = P  // [ET:callable:time.process_time_ns]
+// @ETPL:preload sleep time.sleep
+P sleep = P  // [ET:callable:time.sleep]
+// @ETPL:preload strftime time.strftime
+P strftime = P  // [ET:callable:time.strftime]
+// @ETPL:preload strptime time.strptime
+P strptime = P  // [ET:callable:time.strptime]
+// @ETPL:preload struct_time time.struct_time
+P struct_time = P  // [ET:callable:time.struct_time]
+// @ETPL:preload thread_time time.thread_time
+P thread_time = P  // [ET:callable:time.thread_time]
+// @ETPL:preload thread_time_ns time.thread_time_ns
+P thread_time_ns = P  // [ET:callable:time.thread_time_ns]
+// @ETPL:preload time time.time
+P time = P  // [ET:callable:time.time]
+// @ETPL:preload time_ns time.time_ns
+P time_ns = P  // [ET:callable:time.time_ns]
+P timezone = 18000
+P tzname = manifold ["Haiti Standard Time", "Haiti Daylight Time"]
+// @ETPL:module-end time
+// @ETPL:trace-c-extension-end time

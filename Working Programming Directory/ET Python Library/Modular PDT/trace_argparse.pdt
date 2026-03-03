@@ -1,0 +1,1913 @@
+// @ETPL:trace-stdlib argparse.py  // module=argparse
+// Command-line parsing library  This module is an optparse-inspired command-line parsing library that:      - handles both
+P __version__ = "1.1"
+P __all__ = manifold ["ArgumentParser", "ArgumentError", "ArgumentTypeError", "BooleanOptionalAction", "FileType", "HelpFormatter", "ArgumentDefaultsHelpFormatter", "RawDescriptionHelpFormatter", "RawTextHelpFormatter", "MetavarTypeHelpFormatter", "Namespace", "Action", "ONE_OR_MORE", "OPTIONAL", "PARSER", "REMAINDER", "SUPPRESS", "ZERO_OR_MORE"]
+// @ETPL:preload _os os
+// Import os — resolved at translate-time
+P altsep = "/"
+P curdir = "."
+P pardir = ".."
+P sep = "\\"
+P pathsep = ";"
+P linesep = "\r\n"
+P defpath = ".;C:\\bin"
+P name = "nt"
+// @ETPL:preload path os.path
+P devnull = "nul"
+P SEEK_SET = 0
+P SEEK_CUR = 1
+P SEEK_END = 2
+// @ETPL:preload fsencode os.fsencode
+P fsencode = P  // [ET:callable:os.fsencode]
+// @ETPL:preload fsdecode os.fsdecode
+P fsdecode = P  // [ET:callable:os.fsdecode]
+// @ETPL:preload get_exec_path os.get_exec_path
+P get_exec_path = P  // [ET:callable:os.get_exec_path]
+// @ETPL:preload fdopen os.fdopen
+P fdopen = P  // [ET:callable:os.fdopen]
+P extsep = "."
+// @ETPL:preload _exit os._exit
+P _exit = P  // [ET:callable:os._exit]
+// @ETPL:preload DirEntry os.DirEntry
+P DirEntry = P  // [ET:callable:os.DirEntry]
+P EX_OK = 0
+P F_OK = 0
+P O_APPEND = 8
+P O_BINARY = 32768
+P O_CREAT = 256
+P O_EXCL = 1024
+P O_NOINHERIT = 128
+P O_RANDOM = 16
+P O_RDONLY = 0
+P O_RDWR = 2
+P O_SEQUENTIAL = 32
+P O_SHORT_LIVED = 4096
+P O_TEMPORARY = 64
+P O_TEXT = 16384
+P O_TRUNC = 512
+P O_WRONLY = 1
+P P_DETACH = 4
+P P_NOWAIT = 1
+P P_NOWAITO = 3
+P P_OVERLAY = 2
+P P_WAIT = 0
+P R_OK = 4
+P TMP_MAX = 2147483647
+P W_OK = 2
+P X_OK = 1
+// @ETPL:preload abort os.abort
+P abort = P  // [ET:callable:os.abort]
+// @ETPL:preload access os.access
+P access = P  // [ET:callable:os.access]
+// @ETPL:preload chdir os.chdir
+P chdir = P  // [ET:callable:os.chdir]
+// @ETPL:preload chmod os.chmod
+P chmod = P  // [ET:callable:os.chmod]
+// @ETPL:preload close os.close
+P close = P  // [ET:callable:os.close]
+// @ETPL:preload closerange os.closerange
+P closerange = P  // [ET:callable:os.closerange]
+// @ETPL:preload cpu_count os.cpu_count
+P cpu_count = P  // [ET:callable:os.cpu_count]
+// @ETPL:preload device_encoding os.device_encoding
+P device_encoding = P  // [ET:callable:os.device_encoding]
+// @ETPL:preload dup os.dup
+P dup = P  // [ET:callable:os.dup]
+// @ETPL:preload dup2 os.dup2
+P dup2 = P  // [ET:callable:os.dup2]
+P environ = P  // [ET:unrepresentable:_Environ]
+// @ETPL:preload error os.error
+P error = P  // [ET:callable:os.error]
+// @ETPL:preload execv os.execv
+P execv = P  // [ET:callable:os.execv]
+// @ETPL:preload execve os.execve
+P execve = P  // [ET:callable:os.execve]
+// @ETPL:preload fchmod os.fchmod
+P fchmod = P  // [ET:callable:os.fchmod]
+// @ETPL:preload fspath os.fspath
+P fspath = P  // [ET:callable:os.fspath]
+// @ETPL:preload fstat os.fstat
+P fstat = P  // [ET:callable:os.fstat]
+// @ETPL:preload fsync os.fsync
+P fsync = P  // [ET:callable:os.fsync]
+// @ETPL:preload ftruncate os.ftruncate
+P ftruncate = P  // [ET:callable:os.ftruncate]
+// @ETPL:preload get_blocking os.get_blocking
+P get_blocking = P  // [ET:callable:os.get_blocking]
+// @ETPL:preload get_handle_inheritable os.get_handle_inheritable
+P get_handle_inheritable = P  // [ET:callable:os.get_handle_inheritable]
+// @ETPL:preload get_inheritable os.get_inheritable
+P get_inheritable = P  // [ET:callable:os.get_inheritable]
+// @ETPL:preload get_terminal_size os.get_terminal_size
+P get_terminal_size = P  // [ET:callable:os.get_terminal_size]
+// @ETPL:preload getcwd os.getcwd
+P getcwd = P  // [ET:callable:os.getcwd]
+// @ETPL:preload getcwdb os.getcwdb
+P getcwdb = P  // [ET:callable:os.getcwdb]
+// @ETPL:preload getlogin os.getlogin
+P getlogin = P  // [ET:callable:os.getlogin]
+// @ETPL:preload getpid os.getpid
+P getpid = P  // [ET:callable:os.getpid]
+// @ETPL:preload getppid os.getppid
+P getppid = P  // [ET:callable:os.getppid]
+// @ETPL:preload isatty os.isatty
+P isatty = P  // [ET:callable:os.isatty]
+// @ETPL:preload kill os.kill
+P kill = P  // [ET:callable:os.kill]
+// @ETPL:preload lchmod os.lchmod
+P lchmod = P  // [ET:callable:os.lchmod]
+// @ETPL:preload link os.link
+P link = P  // [ET:callable:os.link]
+// @ETPL:preload listdir os.listdir
+P listdir = P  // [ET:callable:os.listdir]
+// @ETPL:preload listdrives os.listdrives
+P listdrives = P  // [ET:callable:os.listdrives]
+// @ETPL:preload listmounts os.listmounts
+P listmounts = P  // [ET:callable:os.listmounts]
+// @ETPL:preload listvolumes os.listvolumes
+P listvolumes = P  // [ET:callable:os.listvolumes]
+// @ETPL:preload lseek os.lseek
+P lseek = P  // [ET:callable:os.lseek]
+// @ETPL:preload lstat os.lstat
+P lstat = P  // [ET:callable:os.lstat]
+// @ETPL:preload mkdir os.mkdir
+P mkdir = P  // [ET:callable:os.mkdir]
+// @ETPL:preload open os.open
+P open = P  // [ET:callable:os.open]
+// @ETPL:preload pipe os.pipe
+P pipe = P  // [ET:callable:os.pipe]
+// @ETPL:preload putenv os.putenv
+P putenv = P  // [ET:callable:os.putenv]
+// @ETPL:preload read os.read
+P read = P  // [ET:callable:os.read]
+// @ETPL:preload readlink os.readlink
+P readlink = P  // [ET:callable:os.readlink]
+// @ETPL:preload remove os.remove
+P remove = P  // [ET:callable:os.remove]
+// @ETPL:preload rename os.rename
+P rename = P  // [ET:callable:os.rename]
+// @ETPL:preload replace os.replace
+P replace = P  // [ET:callable:os.replace]
+// @ETPL:preload rmdir os.rmdir
+P rmdir = P  // [ET:callable:os.rmdir]
+// @ETPL:preload scandir os.scandir
+P scandir = P  // [ET:callable:os.scandir]
+// @ETPL:preload set_blocking os.set_blocking
+P set_blocking = P  // [ET:callable:os.set_blocking]
+// @ETPL:preload set_handle_inheritable os.set_handle_inheritable
+P set_handle_inheritable = P  // [ET:callable:os.set_handle_inheritable]
+// @ETPL:preload set_inheritable os.set_inheritable
+P set_inheritable = P  // [ET:callable:os.set_inheritable]
+// @ETPL:preload spawnv os.spawnv
+P spawnv = P  // [ET:callable:os.spawnv]
+// @ETPL:preload spawnve os.spawnve
+P spawnve = P  // [ET:callable:os.spawnve]
+// @ETPL:preload startfile os.startfile
+P startfile = P  // [ET:callable:os.startfile]
+// @ETPL:preload stat os.stat
+P stat = P  // [ET:callable:os.stat]
+// @ETPL:preload stat_result os.stat_result
+P stat_result = P  // [ET:callable:os.stat_result]
+// @ETPL:preload statvfs_result os.statvfs_result
+P statvfs_result = P  // [ET:callable:os.statvfs_result]
+// @ETPL:preload strerror os.strerror
+P strerror = P  // [ET:callable:os.strerror]
+// @ETPL:preload symlink os.symlink
+P symlink = P  // [ET:callable:os.symlink]
+// @ETPL:preload system os.system
+P system = P  // [ET:callable:os.system]
+// @ETPL:preload terminal_size os.terminal_size
+P terminal_size = P  // [ET:callable:os.terminal_size]
+// @ETPL:preload times os.times
+P times = P  // [ET:callable:os.times]
+// @ETPL:preload times_result os.times_result
+P times_result = P  // [ET:callable:os.times_result]
+// @ETPL:preload truncate os.truncate
+P truncate = P  // [ET:callable:os.truncate]
+// @ETPL:preload umask os.umask
+P umask = P  // [ET:callable:os.umask]
+// @ETPL:preload uname_result os.uname_result
+P uname_result = P  // [ET:callable:os.uname_result]
+// @ETPL:preload unlink os.unlink
+P unlink = P  // [ET:callable:os.unlink]
+// @ETPL:preload unsetenv os.unsetenv
+P unsetenv = P  // [ET:callable:os.unsetenv]
+// @ETPL:preload urandom os.urandom
+P urandom = P  // [ET:callable:os.urandom]
+// @ETPL:preload utime os.utime
+P utime = P  // [ET:callable:os.utime]
+// @ETPL:preload waitpid os.waitpid
+P waitpid = P  // [ET:callable:os.waitpid]
+// @ETPL:preload waitstatus_to_exitcode os.waitstatus_to_exitcode
+P waitstatus_to_exitcode = P  // [ET:callable:os.waitstatus_to_exitcode]
+// @ETPL:preload write os.write
+P write = P  // [ET:callable:os.write]
+// @ETPL:preload makedirs os.makedirs
+P makedirs = P  // [ET:callable:os.makedirs]
+// @ETPL:preload removedirs os.removedirs
+P removedirs = P  // [ET:callable:os.removedirs]
+// @ETPL:preload renames os.renames
+P renames = P  // [ET:callable:os.renames]
+// @ETPL:preload walk os.walk
+P walk = P  // [ET:callable:os.walk]
+// @ETPL:preload execl os.execl
+P execl = P  // [ET:callable:os.execl]
+// @ETPL:preload execle os.execle
+P execle = P  // [ET:callable:os.execle]
+// @ETPL:preload execlp os.execlp
+P execlp = P  // [ET:callable:os.execlp]
+// @ETPL:preload execlpe os.execlpe
+P execlpe = P  // [ET:callable:os.execlpe]
+// @ETPL:preload execvp os.execvp
+P execvp = P  // [ET:callable:os.execvp]
+// @ETPL:preload execvpe os.execvpe
+P execvpe = P  // [ET:callable:os.execvpe]
+// @ETPL:preload getenv os.getenv
+P getenv = P  // [ET:callable:os.getenv]
+P supports_bytes_environ = 0
+// @ETPL:preload spawnl os.spawnl
+P spawnl = P  // [ET:callable:os.spawnl]
+// @ETPL:preload spawnle os.spawnle
+P spawnle = P  // [ET:callable:os.spawnle]
+// @ETPL:preload popen os.popen
+P popen = P  // [ET:callable:os.popen]
+// @ETPL:preload _re re
+// Import re — resolved at translate-time
+// @ETPL:preload match re.match
+P match = P  // [ET:callable:re.match]
+// @ETPL:preload fullmatch re.fullmatch
+P fullmatch = P  // [ET:callable:re.fullmatch]
+// @ETPL:preload search re.search
+P search = P  // [ET:callable:re.search]
+// @ETPL:preload sub re.sub
+P sub = P  // [ET:callable:re.sub]
+// @ETPL:preload subn re.subn
+P subn = P  // [ET:callable:re.subn]
+// @ETPL:preload split re.split
+P split = P  // [ET:callable:re.split]
+// @ETPL:preload findall re.findall
+P findall = P  // [ET:callable:re.findall]
+// @ETPL:preload finditer re.finditer
+P finditer = P  // [ET:callable:re.finditer]
+// @ETPL:preload compile re.compile
+P compile = P  // [ET:callable:re.compile]
+// @ETPL:preload purge re.purge
+P purge = P  // [ET:callable:re.purge]
+// @ETPL:preload escape re.escape
+P escape = P  // [ET:callable:re.escape]
+// @ETPL:preload Pattern re.Pattern
+P Pattern = P  // [ET:callable:re.Pattern]
+// @ETPL:preload Match re.Match
+P Match = P  // [ET:callable:re.Match]
+P A = 256
+P I = 2
+P L = 4
+P M = 8
+P S = 16
+P X = 64
+P U = 32
+P ASCII = 256
+P IGNORECASE = 2
+P LOCALE = 4
+P MULTILINE = 8
+P DOTALL = 16
+P VERBOSE = 64
+P UNICODE = 32
+P NOFLAG = 0
+// @ETPL:preload RegexFlag re.RegexFlag
+P RegexFlag = P  // [ET:callable:re.RegexFlag]
+// @ETPL:preload PatternError re.PatternError
+P PatternError = P  // [ET:callable:re.PatternError]
+// @ETPL:preload _sys sys
+// Import sys — resolved at translate-time
+// @ETPL:preload activate_stack_trampoline sys.activate_stack_trampoline
+P activate_stack_trampoline = P  // [ET:callable:sys.activate_stack_trampoline]
+// @ETPL:preload addaudithook sys.addaudithook
+P addaudithook = P  // [ET:callable:sys.addaudithook]
+P api_version = 1013
+P argv = manifold ["ETPL.py", "translate", "ETPL.py", "--lang", "python", "--output", "ETPL_self.pdt"]
+// @ETPL:preload audit sys.audit
+P audit = P  // [ET:callable:sys.audit]
+P base_exec_prefix = "C:\\Program Files\\Python313"
+P base_prefix = "C:\\Program Files\\Python313"
+// @ETPL:preload breakpointhook sys.breakpointhook
+P breakpointhook = P  // [ET:callable:sys.breakpointhook]
+P builtin_module_names = manifold ["_abc", "_ast", "_bisect", "_blake2", "_codecs", "_codecs_cn", "_codecs_hk", "_codecs_iso2022", "_codecs_jp", "_codecs_kr", "_codecs_tw", "_collections", "_contextvars", "_csv", "_datetime", "_functools", "_heapq", "_imp", "_interpchannels", "_interpqueues", "_interpreters", "_io", "_json", "_locale", "_lsprof", "_md5", "_multibytecodec", "_opcode", "_operator", "_pickle", "_random", "_sha1", "_sha2", "_sha3", "_signal", "_sre", "_stat", "_statistics", "_string", "_struct", "_suggestions", "_symtable", "_sysconfig", "_thread", "_tokenize", "_tracemalloc", "_typing", "_warnings", "_weakref", "_winapi"]
+P byteorder = "little"
+// @ETPL:preload call_tracing sys.call_tracing
+P call_tracing = P  // [ET:callable:sys.call_tracing]
+P copyright = "Copyright (c) 2001-2024 Python Software Foundation.\nAll Rights Reserved.\n\nCopyright (c) 2000 BeOpen.com.\nAll Rights Reserved.\n\nCopyright (c) 1995-2001 Corporation for National Research Initiatives.\nAll Rights Reserved.\n\nCopyright (c) 1991-1995 Stichting Mathematisch Centrum, Amsterdam.\nAll Rights Reserved."
+// @ETPL:preload deactivate_stack_trampoline sys.deactivate_stack_trampoline
+P deactivate_stack_trampoline = P  // [ET:callable:sys.deactivate_stack_trampoline]
+// @ETPL:preload displayhook sys.displayhook
+P displayhook = P  // [ET:callable:sys.displayhook]
+P dllhandle = 140730231881728
+P dont_write_bytecode = 0
+// @ETPL:preload exc_info sys.exc_info
+P exc_info = P  // [ET:callable:sys.exc_info]
+// @ETPL:preload excepthook sys.excepthook
+P excepthook = P  // [ET:callable:sys.excepthook]
+// @ETPL:preload exception sys.exception
+P exception = P  // [ET:callable:sys.exception]
+P exec_prefix = "C:\\Program Files\\Python313"
+P executable = "C:\\Program Files\\Python313\\python.exe"
+// @ETPL:preload exit sys.exit
+P exit = P  // [ET:callable:sys.exit]
+P flags = manifold [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 4300]
+P float_info = manifold [1.7976931348623157e+308, 1024, 308, 2.2250738585072014e-308, -1021, -307, 15, 53, 2.220446049250313e-16, 2, 1]
+P float_repr_style = "short"
+// @ETPL:preload get_asyncgen_hooks sys.get_asyncgen_hooks
+P get_asyncgen_hooks = P  // [ET:callable:sys.get_asyncgen_hooks]
+// @ETPL:preload get_coroutine_origin_tracking_depth sys.get_coroutine_origin_tracking_depth
+P get_coroutine_origin_tracking_depth = P  // [ET:callable:sys.get_coroutine_origin_tracking_depth]
+// @ETPL:preload get_int_max_str_digits sys.get_int_max_str_digits
+P get_int_max_str_digits = P  // [ET:callable:sys.get_int_max_str_digits]
+// @ETPL:preload getallocatedblocks sys.getallocatedblocks
+P getallocatedblocks = P  // [ET:callable:sys.getallocatedblocks]
+// @ETPL:preload getdefaultencoding sys.getdefaultencoding
+P getdefaultencoding = P  // [ET:callable:sys.getdefaultencoding]
+// @ETPL:preload getfilesystemencodeerrors sys.getfilesystemencodeerrors
+P getfilesystemencodeerrors = P  // [ET:callable:sys.getfilesystemencodeerrors]
+// @ETPL:preload getfilesystemencoding sys.getfilesystemencoding
+P getfilesystemencoding = P  // [ET:callable:sys.getfilesystemencoding]
+// @ETPL:preload getprofile sys.getprofile
+P getprofile = P  // [ET:callable:sys.getprofile]
+// @ETPL:preload getrecursionlimit sys.getrecursionlimit
+P getrecursionlimit = P  // [ET:callable:sys.getrecursionlimit]
+// @ETPL:preload getrefcount sys.getrefcount
+P getrefcount = P  // [ET:callable:sys.getrefcount]
+// @ETPL:preload getsizeof sys.getsizeof
+P getsizeof = P  // [ET:callable:sys.getsizeof]
+// @ETPL:preload getswitchinterval sys.getswitchinterval
+P getswitchinterval = P  // [ET:callable:sys.getswitchinterval]
+// @ETPL:preload gettrace sys.gettrace
+P gettrace = P  // [ET:callable:sys.gettrace]
+// @ETPL:preload getunicodeinternedsize sys.getunicodeinternedsize
+P getunicodeinternedsize = P  // [ET:callable:sys.getunicodeinternedsize]
+// @ETPL:preload getwindowsversion sys.getwindowsversion
+P getwindowsversion = P  // [ET:callable:sys.getwindowsversion]
+P hash_info = manifold [64, 2305843009213693951, 314159, 0, 1000003, "siphash13", 64, 128, 0]
+P hexversion = 51186672
+P implementation = P  // [ET:unrepresentable:SimpleNamespace]
+P int_info = manifold [30, 4, 4300, 640]
+// @ETPL:preload intern sys.intern
+P intern = P  // [ET:callable:sys.intern]
+// @ETPL:preload is_finalizing sys.is_finalizing
+P is_finalizing = P  // [ET:callable:sys.is_finalizing]
+// @ETPL:preload is_stack_trampoline_active sys.is_stack_trampoline_active
+P is_stack_trampoline_active = P  // [ET:callable:sys.is_stack_trampoline_active]
+P maxsize = 9223372036854775807
+P maxunicode = 1114111
+P meta_path = manifold [P, P, P, P]
+// @ETPL:preload modules sys.modules
+// [ET:complex-dict:modules]
+// @ETPL:preload monitoring sys.monitoring
+P orig_argv = manifold ["python", "ETPL.py", "translate", "ETPL.py", "--lang", "python", "--output", "ETPL_self.pdt"]
+P path_hooks = manifold [P, P, P]
+// @ETPL:preload path_importer_cache sys.path_importer_cache
+// [ET:complex-dict:path_importer_cache]
+P platform = "win32"
+P platlibdir = "DLLs"
+P prefix = "C:\\Program Files\\Python313"
+P pycache_prefix = P
+// @ETPL:preload set_asyncgen_hooks sys.set_asyncgen_hooks
+P set_asyncgen_hooks = P  // [ET:callable:sys.set_asyncgen_hooks]
+// @ETPL:preload set_coroutine_origin_tracking_depth sys.set_coroutine_origin_tracking_depth
+P set_coroutine_origin_tracking_depth = P  // [ET:callable:sys.set_coroutine_origin_tracking_depth]
+// @ETPL:preload set_int_max_str_digits sys.set_int_max_str_digits
+P set_int_max_str_digits = P  // [ET:callable:sys.set_int_max_str_digits]
+// @ETPL:preload setprofile sys.setprofile
+P setprofile = P  // [ET:callable:sys.setprofile]
+// @ETPL:preload setrecursionlimit sys.setrecursionlimit
+P setrecursionlimit = P  // [ET:callable:sys.setrecursionlimit]
+// @ETPL:preload setswitchinterval sys.setswitchinterval
+P setswitchinterval = P  // [ET:callable:sys.setswitchinterval]
+// @ETPL:preload settrace sys.settrace
+P settrace = P  // [ET:callable:sys.settrace]
+P stderr = P  // [ET:unrepresentable:TextIOWrapper]
+P stdin = P  // [ET:unrepresentable:TextIOWrapper]
+P stdlib_module_names = manifold ["__future__", "_abc", "_aix_support", "_android_support", "_apple_support", "_ast", "_asyncio", "_bisect", "_blake2", "_bz2", "_codecs", "_codecs_cn", "_codecs_hk", "_codecs_iso2022", "_codecs_jp", "_codecs_kr", "_codecs_tw", "_collections", "_collections_abc", "_colorize", "_compat_pickle", "_compression", "_contextvars", "_csv", "_ctypes", "_curses", "_curses_panel", "_datetime", "_dbm", "_decimal", "_elementtree", "_frozen_importlib", "_frozen_importlib_external", "_functools", "_gdbm", "_hashlib", "_heapq", "_imp", "_interpchannels", "_interpqueues", "_interpreters", "_io", "_ios_support", "_json", "_locale", "_lsprof", "_lzma", "_markupbase", "_md5", "_multibytecodec"]  // frozenset
+P stdout = P  // [ET:unrepresentable:TextIOWrapper]
+P thread_info = manifold ["nt", P, P]
+// @ETPL:preload unraisablehook sys.unraisablehook
+P unraisablehook = P  // [ET:callable:sys.unraisablehook]
+P version = "3.13.11 (tags/v3.13.11:6278944, Dec  5 2025, 16:26:58) [MSC v.1944 64 bit (AMD64)]"
+P version_info = manifold [3, 13, 11, "final", 0]
+P warnoptions = manifold []
+P winver = "3.13"
+// @ETPL:preload _ gettext.gettext
+P _ = P  // [ET:callable:gettext.gettext]
+// @ETPL:preload ngettext gettext.ngettext
+P ngettext = P  // [ET:callable:gettext.ngettext]
+P SUPPRESS = "==SUPPRESS=="
+P OPTIONAL = "?"
+P ZERO_OR_MORE = "*"
+P ONE_OR_MORE = "+"
+P PARSER = "A..."
+P REMAINDER = "..."
+P _UNRECOGNIZED_ARGS_ATTR = "_unrecognized_args"
+D AttributeHolder = λ . P  // class(object)
+    // Abstract base class that provides __repr__.      The __repr__ method returns a string in the format::         ClassName(
+    D AttributeHolder____repr = λ self . {
+        P type_name = type(self) D __name__
+        P arg_strings = manifold []
+        P star_args = manifold []
+        T loop = ∞ (
+            P arg = self D _get_args(P)[_loop_index]
+            arg_strings D append(repr(arg))
+        ) (D |self D _get_args(P)|)
+        T loop = ∞ (
+            P manifold__name__value = self D _get_kwargs(P)[_loop_index]  // manifold [name, value]
+            T cond = → if name D isidentifier(P) → arg_strings D append(("%s=%r" % manifold [name, value]))
+            → E P  // else pass
+        ) (D |self D _get_kwargs(P)|)
+        T cond = → if star_args → arg_strings D append(("**%s" % repr(star_args)))
+        → ("%s(%s)" % manifold [type_name, ", " D join(arg_strings)])
+    }
+    D AttributeHolder___get_kwargs = λ self . → list(self D __dict__ D items(P))
+    D AttributeHolder___get_args = λ self . → manifold []
+D copy_items = λ items . {
+    T cond = → if items == P → → manifold []
+    T cond = → if type(items) == list → → items[0:Ω]
+    // @ETPL:preload copy copy
+    // Import copy — resolved at translate-time
+    // @ETPL:preload Error copy.Error
+    P Error = P  // [ET:callable:copy.Error]
+    // @ETPL:preload copy copy.copy
+    P copy = P  // [ET:callable:copy.copy]
+    // @ETPL:preload deepcopy copy.deepcopy
+    P deepcopy = P  // [ET:callable:copy.deepcopy]
+    → copy D copy(items)
+}
+D HelpFormatter = λ . P  // class(object)
+    // Formatter for generating usage messages and argument help strings.      Only the name of this class is considered a publ
+    D HelpFormatter____init = λ self, prog, indent_increment, max_help_position, width . {
+        T cond = → if width == P → P
+            // @ETPL:preload shutil shutil
+            // Import shutil — resolved at translate-time
+            // @ETPL:preload copyfileobj shutil.copyfileobj
+            P copyfileobj = P  // [ET:callable:shutil.copyfileobj]
+            // @ETPL:preload copyfile shutil.copyfile
+            P copyfile = P  // [ET:callable:shutil.copyfile]
+            // @ETPL:preload copymode shutil.copymode
+            P copymode = P  // [ET:callable:shutil.copymode]
+            // @ETPL:preload copystat shutil.copystat
+            P copystat = P  // [ET:callable:shutil.copystat]
+            // @ETPL:preload copy2 shutil.copy2
+            P copy2 = P  // [ET:callable:shutil.copy2]
+            // @ETPL:preload copytree shutil.copytree
+            P copytree = P  // [ET:callable:shutil.copytree]
+            // @ETPL:preload move shutil.move
+            P move = P  // [ET:callable:shutil.move]
+            // @ETPL:preload rmtree shutil.rmtree
+            P rmtree = P  // [ET:callable:shutil.rmtree]
+            // @ETPL:preload SpecialFileError shutil.SpecialFileError
+            P SpecialFileError = P  // [ET:callable:shutil.SpecialFileError]
+            // @ETPL:preload ExecError shutil.ExecError
+            P ExecError = P  // [ET:callable:shutil.ExecError]
+            // @ETPL:preload make_archive shutil.make_archive
+            P make_archive = P  // [ET:callable:shutil.make_archive]
+            // @ETPL:preload get_archive_formats shutil.get_archive_formats
+            P get_archive_formats = P  // [ET:callable:shutil.get_archive_formats]
+            // @ETPL:preload register_archive_format shutil.register_archive_format
+            P register_archive_format = P  // [ET:callable:shutil.register_archive_format]
+            // @ETPL:preload unregister_archive_format shutil.unregister_archive_format
+            P unregister_archive_format = P  // [ET:callable:shutil.unregister_archive_format]
+            // @ETPL:preload get_unpack_formats shutil.get_unpack_formats
+            P get_unpack_formats = P  // [ET:callable:shutil.get_unpack_formats]
+            // @ETPL:preload register_unpack_format shutil.register_unpack_format
+            P register_unpack_format = P  // [ET:callable:shutil.register_unpack_format]
+            // @ETPL:preload unregister_unpack_format shutil.unregister_unpack_format
+            P unregister_unpack_format = P  // [ET:callable:shutil.unregister_unpack_format]
+            // @ETPL:preload unpack_archive shutil.unpack_archive
+            P unpack_archive = P  // [ET:callable:shutil.unpack_archive]
+            // @ETPL:preload ignore_patterns shutil.ignore_patterns
+            P ignore_patterns = P  // [ET:callable:shutil.ignore_patterns]
+            // @ETPL:preload chown shutil.chown
+            P chown = P  // [ET:callable:shutil.chown]
+            // @ETPL:preload which shutil.which
+            P which = P  // [ET:callable:shutil.which]
+            // @ETPL:preload SameFileError shutil.SameFileError
+            P SameFileError = P  // [ET:callable:shutil.SameFileError]
+            // @ETPL:preload disk_usage shutil.disk_usage
+            P disk_usage = P  // [ET:callable:shutil.disk_usage]
+            P width = shutil D get_terminal_size(P) D columns
+            P width = width - 2
+        D self_D__prog = prog  // self D _prog := prog
+        D self_D__indent_increment = indent_increment  // self D _indent_increment := indent_increment
+        D self_D__max_help_position = min(max_help_position, max((width - 20), (indent_increment * 2)))  // self D _max_help_position := min(max_help_position, max((width - 20), (indent_increment * 2)))
+        D self_D__width = width  // self D _width := width
+        D self_D__current_indent = 0  // self D _current_indent := 0
+        D self_D__level = 0  // self D _level := 0
+        D self_D__action_max_length = 0  // self D _action_max_length := 0
+        D self_D__root_section = self D _Section(self, P)  // self D _root_section := self D _Section(self, P)
+        D self_D__current_section = self D _root_section  // self D _current_section := self D _root_section
+        D self_D__whitespace_matcher = _re D compile("\\s+", _re D ASCII)  // self D _whitespace_matcher := _re D compile("\\s+", _re D ASCII)
+        D self_D__long_break_matcher = _re D compile("\\n\\n\\n+")  // self D _long_break_matcher := _re D compile("\\n\\n\\n+")
+    }
+    D HelpFormatter___indent = λ self . {
+        D self_D__current_indent = self_D__current_indent + self D _indent_increment  // self D _current_indent += self D _indent_increment
+        D self_D__level = self_D__level + 1  // self D _level += 1
+    }
+    D HelpFormatter___dedent = λ self . {
+        D self_D__current_indent = self_D__current_indent - self D _indent_increment  // self D _current_indent -= self D _indent_increment
+        T assert = → if self D _current_indent ≥ 0 → "ok" → E "Assertion failed"
+        D self_D__level = self_D__level - 1  // self D _level -= 1
+    }
+    D Section = λ . P  // class(object)
+        D Section____init = λ self, formatter, parent, heading . {
+            D self_D_formatter = formatter  // self D formatter := formatter
+            D self_D_parent = parent  // self D parent := parent
+            D self_D_heading = heading  // self D heading := heading
+            D self_D_items = manifold []  // self D items := manifold []
+        }
+        D Section__format_help = λ self . {
+            T cond = → if self D parent ≠ P → self D formatter D _indent(P)
+            P join = self D formatter D _join_parts
+            P item_help = join({ T loop = ∞ (func(args)) (D |self D items|) })
+            T cond = → if self D parent ≠ P → self D formatter D _dedent(P)
+            T cond = → if (!item_help) → → ""
+            T cond = → if (self D heading ≠ SUPPRESS && self D heading ≠ P) → P
+                P current_indent = self D formatter D _current_indent
+                P heading_text = (_("%(heading)s:") % dict(manifold ["heading", self D heading]))
+                P heading = ("%*s%s\n" % manifold [current_indent, "", heading_text])
+            → E P heading = ""
+            → join(manifold ["\n", heading, item_help, "\n"])
+        }
+    D HelpFormatter___add_item = λ self, func, args . self D _current_section D items D append(manifold [func, args])
+    D HelpFormatter__start_section = λ self, heading . {
+        self D _indent(P)
+        P section = self D _Section(self, self D _current_section, heading)
+        self D _add_item(section D format_help, manifold [])
+        D self_D__current_section = section  // self D _current_section := section
+    }
+    D HelpFormatter__end_section = λ self . {
+        D self_D__current_section = self D _current_section D parent  // self D _current_section := self D _current_section D parent
+        self D _dedent(P)
+    }
+    D HelpFormatter__add_text = λ self, text . T cond = → if (text ≠ SUPPRESS && text ≠ P) → self D _add_item(self D _format_text, manifold [text])
+    D HelpFormatter__add_usage = λ self, usage, actions, groups, prefix . {
+        T cond = → if usage ≠ SUPPRESS → P
+            P args = manifold [usage, actions, groups, prefix]
+            self D _add_item(self D _format_usage, args)
+    }
+    D HelpFormatter__add_argument = λ self, action . {
+        T cond = → if action D help ≠ SUPPRESS → P
+            P get_invocation = self D _format_action_invocation
+            P invocation_lengths = manifold [(len(get_invocation(action)) + self D _current_indent)]
+            T loop = ∞ (
+                P subaction = self D _iter_indented_subactions(action)[_loop_index]
+                invocation_lengths D append((len(get_invocation(subaction)) + self D _current_indent))
+            ) (D |self D _iter_indented_subactions(action)|)
+            P action_length = max(invocation_lengths)
+            D self_D__action_max_length = max(self D _action_max_length, action_length)  // self D _action_max_length := max(self D _action_max_length, action_length)
+            self D _add_item(self D _format_action, manifold [action])
+    }
+    D HelpFormatter__add_arguments = λ self, actions . {
+        T loop = ∞ (
+            P action = actions[_loop_index]
+            self D add_argument(action)
+        ) (D |actions|)
+    }
+    D HelpFormatter__format_help = λ self . {
+        P help = self D _root_section D format_help(P)
+        T cond = → if help → P
+            P help = self D _long_break_matcher D sub("\n\n", help)
+            P help = (help D strip("\n") + "\n")
+        → help
+    }
+    D HelpFormatter___join_parts = λ self, part_strings . → "" D join({ T loop = ∞ (part → E (part && part ≠ SUPPRESS)) (D |part_strings|) })
+    D HelpFormatter___format_usage = λ self, usage, actions, groups, prefix . {
+        T cond = → if prefix == P → P prefix = _("usage: ")
+        T cond = → if usage ≠ P → P usage = (usage % dict(manifold ["prog", self D _prog]))
+        → E P
+            T cond = → if (usage == P && (!actions)) → P usage = ("%(prog)s" % dict(manifold ["prog", self D _prog]))
+            → E P
+                T cond = → if usage == P → P
+                    P prog = ("%(prog)s" % dict(manifold ["prog", self D _prog]))
+                    P optionals = manifold []
+                    P positionals = manifold []
+                    T loop = ∞ (
+                        P action = actions[_loop_index]
+                        T cond = → if action D option_strings → optionals D append(action)
+                        → E positionals D append(action)
+                    ) (D |actions|)
+                    P format = self D _format_actions_usage
+                    P action_usage = format((optionals + positionals), groups)
+                    P usage = " " D join({ T loop = ∞ (s → E s) (D |manifold [prog, action_usage]|) })
+                    P text_width = (self D _width - self D _current_indent)
+                    T cond = → if (len(prefix) + len(usage)) > text_width → P
+                        P opt_parts = self D _get_actions_usage_parts(optionals, groups)
+                        P pos_parts = self D _get_actions_usage_parts(positionals, groups)
+                        D HelpFormatter__get_lines = λ parts, indent, prefix . {
+                            P lines = manifold []
+                            P line = manifold []
+                            P indent_length = len(indent)
+                            T cond = → if prefix ≠ P → P line_len = (len(prefix) - 1)
+                            → E P line_len = (indent_length - 1)
+                            T loop = ∞ (
+                                P part = parts[_loop_index]
+                                T cond = → if (((line_len + 1) + len(part)) > text_width && line) → P
+                                    lines D append((indent + " " D join(line)))
+                                    P line = manifold []
+                                    P line_len = (indent_length - 1)
+                                line D append(part)
+                                P line_len = line_len + (len(part) + 1)
+                            ) (D |parts|)
+                            T cond = → if line → lines D append((indent + " " D join(line)))
+                            T cond = → if prefix ≠ P → P  // pass
+                            → lines
+                        }
+                        T cond = → if (len(prefix) + len(prog)) ≤ (0.75 * text_width) → P
+                            P indent = (" " * ((len(prefix) + len(prog)) + 1))
+                            T cond = → if opt_parts → P
+                                P lines = get_lines((manifold [prog] + opt_parts), indent, prefix)
+                                lines D extend(get_lines(pos_parts, indent))
+                            → E P
+                                T cond = → if pos_parts → P lines = get_lines((manifold [prog] + pos_parts), indent, prefix)
+                                → E P lines = manifold [prog]
+                        → E P
+                            P indent = (" " * len(prefix))
+                            P parts = (opt_parts + pos_parts)
+                            P lines = get_lines(parts, indent)
+                            T cond = → if len(lines) > 1 → P
+                                P lines = manifold []
+                                lines D extend(get_lines(opt_parts, indent))
+                                lines D extend(get_lines(pos_parts, indent))
+                            P lines = (manifold [prog] + lines)
+                        P usage = "\n" D join(lines)
+        → ("%s%s\n\n" % manifold [prefix, usage])
+    }
+    D HelpFormatter___format_actions_usage = λ self, actions, groups . → " " D join(self D _get_actions_usage_parts(actions, groups))
+    D HelpFormatter___get_actions_usage_parts = λ self, actions, groups . {
+        P group_actions = set(P)
+        P inserts = manifold []
+        T loop = ∞ (
+            P group = groups[_loop_index]
+            T cond = → if (!group D _group_actions) → → E ValueError("empty group " + group)
+            T cond = → if all({ T loop = ∞ (action D help == SUPPRESS) (D |group D _group_actions|) }) → P  // pass
+            T attempt = → P  // try
+                P start = actions D index(group D _group_actions[0])
+            → E ValueError (_)
+                // continue
+        ) (D |groups|)
+        P parts = manifold []
+        T loop = ∞ (
+            P action = actions[_loop_index]
+            T cond = → if action D help == SUPPRESS → P part = P
+            → E P
+                T cond = → if (!action D option_strings) → P
+                    P default = self D _get_default_metavar_for_positional(action)
+                    P part = self D _format_args(action, default)
+                    T cond = → if action == group_actions → T cond = → if (part[0] == "[" && part[(-1)] == "]") → P part = part[1:(-1)]
+                → E P
+                    P option_string = action D option_strings[0]
+                    T cond = → if action D nargs == 0 → P part = action D format_usage(P)
+                    → E P
+                        P default = self D _get_default_metavar_for_optional(action)
+                        P args_string = self D _format_args(action, default)
+                        P part = ("%s %s" % manifold [option_string, args_string])
+                    T cond = → if ((!action D required) && action ≠ group_actions) → P part = ("[%s]" % part)
+            parts D append(part)
+        ) (D |actions|)
+        P inserted_separators_indices = set(P)
+        T loop = ∞ (
+            P manifold__start__end = sorted(inserts, manifold ["reverse", 1])[_loop_index]  // manifold [start, end]
+            P group = inserts[manifold [start, end]]
+            P group_parts = { T loop = ∞ (item → E item ≠ P) (D |parts[start:end]|) }
+            P group_size = len(group_parts)
+            T cond = → if group D required → P manifold__open__close = if group_size > 1 → "()" → E manifold ["", ""]  // manifold [open, close] := if group_size > 1 → "()" → E manifold ["", ""]
+            → E P manifold__open__close = "[]"  // manifold [open, close] := "[]"
+            // group_parts[0] := (open + group_parts[0])
+            // group_parts[(-1)] := (group_parts[(-1)] + close)
+            T loop = ∞ (
+                P manifold__i__part = enumerate(group_parts[0:(-1)], manifold ["start", start])[_loop_index]  // manifold [i, part]
+                T cond = → if i ≠ inserted_separators_indices → inserted_separators_indices D add(i)
+            ) (D |enumerate(group_parts[0:(-1)], manifold ["start", start])|)
+            // parts[((start + group_size) - 1)] := group_parts[(-1)]
+            T loop = ∞ (
+                P i = range((start + group_size), end)[_loop_index]
+                // parts[i] := P
+            ) (D |range((start + group_size), end)|)
+        ) (D |sorted(inserts, manifold ["reverse", 1])|)
+        → { T loop = ∞ (item → E item ≠ P) (D |parts|) }
+    }
+    D HelpFormatter___format_text = λ self, text . {
+        T cond = → if "%(prog)" == text → P text = (text % dict(manifold ["prog", self D _prog]))
+        P text_width = max((self D _width - self D _current_indent), 11)
+        P indent = (" " * self D _current_indent)
+        → (self D _fill_text(text, text_width, indent) + "\n\n")
+    }
+    D HelpFormatter___format_action = λ self, action . {
+        P help_position = min((self D _action_max_length + 2), self D _max_help_position)
+        P help_width = max((self D _width - help_position), 11)
+        P action_width = ((help_position - self D _current_indent) - 2)
+        P action_header = self D _format_action_invocation(action)
+        T cond = → if (!action D help) → P
+            P tup = manifold [self D _current_indent, "", action_header]
+            P action_header = ("%*s%s\n" % tup)
+        → E P
+            T cond = → if len(action_header) ≤ action_width → P
+                P tup = manifold [self D _current_indent, "", action_width, action_header]
+                P action_header = ("%*s%-*s  " % tup)
+                P indent_first = 0
+            → E P
+                P tup = manifold [self D _current_indent, "", action_header]
+                P action_header = ("%*s%s\n" % tup)
+                P indent_first = help_position
+        P parts = manifold [action_header]
+        T cond = → if (action D help && action D help D strip(P)) → P
+            P help_text = self D _expand_help(action)
+            T cond = → if help_text → P
+                P help_lines = self D _split_lines(help_text, help_width)
+                parts D append(("%*s%s\n" % manifold [indent_first, "", help_lines[0]]))
+                T loop = ∞ (
+                    P line = help_lines[1:Ω][_loop_index]
+                    parts D append(("%*s%s\n" % manifold [help_position, "", line]))
+                ) (D |help_lines[1:Ω]|)
+        → E T cond = → if (!action_header D endswith("\n")) → parts D append("\n")
+        T loop = ∞ (
+            P subaction = self D _iter_indented_subactions(action)[_loop_index]
+            parts D append(self D _format_action(subaction))
+        ) (D |self D _iter_indented_subactions(action)|)
+        → self D _join_parts(parts)
+    }
+    D HelpFormatter___format_action_invocation = λ self, action . {
+        T cond = → if (!action D option_strings) → P
+            P default = self D _get_default_metavar_for_positional(action)
+            → " " D join(self D _metavar_formatter(action, default)(1))
+        → E P
+            T cond = → if action D nargs == 0 → → ", " D join(action D option_strings)
+            → E P
+                P default = self D _get_default_metavar_for_optional(action)
+                P args_string = self D _format_args(action, default)
+                → ((", " D join(action D option_strings) + " ") + args_string)
+    }
+    D HelpFormatter___metavar_formatter = λ self, action, default_metavar . {
+        T cond = → if action D metavar ≠ P → P result = action D metavar
+        → E P
+            T cond = → if action D choices ≠ P → P result = ("{%s}" % "," D join(_et_map(str, action D choices)))
+            → E P result = default_metavar
+        D HelpFormatter__format = λ tuple_size . {
+            T cond = → if isinstance(result, tuple) → → result
+            → E → (manifold [result] * tuple_size)
+        }
+        → format
+    }
+    D HelpFormatter___format_args = λ self, action, default_metavar . {
+        P get_metavar = self D _metavar_formatter(action, default_metavar)
+        T cond = → if action D nargs == P → P result = ("%s" % get_metavar(1))
+        → E P
+            T cond = → if action D nargs == OPTIONAL → P result = ("[%s]" % get_metavar(1))
+            → E P
+                T cond = → if action D nargs == ZERO_OR_MORE → P
+                    P metavar = get_metavar(1)
+                    T cond = → if len(metavar) == 2 → P result = ("[%s [%s ...]]" % metavar)
+                    → E P result = ("[%s ...]" % metavar)
+                → E P
+                    T cond = → if action D nargs == ONE_OR_MORE → P result = ("%s [%s ...]" % get_metavar(2))
+                    → E P
+                        T cond = → if action D nargs == REMAINDER → P result = "..."
+                        → E P
+                            T cond = → if action D nargs == PARSER → P result = ("%s ..." % get_metavar(1))
+                            → E P
+                                T cond = → if action D nargs == SUPPRESS → P result = ""
+                                → E P
+                                    T attempt = → P  // try
+                                        P formats = { T loop = ∞ ("%s") (D |range(action D nargs)|) }
+                                    → E TypeError (_)
+                                        → E ValueError("invalid nargs value")
+                                    P result = (" " D join(formats) % get_metavar(action D nargs))
+        → result
+    }
+    D HelpFormatter___expand_help = λ self, action . {
+        P params = dict(vars(action), manifold ["prog", self D _prog])
+        T loop = ∞ (
+            P name = list(params)[_loop_index]
+            T cond = → if params[name] == SUPPRESS → P  // pass
+        ) (D |list(params)|)
+        T loop = ∞ (
+            P name = list(params)[_loop_index]
+            T cond = → if hasattr(params[name], "__name__") → P  // pass
+        ) (D |list(params)|)
+        T cond = → if params D get("choices") ≠ P → P  // pass
+        → (self D _get_help_string(action) % params)
+    }
+    D HelpFormatter___iter_indented_subactions = λ self, action . {
+        T attempt = → P  // try
+            P get_subactions = action D _get_subactions
+        → E AttributeError (_)
+            // pass
+    }
+    D HelpFormatter___split_lines = λ self, text, width . {
+        P text = self D _whitespace_matcher D sub(" ", text) D strip(P)
+        // @ETPL:preload textwrap textwrap
+        // Import textwrap — resolved at translate-time
+        // @ETPL:preload TextWrapper textwrap.TextWrapper
+        P TextWrapper = P  // [ET:callable:textwrap.TextWrapper]
+        // @ETPL:preload wrap textwrap.wrap
+        P wrap = P  // [ET:callable:textwrap.wrap]
+        // @ETPL:preload fill textwrap.fill
+        P fill = P  // [ET:callable:textwrap.fill]
+        // @ETPL:preload dedent textwrap.dedent
+        P dedent = P  // [ET:callable:textwrap.dedent]
+        // @ETPL:preload indent textwrap.indent
+        P indent = P  // [ET:callable:textwrap.indent]
+        // @ETPL:preload shorten textwrap.shorten
+        P shorten = P  // [ET:callable:textwrap.shorten]
+        → textwrap D wrap(text, width)
+    }
+    D HelpFormatter___fill_text = λ self, text, width, indent . {
+        P text = self D _whitespace_matcher D sub(" ", text) D strip(P)
+        // @ETPL:preload textwrap textwrap
+        // Import textwrap — resolved at translate-time
+        → textwrap D fill(text, width, manifold ["initial_indent", indent], manifold ["subsequent_indent", indent])
+    }
+    D HelpFormatter___get_help_string = λ self, action . → action D help
+    D HelpFormatter___get_default_metavar_for_optional = λ self, action . → action D dest D upper(P)
+    D HelpFormatter___get_default_metavar_for_positional = λ self, action . → action D dest
+D RawDescriptionHelpFormatter = λ . P  // class(HelpFormatter)
+    // Help message formatter which retains any formatting in descriptions.      Only the name of this class is considered a pu
+    D RawDescriptionHelpFormatter___fill_text = λ self, text, width, indent . → "" D join({ T loop = ∞ ((indent + line)) (D |text D splitlines(manifold ["keepends", 1])|) })
+D RawTextHelpFormatter = λ . P  // class(RawDescriptionHelpFormatter)
+    // Help message formatter which retains formatting of all help text.      Only the name of this class is considered a publi
+    D RawTextHelpFormatter___split_lines = λ self, text, width . → text D splitlines(P)
+D ArgumentDefaultsHelpFormatter = λ . P  // class(HelpFormatter)
+    // Help message formatter which adds default values to argument help.      Only the name of this class is considered a publ
+    D ArgumentDefaultsHelpFormatter___get_help_string = λ self, action . {
+        P help = action D help
+        T cond = → if help == P → P help = ""
+        T cond = → if "%(default)" ≠ help → P
+            T cond = → if action D default ≠ SUPPRESS → P
+                P defaulting_nargs = manifold [OPTIONAL, ZERO_OR_MORE]
+                T cond = → if (action D option_strings || action D nargs == defaulting_nargs) → P help = help + _(" (default: %(default)s)")
+        → help
+    }
+D MetavarTypeHelpFormatter = λ . P  // class(HelpFormatter)
+    // Help message formatter which uses the argument 'type' as the default     metavar value (instead of the argument 'dest') 
+    D MetavarTypeHelpFormatter___get_default_metavar_for_optional = λ self, action . → action D type D __name__
+    D MetavarTypeHelpFormatter___get_default_metavar_for_positional = λ self, action . → action D type D __name__
+D get_action_name = λ argument . {
+    T cond = → if argument == P → → P
+    → E P
+        T cond = → if argument D option_strings → → "/" D join(argument D option_strings)
+        → E P
+            T cond = → if argument D metavar ≠ manifold [P, SUPPRESS] → P
+                P metavar = argument D metavar
+                T cond = → if (!isinstance(metavar, tuple)) → → metavar
+                T cond = → if (argument D nargs == ZERO_OR_MORE && len(metavar) == 2) → → ("%s[, %s]" % metavar)
+                → E P
+                    T cond = → if argument D nargs == ONE_OR_MORE → → ("%s[, %s]" % metavar)
+                    → E → ", " D join(metavar)
+            → E P
+                T cond = → if argument D dest ≠ manifold [P, SUPPRESS] → → argument D dest
+                → E P
+                    T cond = → if argument D choices → → ("{%s}" % "," D join(_et_map(str, argument D choices)))
+                    → E → P
+}
+D ArgumentError = λ . P  // class(Exception)
+    // An error from creating or using an argument (optional or positional).      The string value of this exception is the mes
+    D ArgumentError____init = λ self, argument, message . {
+        D self_D_argument_name = _get_action_name(argument)  // self D argument_name := _get_action_name(argument)
+        D self_D_message = message  // self D message := message
+    }
+    D ArgumentError____str = λ self . {
+        T cond = → if self D argument_name == P → P format = "%(message)s"
+        → E P format = _("argument %(argument_name)s: %(message)s")
+        → (format % dict(manifold ["message", self D message], manifold ["argument_name", self D argument_name]))
+    }
+D ArgumentTypeError = λ . P  // class(Exception)
+    // An error from trying to convert a command line string to a type.
+    // pass
+D Action = λ . P  // class(_AttributeHolder)
+    // Information about how to convert command line strings to Python objects.      Action objects are used by an ArgumentPars
+    D Action____init = λ self, option_strings, dest, nargs, const, default, type, choices, required, help, metavar, deprecated . {
+        D self_D_option_strings = option_strings  // self D option_strings := option_strings
+        D self_D_dest = dest  // self D dest := dest
+        D self_D_nargs = nargs  // self D nargs := nargs
+        D self_D_const = const  // self D const := const
+        D self_D_default = default  // self D default := default
+        D self_D_type = type  // self D type := type
+        D self_D_choices = choices  // self D choices := choices
+        D self_D_required = required  // self D required := required
+        D self_D_help = help  // self D help := help
+        D self_D_metavar = metavar  // self D metavar := metavar
+        D self_D_deprecated = deprecated  // self D deprecated := deprecated
+    }
+    D Action___get_kwargs = λ self . {
+        P names = manifold ["option_strings", "dest", "nargs", "const", "default", "type", "choices", "required", "help", "metavar", "deprecated"]
+        → { T loop = ∞ (manifold [name, getattr(self, name)]) (D |names|) }
+    }
+    D Action__format_usage = λ self . → self D option_strings[0]
+    D Action____call = λ self, parser, namespace, values, option_string . → E NotImplementedError(_(".__call__() not defined"))
+P _deprecated_default = object(P)
+D BooleanOptionalAction = λ . P  // class(Action)
+    D BooleanOptionalAction____init = λ self, option_strings, dest, default, type, choices, required, help, metavar, deprecated . {
+        P _option_strings = manifold []
+        T loop = ∞ (
+            P option_string = option_strings[_loop_index]
+            _option_strings D append(option_string)
+            T cond = → if option_string D startswith("--") → P
+                P option_string = ("--no-" + option_string[2:Ω])
+                _option_strings D append(option_string)
+        ) (D |option_strings|)
+        T loop = ∞ (
+            P field_name = manifold ["type", "choices", "metavar"][_loop_index]
+            T cond = → if locals(P)[field_name] ≠ _deprecated_default → P
+                // @ETPL:preload warnings warnings
+                // Import warnings — resolved at translate-time
+                // @ETPL:preload warn warnings.warn
+                P warn = P  // [ET:callable:warnings.warn]
+                // @ETPL:preload warn_explicit warnings.warn_explicit
+                P warn_explicit = P  // [ET:callable:warnings.warn_explicit]
+                // @ETPL:preload showwarning warnings.showwarning
+                P showwarning = P  // [ET:callable:warnings.showwarning]
+                // @ETPL:preload formatwarning warnings.formatwarning
+                P formatwarning = P  // [ET:callable:warnings.formatwarning]
+                // @ETPL:preload filterwarnings warnings.filterwarnings
+                P filterwarnings = P  // [ET:callable:warnings.filterwarnings]
+                // @ETPL:preload simplefilter warnings.simplefilter
+                P simplefilter = P  // [ET:callable:warnings.simplefilter]
+                // @ETPL:preload resetwarnings warnings.resetwarnings
+                P resetwarnings = P  // [ET:callable:warnings.resetwarnings]
+                // @ETPL:preload catch_warnings warnings.catch_warnings
+                P catch_warnings = P  // [ET:callable:warnings.catch_warnings]
+                // @ETPL:preload deprecated warnings.deprecated
+                P deprecated = P  // [ET:callable:warnings.deprecated]
+                warnings D _deprecated(field_name, "{name!r} is deprecated as of Python 3.12 and will be removed in Python {remove}.", manifold ["remove", manifold [3, 14]])
+        ) (D |manifold ["type", "choices", "metavar"]|)
+        T cond = → if type == _deprecated_default → P type = P
+        T cond = → if choices == _deprecated_default → P choices = P
+        T cond = → if metavar == _deprecated_default → P metavar = P
+        super(P) D __init__(manifold ["option_strings", _option_strings], manifold ["dest", dest], manifold ["nargs", 0], manifold ["default", default], manifold ["type", type], manifold ["choices", choices], manifold ["required", required], manifold ["help", help], manifold ["metavar", metavar], manifold ["deprecated", deprecated])
+    }
+    D BooleanOptionalAction____call = λ self, parser, namespace, values, option_string . T cond = → if option_string == self D option_strings → setattr(namespace, self D dest, (!option_string D startswith("--no-")))
+    D BooleanOptionalAction__format_usage = λ self . → " | " D join(self D option_strings)
+D StoreAction = λ . P  // class(Action)
+    D StoreAction____init = λ self, option_strings, dest, nargs, const, default, type, choices, required, help, metavar, deprecated . {
+        T cond = → if nargs == 0 → → E ValueError("nargs for store actions must be != 0; if you have nothing to store, actions such as store true or store const may be more appropriate")
+        T cond = → if (const ≠ P && nargs ≠ OPTIONAL) → → E ValueError(("nargs must be %r to supply const" % OPTIONAL))
+        super(_StoreAction, self) D __init__(manifold ["option_strings", option_strings], manifold ["dest", dest], manifold ["nargs", nargs], manifold ["const", const], manifold ["default", default], manifold ["type", type], manifold ["choices", choices], manifold ["required", required], manifold ["help", help], manifold ["metavar", metavar], manifold ["deprecated", deprecated])
+    }
+    D StoreAction____call = λ self, parser, namespace, values, option_string . setattr(namespace, self D dest, values)
+D StoreConstAction = λ . P  // class(Action)
+    D StoreConstAction____init = λ self, option_strings, dest, const, default, required, help, metavar, deprecated . super(_StoreConstAction, self) D __init__(manifold ["option_strings", option_strings], manifold ["dest", dest], manifold ["nargs", 0], manifold ["const", const], manifold ["default", default], manifold ["required", required], manifold ["help", help], manifold ["deprecated", deprecated])
+    D StoreConstAction____call = λ self, parser, namespace, values, option_string . setattr(namespace, self D dest, self D const)
+D StoreTrueAction = λ . P  // class(_StoreConstAction)
+    D StoreTrueAction____init = λ self, option_strings, dest, default, required, help, deprecated . super(_StoreTrueAction, self) D __init__(manifold ["option_strings", option_strings], manifold ["dest", dest], manifold ["const", 1], manifold ["deprecated", deprecated], manifold ["required", required], manifold ["help", help], manifold ["default", default])
+D StoreFalseAction = λ . P  // class(_StoreConstAction)
+    D StoreFalseAction____init = λ self, option_strings, dest, default, required, help, deprecated . super(_StoreFalseAction, self) D __init__(manifold ["option_strings", option_strings], manifold ["dest", dest], manifold ["const", 0], manifold ["default", default], manifold ["required", required], manifold ["help", help], manifold ["deprecated", deprecated])
+D AppendAction = λ . P  // class(Action)
+    D AppendAction____init = λ self, option_strings, dest, nargs, const, default, type, choices, required, help, metavar, deprecated . {
+        T cond = → if nargs == 0 → → E ValueError("nargs for append actions must be != 0; if arg strings are not supplying the value to append, the append const action may be more appropriate")
+        T cond = → if (const ≠ P && nargs ≠ OPTIONAL) → → E ValueError(("nargs must be %r to supply const" % OPTIONAL))
+        super(_AppendAction, self) D __init__(manifold ["option_strings", option_strings], manifold ["dest", dest], manifold ["nargs", nargs], manifold ["const", const], manifold ["default", default], manifold ["type", type], manifold ["choices", choices], manifold ["required", required], manifold ["help", help], manifold ["metavar", metavar], manifold ["deprecated", deprecated])
+    }
+    D AppendAction____call = λ self, parser, namespace, values, option_string . {
+        P items = getattr(namespace, self D dest, P)
+        P items = _copy_items(items)
+        items D append(values)
+        setattr(namespace, self D dest, items)
+    }
+D AppendConstAction = λ . P  // class(Action)
+    D AppendConstAction____init = λ self, option_strings, dest, const, default, required, help, metavar, deprecated . super(_AppendConstAction, self) D __init__(manifold ["option_strings", option_strings], manifold ["dest", dest], manifold ["nargs", 0], manifold ["const", const], manifold ["default", default], manifold ["required", required], manifold ["help", help], manifold ["metavar", metavar], manifold ["deprecated", deprecated])
+    D AppendConstAction____call = λ self, parser, namespace, values, option_string . {
+        P items = getattr(namespace, self D dest, P)
+        P items = _copy_items(items)
+        items D append(self D const)
+        setattr(namespace, self D dest, items)
+    }
+D CountAction = λ . P  // class(Action)
+    D CountAction____init = λ self, option_strings, dest, default, required, help, deprecated . super(_CountAction, self) D __init__(manifold ["option_strings", option_strings], manifold ["dest", dest], manifold ["nargs", 0], manifold ["default", default], manifold ["required", required], manifold ["help", help], manifold ["deprecated", deprecated])
+    D CountAction____call = λ self, parser, namespace, values, option_string . {
+        P count = getattr(namespace, self D dest, P)
+        T cond = → if count == P → P count = 0
+        setattr(namespace, self D dest, (count + 1))
+    }
+D HelpAction = λ . P  // class(Action)
+    D HelpAction____init = λ self, option_strings, dest, default, help, deprecated . super(_HelpAction, self) D __init__(manifold ["option_strings", option_strings], manifold ["dest", dest], manifold ["default", default], manifold ["nargs", 0], manifold ["help", help], manifold ["deprecated", deprecated])
+    D HelpAction____call = λ self, parser, namespace, values, option_string . {
+        parser D print_help(P)
+        parser D exit(P)
+    }
+D VersionAction = λ . P  // class(Action)
+    D VersionAction____init = λ self, option_strings, version, dest, default, help, deprecated . {
+        T cond = → if help == P → P help = _("show program's version number and exit")
+        super(_VersionAction, self) D __init__(manifold ["option_strings", option_strings], manifold ["dest", dest], manifold ["default", default], manifold ["nargs", 0], manifold ["help", help])
+        D self_D_version = version  // self D version := version
+    }
+    D VersionAction____call = λ self, parser, namespace, values, option_string . {
+        P version = self D version
+        T cond = → if version == P → P version = parser D version
+        P formatter = parser D _get_formatter(P)
+        formatter D add_text(version)
+        parser D _print_message(formatter D format_help(P), _sys D stdout)
+        parser D exit(P)
+    }
+D SubParsersAction = λ . P  // class(Action)
+    D ChoicesPseudoAction = λ . P  // class(Action)
+        D ChoicesPseudoAction____init = λ self, name, aliases, help . {
+            P metavar = name
+            P dest = name
+            T cond = → if aliases → P metavar = metavar + (" (%s)" % ", " D join(aliases))
+            P sup = super(_SubParsersAction D _ChoicesPseudoAction, self)
+            sup D __init__(manifold ["option_strings", manifold []], manifold ["dest", dest], manifold ["help", help], manifold ["metavar", metavar])
+        }
+    D SubParsersAction____init = λ self, option_strings, prog, parser_class, dest, required, help, metavar . {
+        D self_D__prog_prefix = prog  // self D _prog_prefix := prog
+        D self_D__parser_class = parser_class  // self D _parser_class := parser_class
+        D self_D__name_parser_map = manifold []  // self D _name_parser_map := manifold []
+        D self_D__choices_actions = manifold []  // self D _choices_actions := manifold []
+        D self_D__deprecated = set(P)  // self D _deprecated := set(P)
+        super(_SubParsersAction, self) D __init__(manifold ["option_strings", option_strings], manifold ["dest", dest], manifold ["nargs", PARSER], manifold ["choices", self D _name_parser_map], manifold ["required", required], manifold ["help", help], manifold ["metavar", metavar])
+    }
+    D SubParsersAction__add_parser = λ self, name . {
+        T cond = → if kwargs D get("prog") == P → P  // pass
+        P aliases = kwargs D pop("aliases", manifold [])
+        T cond = → if name == self D _name_parser_map → → E ArgumentError(self, (_("conflicting subparser: %s") % name))
+        T loop = ∞ (
+            P alias = aliases[_loop_index]
+            T cond = → if alias == self D _name_parser_map → → E ArgumentError(self, (_("conflicting subparser alias: %s") % alias))
+        ) (D |aliases|)
+        T cond = → if "help" == kwargs → P
+            P help = kwargs D pop("help")
+            P choice_action = self D _ChoicesPseudoAction(name, aliases, help)
+            self D _choices_actions D append(choice_action)
+        P parser = self D _parser_class(kwargs)
+        // self D _name_parser_map[name] := parser
+        T loop = ∞ (
+            P alias = aliases[_loop_index]
+            // self D _name_parser_map[alias] := parser
+        ) (D |aliases|)
+        T cond = → if deprecated → P
+            self D _deprecated D add(name)
+            self D _deprecated D update(aliases)
+        → parser
+    }
+    D SubParsersAction___get_subactions = λ self . → self D _choices_actions
+    D SubParsersAction____call = λ self, parser, namespace, values, option_string . {
+        P parser_name = values[0]
+        P arg_strings = values[1:Ω]
+        T cond = → if self D dest ≠ SUPPRESS → setattr(namespace, self D dest, parser_name)
+        T attempt = → P  // try
+            P subparser = self D _name_parser_map[parser_name]
+        → E KeyError (_)
+            P args = manifold [manifold ["parser_name", parser_name], manifold ["choices", ", " D join(self D _name_parser_map)]]
+            P msg = (_("unknown parser %(parser_name)r (choices: %(choices)s)") % args)
+            → E ArgumentError(self, msg)
+        T cond = → if parser_name == self D _deprecated → parser D _warning((_("command '%(parser_name)s' is deprecated") % manifold [manifold ["parser_name", parser_name]]))
+        P manifold__subnamespace__arg_strings = subparser D parse_known_args(arg_strings, P)  // manifold [subnamespace, arg_strings] := subparser D parse_known_args(arg_strings, P)
+        T loop = ∞ (
+            P manifold__key__value = vars(subnamespace) D items(P)[_loop_index]  // manifold [key, value]
+            setattr(namespace, key, value)
+        ) (D |vars(subnamespace) D items(P)|)
+        T cond = → if arg_strings → P
+            T cond = → if (!hasattr(namespace, _UNRECOGNIZED_ARGS_ATTR)) → setattr(namespace, _UNRECOGNIZED_ARGS_ATTR, manifold [])
+            getattr(namespace, _UNRECOGNIZED_ARGS_ATTR) D extend(arg_strings)
+    }
+D ExtendAction = λ . P  // class(_AppendAction)
+    D ExtendAction____call = λ self, parser, namespace, values, option_string . {
+        P items = getattr(namespace, self D dest, P)
+        P items = _copy_items(items)
+        items D extend(values)
+        setattr(namespace, self D dest, items)
+    }
+D FileType = λ . P  // class(object)
+    // Factory for creating file object types      Instances of FileType are typically passed as type= arguments to the     Arg
+    D FileType____init = λ self, mode, bufsize, encoding, errors . {
+        D self_D__mode = mode  // self D _mode := mode
+        D self_D__bufsize = bufsize  // self D _bufsize := bufsize
+        D self_D__encoding = encoding  // self D _encoding := encoding
+        D self_D__errors = errors  // self D _errors := errors
+    }
+    D FileType____call = λ self, string . {
+        T cond = → if string == "-" → P
+            T cond = → if "r" == self D _mode → → if "b" == self D _mode → _sys D stdin D buffer → E _sys D stdin
+            → E P
+                T cond = → if any({ T loop = ∞ (c == self D _mode) (D |"wax"|) }) → → if "b" == self D _mode → _sys D stdout D buffer → E _sys D stdout
+                → E P
+                    P msg = (_("argument \"-\" with mode %r") % self D _mode)
+                    → E ValueError(msg)
+        T attempt = → P  // try
+            → open(string, self D _mode, self D _bufsize, self D _encoding, self D _errors)
+        → E OSError (e)
+            P args = manifold [manifold ["filename", string], manifold ["error", e]]
+            P message = _("can't open '%(filename)s': %(error)s")
+            → E ArgumentTypeError((message % args))
+    }
+    D FileType____repr = λ self . {
+        P args = manifold [self D _mode, self D _bufsize]
+        P kwargs = manifold [manifold ["encoding", self D _encoding], manifold ["errors", self D _errors]]
+        P args_str = ", " D join(({ T loop = ∞ (repr(arg) → E arg ≠ (-1)) (D |args|) } + { T loop = ∞ (("%s=%r" % manifold [kw, arg]) → E arg ≠ P) (D |kwargs|) }))
+        → ("%s(%s)" % manifold [type(self) D __name__, args_str])
+    }
+D Namespace = λ . P  // class(_AttributeHolder)
+    // Simple object for storing attributes.      Implements equality by attribute names and values, and provides a simple     
+    D Namespace____init = λ self . {
+        T loop = ∞ (
+            P name = kwargs[_loop_index]
+            setattr(self, name, kwargs[name])
+        ) (D |kwargs|)
+    }
+    D Namespace____eq = λ self, other . {
+        T cond = → if (!isinstance(other, Namespace)) → → NotImplemented
+        → vars(self) == vars(other)
+    }
+    D Namespace____contains = λ self, key . → key == self D __dict__
+D ActionsContainer = λ . P  // class(object)
+    D ActionsContainer____init = λ self, description, prefix_chars, argument_default, conflict_handler . {
+        super(_ActionsContainer, self) D __init__(P)
+        D self_D_description = description  // self D description := description
+        D self_D_argument_default = argument_default  // self D argument_default := argument_default
+        D self_D_prefix_chars = prefix_chars  // self D prefix_chars := prefix_chars
+        D self_D_conflict_handler = conflict_handler  // self D conflict_handler := conflict_handler
+        D self_D__registries = manifold []  // self D _registries := manifold []
+        self D register("action", P, _StoreAction)
+        self D register("action", "store", _StoreAction)
+        self D register("action", "store_const", _StoreConstAction)
+        self D register("action", "store_true", _StoreTrueAction)
+        self D register("action", "store_false", _StoreFalseAction)
+        self D register("action", "append", _AppendAction)
+        self D register("action", "append_const", _AppendConstAction)
+        self D register("action", "count", _CountAction)
+        self D register("action", "help", _HelpAction)
+        self D register("action", "version", _VersionAction)
+        self D register("action", "parsers", _SubParsersAction)
+        self D register("action", "extend", _ExtendAction)
+        self D _get_handler(P)
+        D self_D__actions = manifold []  // self D _actions := manifold []
+        D self_D__option_string_actions = manifold []  // self D _option_string_actions := manifold []
+        D self_D__action_groups = manifold []  // self D _action_groups := manifold []
+        D self_D__mutually_exclusive_groups = manifold []  // self D _mutually_exclusive_groups := manifold []
+        D self_D__defaults = manifold []  // self D _defaults := manifold []
+        D self_D__negative_number_matcher = _re D compile("^-\\d+$|^-\\d*\\.\\d+$")  // self D _negative_number_matcher := _re D compile("^-\\d+$|^-\\d*\\.\\d+$")
+        D self_D__has_negative_number_optionals = manifold []  // self D _has_negative_number_optionals := manifold []
+    }
+    D ActionsContainer__register = λ self, registry_name, value, object . {
+        P registry = self D _registries D setdefault(registry_name, manifold [])
+        // registry[value] := object
+    }
+    D ActionsContainer___registry_get = λ self, registry_name, value, default . → self D _registries[registry_name] D get(value, default)
+    D ActionsContainer__set_defaults = λ self . {
+        self D _defaults D update(kwargs)
+        T loop = ∞ (
+            P action = self D _actions[_loop_index]
+            T cond = → if action D dest == kwargs → D action_D_default = kwargs[action D dest]  // action D default := kwargs[action D dest]
+        ) (D |self D _actions|)
+    }
+    D ActionsContainer__get_default = λ self, dest . {
+        T loop = ∞ (
+            P action = self D _actions[_loop_index]
+            T cond = → if (action D dest == dest && action D default ≠ P) → → action D default
+        ) (D |self D _actions|)
+        → self D _defaults D get(dest, P)
+    }
+    D ActionsContainer__add_argument = λ self . {
+        // add_argument(dest, ..., name=value, ...)         add_argument(option_string, option_string, ..., name=value, ...)
+        P chars = self D prefix_chars
+        T cond = → if ((!args) || (len(args) == 1 && args[0][0] ≠ chars)) → P
+            T cond = → if (args && "dest" == kwargs) → → E ValueError("dest supplied twice for positional argument")
+            P kwargs = self D _get_positional_kwargs(args, kwargs)
+        → E P kwargs = self D _get_optional_kwargs(args, kwargs)
+        T cond = → if "default" ≠ kwargs → P
+            P dest = kwargs["dest"]
+            T cond = → if dest == self D _defaults → P  // pass
+        P action_class = self D _pop_action_class(kwargs)
+        T cond = → if (!callable(action_class)) → → E ValueError(("unknown action \"%s\"" % manifold [action_class]))
+        P action = action_class(kwargs)
+        P type_func = self D _registry_get("type", action D type, action D type)
+        T cond = → if (!callable(type_func)) → → E ValueError(("%r is not callable" % manifold [type_func]))
+        T cond = → if type_func == FileType → → E ValueError(("%r is a FileType class object, instance of it must be passed" % manifold [type_func]))
+        T cond = → if hasattr(self, "_get_formatter") → P
+            T attempt = → P  // try
+                self D _get_formatter(P) D _format_args(action, P)
+            → E TypeError (_)
+                → E ValueError("length of metavar tuple does not match nargs")
+        → self D _add_action(action)
+    }
+    D ActionsContainer__add_argument_group = λ self . {
+        P group = _ArgumentGroup(self, args, kwargs)
+        self D _action_groups D append(group)
+        → group
+    }
+    D ActionsContainer__add_mutually_exclusive_group = λ self . {
+        P group = _MutuallyExclusiveGroup(self, kwargs)
+        self D _mutually_exclusive_groups D append(group)
+        → group
+    }
+    D ActionsContainer___add_action = λ self, action . {
+        self D _check_conflict(action)
+        self D _actions D append(action)
+        D action_D_container = self  // action D container := self
+        T loop = ∞ (
+            P option_string = action D option_strings[_loop_index]
+            // self D _option_string_actions[option_string] := action
+        ) (D |action D option_strings|)
+        T loop = ∞ (
+            P option_string = action D option_strings[_loop_index]
+            T cond = → if self D _negative_number_matcher D match(option_string) → T cond = → if (!self D _has_negative_number_optionals) → self D _has_negative_number_optionals D append(1)
+        ) (D |action D option_strings|)
+        → action
+    }
+    D ActionsContainer___remove_action = λ self, action . self D _actions D remove(action)
+    D ActionsContainer___add_container_actions = λ self, container . {
+        P title_group_map = manifold []
+        T loop = ∞ (
+            P group = self D _action_groups[_loop_index]
+            T cond = → if group D title == title_group_map → P
+                P msg = _("cannot merge actions - two groups are named %r")
+                → E ValueError((msg % group D title))
+            // title_group_map[group D title] := group
+        ) (D |self D _action_groups|)
+        P group_map = manifold []
+        T loop = ∞ (
+            P group = container D _action_groups[_loop_index]
+            T cond = → if group D title ≠ title_group_map → P  // pass
+            T loop = ∞ (
+                P action = group D _group_actions[_loop_index]
+                // group_map[action] := title_group_map[group D title]
+            ) (D |group D _group_actions|)
+        ) (D |container D _action_groups|)
+        T loop = ∞ (
+            P group = container D _mutually_exclusive_groups[_loop_index]
+            T cond = → if group D _container == container → P cont = self
+            → E P cont = title_group_map[group D _container D title]
+            P mutex_group = cont D add_mutually_exclusive_group(manifold ["required", group D required])
+            T loop = ∞ (
+                P action = group D _group_actions[_loop_index]
+                // group_map[action] := mutex_group
+            ) (D |group D _group_actions|)
+        ) (D |container D _mutually_exclusive_groups|)
+        T loop = ∞ (
+            P action = container D _actions[_loop_index]
+            group_map D get(action, self) D _add_action(action)
+        ) (D |container D _actions|)
+    }
+    D ActionsContainer___get_positional_kwargs = λ self, dest . {
+        T cond = → if "required" == kwargs → P
+            P msg = _("'required' is an invalid argument for positionals")
+            → E TypeError(msg)
+        P nargs = kwargs D get("nargs")
+        T cond = → if nargs ≠ manifold [OPTIONAL, ZERO_OR_MORE, REMAINDER, SUPPRESS, 0] → P  // pass
+        → dict(kwargs, manifold ["dest", dest], manifold ["option_strings", manifold []])
+    }
+    D ActionsContainer___get_optional_kwargs = λ self . {
+        P option_strings = manifold []
+        P long_option_strings = manifold []
+        T loop = ∞ (
+            P option_string = args[_loop_index]
+            T cond = → if (!option_string[0] == self D prefix_chars) → P
+                P args = manifold [manifold ["option", option_string], manifold ["prefix_chars", self D prefix_chars]]
+                P msg = _("invalid option string %(option)r: must start with a character %(prefix_chars)r")
+                → E ValueError((msg % args))
+            option_strings D append(option_string)
+            T cond = → if (len(option_string) > 1 && option_string[1] == self D prefix_chars) → long_option_strings D append(option_string)
+        ) (D |args|)
+        P dest = kwargs D pop("dest", P)
+        T cond = → if dest == P → P
+            T cond = → if long_option_strings → P dest_option_string = long_option_strings[0]
+            → E P dest_option_string = option_strings[0]
+            P dest = dest_option_string D lstrip(self D prefix_chars)
+            T cond = → if (!dest) → P
+                P msg = _("dest= is required for options like %r")
+                → E ValueError((msg % option_string))
+            P dest = dest D replace("-", "_")
+        → dict(kwargs, manifold ["dest", dest], manifold ["option_strings", option_strings])
+    }
+    D ActionsContainer___pop_action_class = λ self, kwargs, default . {
+        P action = kwargs D pop("action", default)
+        → self D _registry_get("action", action, action)
+    }
+    D ActionsContainer___get_handler = λ self . {
+        P handler_func_name = ("_handle_conflict_%s" % self D conflict_handler)
+        T attempt = → P  // try
+            → getattr(self, handler_func_name)
+        → E AttributeError (_)
+            P msg = _("invalid conflict_resolution value: %r")
+            → E ValueError((msg % self D conflict_handler))
+    }
+    D ActionsContainer___check_conflict = λ self, action . {
+        P confl_optionals = manifold []
+        T loop = ∞ (
+            P option_string = action D option_strings[_loop_index]
+            T cond = → if option_string == self D _option_string_actions → P
+                P confl_optional = self D _option_string_actions[option_string]
+                confl_optionals D append(manifold [option_string, confl_optional])
+        ) (D |action D option_strings|)
+        T cond = → if confl_optionals → P
+            P conflict_handler = self D _get_handler(P)
+            conflict_handler(action, confl_optionals)
+    }
+    D ActionsContainer___handle_conflict_error = λ self, action, conflicting_actions . {
+        P message = ngettext("conflicting option string: %s", "conflicting option strings: %s", len(conflicting_actions))
+        P conflict_string = ", " D join({ T loop = ∞ (option_string) (D |conflicting_actions|) })
+        → E ArgumentError(action, (message % conflict_string))
+    }
+    D ActionsContainer___handle_conflict_resolve = λ self, action, conflicting_actions . {
+        T loop = ∞ (
+            P manifold__option_string__action = conflicting_actions[_loop_index]  // manifold [option_string, action]
+            action D option_strings D remove(option_string)
+            self D _option_string_actions D pop(option_string, P)
+            T cond = → if (!action D option_strings) → action D container D _remove_action(action)
+        ) (D |conflicting_actions|)
+    }
+D ArgumentGroup = λ . P  // class(_ActionsContainer)
+    D ArgumentGroup____init = λ self, container, title, description . {
+        P update = kwargs D setdefault
+        update("conflict_handler", container D conflict_handler)
+        update("prefix_chars", container D prefix_chars)
+        update("argument_default", container D argument_default)
+        P super_init = super(_ArgumentGroup, self) D __init__
+        super_init(manifold ["description", description], kwargs)
+        D self_D_title = title  // self D title := title
+        D self_D__group_actions = manifold []  // self D _group_actions := manifold []
+        D self_D__registries = container D _registries  // self D _registries := container D _registries
+        D self_D__actions = container D _actions  // self D _actions := container D _actions
+        D self_D__option_string_actions = container D _option_string_actions  // self D _option_string_actions := container D _option_string_actions
+        D self_D__defaults = container D _defaults  // self D _defaults := container D _defaults
+        D self_D__has_negative_number_optionals = container D _has_negative_number_optionals  // self D _has_negative_number_optionals := container D _has_negative_number_optionals
+        D self_D__mutually_exclusive_groups = container D _mutually_exclusive_groups  // self D _mutually_exclusive_groups := container D _mutually_exclusive_groups
+    }
+    D ArgumentGroup___add_action = λ self, action . {
+        P action = super(_ArgumentGroup, self) D _add_action(action)
+        self D _group_actions D append(action)
+        → action
+    }
+    D ArgumentGroup___remove_action = λ self, action . {
+        super(_ArgumentGroup, self) D _remove_action(action)
+        self D _group_actions D remove(action)
+    }
+    D ArgumentGroup__add_argument_group = λ self . {
+        // @ETPL:preload warnings warnings
+        // Import warnings — resolved at translate-time
+        warnings D warn("Nesting argument groups is deprecated.", manifold ["category", DeprecationWarning], manifold ["stacklevel", 2])
+        → super(P) D add_argument_group(args, kwargs)
+    }
+D MutuallyExclusiveGroup = λ . P  // class(_ArgumentGroup)
+    D MutuallyExclusiveGroup____init = λ self, container, required . {
+        super(_MutuallyExclusiveGroup, self) D __init__(container)
+        D self_D_required = required  // self D required := required
+        D self_D__container = container  // self D _container := container
+    }
+    D MutuallyExclusiveGroup___add_action = λ self, action . {
+        T cond = → if action D required → P
+            P msg = _("mutually exclusive arguments must be optional")
+            → E ValueError(msg)
+        P action = self D _container D _add_action(action)
+        self D _group_actions D append(action)
+        → action
+    }
+    D MutuallyExclusiveGroup___remove_action = λ self, action . {
+        self D _container D _remove_action(action)
+        self D _group_actions D remove(action)
+    }
+    D MutuallyExclusiveGroup__add_mutually_exclusive_group = λ self . {
+        // @ETPL:preload warnings warnings
+        // Import warnings — resolved at translate-time
+        warnings D warn("Nesting mutually exclusive groups is deprecated.", manifold ["category", DeprecationWarning], manifold ["stacklevel", 2])
+        → super(P) D add_mutually_exclusive_group(args, kwargs)
+    }
+D ArgumentParser = λ . P  // class(_AttributeHolder, _ActionsContainer)
+    // Object for parsing command line strings into Python objects.      Keyword Arguments:         - prog -- The name of the p
+    D ArgumentParser____init = λ self, prog, usage, description, epilog, parents, formatter_class, prefix_chars, fromfile_prefix_chars, argument_default, conflict_handler, add_help, allow_abbrev, exit_on_error . {
+        P superinit = super(ArgumentParser, self) D __init__
+        superinit(manifold ["description", description], manifold ["prefix_chars", prefix_chars], manifold ["argument_default", argument_default], manifold ["conflict_handler", conflict_handler])
+        T cond = → if prog == P → P prog = _os D path D basename(_sys D argv[0])
+        D self_D_prog = prog  // self D prog := prog
+        D self_D_usage = usage  // self D usage := usage
+        D self_D_epilog = epilog  // self D epilog := epilog
+        D self_D_formatter_class = formatter_class  // self D formatter_class := formatter_class
+        D self_D_fromfile_prefix_chars = fromfile_prefix_chars  // self D fromfile_prefix_chars := fromfile_prefix_chars
+        D self_D_add_help = add_help  // self D add_help := add_help
+        D self_D_allow_abbrev = allow_abbrev  // self D allow_abbrev := allow_abbrev
+        D self_D_exit_on_error = exit_on_error  // self D exit_on_error := exit_on_error
+        P add_group = self D add_argument_group
+        D self_D__positionals = add_group(_("positional arguments"))  // self D _positionals := add_group(_("positional arguments"))
+        D self_D__optionals = add_group(_("options"))  // self D _optionals := add_group(_("options"))
+        D self_D__subparsers = P  // self D _subparsers := P
+        D ArgumentParser__identity = λ string . → string
+        self D register("type", P, identity)
+        P default_prefix = if "-" == prefix_chars → "-" → E prefix_chars[0]
+        T cond = → if self D add_help → self D add_argument((default_prefix + "h"), ((default_prefix * 2) + "help"), manifold ["action", "help"], manifold ["default", SUPPRESS], manifold ["help", _("show this help message and exit")])
+        T loop = ∞ (
+            P parent = parents[_loop_index]
+            T cond = → if (!isinstance(parent, ArgumentParser)) → → E TypeError("parents must be a list of ArgumentParser")
+            self D _add_container_actions(parent)
+            P defaults = parent D _defaults
+            self D _defaults D update(defaults)
+        ) (D |parents|)
+    }
+    D ArgumentParser___get_kwargs = λ self . {
+        P names = manifold ["prog", "usage", "description", "formatter_class", "conflict_handler", "add_help"]
+        → { T loop = ∞ (manifold [name, getattr(self, name)]) (D |names|) }
+    }
+    D ArgumentParser__add_subparsers = λ self . {
+        T cond = → if self D _subparsers ≠ P → → E ArgumentError(P, _("cannot have multiple subparser arguments"))
+        kwargs D setdefault("parser_class", type(self))
+        T cond = → if ("title" == kwargs || "description" == kwargs) → P
+            P title = kwargs D pop("title", _("subcommands"))
+            P description = kwargs D pop("description", P)
+            D self_D__subparsers = self D add_argument_group(title, description)  // self D _subparsers := self D add_argument_group(title, description)
+        → E D self_D__subparsers = self D _positionals  // self D _subparsers := self D _positionals
+        T cond = → if kwargs D get("prog") == P → P
+            P formatter = self D _get_formatter(P)
+            P positionals = self D _get_positional_actions(P)
+            P groups = self D _mutually_exclusive_groups
+            formatter D add_usage(self D usage, positionals, groups, "")
+            // kwargs["prog"] := formatter D format_help(P) D strip(P)
+        P parsers_class = self D _pop_action_class(kwargs, "parsers")
+        P action = parsers_class(manifold ["option_strings", manifold []], kwargs)
+        self D _subparsers D _add_action(action)
+        → action
+    }
+    D ArgumentParser___add_action = λ self, action . {
+        T cond = → if action D option_strings → self D _optionals D _add_action(action)
+        → E self D _positionals D _add_action(action)
+        → action
+    }
+    D ArgumentParser___get_optional_actions = λ self . → { T loop = ∞ (action → E action D option_strings) (D |self D _actions|) }
+    D ArgumentParser___get_positional_actions = λ self . → { T loop = ∞ (action → E (!action D option_strings)) (D |self D _actions|) }
+    D ArgumentParser__parse_args = λ self, args, namespace . {
+        P manifold__args__argv = self D parse_known_args(args, namespace)  // manifold [args, argv] := self D parse_known_args(args, namespace)
+        T cond = → if argv → P
+            P msg = (_("unrecognized arguments: %s") % " " D join(argv))
+            T cond = → if self D exit_on_error → self D error(msg)
+            → E → E ArgumentError(P, msg)
+        → args
+    }
+    D ArgumentParser__parse_known_args = λ self, args, namespace . → self D _parse_known_args2(args, namespace, manifold ["intermixed", 0])
+    D ArgumentParser___parse_known_args2 = λ self, args, namespace, intermixed . {
+        T cond = → if args == P → P args = _sys D argv[1:Ω]
+        → E P args = list(args)
+        T cond = → if namespace == P → P namespace = Namespace(P)
+        T loop = ∞ (
+            P action = self D _actions[_loop_index]
+            T cond = → if action D dest ≠ SUPPRESS → T cond = → if (!hasattr(namespace, action D dest)) → T cond = → if action D default ≠ SUPPRESS → setattr(namespace, action D dest, action D default)
+        ) (D |self D _actions|)
+        T loop = ∞ (
+            P dest = self D _defaults[_loop_index]
+            T cond = → if (!hasattr(namespace, dest)) → setattr(namespace, dest, self D _defaults[dest])
+        ) (D |self D _defaults|)
+        T cond = → if self D exit_on_error → P
+            T attempt = → P  // try
+                P manifold__namespace__args = self D _parse_known_args(args, namespace, intermixed)  // manifold [namespace, args] := self D _parse_known_args(args, namespace, intermixed)
+            → E ArgumentError (err)
+                self D error(str(err))
+        → E P manifold__namespace__args = self D _parse_known_args(args, namespace, intermixed)  // manifold [namespace, args] := self D _parse_known_args(args, namespace, intermixed)
+        T cond = → if hasattr(namespace, _UNRECOGNIZED_ARGS_ATTR) → P
+            args D extend(getattr(namespace, _UNRECOGNIZED_ARGS_ATTR))
+            delattr(namespace, _UNRECOGNIZED_ARGS_ATTR)
+        → manifold [namespace, args]
+    }
+    D ArgumentParser___parse_known_args = λ self, arg_strings, namespace, intermixed . {
+        T cond = → if self D fromfile_prefix_chars ≠ P → P arg_strings = self D _read_args_from_files(arg_strings)
+        P action_conflicts = manifold []
+        T loop = ∞ (
+            P mutex_group = self D _mutually_exclusive_groups[_loop_index]
+            P group_actions = mutex_group D _group_actions
+            T loop = ∞ (
+                P manifold__i__mutex_action = enumerate(mutex_group D _group_actions)[_loop_index]  // manifold [i, mutex_action]
+                P conflicts = action_conflicts D setdefault(mutex_action, manifold [])
+                conflicts D extend(group_actions[0:i])
+                conflicts D extend(group_actions[(i + 1):Ω])
+            ) (D |enumerate(mutex_group D _group_actions)|)
+        ) (D |self D _mutually_exclusive_groups|)
+        P option_string_indices = manifold []
+        P arg_string_pattern_parts = manifold []
+        P arg_strings_iter = iter(arg_strings)
+        T loop = ∞ (
+            P manifold__i__arg_string = enumerate(arg_strings_iter)[_loop_index]  // manifold [i, arg_string]
+            T cond = → if arg_string == "--" → P
+                arg_string_pattern_parts D append("-")
+                T loop = ∞ (
+                    P arg_string = arg_strings_iter[_loop_index]
+                    arg_string_pattern_parts D append("A")
+                ) (D |arg_strings_iter|)
+            → E P
+                P option_tuples = self D _parse_optional(arg_string)
+                T cond = → if option_tuples == P → P pattern = "A"
+                → E P pattern = "O"
+                arg_string_pattern_parts D append(pattern)
+        ) (D |enumerate(arg_strings_iter)|)
+        P arg_strings_pattern = "" D join(arg_string_pattern_parts)
+        P seen_actions = set(P)
+        P seen_non_default_actions = set(P)
+        P warned = set(P)
+        D ArgumentParser__take_action = λ action, argument_strings, option_string . {
+            seen_actions D add(action)
+            P argument_values = self D _get_values(action, argument_strings)
+            T cond = → if (action D option_strings || argument_strings) → P
+                seen_non_default_actions D add(action)
+                T loop = ∞ (
+                    P conflict_action = action_conflicts D get(action, manifold [])[_loop_index]
+                    T cond = → if conflict_action == seen_non_default_actions → P
+                        P msg = _("not allowed with argument %s")
+                        P action_name = _get_action_name(conflict_action)
+                        → E ArgumentError(action, (msg % action_name))
+                ) (D |action_conflicts D get(action, manifold [])|)
+            T cond = → if argument_values ≠ SUPPRESS → action(self, namespace, argument_values, option_string)
+        }
+        D ArgumentParser__consume_optional = λ start_index . {
+            P option_tuples = option_string_indices[start_index]
+            T cond = → if len(option_tuples) > 1 → P
+                P options = ", " D join({ T loop = ∞ (option_string) (D |option_tuples|) })
+                P args = manifold [manifold ["option", arg_strings[start_index]], manifold ["matches", options]]
+                P msg = _("ambiguous option: %(option)s could match %(matches)s")
+                → E ArgumentError(P, (msg % args))
+            P manifold__action__option_string__sep__explicit_arg = option_tuples[0]  // manifold [action, option_string, sep, explicit_arg] := option_tuples[0]
+            P match_argument = self D _match_argument
+            P action_tuples = manifold []
+            T while_loop = ∞ (
+                T check = → if 1 → P  // while body follows
+                    T cond = → if action == P → P
+                        extras D append(arg_strings[start_index])
+                        extras_pattern D append("O")
+                        → (start_index + 1)
+                    T cond = → if explicit_arg ≠ P → P
+                        P arg_count = match_argument(action, "A")
+                        P chars = self D prefix_chars
+                        T cond = → if (arg_count == 0 && option_string[1] ≠ chars && explicit_arg ≠ "") → P
+                            T cond = → if (sep || explicit_arg[0] == chars) → P
+                                P msg = _("ignored explicit argument %r")
+                                → E ArgumentError(action, (msg % explicit_arg))
+                            action_tuples D append(manifold [action, manifold [], option_string])
+                            P char = option_string[0]
+                            P option_string = (char + explicit_arg[0])
+                            P optionals_map = self D _option_string_actions
+                            T cond = → if option_string == optionals_map → P
+                                P action = optionals_map[option_string]
+                                P explicit_arg = explicit_arg[1:Ω]
+                                T cond = → if (!explicit_arg) → P
+                                    P sep = P
+                                    P explicit_arg = P
+                                → E P
+                                    T cond = → if explicit_arg[0] == "=" → P
+                                        P sep = "="
+                                        P explicit_arg = explicit_arg[1:Ω]
+                                    → E P sep = ""
+                            → E P
+                                extras D append((char + explicit_arg))
+                                extras_pattern D append("O")
+                                P stop = (start_index + 1)
+                                // break
+                        → E P
+                            T cond = → if arg_count == 1 → P
+                                P stop = (start_index + 1)
+                                P args = manifold [explicit_arg]
+                                action_tuples D append(manifold [action, args, option_string])
+                                // break
+                            → E P
+                                P msg = _("ignored explicit argument %r")
+                                → E ArgumentError(action, (msg % explicit_arg))
+                    → E P
+                        P start = (start_index + 1)
+                        P selected_patterns = arg_strings_pattern[start:Ω]
+                        P arg_count = match_argument(action, selected_patterns)
+                        P stop = (start + arg_count)
+                        P args = arg_strings[start:stop]
+                        action_tuples D append(manifold [action, args, option_string])
+                        // break
+            ) (D WHILE_LOOP_FINITE_BOUND)  // bounded by condition; max=144
+            T assert = → if action_tuples → "ok" → E "Assertion failed"
+            T loop = ∞ (
+                P manifold__action__args__option_string = action_tuples[_loop_index]  // manifold [action, args, option_string]
+                T cond = → if (action D deprecated && option_string ≠ warned) → P
+                    self D _warning((_("option '%(option)s' is deprecated") % manifold [manifold ["option", option_string]]))
+                    warned D add(option_string)
+                take_action(action, args, option_string)
+            ) (D |action_tuples|)
+            → stop
+        }
+        P positionals = self D _get_positional_actions(P)
+        D ArgumentParser__consume_positionals = λ start_index . {
+            P match_partial = self D _match_arguments_partial
+            P selected_pattern = arg_strings_pattern[start_index:Ω]
+            P arg_counts = match_partial(positionals, selected_pattern)
+            T loop = ∞ (
+                P manifold__action__arg_count = zip(positionals, arg_counts)[_loop_index]  // manifold [action, arg_count]
+                P args = arg_strings[start_index:(start_index + arg_count)]
+                T cond = → if action D nargs == PARSER → P
+                    T cond = → if arg_strings_pattern[start_index] == "-" → P
+                        T assert = → if args[0] == "--" → "ok" → E "Assertion failed"
+                        args D remove("--")
+                → E T cond = → if action D nargs ≠ REMAINDER → T cond = → if arg_strings_pattern D find("-", start_index, (start_index + arg_count)) ≥ 0 → args D remove("--")
+                P start_index = start_index + arg_count
+                T cond = → if (args && action D deprecated && action D dest ≠ warned) → P
+                    self D _warning((_("argument '%(argument_name)s' is deprecated") % manifold [manifold ["argument_name", action D dest]]))
+                    warned D add(action D dest)
+                take_action(action, args)
+            ) (D |zip(positionals, arg_counts)|)
+            // positionals[0:Ω] := positionals[len(arg_counts):Ω]
+            → start_index
+        }
+        P extras = manifold []
+        P extras_pattern = manifold []
+        P start_index = 0
+        T cond = → if option_string_indices → P max_option_string_index = max(option_string_indices)
+        → E P max_option_string_index = (-1)
+        T while_loop = ∞ (
+            T check = → if start_index ≤ max_option_string_index → P  // while body follows
+                P next_option_string_index = start_index
+                T while_loop = ∞ (
+                    T check = → if next_option_string_index ≤ max_option_string_index → P  // while body follows
+                        T cond = → if next_option_string_index == option_string_indices → P  // pass
+                        P next_option_string_index = next_option_string_index + 1
+                ) (D WHILE_LOOP_FINITE_BOUND)  // bounded by condition; max=144
+                T cond = → if ((!intermixed) && start_index ≠ next_option_string_index) → P
+                    P positionals_end_index = consume_positionals(start_index)
+                    T cond = → if positionals_end_index > start_index → P start_index = positionals_end_index
+                    → E P start_index = positionals_end_index
+                T cond = → if start_index ≠ option_string_indices → P
+                    P strings = arg_strings[start_index:next_option_string_index]
+                    extras D extend(strings)
+                    extras_pattern D extend(arg_strings_pattern[start_index:next_option_string_index])
+                    P start_index = next_option_string_index
+                P start_index = consume_optional(start_index)
+        ) (D WHILE_LOOP_FINITE_BOUND)  // bounded by condition; max=144
+        T cond = → if (!intermixed) → P
+            P stop_index = consume_positionals(start_index)
+            extras D extend(arg_strings[stop_index:Ω])
+        → E P
+            extras D extend(arg_strings[start_index:Ω])
+            extras_pattern D extend(arg_strings_pattern[start_index:Ω])
+            P extras_pattern = "" D join(extras_pattern)
+            T assert = → if len(extras_pattern) == len(extras) → "ok" → E "Assertion failed"
+            P arg_strings = { T loop = ∞ (s → E c ≠ "O") (D |zip(extras, extras_pattern)|) }
+            P arg_strings_pattern = extras_pattern D replace("O", "")
+            P stop_index = consume_positionals(0)
+            T loop = ∞ (
+                P manifold__i__c = enumerate(extras_pattern)[_loop_index]  // manifold [i, c]
+                T cond = → if (!stop_index) → P  // pass
+                T cond = → if c ≠ "O" → P stop_index = stop_index - 1
+            ) (D |enumerate(extras_pattern)|)
+            P extras = { T loop = ∞ (s → E s ≠ P) (D |extras|) }
+        P required_actions = manifold []
+        T loop = ∞ (
+            P action = self D _actions[_loop_index]
+            T cond = → if action ≠ seen_actions → P
+                T cond = → if action D required → required_actions D append(_get_action_name(action))
+                → E T cond = → if (action D default ≠ P && isinstance(action D default, str) && hasattr(namespace, action D dest) && action D default == getattr(namespace, action D dest)) → setattr(namespace, action D dest, self D _get_value(action, action D default))
+        ) (D |self D _actions|)
+        T cond = → if required_actions → → E ArgumentError(P, (_("the following arguments are required: %s") % ", " D join(required_actions)))
+        T loop = ∞ (
+            P group = self D _mutually_exclusive_groups[_loop_index]
+            T cond = → if group D required → P
+                T loop = ∞ (
+                    P action = group D _group_actions[_loop_index]
+                    T cond = → if action == seen_non_default_actions → P  // pass
+                ) (D |group D _group_actions|)
+        ) (D |self D _mutually_exclusive_groups|)
+        → manifold [namespace, extras]
+    }
+    D ArgumentParser___read_args_from_files = λ self, arg_strings . {
+        P new_arg_strings = manifold []
+        T loop = ∞ (
+            P arg_string = arg_strings[_loop_index]
+            T cond = → if ((!arg_string) || arg_string[0] ≠ self D fromfile_prefix_chars) → new_arg_strings D append(arg_string)
+            → E P
+                T attempt = → P  // try
+                    T scope_args_file = → open(arg_string[1:Ω], manifold ["encoding", _sys D getfilesystemencoding(P)], manifold ["errors", _sys D getfilesystemencodeerrors(P)])
+                    P args_file = scope_args_file  // context var
+                        P arg_strings = manifold []
+                        T loop = ∞ (
+                            P arg_line = args_file D read(P) D splitlines(P)[_loop_index]
+                            T loop = ∞ (
+                                P arg = self D convert_arg_line_to_args(arg_line)[_loop_index]
+                                arg_strings D append(arg)
+                            ) (D |self D convert_arg_line_to_args(arg_line)|)
+                        ) (D |args_file D read(P) D splitlines(P)|)
+                        P arg_strings = self D _read_args_from_files(arg_strings)
+                        new_arg_strings D extend(arg_strings)
+                → E OSError (err)
+                    → E ArgumentError(P, str(err))
+        ) (D |arg_strings|)
+        → new_arg_strings
+    }
+    D ArgumentParser__convert_arg_line_to_args = λ self, arg_line . → manifold [arg_line]
+    D ArgumentParser___match_argument = λ self, action, arg_strings_pattern . {
+        P nargs_pattern = self D _get_nargs_pattern(action)
+        P match = _re D match(nargs_pattern, arg_strings_pattern)
+        T cond = → if match == P → P
+            P nargs_errors = manifold [manifold [P, _("expected one argument")], manifold [OPTIONAL, _("expected at most one argument")], manifold [ONE_OR_MORE, _("expected at least one argument")]]
+            P msg = nargs_errors D get(action D nargs)
+            T cond = → if msg == P → P msg = (ngettext("expected %s argument", "expected %s arguments", action D nargs) % action D nargs)
+            → E ArgumentError(action, msg)
+        → len(match D group(1))
+    }
+    D ArgumentParser___match_arguments_partial = λ self, actions, arg_strings_pattern . {
+        T loop = ∞ (
+            P i = range(len(actions), 0, (-1))[_loop_index]
+            P actions_slice = actions[0:i]
+            P pattern = "" D join({ T loop = ∞ (self D _get_nargs_pattern(action)) (D |actions_slice|) })
+            P match = _re D match(pattern, arg_strings_pattern)
+            T cond = → if match ≠ P → P
+                P result = { T loop = ∞ (len(string)) (D |match D groups(P)|) }
+                T cond = → if (match D end(P) < len(arg_strings_pattern) && arg_strings_pattern[match D end(P)] == "O") → P
+                    T while_loop = ∞ (
+                        T check = → if (result && (!result[(-1)])) → P  // while body follows
+                            // del result[-1]
+                    ) (D WHILE_LOOP_FINITE_BOUND)  // bounded by condition; max=144
+                → result
+        ) (D |range(len(actions), 0, (-1))|)
+        → manifold []
+    }
+    D ArgumentParser___parse_optional = λ self, arg_string . {
+        T cond = → if (!arg_string) → → P
+        T cond = → if (!arg_string[0] == self D prefix_chars) → → P
+        T cond = → if arg_string == self D _option_string_actions → P
+            P action = self D _option_string_actions[arg_string]
+            → manifold [manifold [action, arg_string, P, P]]
+        T cond = → if len(arg_string) == 1 → → P
+        P manifold__option_string__sep__explicit_arg = arg_string D partition("=")  // manifold [option_string, sep, explicit_arg] := arg_string D partition("=")
+        T cond = → if (sep && option_string == self D _option_string_actions) → P
+            P action = self D _option_string_actions[option_string]
+            → manifold [manifold [action, option_string, sep, explicit_arg]]
+        P option_tuples = self D _get_option_tuples(arg_string)
+        T cond = → if option_tuples → → option_tuples
+        T cond = → if self D _negative_number_matcher D match(arg_string) → T cond = → if (!self D _has_negative_number_optionals) → → P
+        T cond = → if " " == arg_string → → P
+        → manifold [manifold [P, arg_string, P, P]]
+    }
+    D ArgumentParser___get_option_tuples = λ self, option_string . {
+        P result = manifold []
+        P chars = self D prefix_chars
+        T cond = → if (option_string[0] == chars && option_string[1] == chars) → P
+            T cond = → if self D allow_abbrev → P
+                P manifold__option_prefix__sep__explicit_arg = option_string D partition("=")  // manifold [option_prefix, sep, explicit_arg] := option_string D partition("=")
+                T cond = → if (!sep) → P
+                    P sep = P
+                    P explicit_arg = P
+                T loop = ∞ (
+                    P option_string = self D _option_string_actions[_loop_index]
+                    T cond = → if option_string D startswith(option_prefix) → P
+                        P action = self D _option_string_actions[option_string]
+                        P tup = manifold [action, option_string, sep, explicit_arg]
+                        result D append(tup)
+                ) (D |self D _option_string_actions|)
+        → E P
+            T cond = → if (option_string[0] == chars && option_string[1] ≠ chars) → P
+                P manifold__option_prefix__sep__explicit_arg = option_string D partition("=")  // manifold [option_prefix, sep, explicit_arg] := option_string D partition("=")
+                T cond = → if (!sep) → P
+                    P sep = P
+                    P explicit_arg = P
+                P short_option_prefix = option_string[0:2]
+                P short_explicit_arg = option_string[2:Ω]
+                T loop = ∞ (
+                    P option_string = self D _option_string_actions[_loop_index]
+                    T cond = → if option_string == short_option_prefix → P
+                        P action = self D _option_string_actions[option_string]
+                        P tup = manifold [action, option_string, "", short_explicit_arg]
+                        result D append(tup)
+                    → E P
+                        T cond = → if (self D allow_abbrev && option_string D startswith(option_prefix)) → P
+                            P action = self D _option_string_actions[option_string]
+                            P tup = manifold [action, option_string, sep, explicit_arg]
+                            result D append(tup)
+                ) (D |self D _option_string_actions|)
+            → E → E ArgumentError(P, (_("unexpected option string: %s") % option_string))
+        → result
+    }
+    D ArgumentParser___get_nargs_pattern = λ self, action . {
+        P nargs = action D nargs
+        P option = action D option_strings
+        T cond = → if nargs == P → P nargs_pattern = if option → "([A])" → E "(-*A-*)"
+        → E P
+            T cond = → if nargs == OPTIONAL → P nargs_pattern = if option → "(A?)" → E "(-*A?-*)"
+            → E P
+                T cond = → if nargs == ZERO_OR_MORE → P nargs_pattern = if option → "(A*)" → E "(-*[A-]*)"
+                → E P
+                    T cond = → if nargs == ONE_OR_MORE → P nargs_pattern = if option → "(A+)" → E "(-*A[A-]*)"
+                    → E P
+                        T cond = → if nargs == REMAINDER → P nargs_pattern = if option → "([AO]*)" → E "(.*)"
+                        → E P
+                            T cond = → if nargs == PARSER → P nargs_pattern = if option → "(A[AO]*)" → E "(-*A[-AO]*)"
+                            → E P
+                                T cond = → if nargs == SUPPRESS → P nargs_pattern = if option → "()" → E "(-*)"
+                                → E P nargs_pattern = if option → ("([AO]{%d})" % nargs) → E ("((?:-*A){%d}-*)" % nargs)
+        → nargs_pattern
+    }
+    D ArgumentParser__parse_intermixed_args = λ self, args, namespace . {
+        P manifold__args__argv = self D parse_known_intermixed_args(args, namespace)  // manifold [args, argv] := self D parse_known_intermixed_args(args, namespace)
+        T cond = → if argv → P
+            P msg = (_("unrecognized arguments: %s") % " " D join(argv))
+            T cond = → if self D exit_on_error → self D error(msg)
+            → E → E ArgumentError(P, msg)
+        → args
+    }
+    D ArgumentParser__parse_known_intermixed_args = λ self, args, namespace . {
+        P positionals = self D _get_positional_actions(P)
+        P a = { T loop = ∞ (action → E action D nargs == manifold [PARSER, REMAINDER]) (D |positionals|) }
+        T cond = → if a → → E TypeError(("parse_intermixed_args: positional arg with nargs=%s" % a[0] D nargs))
+        → self D _parse_known_args2(args, namespace, manifold ["intermixed", 1])
+    }
+    D ArgumentParser___get_values = λ self, action, arg_strings . {
+        T cond = → if ((!arg_strings) && action D nargs == OPTIONAL) → P
+            T cond = → if action D option_strings → P value = action D const
+            → E P value = action D default
+            T cond = → if (isinstance(value, str) && value ≠ SUPPRESS) → P
+                P value = self D _get_value(action, value)
+                self D _check_value(action, value)
+        → E P
+            T cond = → if ((!arg_strings) && action D nargs == ZERO_OR_MORE && (!action D option_strings)) → P
+                T cond = → if action D default ≠ P → P
+                    P value = action D default
+                    self D _check_value(action, value)
+                → E P value = arg_strings
+            → E P
+                T cond = → if (len(arg_strings) == 1 && action D nargs == manifold [P, OPTIONAL]) → P
+                    P manifold__arg_string = arg_strings  // manifold [arg_string] := arg_strings
+                    P value = self D _get_value(action, arg_string)
+                    self D _check_value(action, value)
+                → E P
+                    T cond = → if action D nargs == REMAINDER → P value = { T loop = ∞ (self D _get_value(action, v)) (D |arg_strings|) }
+                    → E P
+                        T cond = → if action D nargs == PARSER → P
+                            P value = { T loop = ∞ (self D _get_value(action, v)) (D |arg_strings|) }
+                            self D _check_value(action, value[0])
+                        → E P
+                            T cond = → if action D nargs == SUPPRESS → P value = SUPPRESS
+                            → E P
+                                P value = { T loop = ∞ (self D _get_value(action, v)) (D |arg_strings|) }
+                                T loop = ∞ (
+                                    P v = value[_loop_index]
+                                    self D _check_value(action, v)
+                                ) (D |value|)
+        → value
+    }
+    D ArgumentParser___get_value = λ self, action, arg_string . {
+        P type_func = self D _registry_get("type", action D type, action D type)
+        T cond = → if (!callable(type_func)) → P
+            P msg = _("%r is not callable")
+            → E ArgumentError(action, (msg % type_func))
+        T attempt = → P  // try
+            P result = type_func(arg_string)
+        → E ArgumentTypeError (err)
+            P msg = str(err)
+            → E ArgumentError(action, msg)
+        → E manifold [TypeError, ValueError] (_)
+            P name = getattr(action D type, "__name__", repr(action D type))
+            P args = manifold [manifold ["type", name], manifold ["value", arg_string]]
+            P msg = _("invalid %(type)s value: %(value)r")
+            → E ArgumentError(action, (msg % args))
+        → result
+    }
+    D ArgumentParser___check_value = λ self, action, value . {
+        P choices = action D choices
+        T cond = → if choices ≠ P → P
+            T cond = → if isinstance(choices, str) → P choices = iter(choices)
+            T cond = → if value ≠ choices → P
+                P args = manifold [manifold ["value", str(value)], manifold ["choices", ", " D join(_et_map(str, action D choices))]]
+                P msg = _("invalid choice: %(value)r (choose from %(choices)s)")
+                → E ArgumentError(action, (msg % args))
+    }
+    D ArgumentParser__format_usage = λ self . {
+        P formatter = self D _get_formatter(P)
+        formatter D add_usage(self D usage, self D _actions, self D _mutually_exclusive_groups)
+        → formatter D format_help(P)
+    }
+    D ArgumentParser__format_help = λ self . {
+        P formatter = self D _get_formatter(P)
+        formatter D add_usage(self D usage, self D _actions, self D _mutually_exclusive_groups)
+        formatter D add_text(self D description)
+        T loop = ∞ (
+            P action_group = self D _action_groups[_loop_index]
+            formatter D start_section(action_group D title)
+            formatter D add_text(action_group D description)
+            formatter D add_arguments(action_group D _group_actions)
+            formatter D end_section(P)
+        ) (D |self D _action_groups|)
+        formatter D add_text(self D epilog)
+        → formatter D format_help(P)
+    }
+    D ArgumentParser___get_formatter = λ self . → self D formatter_class(manifold ["prog", self D prog])
+    D ArgumentParser__print_usage = λ self, file . {
+        T cond = → if file == P → P file = _sys D stdout
+        self D _print_message(self D format_usage(P), file)
+    }
+    D ArgumentParser__print_help = λ self, file . {
+        T cond = → if file == P → P file = _sys D stdout
+        self D _print_message(self D format_help(P), file)
+    }
+    D ArgumentParser___print_message = λ self, message, file . {
+        T cond = → if message → P
+            P file = (file || _sys D stderr)
+            T attempt = → P  // try
+                file D write(message)
+            → E manifold [AttributeError, OSError] (_)
+                // pass
+    }
+    D ArgumentParser__exit = λ self, status, message . {
+        T cond = → if message → self D _print_message(message, _sys D stderr)
+        _sys D exit(status)
+    }
+    D ArgumentParser__error = λ self, message . {
+        // error(message: string)          Prints a usage message incorporating the message to stderr and         exits.          I
+        self D print_usage(_sys D stderr)
+        P args = manifold [manifold ["prog", self D prog], manifold ["message", message]]
+        self D exit(2, (_("%(prog)s: error: %(message)s\n") % args))
+    }
+    D ArgumentParser___warning = λ self, message . {
+        P args = manifold [manifold ["prog", self D prog], manifold ["message", message]]
+        self D _print_message((_("%(prog)s: warning: %(message)s\n") % args), _sys D stderr)
+    }
+

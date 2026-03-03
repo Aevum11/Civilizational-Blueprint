@@ -105,7 +105,7 @@ Changelog v1.4.9 (Linker ABI Fix + Dual-Triple Emission + vcvarsall Hardening):
              For MSVC link.exe this works if DEFAULTLIB flags are correct, but
              for lld-link standalone, the entry point resolution can fail
              silently (producing a PE that crashes on startup).
-             Fix: Add /ENTRY:main to all MSVC-ABI linker invocations.
+             Fix: Add /ENTRY:mainCRTStartup to all MSVC-ABI linker invocations.
              For MinGW, gcc automatically wraps main via its crt2.o — no flag.
              ET Ground Principle (Eq 3): the entry point is the first T-binding
              event; it must be explicitly declared, not implicit.
@@ -6179,7 +6179,7 @@ class ETPLCompiler:
         # ── Linker strategy (v1.4.9 complete redesign) ───────────────────────
         # BUG-W fix: codemodel='small' produces proper COFF (root cause fix).
         # BUG-P fix: vcvarsall error handling hardened (stderr preserved).
-        # BUG-R fix: /ENTRY:main added to all MSVC-ABI linkers.
+        # BUG-R fix: /ENTRY:mainCRTStartup added to all MSVC-ABI linkers.
         # BUG-S fix: explicit -target for standalone clang.
         # MSVC lib path discovery: searches VS and WinSDK lib directories.
         #
@@ -6396,10 +6396,10 @@ class ETPLCompiler:
             if is_win:
                 # CRT flags for LLVM-emitted COFF (no .drectve section).
                 # Without these, MSVC-ABI linkers fail with LNK2019.
-                # BUG-R fix: add /ENTRY:main for explicit CRT entry.
+                # BUG-R fix: add /ENTRY:mainCRTStartup for explicit CRT entry.
                 _crt = [
                     '/SUBSYSTEM:CONSOLE',
-                    '/ENTRY:main',
+                    '/ENTRY:mainCRTStartup',
                     '/DEFAULTLIB:msvcrt.lib',
                     '/DEFAULTLIB:ucrt.lib',
                     '/DEFAULTLIB:vcruntime.lib',
@@ -6550,7 +6550,7 @@ class ETPLCompiler:
                     _r = _try_link(
                         ['cl.exe', f'/Fe:{exe_path}', obj_path,
                          '/link', '/SUBSYSTEM:CONSOLE',
-                         '/ENTRY:main']
+                         '/ENTRY:mainCRTStartup']
                     )
                     if _r is not None:
                         return _r
@@ -6565,7 +6565,7 @@ class ETPLCompiler:
                     _r = _try_link(
                         ['clang-cl.exe', f'/Fe:{exe_path}', obj_path,
                          '/link', '/SUBSYSTEM:CONSOLE',
-                         '/ENTRY:main']
+                         '/ENTRY:mainCRTStartup']
                     )
                     if _r is not None:
                         return _r
@@ -6588,7 +6588,7 @@ class ETPLCompiler:
                         vcvarsall,
                         ['cl.exe', f'/Fe:{exe_path}', obj_path,
                          '/link', '/SUBSYSTEM:CONSOLE',
-                         '/ENTRY:main']
+                         '/ENTRY:mainCRTStartup']
                     )
                     if _bat_r is not None:
                         return _bat_r
@@ -6610,11 +6610,11 @@ class ETPLCompiler:
                         ['link',     f'/OUT:{exe_path}', obj_path] + _crt,
                         ['cl',       f'/Fe:{exe_path}', obj_path,
                          '/link', '/SUBSYSTEM:CONSOLE',
-                         '/ENTRY:main'],
+                         '/ENTRY:mainCRTStartup'],
                         ['lld-link', f'/OUT:{exe_path}', obj_path] + _crt,
                         ['clang-cl', f'/Fe:{exe_path}', obj_path,
                          '/link', '/SUBSYSTEM:CONSOLE',
-                         '/ENTRY:main'],
+                         '/ENTRY:mainCRTStartup'],
                     ]
                     for _cmd in _path_cands:
                         _r = _try_link(_cmd)
@@ -6652,7 +6652,7 @@ class ETPLCompiler:
                         _r = _try_link([_clang_cl, f'/Fe:{exe_path}',
                                         obj_path, '/link',
                                         '/SUBSYSTEM:CONSOLE',
-                                        '/ENTRY:main'])
+                                        '/ENTRY:mainCRTStartup'])
                         if _r is not None:
                             return _r
                         if vcvarsall and not _dev_env_active:
@@ -6660,7 +6660,7 @@ class ETPLCompiler:
                                 vcvarsall,
                                 [_clang_cl, f'/Fe:{exe_path}', obj_path,
                                  '/link', '/SUBSYSTEM:CONSOLE',
-                                 '/ENTRY:main']
+                                 '/ENTRY:mainCRTStartup']
                             )
                             if _bat_r is not None:
                                 return _bat_r
@@ -7156,7 +7156,7 @@ class ETPLCompiler:
                 esc = val[1].replace('\\', '\\\\').replace("'", "\\'")
                 return f"b'{esc}'"
             escaped = str(val).replace('\\\\', '\\\\\\\\').replace("'", "\\'")
-            return f"'{escaped}'"
+            return f"'{escaped}'" 
         if nt in (ASTNodeType.LITERAL_INFINITY, ASTNodeType.LITERAL_OMEGA):
             return 'float("inf")'
         if nt == ASTNodeType.IDENTIFIER:
@@ -7189,7 +7189,7 @@ class ETPLCompiler:
             if op in ('sin', 'cos', 'tan', 'log', 'exp'):
                 # FIX v1.4.3: use _et_X (ET-native, defined in preamble); _math does not exist.
                 return f'_et_{op}({operand})'
-            if op in ('abs', u'|...|'):
+            if op in ('abs', u'|...|'): 
                 return f'abs({operand})'
             if op in (u'\u2211', u'\u220f'):  # sum, product
                 return operand
@@ -7231,7 +7231,7 @@ class ETPLCompiler:
         if nt == ASTNodeType.INDEX:
             coll = self._gen_sovereign_expr(node.left)
             idx  = self._gen_sovereign_expr(node.right)
-            return f'{coll}[int({idx})]'
+            return f'{coll}[int({idx})]' 
         if nt == ASTNodeType.MEMBER_ACCESS:
             obj = self._gen_sovereign_expr(node.left)
             return f'{obj}.{node.name}'
@@ -8932,7 +8932,7 @@ class ETPLTranslator:
         if isinstance(node, python_ast.Starred):
             return self._convert_py_expr(node.value)
 
-        # Walrus :=
+        # Walrus := 
         if isinstance(node, python_ast.NamedExpr):
             # -----------------------------------------------------------------------
             # ET Traverser Indeterminacy (Eq 127): The walrus operator (x := val)
@@ -9762,620 +9762,63 @@ def toolchain_diagnose(auto_fix: bool = False):
 
 
 # ============================================================================
-# ██████╗  SECTION 14: INTERACTIVE CLI SHELL
+# ██████╗  SECTION 14: CLI ENTRY POINT
 # ============================================================================
 
-_ETPL_BANNER = """
-╔══════════════════════════════════════════════════════════════════════════════╗
-║     ETPL — Exception Theory Programming Language                            ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║  Author : Derived from Michael James Muller's Exception Theory              ║
-║  License: Exception Theory Framework                                        ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║  MASTER EQUATION     P ∘ D ∘ T  =  EIM  =  S  (Something)                 ║
-║  TAUTOLOGICAL FORM   3 = 3 = 3 = Σ                                         ║
-║  GROUND PRINCIPLE    Every exception has an exception, except the exception ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║  PRIMITIVES                                                                 ║
-║    P (Point)       — substrate; the thing that exists                       ║
-║    D (Descriptor)  — constraint; the rule that shapes the thing             ║
-║    T (Traverser)   — agency; the movement across the configuration          ║
-║    E (Exception)   — the result of P∘D∘T binding; emergent event           ║
-║                                                                             ║
-║  FILE EXTENSION    .pdt   (Point · Descriptor · Traverser)                 ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║  QUICK START                                                                ║
-║    interpret <file.pdt>        — Run an ETPL source file                   ║
-║    compile <file.pdt> [out]    — Compile to native binary                  ║
-║    translate <file> --lang py  — Translate Python/C/JS → ETPL              ║
-║    repl                        — Interactive ETPL expression shell          ║
-║    verify                      — Run self-verification test suite           ║
-║    toolchain                   — Diagnose compilation toolchain             ║
-║    help                        — Show detailed command reference            ║
-║    exit / quit / Ctrl+C        — Exit this shell                            ║
-╚══════════════════════════════════════════════════════════════════════════════╝
-"""
-
-_ETPL_HELP = """
-╔══════════════════════════════════════════════════════════════════════════════╗
-║  ETPL Command Reference                                                     ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║  INTERPRET / RUN                                                            ║
-║    interpret <file.pdt>                                                     ║
-║    interpret <file.pdt> --debug          (verbose AST + binding trace)      ║
-║    Aliases: run, i                                                          ║
-║                                                                             ║
-║  COMPILE / BUILD                                                            ║
-║    compile <file.pdt>                    (auto-name output)                 ║
-║    compile <file.pdt> <output.exe>       (explicit output path)             ║
-║    compile <file.pdt> out --target classical   (classical binary, default)  ║
-║    compile <file.pdt> out --target quantum     (quantum-aware emission)     ║
-║    compile <file.pdt> out --target hybrid      (hybrid classical+quantum)   ║
-║    compile <file.pdt> out --target bare_metal  (no OS, raw hardware)        ║
-║    compile <file.pdt> out --arch x86_64        (explicit architecture)      ║
-║    compile <file.pdt> out --arch arm64                                      ║
-║    compile <file.pdt> out --arch riscv64                                    ║
-║    compile <file.pdt> out --arch wasm                                       ║
-║    compile <file.pdt> out --bare-metal         (bare metal flag)            ║
-║    compile <file.pdt> out --device <dev>       (hardware target device)     ║
-║    Aliases: build, c                                                        ║
-║                                                                             ║
-║  TRANSLATE                                                                  ║
-║    translate <file> --lang python        (Python → ETPL)                   ║
-║    translate <file> --lang c_header      (C header → ETPL)                 ║
-║    translate <file> --lang javascript    (JavaScript → ETPL)               ║
-║    translate <file> --lang binary        (binary → ETPL disassembly)       ║
-║    translate <file> --lang python -o out.pdt   (write to file)             ║
-║    Aliases: trans, t                                                        ║
-║                                                                             ║
-║  REPL                                                                       ║
-║    repl                     (interactive expression evaluator)              ║
-║    Alias: shell                                                             ║
-║    REPL dot-commands: .help .env .clear .debug .verify .history .quit      ║
-║                                                                             ║
-║  VERIFY                                                                     ║
-║    verify                   (comprehensive self-verification suite)         ║
-║    Aliases: test, v                                                         ║
-║                                                                             ║
-║  TOOLCHAIN                                                                  ║
-║    toolchain                (diagnose llvmlite / MSVC / MinGW / LLVM)      ║
-║    toolchain --fix          (attempt auto-repair of toolchain issues)       ║
-║    Alias: tc                                                                ║
-║                                                                             ║
-║  SHELL META-COMMANDS                                                        ║
-║    help                     (show this reference)                          ║
-║    version                  (print version string)                         ║
-║    cls / clear              (clear terminal screen)                        ║
-║    exit / quit              (exit ETPL shell)                              ║
-║                                                                             ║
-║  ONE-SHOT CLI (from host terminal, bypasses interactive shell)              ║
-║    python ETPL.py interpret  file.pdt                                      ║
-║    python ETPL.py compile    file.pdt output.exe --target classical        ║
-║    python ETPL.py translate  file.py  --lang python -o file.pdt            ║
-║    python ETPL.py repl                                                     ║
-║    python ETPL.py verify                                                   ║
-║    python ETPL.py toolchain  --fix                                         ║
-║    python ETPL.py --version                                                ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║  ETPL SYNTAX CHEAT-SHEET                                                   ║
-║    P name = <expr>           Point (variable) declaration                  ║
-║    D name = λ a, b . <expr>  Descriptor (function) definition              ║
-║    T name = <expr>           Traverser (dynamic binding / loop)            ║
-║    T loop = ∞ (<body>) (D <n>)   Loop n times                             ║
-║    ψ(n, l, m)                Hydrogen wavefunction (quantum mode)          ║
-║    manifold [x, y, z]        ET manifold (list/tensor substrate)           ║
-║    ∑ / ∏ / ∫ / ∇ / √         Math operators (Unicode or ASCII)            ║
-║    [0/0]                     Indeterminate form                             ║
-║    // comment                Line comment                                  ║
-╚══════════════════════════════════════════════════════════════════════════════╝
-"""
-
-
-def _et_cli_split(line: str) -> list:
-    """ET-native quoted-string command-line tokeniser.
-
-    Replaces shlex.split() with a zero-import implementation that is
-    fully translatable to ETPL .pdt and compilable to a self-hosted binary.
-
-    ET Form (Master Equation):
-      P  = input string substrate (sequence of Unicode code points)
-      D  = three-state quote constraint, defined by integer ordinal comparisons
-      T  = character-by-character traversal  (T-index: 0 … len(line)-1)
-      E  = grounded list of token strings
-
-    State machine (D-descriptor encoded as ET integer):
-      0 = between tokens (whitespace)
-      1 = inside bare (unquoted) token
-      2 = inside single-quoted token  [ord("'") = 39]
-      3 = inside double-quoted token  [ord('"') = 34]
-
-    All branch conditions reduce to ET integer arithmetic on ord() values:
-      ord(' ')  = 32   — whitespace D-boundary
-      ord("'") = 39   — single-quote D-delimiter
-      ord('"')  = 34   — double-quote D-delimiter
-    These are pure P-substrate integer constants — no string-method imports needed.
-
-    ET Ground Principle (Eq 3): an unmatched quote is an incoherent D-configuration.
-    The traverser continues collecting characters until EOL, then grounds the token.
-    This mirrors ET's handling of the indeterminate form [0/0]: the traversal
-    reaches its natural bound and emits whatever E is available.
-    """
-    # P: substrate constants (integer D-descriptors on character space)
-    _ORD_SPACE  = 32   # ord(' ')
-    _ORD_TAB    = 9    # ord('\t')
-    _ORD_SQ     = 39   # ord("'")
-    _ORD_DQ     = 34   # ord('"')
-
-    # T: traversal state — encoded as ET integer Point
-    # P state = 0 (between), 1 (bare token), 2 (single-quoted), 3 (double-quoted)
-    _state  = 0
-    _tokens = []    # E: output manifold of grounded token strings
-    _buf    = []    # P: current token character accumulator
-
-    # T: traverse every character in the P-substrate line
-    # ET loop bound: len(line) — finite D-constraint on traversal depth
-    _n = len(line)
-    _i = 0
-    while _i < _n:
-        _c = line[_i]
-        _o = ord(_c)           # ET: reduce character to integer P-substrate
-
-        if _state == 0:
-            # Between tokens: skip whitespace, detect quote/bare start
-            if _o == _ORD_SPACE or _o == _ORD_TAB:
-                pass                                    # T continues
-            elif _o == _ORD_SQ:
-                _state = 2                              # D-bind: enter single-quote
-            elif _o == _ORD_DQ:
-                _state = 3                              # D-bind: enter double-quote
-            else:
-                _buf.append(_c)
-                _state = 1                              # D-bind: enter bare token
-
-        elif _state == 1:
-            # Inside bare token: whitespace grounds the token
-            if _o == _ORD_SPACE or _o == _ORD_TAB:
-                _tokens.append(''.join(_buf))           # E: ground current token
-                _buf   = []
-                _state = 0
-            elif _o == _ORD_SQ:
-                _state = 2                              # D-transition: quoted segment
-            elif _o == _ORD_DQ:
-                _state = 3
-            else:
-                _buf.append(_c)                         # T: accumulate character
-
-        elif _state == 2:
-            # Inside single-quoted segment: only closing quote exits
-            if _o == _ORD_SQ:
-                _state = 1                              # D-transition: back to bare
-            else:
-                _buf.append(_c)
-
-        elif _state == 3:
-            # Inside double-quoted segment: only closing quote exits
-            if _o == _ORD_DQ:
-                _state = 1
-            else:
-                _buf.append(_c)
-
-        _i += 1   # T-index advance: P(i) -> P(i+1)
-
-    # ET Ground: EOL is a natural D-boundary — ground any open token
-    # Mirrors ET Indeterminate handling: unmatched quote yields what was collected
-    if _buf:
-        _tokens.append(''.join(_buf))
-
-    return _tokens
-
-
-class ETPLCLI:
-    """Interactive ETPL command-line shell.
-
-    ET Principle (Eq 1 / Ground): The CLI is itself a T-agent traversing the
-    P-substrate (user input) through D-constraints (commands) to produce E
-    (execution results).  The shell must never self-terminate without explicit
-    user instruction — silence/no-args is NOT a ground event.
-
-    Launched automatically when ETPL binary is opened with no arguments, or
-    explicitly via `python ETPL.py shell` / `python ETPL.py cli`.
-    """
-
-    # ── constructor ──────────────────────────────────────────────────────────
-    def __init__(self):
-        self._running = True
-        # ET Manifold of 12 symmetry slots — one per batch layer in the CLI
-        # D-binding: maps command tokens to handler methods
-        self._dispatch: dict = {
-            # interpret
-            'interpret': self._cmd_interpret,
-            'run':       self._cmd_interpret,
-            'i':         self._cmd_interpret,
-            # compile
-            'compile':   self._cmd_compile,
-            'build':     self._cmd_compile,
-            'c':         self._cmd_compile,
-            # translate
-            'translate': self._cmd_translate,
-            'trans':     self._cmd_translate,
-            't':         self._cmd_translate,
-            # repl
-            'repl':      self._cmd_repl,
-            'shell':     self._cmd_repl,
-            # verify
-            'verify':    self._cmd_verify,
-            'test':      self._cmd_verify,
-            'v':         self._cmd_verify,
-            # toolchain
-            'toolchain': self._cmd_toolchain,
-            'tc':        self._cmd_toolchain,
-            # meta
-            'help':      self._cmd_help,
-            '?':         self._cmd_help,
-            'version':   self._cmd_version,
-            'ver':       self._cmd_version,
-            'cls':       self._cmd_clear,
-            'clear':     self._cmd_clear,
-            'exit':      self._cmd_exit,
-            'quit':      self._cmd_exit,
-            'q':         self._cmd_exit,
-        }
-
-    # ── public entry point ───────────────────────────────────────────────────
-    def run(self):
-        """Main interactive loop — the T-traversal event loop."""
-        print(_ETPL_BANNER)
-        print(f"  Platform : {platform.system()} {platform.machine()}"
-              f"  |  Python {sys.version.split()[0]}")
-        print(f"  Type 'help' for the full command reference.\n")
-
-        while self._running:
-            try:
-                raw = input("etpl> ").strip()
-            except (EOFError, KeyboardInterrupt):
-                print("\n→ E (shell grounded — session terminated)")
-                break
-
-            if not raw:
-                continue
-
-            self._dispatch_line(raw)
-
-    # ── internal line dispatcher ─────────────────────────────────────────────
-    def _dispatch_line(self, line: str):
-        """Parse one interactive line and route to the matching handler.
-
-        ET Form: P(line) -> D(tokenise+lookup) -> T(handler) = E(result).
-        """
-        # ET-native quoted-string tokeniser — no external import required.
-        # P: input string substrate. D: quote-state constraint. T: character traversal.
-        # E: grounded list of token strings. Fully translatable to ETPL .pdt.
-        tokens = _et_cli_split(line)
-
-        if not tokens:
-            return
-
-        cmd = tokens[0].lower()
-        rest = tokens[1:]  # remaining tokens as raw list for sub-parsers
-
-        handler = self._dispatch.get(cmd)
-        if handler is None:
-            print(f"  ETPL: Unknown command '{cmd}'.  Type 'help' for command list.")
-            return
-
-        try:
-            handler(rest)
-        except SystemExit as se:
-            # Commands that call sys.exit() must not kill the shell
-            if se.code and int(se.code) != 0:
-                print(f"  → exited with code {se.code}")
-        except KeyboardInterrupt:
-            print("  (interrupted)")
-        except Exception as exc:
-            print(f"  ETPL Error: {exc}")
-            if '--debug' in rest or '-d' in rest:
-                traceback.print_exc()
-
-    # =========================================================================
-    # COMMAND HANDLERS
-    # Each handler receives `rest: list[str]` — the tokens after the verb.
-    # ET Principle: each handler is a Descriptor (D) applied to a Point (P).
-    # =========================================================================
-
-    # ── interpret ─────────────────────────────────────────────────────────────
-    def _cmd_interpret(self, rest: list):
-        """interpret <file.pdt> [--debug]"""
-        if not rest:
-            print("  Usage: interpret <file.pdt> [--debug]")
-            return
-        file_path = rest[0]
-        debug = '--debug' in rest or '-d' in rest
-        interp = ETPLInterpreter(debug=debug)
-        try:
-            result = interp.interpret_file(file_path)
-            if result is not None and debug:
-                print(f"\n→ E: {result}")
-        except ETGroundException as eg:
-            code = eg.exit_code()
-            if code != 0:
-                print(f"  → E (ground, code={code})")
-        except FileNotFoundError:
-            print(f"  ETPL Error: File not found: {file_path}")
-        except Exception as e:
-            print(f"  ETPL Runtime Error: {e}")
-            if debug:
-                traceback.print_exc()
-
-    # ── compile ───────────────────────────────────────────────────────────────
-    def _cmd_compile(self, rest: list):
-        """compile <file.pdt> [output] [--target T] [--arch A] [--device D] [--bare-metal]"""
-        if not rest:
-            print("  Usage: compile <file.pdt> [output] [--target classical|quantum|hybrid|bare_metal]")
-            print("         [--arch x86_64|arm64|riscv64|wasm] [--device <dev>] [--bare-metal]")
-            return
-
-        # ── parse flags manually (no argparse here so we don't call sys.exit) ──
-        file_path   = None
-        output_path = None
-        target      = 'classical'
-        arch        = 'universal'
-        device      = 'any'
-        bare_metal  = False
-
-        skip_next = False
-        positionals = []
-        i = 0
-        while i < len(rest):
-            tok = rest[i]
-            if skip_next:
-                skip_next = False
-                i += 1
-                continue
-            if tok in ('--target', '-t') and i + 1 < len(rest):
-                target = rest[i + 1]; skip_next = True
-            elif tok in ('--arch', '-a') and i + 1 < len(rest):
-                arch = rest[i + 1]; skip_next = True
-            elif tok in ('--device',) and i + 1 < len(rest):
-                device = rest[i + 1]; skip_next = True
-            elif tok in ('--bare-metal', '--bare_metal'):
-                bare_metal = True
-            elif tok in ('--debug', '-d'):
-                pass  # compile doesn't use debug flag
-            elif not tok.startswith('-'):
-                positionals.append(tok)
-            i += 1
-
-        if len(positionals) >= 1:
-            file_path = positionals[0]
-        if len(positionals) >= 2:
-            output_path = positionals[1]
-
-        if not file_path:
-            print("  ETPL Error: No source file specified.")
-            return
-
-        if target == 'bare_metal':
-            bare_metal = True
-
-        compiler = ETPLCompiler(
-            target_type=target,
-            target_arch=arch,
-            target_device=device
-        )
-        try:
-            compiler.compile_file(file_path, output_path, bare_metal=bare_metal)
-        except FileNotFoundError:
-            print(f"  ETPL Error: File not found: {file_path}")
-        except Exception as e:
-            print(f"  ETPL Compilation Error: {e}")
-            traceback.print_exc()
-
-    # ── translate ─────────────────────────────────────────────────────────────
-    def _cmd_translate(self, rest: list):
-        """translate <file> [--lang python|c_header|javascript|binary] [-o output.pdt]"""
-        if not rest:
-            print("  Usage: translate <file> [--lang python|c_header|javascript|binary]"
-                  " [-o output.pdt]")
-            return
-
-        file_path   = None
-        lang        = 'python'
-        output_path = None
-        skip_next   = False
-        i = 0
-        while i < len(rest):
-            tok = rest[i]
-            if skip_next:
-                skip_next = False
-                i += 1
-                continue
-            if tok in ('--lang', '-l') and i + 1 < len(rest):
-                lang = rest[i + 1]; skip_next = True
-            elif tok in ('--output', '-o') and i + 1 < len(rest):
-                output_path = rest[i + 1]; skip_next = True
-            elif not tok.startswith('-'):
-                file_path = tok
-            i += 1
-
-        if not file_path:
-            print("  ETPL Error: No source file specified.")
-            return
-
-        translator = ETPLTranslator(from_lang=lang)
-        try:
-            if lang == 'binary':
-                etpl = translator.translate_binary(file_path)
-            else:
-                etpl = translator.translate_file(file_path, lang)
-            if output_path:
-                with open(output_path, 'w', encoding='utf-8') as fh:
-                    fh.write(etpl)
-                print(f"  ETPL: Translated → {output_path}")
-            else:
-                print(etpl)
-        except FileNotFoundError:
-            print(f"  ETPL Error: File not found: {file_path}")
-        except Exception as e:
-            print(f"  ETPL Translation Error: {e}")
-            traceback.print_exc()
-
-    # ── repl ──────────────────────────────────────────────────────────────────
-    def _cmd_repl(self, rest: list):
-        """Launch the ETPL expression REPL (nested inside the CLI shell)."""
-        repl = ETPLREPL()
-        repl.run()
-
-    # ── verify ────────────────────────────────────────────────────────────────
-    def _cmd_verify(self, rest: list):
-        """Run the ETPL self-verification suite."""
-        verify_etpl()
-
-    # ── toolchain ─────────────────────────────────────────────────────────────
-    def _cmd_toolchain(self, rest: list):
-        """Diagnose (and optionally fix) the ETPL compilation toolchain."""
-        auto_fix = '--fix' in rest
-        toolchain_diagnose(auto_fix=auto_fix)
-
-    # ── meta: help ────────────────────────────────────────────────────────────
-    def _cmd_help(self, rest: list):
-        """Print the full command reference."""
-        print(_ETPL_HELP)
-
-    # ── meta: version ─────────────────────────────────────────────────────────
-    def _cmd_version(self, rest: list):
-        """Print version and build string."""
-        print(f"  ETPL {ETPL_VERSION}  (build: {ETPL_BUILD})")
-        print(f"  Platform: {platform.system()} {platform.machine()}"
-              f"  |  Python {sys.version.split()[0]}")
-
-    # ── meta: clear ───────────────────────────────────────────────────────────
-    def _cmd_clear(self, rest: list):
-        """Clear the terminal screen.
-
-        ET Form: P(terminal state) D(ANSI erase constraint) T(print traversal) = E(clear screen)
-
-        Uses ANSI escape sequences only — no os.system(), no subprocess.
-        ANSI CSI codes are pure integer D-descriptors on the terminal P-substrate:
-          ESC[2J  = erase entire display  (ord(ESC)=27, ord('[')=91, ord('2')=50, ord('J')=74)
-          ESC[H   = move cursor to home   (ord('H')=72)
-        These ordinal values are ET-native integers, fully translatable to .pdt arithmetic.
-        On Windows consoles that do not support ANSI, the codes are harmlessly ignored.
-        """
-        # ESC = chr(27); the sequence is a D-constraint emitted as a P-string to stdout.
-        # ET: sovereign_print binds these bytes directly to the output E-channel.
-        print('[2J[H', end='', flush=True)
-
-    # ── meta: exit ────────────────────────────────────────────────────────────
-    def _cmd_exit(self, rest: list):
-        """Exit the ETPL interactive shell."""
-        print("→ E (shell grounded)")
-        self._running = False
-
-
-# ============================================================================
-# ██████╗  SECTION 15: ONE-SHOT CLI ENTRY POINT
-# ============================================================================
-
-def _build_argparser() -> argparse.ArgumentParser:
-    """Construct the one-shot ArgumentParser for direct invocation.
-
-    ET D-Binding: each subparser is a Descriptor that constrains the
-    argument-space P into a specific command-exception E.
-    """
+def main():
+    """ETPL CLI — Master entry point."""
     parser = argparse.ArgumentParser(
         prog='ETPL',
         description='Exception Theory Programming Language — Complete Toolchain',
-        epilog='"For every exception there is an exception, except the exception."',
-        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog='"For every exception there is an exception, except the exception."'
     )
     parser.add_argument('--version', action='version', version=f'ETPL {ETPL_VERSION}')
 
     subparsers = parser.add_subparsers(dest='command', help='Available commands')
 
-    # ── interpret ─────────────────────────────────────────────────────────────
-    p_interp = subparsers.add_parser(
-        'interpret', aliases=['run', 'i'],
-        help='Interpret an ETPL .pdt source file')
+    # interpret
+    p_interp = subparsers.add_parser('interpret', aliases=['run', 'i'],
+                                      help='Interpret ETPL source file')
     p_interp.add_argument('file', help='Path to .pdt file')
-    p_interp.add_argument('--debug', '-d', action='store_true',
-                          help='Enable verbose AST + binding trace')
+    p_interp.add_argument('--debug', '-d', action='store_true', help='Enable debug output')
 
-    # ── compile ───────────────────────────────────────────────────────────────
-    p_compile = subparsers.add_parser(
-        'compile', aliases=['build', 'c'],
-        help='Compile an ETPL .pdt file to a native binary')
-    p_compile.add_argument('file', help='Path to .pdt source file')
-    p_compile.add_argument('output', nargs='?', default=None,
-                           help='Output file path (auto-named if omitted)')
+    # compile
+    p_compile = subparsers.add_parser('compile', aliases=['build', 'c'],
+                                       help='Compile ETPL to binary')
+    p_compile.add_argument('file', help='Path to .pdt file')
+    p_compile.add_argument('output', nargs='?', default=None, help='Output file path')
     p_compile.add_argument('--target', '-t', default='classical',
-                           choices=['classical', 'quantum', 'hybrid', 'bare_metal'],
-                           help='Compilation target (default: classical)')
+                            choices=['classical', 'quantum', 'hybrid', 'bare_metal'],
+                            help='Compilation target')
     p_compile.add_argument('--arch', '-a', default='universal',
-                           help='Target architecture: x86_64 | arm64 | riscv64 | wasm | universal')
-    p_compile.add_argument('--device', default='any',
-                           help='Target device identifier for hardware-access emission')
-    p_compile.add_argument('--bare-metal', action='store_true',
-                           help='Bare-metal mode: no OS dependencies, raw entry point')
+                            help='Target architecture (x86_64, arm64, riscv64, wasm)')
+    p_compile.add_argument('--device', default='any', help='Target device for hardware access')
+    p_compile.add_argument('--bare-metal', action='store_true', help='Bare metal (no OS)')
 
-    # ── translate ─────────────────────────────────────────────────────────────
-    p_trans = subparsers.add_parser(
-        'translate', aliases=['trans', 't'],
-        help='Translate a foreign-language source file into ETPL .pdt')
+    # translate
+    p_trans = subparsers.add_parser('translate', aliases=['trans', 't'],
+                                     help='Translate source to ETPL')
     p_trans.add_argument('file', help='Source file to translate')
     p_trans.add_argument('--lang', '-l', default='python',
-                         choices=['python', 'c_header', 'javascript', 'binary'],
-                         help='Source language (default: python)')
-    p_trans.add_argument('--output', '-o', default=None,
-                         help='Output .pdt file path (stdout if omitted)')
+                          choices=['python', 'c_header', 'javascript', 'binary'],
+                          help='Source language')
+    p_trans.add_argument('--output', '-o', default=None, help='Output .pdt file')
 
-    # ── verify ────────────────────────────────────────────────────────────────
-    subparsers.add_parser(
-        'verify', aliases=['test', 'v'],
-        help='Run the ETPL self-verification suite')
+    # verify
+    subparsers.add_parser('verify', aliases=['test', 'v'],
+                           help='Run self-verification suite')
 
-    # ── repl ──────────────────────────────────────────────────────────────────
-    subparsers.add_parser(
-        'repl', aliases=['shell'],
-        help='Start the interactive ETPL expression REPL')
+    # repl
+    subparsers.add_parser('repl', aliases=['shell'],
+                           help='Start interactive REPL')
 
-    # ── cli / interactive shell ───────────────────────────────────────────────
-    subparsers.add_parser(
-        'cli',
-        help='Start the full interactive ETPL CLI shell (default when no args given)')
-
-    # ── toolchain ─────────────────────────────────────────────────────────────
-    p_toolchain = subparsers.add_parser(
-        'toolchain', aliases=['tc'],
-        help='Diagnose and optionally repair the ETPL compilation toolchain')
+    # toolchain
+    p_toolchain = subparsers.add_parser('toolchain', aliases=['tc'],
+                                         help='Diagnose/fix compilation toolchain')
     p_toolchain.add_argument('--fix', action='store_true',
-                             help='Attempt auto-repair of toolchain issues')
+                              help='Attempt to auto-fix toolchain issues')
 
-    # ── help (explicit) ───────────────────────────────────────────────────────
-    subparsers.add_parser(
-        'help',
-        help='Print the full ETPL command reference')
-
-    return parser
-
-
-def main():
-    """ETPL master entry point.
-
-    ET Form:  P(sys.argv) ∘ D(argparser) ∘ T(dispatcher) = E(result)
-
-    When invoked with no arguments — e.g. by double-clicking the compiled
-    binary — the T-traversal defaults to the interactive ETPLCLI shell so
-    the window stays open and all commands remain accessible.
-    """
-    # ── No arguments → launch full interactive CLI shell ─────────────────────
-    if len(sys.argv) == 1:
-        ETPLCLI().run()
-        return
-
-    parser = _build_argparser()
     args = parser.parse_args()
-
-    # ── dispatch ──────────────────────────────────────────────────────────────
 
     if args.command in ('interpret', 'run', 'i'):
         interp = ETPLInterpreter(debug=args.debug)
@@ -10384,6 +9827,7 @@ def main():
             if result is not None and args.debug:
                 print(f"\n→ E: {result}")
         except ETGroundException as eg:
+            # ET Form A: → E value — clean exit via exception-ground path
             sys.exit(eg.exit_code())
         except FileNotFoundError:
             print(f"ETPL Error: File not found: {args.file}")
@@ -10419,8 +9863,8 @@ def main():
             else:
                 etpl = translator.translate_file(args.file, args.lang)
             if args.output:
-                with open(args.output, 'w', encoding='utf-8') as fh:
-                    fh.write(etpl)
+                with open(args.output, 'w', encoding='utf-8') as f:
+                    f.write(etpl)
                 print(f"ETPL: Translated → {args.output}")
             else:
                 print(etpl)
@@ -10437,20 +9881,15 @@ def main():
         sys.exit(0 if success else 1)
 
     elif args.command in ('repl', 'shell'):
-        ETPLREPL().run()
-
-    elif args.command == 'cli':
-        ETPLCLI().run()
+        repl = ETPLREPL()
+        repl.run()
 
     elif args.command in ('toolchain', 'tc'):
         toolchain_diagnose(auto_fix=args.fix)
 
-    elif args.command == 'help':
-        print(_ETPL_HELP)
-
     else:
-        # Fallback — should not normally be reached given subparser coverage
-        ETPLCLI().run()
+        parser.print_help()
+        sys.exit(1)
 
 
 if __name__ == "__main__":

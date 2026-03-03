@@ -1,0 +1,2024 @@
+// @ETPL:trace-stdlib ast.py  // module=ast
+// The `ast` module helps Python applications to process trees of the Python abstract syntax grammar.  The abstract syntax 
+// @ETPL:preload sys sys
+// Import sys — resolved at translate-time
+// @ETPL:preload activate_stack_trampoline sys.activate_stack_trampoline
+P activate_stack_trampoline = P  // [ET:callable:sys.activate_stack_trampoline]
+// @ETPL:preload addaudithook sys.addaudithook
+P addaudithook = P  // [ET:callable:sys.addaudithook]
+P api_version = 1013
+P argv = manifold ["ETPL.py", "translate", "ETPL.py", "--lang", "python", "--output", "ETPL_self.pdt"]
+// @ETPL:preload audit sys.audit
+P audit = P  // [ET:callable:sys.audit]
+P base_exec_prefix = "C:\\Program Files\\Python313"
+P base_prefix = "C:\\Program Files\\Python313"
+// @ETPL:preload breakpointhook sys.breakpointhook
+P breakpointhook = P  // [ET:callable:sys.breakpointhook]
+P builtin_module_names = manifold ["_abc", "_ast", "_bisect", "_blake2", "_codecs", "_codecs_cn", "_codecs_hk", "_codecs_iso2022", "_codecs_jp", "_codecs_kr", "_codecs_tw", "_collections", "_contextvars", "_csv", "_datetime", "_functools", "_heapq", "_imp", "_interpchannels", "_interpqueues", "_interpreters", "_io", "_json", "_locale", "_lsprof", "_md5", "_multibytecodec", "_opcode", "_operator", "_pickle", "_random", "_sha1", "_sha2", "_sha3", "_signal", "_sre", "_stat", "_statistics", "_string", "_struct", "_suggestions", "_symtable", "_sysconfig", "_thread", "_tokenize", "_tracemalloc", "_typing", "_warnings", "_weakref", "_winapi"]
+P byteorder = "little"
+// @ETPL:preload call_tracing sys.call_tracing
+P call_tracing = P  // [ET:callable:sys.call_tracing]
+P copyright = "Copyright (c) 2001-2024 Python Software Foundation.\nAll Rights Reserved.\n\nCopyright (c) 2000 BeOpen.com.\nAll Rights Reserved.\n\nCopyright (c) 1995-2001 Corporation for National Research Initiatives.\nAll Rights Reserved.\n\nCopyright (c) 1991-1995 Stichting Mathematisch Centrum, Amsterdam.\nAll Rights Reserved."
+// @ETPL:preload deactivate_stack_trampoline sys.deactivate_stack_trampoline
+P deactivate_stack_trampoline = P  // [ET:callable:sys.deactivate_stack_trampoline]
+// @ETPL:preload displayhook sys.displayhook
+P displayhook = P  // [ET:callable:sys.displayhook]
+P dllhandle = 140730231881728
+P dont_write_bytecode = 0
+// @ETPL:preload exc_info sys.exc_info
+P exc_info = P  // [ET:callable:sys.exc_info]
+// @ETPL:preload excepthook sys.excepthook
+P excepthook = P  // [ET:callable:sys.excepthook]
+// @ETPL:preload exception sys.exception
+P exception = P  // [ET:callable:sys.exception]
+P exec_prefix = "C:\\Program Files\\Python313"
+P executable = "C:\\Program Files\\Python313\\python.exe"
+// @ETPL:preload exit sys.exit
+P exit = P  // [ET:callable:sys.exit]
+P flags = manifold [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 4300]
+P float_info = manifold [1.7976931348623157e+308, 1024, 308, 2.2250738585072014e-308, -1021, -307, 15, 53, 2.220446049250313e-16, 2, 1]
+P float_repr_style = "short"
+// @ETPL:preload get_asyncgen_hooks sys.get_asyncgen_hooks
+P get_asyncgen_hooks = P  // [ET:callable:sys.get_asyncgen_hooks]
+// @ETPL:preload get_coroutine_origin_tracking_depth sys.get_coroutine_origin_tracking_depth
+P get_coroutine_origin_tracking_depth = P  // [ET:callable:sys.get_coroutine_origin_tracking_depth]
+// @ETPL:preload get_int_max_str_digits sys.get_int_max_str_digits
+P get_int_max_str_digits = P  // [ET:callable:sys.get_int_max_str_digits]
+// @ETPL:preload getallocatedblocks sys.getallocatedblocks
+P getallocatedblocks = P  // [ET:callable:sys.getallocatedblocks]
+// @ETPL:preload getdefaultencoding sys.getdefaultencoding
+P getdefaultencoding = P  // [ET:callable:sys.getdefaultencoding]
+// @ETPL:preload getfilesystemencodeerrors sys.getfilesystemencodeerrors
+P getfilesystemencodeerrors = P  // [ET:callable:sys.getfilesystemencodeerrors]
+// @ETPL:preload getfilesystemencoding sys.getfilesystemencoding
+P getfilesystemencoding = P  // [ET:callable:sys.getfilesystemencoding]
+// @ETPL:preload getprofile sys.getprofile
+P getprofile = P  // [ET:callable:sys.getprofile]
+// @ETPL:preload getrecursionlimit sys.getrecursionlimit
+P getrecursionlimit = P  // [ET:callable:sys.getrecursionlimit]
+// @ETPL:preload getrefcount sys.getrefcount
+P getrefcount = P  // [ET:callable:sys.getrefcount]
+// @ETPL:preload getsizeof sys.getsizeof
+P getsizeof = P  // [ET:callable:sys.getsizeof]
+// @ETPL:preload getswitchinterval sys.getswitchinterval
+P getswitchinterval = P  // [ET:callable:sys.getswitchinterval]
+// @ETPL:preload gettrace sys.gettrace
+P gettrace = P  // [ET:callable:sys.gettrace]
+// @ETPL:preload getunicodeinternedsize sys.getunicodeinternedsize
+P getunicodeinternedsize = P  // [ET:callable:sys.getunicodeinternedsize]
+// @ETPL:preload getwindowsversion sys.getwindowsversion
+P getwindowsversion = P  // [ET:callable:sys.getwindowsversion]
+P hash_info = manifold [64, 2305843009213693951, 314159, 0, 1000003, "siphash13", 64, 128, 0]
+P hexversion = 51186672
+P implementation = P  // [ET:unrepresentable:SimpleNamespace]
+P int_info = manifold [30, 4, 4300, 640]
+// @ETPL:preload intern sys.intern
+P intern = P  // [ET:callable:sys.intern]
+// @ETPL:preload is_finalizing sys.is_finalizing
+P is_finalizing = P  // [ET:callable:sys.is_finalizing]
+// @ETPL:preload is_stack_trampoline_active sys.is_stack_trampoline_active
+P is_stack_trampoline_active = P  // [ET:callable:sys.is_stack_trampoline_active]
+P maxsize = 9223372036854775807
+P maxunicode = 1114111
+P meta_path = manifold [P, P, P, P]
+// @ETPL:preload modules sys.modules
+// [ET:complex-dict:modules]
+// @ETPL:preload monitoring sys.monitoring
+P orig_argv = manifold ["python", "ETPL.py", "translate", "ETPL.py", "--lang", "python", "--output", "ETPL_self.pdt"]
+P path = manifold ["C:\\Users\\aevum\\Desktop\\Civilizational Blueprint\\Working Programming Directory\\ET Python Library", "C:\\Program Files\\Python313\\python313.zip", "C:\\Program Files\\Python313\\DLLs", "C:\\Program Files\\Python313\\Lib", "C:\\Program Files\\Python313", "C:\\Users\\aevum\\AppData\\Roaming\\Python\\Python313\\site-packages", "__editable__.exception_theory-3.0.0.finder.__path_hook__", "C:\\Program Files\\Python313\\Lib\\site-packages"]
+P path_hooks = manifold [P, P, P]
+// @ETPL:preload path_importer_cache sys.path_importer_cache
+// [ET:complex-dict:path_importer_cache]
+P platform = "win32"
+P platlibdir = "DLLs"
+P prefix = "C:\\Program Files\\Python313"
+P pycache_prefix = P
+// @ETPL:preload set_asyncgen_hooks sys.set_asyncgen_hooks
+P set_asyncgen_hooks = P  // [ET:callable:sys.set_asyncgen_hooks]
+// @ETPL:preload set_coroutine_origin_tracking_depth sys.set_coroutine_origin_tracking_depth
+P set_coroutine_origin_tracking_depth = P  // [ET:callable:sys.set_coroutine_origin_tracking_depth]
+// @ETPL:preload set_int_max_str_digits sys.set_int_max_str_digits
+P set_int_max_str_digits = P  // [ET:callable:sys.set_int_max_str_digits]
+// @ETPL:preload setprofile sys.setprofile
+P setprofile = P  // [ET:callable:sys.setprofile]
+// @ETPL:preload setrecursionlimit sys.setrecursionlimit
+P setrecursionlimit = P  // [ET:callable:sys.setrecursionlimit]
+// @ETPL:preload setswitchinterval sys.setswitchinterval
+P setswitchinterval = P  // [ET:callable:sys.setswitchinterval]
+// @ETPL:preload settrace sys.settrace
+P settrace = P  // [ET:callable:sys.settrace]
+P stderr = P  // [ET:unrepresentable:TextIOWrapper]
+P stdin = P  // [ET:unrepresentable:TextIOWrapper]
+P stdlib_module_names = manifold ["__future__", "_abc", "_aix_support", "_android_support", "_apple_support", "_ast", "_asyncio", "_bisect", "_blake2", "_bz2", "_codecs", "_codecs_cn", "_codecs_hk", "_codecs_iso2022", "_codecs_jp", "_codecs_kr", "_codecs_tw", "_collections", "_collections_abc", "_colorize", "_compat_pickle", "_compression", "_contextvars", "_csv", "_ctypes", "_curses", "_curses_panel", "_datetime", "_dbm", "_decimal", "_elementtree", "_frozen_importlib", "_frozen_importlib_external", "_functools", "_gdbm", "_hashlib", "_heapq", "_imp", "_interpchannels", "_interpqueues", "_interpreters", "_io", "_ios_support", "_json", "_locale", "_lsprof", "_lzma", "_markupbase", "_md5", "_multibytecodec"]  // frozenset
+P stdout = P  // [ET:unrepresentable:TextIOWrapper]
+P thread_info = manifold ["nt", P, P]
+// @ETPL:preload unraisablehook sys.unraisablehook
+P unraisablehook = P  // [ET:callable:sys.unraisablehook]
+P version = "3.13.11 (tags/v3.13.11:6278944, Dec  5 2025, 16:26:58) [MSC v.1944 64 bit (AMD64)]"
+P version_info = manifold [3, 13, 11, "final", 0]
+P warnoptions = manifold []
+P winver = "3.13"
+// @ETPL:preload re re
+// Import re — resolved at translate-time
+// @ETPL:preload match re.match
+P match = P  // [ET:callable:re.match]
+// @ETPL:preload fullmatch re.fullmatch
+P fullmatch = P  // [ET:callable:re.fullmatch]
+// @ETPL:preload search re.search
+P search = P  // [ET:callable:re.search]
+// @ETPL:preload sub re.sub
+P sub = P  // [ET:callable:re.sub]
+// @ETPL:preload subn re.subn
+P subn = P  // [ET:callable:re.subn]
+// @ETPL:preload split re.split
+P split = P  // [ET:callable:re.split]
+// @ETPL:preload findall re.findall
+P findall = P  // [ET:callable:re.findall]
+// @ETPL:preload finditer re.finditer
+P finditer = P  // [ET:callable:re.finditer]
+// @ETPL:preload compile re.compile
+P compile = P  // [ET:callable:re.compile]
+// @ETPL:preload purge re.purge
+P purge = P  // [ET:callable:re.purge]
+// @ETPL:preload escape re.escape
+P escape = P  // [ET:callable:re.escape]
+// @ETPL:preload error re.error
+P error = P  // [ET:callable:re.error]
+// @ETPL:preload Pattern re.Pattern
+P Pattern = P  // [ET:callable:re.Pattern]
+// @ETPL:preload Match re.Match
+P Match = P  // [ET:callable:re.Match]
+P A = 256
+P I = 2
+P L = 4
+P M = 8
+P S = 16
+P X = 64
+P U = 32
+P ASCII = 256
+P IGNORECASE = 2
+P LOCALE = 4
+P MULTILINE = 8
+P DOTALL = 16
+P VERBOSE = 64
+P UNICODE = 32
+P NOFLAG = 0
+// @ETPL:preload RegexFlag re.RegexFlag
+P RegexFlag = P  // [ET:callable:re.RegexFlag]
+// @ETPL:preload PatternError re.PatternError
+P PatternError = P  // [ET:callable:re.PatternError]
+// @ETPL:wildcard-start _ast
+// @ETPL:module-start _ast
+// @ETPL:preload AST _ast.AST
+P AST = P  // [ET:callable:_ast.AST]
+// @ETPL:preload Add _ast.Add
+P Add = P  // [ET:callable:_ast.Add]
+// @ETPL:preload And _ast.And
+P And = P  // [ET:callable:_ast.And]
+// @ETPL:preload AnnAssign _ast.AnnAssign
+P AnnAssign = P  // [ET:callable:_ast.AnnAssign]
+// @ETPL:preload Assert _ast.Assert
+P Assert = P  // [ET:callable:_ast.Assert]
+// @ETPL:preload Assign _ast.Assign
+P Assign = P  // [ET:callable:_ast.Assign]
+// @ETPL:preload AsyncFor _ast.AsyncFor
+P AsyncFor = P  // [ET:callable:_ast.AsyncFor]
+// @ETPL:preload AsyncFunctionDef _ast.AsyncFunctionDef
+P AsyncFunctionDef = P  // [ET:callable:_ast.AsyncFunctionDef]
+// @ETPL:preload AsyncWith _ast.AsyncWith
+P AsyncWith = P  // [ET:callable:_ast.AsyncWith]
+// @ETPL:preload Attribute _ast.Attribute
+P Attribute = P  // [ET:callable:_ast.Attribute]
+// @ETPL:preload AugAssign _ast.AugAssign
+P AugAssign = P  // [ET:callable:_ast.AugAssign]
+// @ETPL:preload Await _ast.Await
+P Await = P  // [ET:callable:_ast.Await]
+// @ETPL:preload BinOp _ast.BinOp
+P BinOp = P  // [ET:callable:_ast.BinOp]
+// @ETPL:preload BitAnd _ast.BitAnd
+P BitAnd = P  // [ET:callable:_ast.BitAnd]
+// @ETPL:preload BitOr _ast.BitOr
+P BitOr = P  // [ET:callable:_ast.BitOr]
+// @ETPL:preload BitXor _ast.BitXor
+P BitXor = P  // [ET:callable:_ast.BitXor]
+// @ETPL:preload BoolOp _ast.BoolOp
+P BoolOp = P  // [ET:callable:_ast.BoolOp]
+// @ETPL:preload Break _ast.Break
+P Break = P  // [ET:callable:_ast.Break]
+// @ETPL:preload Call _ast.Call
+P Call = P  // [ET:callable:_ast.Call]
+// @ETPL:preload ClassDef _ast.ClassDef
+P ClassDef = P  // [ET:callable:_ast.ClassDef]
+// @ETPL:preload Compare _ast.Compare
+P Compare = P  // [ET:callable:_ast.Compare]
+// @ETPL:preload Constant _ast.Constant
+P Constant = P  // [ET:callable:_ast.Constant]
+// @ETPL:preload Continue _ast.Continue
+P Continue = P  // [ET:callable:_ast.Continue]
+// @ETPL:preload Del _ast.Del
+P Del = P  // [ET:callable:_ast.Del]
+// @ETPL:preload Delete _ast.Delete
+P Delete = P  // [ET:callable:_ast.Delete]
+// @ETPL:preload Dict _ast.Dict
+P Dict = P  // [ET:callable:_ast.Dict]
+// @ETPL:preload DictComp _ast.DictComp
+P DictComp = P  // [ET:callable:_ast.DictComp]
+// @ETPL:preload Div _ast.Div
+P Div = P  // [ET:callable:_ast.Div]
+// @ETPL:preload Eq _ast.Eq
+P Eq = P  // [ET:callable:_ast.Eq]
+// @ETPL:preload ExceptHandler _ast.ExceptHandler
+P ExceptHandler = P  // [ET:callable:_ast.ExceptHandler]
+// @ETPL:preload Expr _ast.Expr
+P Expr = P  // [ET:callable:_ast.Expr]
+// @ETPL:preload Expression _ast.Expression
+P Expression = P  // [ET:callable:_ast.Expression]
+// @ETPL:preload FloorDiv _ast.FloorDiv
+P FloorDiv = P  // [ET:callable:_ast.FloorDiv]
+// @ETPL:preload For _ast.For
+P For = P  // [ET:callable:_ast.For]
+// @ETPL:preload FormattedValue _ast.FormattedValue
+P FormattedValue = P  // [ET:callable:_ast.FormattedValue]
+// @ETPL:preload FunctionDef _ast.FunctionDef
+P FunctionDef = P  // [ET:callable:_ast.FunctionDef]
+// @ETPL:preload FunctionType _ast.FunctionType
+P FunctionType = P  // [ET:callable:_ast.FunctionType]
+// @ETPL:preload GeneratorExp _ast.GeneratorExp
+P GeneratorExp = P  // [ET:callable:_ast.GeneratorExp]
+// @ETPL:preload Global _ast.Global
+P Global = P  // [ET:callable:_ast.Global]
+// @ETPL:preload Gt _ast.Gt
+P Gt = P  // [ET:callable:_ast.Gt]
+// @ETPL:preload GtE _ast.GtE
+P GtE = P  // [ET:callable:_ast.GtE]
+// @ETPL:preload If _ast.If
+P If = P  // [ET:callable:_ast.If]
+// @ETPL:preload IfExp _ast.IfExp
+P IfExp = P  // [ET:callable:_ast.IfExp]
+// @ETPL:preload Import _ast.Import
+P Import = P  // [ET:callable:_ast.Import]
+// @ETPL:preload ImportFrom _ast.ImportFrom
+P ImportFrom = P  // [ET:callable:_ast.ImportFrom]
+// @ETPL:preload In _ast.In
+P In = P  // [ET:callable:_ast.In]
+// @ETPL:preload Interactive _ast.Interactive
+P Interactive = P  // [ET:callable:_ast.Interactive]
+// @ETPL:preload Invert _ast.Invert
+P Invert = P  // [ET:callable:_ast.Invert]
+// @ETPL:preload Is _ast.Is
+P Is = P  // [ET:callable:_ast.Is]
+// @ETPL:preload IsNot _ast.IsNot
+P IsNot = P  // [ET:callable:_ast.IsNot]
+// @ETPL:preload JoinedStr _ast.JoinedStr
+P JoinedStr = P  // [ET:callable:_ast.JoinedStr]
+// @ETPL:preload LShift _ast.LShift
+P LShift = P  // [ET:callable:_ast.LShift]
+// @ETPL:preload Lambda _ast.Lambda
+P Lambda = P  // [ET:callable:_ast.Lambda]
+// @ETPL:preload List _ast.List
+P List = P  // [ET:callable:_ast.List]
+// @ETPL:preload ListComp _ast.ListComp
+P ListComp = P  // [ET:callable:_ast.ListComp]
+// @ETPL:preload Load _ast.Load
+P Load = P  // [ET:callable:_ast.Load]
+// @ETPL:preload Lt _ast.Lt
+P Lt = P  // [ET:callable:_ast.Lt]
+// @ETPL:preload LtE _ast.LtE
+P LtE = P  // [ET:callable:_ast.LtE]
+// @ETPL:preload MatMult _ast.MatMult
+P MatMult = P  // [ET:callable:_ast.MatMult]
+// @ETPL:preload MatchAs _ast.MatchAs
+P MatchAs = P  // [ET:callable:_ast.MatchAs]
+// @ETPL:preload MatchClass _ast.MatchClass
+P MatchClass = P  // [ET:callable:_ast.MatchClass]
+// @ETPL:preload MatchMapping _ast.MatchMapping
+P MatchMapping = P  // [ET:callable:_ast.MatchMapping]
+// @ETPL:preload MatchOr _ast.MatchOr
+P MatchOr = P  // [ET:callable:_ast.MatchOr]
+// @ETPL:preload MatchSequence _ast.MatchSequence
+P MatchSequence = P  // [ET:callable:_ast.MatchSequence]
+// @ETPL:preload MatchSingleton _ast.MatchSingleton
+P MatchSingleton = P  // [ET:callable:_ast.MatchSingleton]
+// @ETPL:preload MatchStar _ast.MatchStar
+P MatchStar = P  // [ET:callable:_ast.MatchStar]
+// @ETPL:preload MatchValue _ast.MatchValue
+P MatchValue = P  // [ET:callable:_ast.MatchValue]
+// @ETPL:preload Mod _ast.Mod
+P Mod = P  // [ET:callable:_ast.Mod]
+// @ETPL:preload Module _ast.Module
+P Module = P  // [ET:callable:_ast.Module]
+// @ETPL:preload Mult _ast.Mult
+P Mult = P  // [ET:callable:_ast.Mult]
+// @ETPL:preload Name _ast.Name
+P Name = P  // [ET:callable:_ast.Name]
+// @ETPL:preload NamedExpr _ast.NamedExpr
+P NamedExpr = P  // [ET:callable:_ast.NamedExpr]
+// @ETPL:preload Nonlocal _ast.Nonlocal
+P Nonlocal = P  // [ET:callable:_ast.Nonlocal]
+// @ETPL:preload Not _ast.Not
+P Not = P  // [ET:callable:_ast.Not]
+// @ETPL:preload NotEq _ast.NotEq
+P NotEq = P  // [ET:callable:_ast.NotEq]
+// @ETPL:preload NotIn _ast.NotIn
+P NotIn = P  // [ET:callable:_ast.NotIn]
+// @ETPL:preload Or _ast.Or
+P Or = P  // [ET:callable:_ast.Or]
+// @ETPL:preload ParamSpec _ast.ParamSpec
+P ParamSpec = P  // [ET:callable:_ast.ParamSpec]
+// @ETPL:preload Pass _ast.Pass
+P Pass = P  // [ET:callable:_ast.Pass]
+// @ETPL:preload Pow _ast.Pow
+P Pow = P  // [ET:callable:_ast.Pow]
+P PyCF_ALLOW_TOP_LEVEL_AWAIT = 8192
+P PyCF_ONLY_AST = 1024
+P PyCF_OPTIMIZED_AST = 33792
+P PyCF_TYPE_COMMENTS = 4096
+// @ETPL:preload RShift _ast.RShift
+P RShift = P  // [ET:callable:_ast.RShift]
+// @ETPL:preload Raise _ast.Raise
+P Raise = P  // [ET:callable:_ast.Raise]
+// @ETPL:preload Return _ast.Return
+P Return = P  // [ET:callable:_ast.Return]
+// @ETPL:preload Set _ast.Set
+P Set = P  // [ET:callable:_ast.Set]
+// @ETPL:preload SetComp _ast.SetComp
+P SetComp = P  // [ET:callable:_ast.SetComp]
+// @ETPL:preload Slice _ast.Slice
+P Slice = P  // [ET:callable:_ast.Slice]
+// @ETPL:preload Starred _ast.Starred
+P Starred = P  // [ET:callable:_ast.Starred]
+// @ETPL:preload Store _ast.Store
+P Store = P  // [ET:callable:_ast.Store]
+// @ETPL:preload Sub _ast.Sub
+P Sub = P  // [ET:callable:_ast.Sub]
+// @ETPL:preload Subscript _ast.Subscript
+P Subscript = P  // [ET:callable:_ast.Subscript]
+// @ETPL:preload Try _ast.Try
+P Try = P  // [ET:callable:_ast.Try]
+// @ETPL:preload TryStar _ast.TryStar
+P TryStar = P  // [ET:callable:_ast.TryStar]
+// @ETPL:preload Tuple _ast.Tuple
+P Tuple = P  // [ET:callable:_ast.Tuple]
+// @ETPL:preload TypeAlias _ast.TypeAlias
+P TypeAlias = P  // [ET:callable:_ast.TypeAlias]
+// @ETPL:preload TypeIgnore _ast.TypeIgnore
+P TypeIgnore = P  // [ET:callable:_ast.TypeIgnore]
+// @ETPL:preload TypeVar _ast.TypeVar
+P TypeVar = P  // [ET:callable:_ast.TypeVar]
+// @ETPL:preload TypeVarTuple _ast.TypeVarTuple
+P TypeVarTuple = P  // [ET:callable:_ast.TypeVarTuple]
+// @ETPL:preload UAdd _ast.UAdd
+P UAdd = P  // [ET:callable:_ast.UAdd]
+// @ETPL:preload USub _ast.USub
+P USub = P  // [ET:callable:_ast.USub]
+// @ETPL:preload UnaryOp _ast.UnaryOp
+P UnaryOp = P  // [ET:callable:_ast.UnaryOp]
+// @ETPL:preload While _ast.While
+P While = P  // [ET:callable:_ast.While]
+// @ETPL:preload With _ast.With
+P With = P  // [ET:callable:_ast.With]
+// @ETPL:preload Yield _ast.Yield
+P Yield = P  // [ET:callable:_ast.Yield]
+// @ETPL:preload YieldFrom _ast.YieldFrom
+P YieldFrom = P  // [ET:callable:_ast.YieldFrom]
+// @ETPL:preload alias _ast.alias
+P alias = P  // [ET:callable:_ast.alias]
+// @ETPL:preload arg _ast.arg
+P arg = P  // [ET:callable:_ast.arg]
+// @ETPL:preload arguments _ast.arguments
+P arguments = P  // [ET:callable:_ast.arguments]
+// @ETPL:preload boolop _ast.boolop
+P boolop = P  // [ET:callable:_ast.boolop]
+// @ETPL:preload cmpop _ast.cmpop
+P cmpop = P  // [ET:callable:_ast.cmpop]
+// @ETPL:preload comprehension _ast.comprehension
+P comprehension = P  // [ET:callable:_ast.comprehension]
+// @ETPL:preload excepthandler _ast.excepthandler
+P excepthandler = P  // [ET:callable:_ast.excepthandler]
+// @ETPL:preload expr _ast.expr
+P expr = P  // [ET:callable:_ast.expr]
+// @ETPL:preload expr_context _ast.expr_context
+P expr_context = P  // [ET:callable:_ast.expr_context]
+// @ETPL:preload keyword _ast.keyword
+P keyword = P  // [ET:callable:_ast.keyword]
+// @ETPL:preload match_case _ast.match_case
+P match_case = P  // [ET:callable:_ast.match_case]
+// @ETPL:preload mod _ast.mod
+P mod = P  // [ET:callable:_ast.mod]
+// @ETPL:preload operator _ast.operator
+P operator = P  // [ET:callable:_ast.operator]
+// @ETPL:preload pattern _ast.pattern
+P pattern = P  // [ET:callable:_ast.pattern]
+// @ETPL:preload stmt _ast.stmt
+P stmt = P  // [ET:callable:_ast.stmt]
+// @ETPL:preload type_ignore _ast.type_ignore
+P type_ignore = P  // [ET:callable:_ast.type_ignore]
+// @ETPL:preload type_param _ast.type_param
+P type_param = P  // [ET:callable:_ast.type_param]
+// @ETPL:preload unaryop _ast.unaryop
+P unaryop = P  // [ET:callable:_ast.unaryop]
+// @ETPL:preload withitem _ast.withitem
+P withitem = P  // [ET:callable:_ast.withitem]
+// @ETPL:module-end _ast
+// @ETPL:wildcard-end _ast
+// @ETPL:preload contextmanager contextlib.contextmanager
+P contextmanager = P  // [ET:callable:contextlib.contextmanager]
+// @ETPL:preload nullcontext contextlib.nullcontext
+P nullcontext = P  // [ET:callable:contextlib.nullcontext]
+// @ETPL:preload IntEnum enum.IntEnum
+P IntEnum = P  // [ET:callable:enum.IntEnum]
+// @ETPL:preload auto enum.auto
+P auto = P  // [ET:callable:enum.auto]
+// @ETPL:preload _simple_enum enum._simple_enum
+P _simple_enum = P  // [ET:callable:enum._simple_enum]
+D parse = λ source, filename, mode . {
+    // Parse the source into an AST node.     Equivalent to compile(source, filename, mode, PyCF_ONLY_AST).     Pass type_comme
+    P flags = PyCF_ONLY_AST
+    T cond = → if optimize > 0 → P flags = flags | PyCF_OPTIMIZED_AST
+    T cond = → if type_comments → P flags = flags | PyCF_TYPE_COMMENTS
+    T cond = → if feature_version == P → P feature_version = (-1)
+    → E P
+        T cond = → if isinstance(feature_version, tuple) → P
+            P manifold__major__minor = feature_version  // manifold [major, minor] := feature_version
+            T cond = → if major ≠ 3 → → E ValueError("Unsupported major version: " + major)
+            P feature_version = minor
+    → compile(source, filename, mode, flags, manifold ["_feature_version", feature_version], manifold ["optimize", optimize])
+}
+D literal_eval = λ node_or_string . {
+    // Evaluate an expression node or a string containing only a Python     expression.  The string or node provided may only c
+    T cond = → if isinstance(node_or_string, str) → P node_or_string = parse(node_or_string D lstrip(" \t"), manifold ["mode", "eval"])
+    T cond = → if isinstance(node_or_string, Expression) → P node_or_string = node_or_string D body
+    D raise_malformed_node = λ node . {
+        P msg = "malformed node or string"
+        T cond = → if (λ lno . lno)(getattr(node, "lineno", P)) → P msg = msg + " on line " + lno
+        → E ValueError((msg + ": " + node))
+    }
+    D convert_num = λ node . {
+        T cond = → if ((!isinstance(node, Constant)) || type(node D value) ≠ manifold [int, float, complex]) → _raise_malformed_node(node)
+        → node D value
+    }
+    D convert_signed_num = λ node . {
+        T cond = → if (isinstance(node, UnaryOp) && isinstance(node D op, manifold [UAdd, USub])) → P
+            P operand = _convert_num(node D operand)
+            T cond = → if isinstance(node D op, UAdd) → → operand
+            → E → (-operand)
+        → _convert_num(node)
+    }
+    D convert = λ node . {
+        T cond = → if isinstance(node, Constant) → → node D value
+        → E P
+            T cond = → if isinstance(node, Tuple) → → tuple(_et_map(_convert, node D elts))
+            → E P
+                T cond = → if isinstance(node, List) → → list(_et_map(_convert, node D elts))
+                → E P
+                    T cond = → if isinstance(node, Set) → → set(_et_map(_convert, node D elts))
+                    → E P
+                        T cond = → if (isinstance(node, Call) && isinstance(node D func, Name) && node D func D id == "set" && node D args == node D keywords == manifold []) → → set(P)
+                        → E P
+                            T cond = → if isinstance(node, Dict) → P
+                                T cond = → if len(node D keys) ≠ len(node D values) → _raise_malformed_node(node)
+                                → dict(zip(_et_map(_convert, node D keys), _et_map(_convert, node D values)))
+                            → E P
+                                T cond = → if (isinstance(node, BinOp) && isinstance(node D op, manifold [Add, Sub])) → P
+                                    P left = _convert_signed_num(node D left)
+                                    P right = _convert_num(node D right)
+                                    T cond = → if (isinstance(left, manifold [int, float]) && isinstance(right, complex)) → P
+                                        T cond = → if isinstance(node D op, Add) → → (left + right)
+                                        → E → (left - right)
+        → _convert_signed_num(node)
+    }
+    → _convert(node_or_string)
+}
+D dump = λ node, annotate_fields, include_attributes . {
+    // Return a formatted dump of the tree in node.  This is mainly useful for     debugging purposes.  If annotate_fields is t
+    D format = λ node, level . {
+        T cond = → if indent ≠ P → P
+            P level = level + 1
+            P prefix = ("\n" + (indent * level))
+            P sep = (",\n" + (indent * level))
+        → E P
+            P prefix = ""
+            P sep = ", "
+        T cond = → if isinstance(node, AST) → P
+            P cls = type(node)
+            P args = manifold []
+            P args_buffer = manifold []
+            P allsimple = 1
+            P keywords = annotate_fields
+            T loop = ∞ (
+                P name = node D _fields[_loop_index]
+                T attempt = → P  // try
+                    P value = getattr(node, name)
+                → E AttributeError (_)
+                    P keywords = 1
+                    // continue
+                T cond = → if (value == P && getattr(cls, name, Ellipsis) == P) → P keywords = 1
+                T cond = → if (!show_empty) → P
+                    T cond = → if value == manifold [] → P
+                        P field_type = cls D _field_types D get(name, object)
+                        T cond = → if getattr(field_type, "__origin__", Ellipsis) == list → T cond = → if (!keywords) → args_buffer D append(repr(value))
+                    T cond = → if (!keywords) → P
+                        args D extend(args_buffer)
+                        P args_buffer = manifold []
+                P manifold__value__simple = _format(value, level)  // manifold [value, simple] := _format(value, level)
+                P allsimple = (allsimple && simple)
+                T cond = → if keywords → args D append(("%s=%s" % manifold [name, value]))
+                → E args D append(value)
+            ) (D |node D _fields|)
+            T cond = → if (include_attributes && node D _attributes) → P
+                T loop = ∞ (
+                    P name = node D _attributes[_loop_index]
+                    T attempt = → P  // try
+                        P value = getattr(node, name)
+                    → E AttributeError (_)
+                        // continue
+                    T cond = → if (value == P && getattr(cls, name, Ellipsis) == P) → P  // pass
+                    P manifold__value__simple = _format(value, level)  // manifold [value, simple] := _format(value, level)
+                    P allsimple = (allsimple && simple)
+                    args D append(("%s=%s" % manifold [name, value]))
+                ) (D |node D _attributes|)
+            T cond = → if (allsimple && len(args) ≤ 3) → → manifold [("%s(%s)" % manifold [node D __class__ D __name__, ", " D join(args)]), (!args)]
+            → manifold [("%s(%s%s)" % manifold [node D __class__ D __name__, prefix, sep D join(args)]), 0]
+        → E P
+            T cond = → if isinstance(node, list) → P
+                T cond = → if (!node) → → manifold ["[]", 1]
+                → manifold [("[%s%s]" % manifold [prefix, sep D join({ T loop = ∞ (_format(x, level)[0]) (D |node|) })]), 0]
+        → manifold [repr(node), 1]
+    }
+    T cond = → if (!isinstance(node, AST)) → → E TypeError(("expected AST, got %r" % node D __class__ D __name__))
+    T cond = → if (indent ≠ P && (!isinstance(indent, str))) → P indent = (" " * indent)
+    → _format(node)[0]
+}
+D copy_location = λ new_node, old_node . {
+    // Copy source location (`lineno`, `col_offset`, `end_lineno`, and `end_col_offset`     attributes) from *old_node* to *new
+    T loop = ∞ (
+        P attr = manifold ["lineno", "col_offset", "end_lineno", "end_col_offset"][_loop_index]
+        T cond = → if (attr == old_node D _attributes && attr == new_node D _attributes) → P
+            P value = getattr(old_node, attr, P)
+            T cond = → if (value ≠ P || (hasattr(old_node, attr) && attr D startswith("end_"))) → setattr(new_node, attr, value)
+    ) (D |manifold ["lineno", "col_offset", "end_lineno", "end_col_offset"]|)
+    → new_node
+}
+D fix_missing_locations = λ node . {
+    // When you compile a node tree with compile(), the compiler expects lineno and     col_offset attributes for every node th
+    D fix = λ node, lineno, col_offset, end_lineno, end_col_offset . {
+        T cond = → if "lineno" == node D _attributes → P
+            T cond = → if (!hasattr(node, "lineno")) → D node_D_lineno = lineno  // node D lineno := lineno
+            → E P lineno = node D lineno
+        T cond = → if "end_lineno" == node D _attributes → P
+            T cond = → if getattr(node, "end_lineno", P) == P → D node_D_end_lineno = end_lineno  // node D end_lineno := end_lineno
+            → E P end_lineno = node D end_lineno
+        T cond = → if "col_offset" == node D _attributes → P
+            T cond = → if (!hasattr(node, "col_offset")) → D node_D_col_offset = col_offset  // node D col_offset := col_offset
+            → E P col_offset = node D col_offset
+        T cond = → if "end_col_offset" == node D _attributes → P
+            T cond = → if getattr(node, "end_col_offset", P) == P → D node_D_end_col_offset = end_col_offset  // node D end_col_offset := end_col_offset
+            → E P end_col_offset = node D end_col_offset
+        T loop = ∞ (
+            P child = iter_child_nodes(node)[_loop_index]
+            _fix(child, lineno, col_offset, end_lineno, end_col_offset)
+        ) (D |iter_child_nodes(node)|)
+    }
+    _fix(node, 1, 0, 1, 0)
+    → node
+}
+D increment_lineno = λ node, n . {
+    // Increment the line number and end line number of each node in the tree     starting at *node* by *n*. This is useful to 
+    T loop = ∞ (
+        P child = walk(node)[_loop_index]
+        T cond = → if isinstance(child, TypeIgnore) → D child_D_lineno = (getattr(child, "lineno", 0) + n)  // child D lineno := (getattr(child, "lineno", 0) + n)
+        T cond = → if "lineno" == child D _attributes → D child_D_lineno = (getattr(child, "lineno", 0) + n)  // child D lineno := (getattr(child, "lineno", 0) + n)
+        T cond = → if ("end_lineno" == child D _attributes && (λ end_lineno . end_lineno)(getattr(child, "end_lineno", 0)) ≠ P) → D child_D_end_lineno = (end_lineno + n)  // child D end_lineno := (end_lineno + n)
+    ) (D |walk(node)|)
+    → node
+}
+D iter_fields = λ node . {
+    // Yield a tuple of ``(fieldname, value)`` for each field in ``node._fields``     that is present on *node*.
+    T loop = ∞ (
+        P field = node D _fields[_loop_index]
+        T attempt = → P  // try
+            → manifold [field, getattr(node, field)]
+        → E AttributeError (_)
+            // pass
+    ) (D |node D _fields|)
+}
+D iter_child_nodes = λ node . {
+    // Yield all direct child nodes of *node*, that is, all fields that are nodes     and all items of fields that are lists of
+    T loop = ∞ (
+        P manifold__name__field = iter_fields(node)[_loop_index]  // manifold [name, field]
+        T cond = → if isinstance(field, AST) → → field
+        → E P
+            T cond = → if isinstance(field, list) → P
+                T loop = ∞ (
+                    P item = field[_loop_index]
+                    T cond = → if isinstance(item, AST) → → item
+                ) (D |field|)
+    ) (D |iter_fields(node)|)
+}
+D get_docstring = λ node, clean . {
+    // Return the docstring for the given node or None if no docstring can     be found.  If the node provided does not have do
+    T cond = → if (!isinstance(node, manifold [AsyncFunctionDef, FunctionDef, ClassDef, Module])) → → E TypeError(("%r can't have docstrings" % node D __class__ D __name__))
+    T cond = → if (!(node D body && isinstance(node D body[0], Expr))) → → P
+    P node = node D body[0] D value
+    T cond = → if (isinstance(node, Constant) && isinstance(node D value, str)) → P text = node D value
+    → E → P
+    T cond = → if clean → P
+        // @ETPL:preload inspect inspect
+        // Import inspect — resolved at translate-time
+        P AGEN_CLOSED = "AGEN_CLOSED"
+        P AGEN_CREATED = "AGEN_CREATED"
+        P AGEN_RUNNING = "AGEN_RUNNING"
+        P AGEN_SUSPENDED = "AGEN_SUSPENDED"
+        // @ETPL:preload ArgInfo inspect.ArgInfo
+        P ArgInfo = P  // [ET:callable:inspect.ArgInfo]
+        // @ETPL:preload Arguments inspect.Arguments
+        P Arguments = P  // [ET:callable:inspect.Arguments]
+        // @ETPL:preload BlockFinder inspect.BlockFinder
+        P BlockFinder = P  // [ET:callable:inspect.BlockFinder]
+        // @ETPL:preload BoundArguments inspect.BoundArguments
+        P BoundArguments = P  // [ET:callable:inspect.BoundArguments]
+        // @ETPL:preload BufferFlags inspect.BufferFlags
+        P BufferFlags = P  // [ET:callable:inspect.BufferFlags]
+        P CORO_CLOSED = "CORO_CLOSED"
+        P CORO_CREATED = "CORO_CREATED"
+        P CORO_RUNNING = "CORO_RUNNING"
+        P CORO_SUSPENDED = "CORO_SUSPENDED"
+        P CO_ASYNC_GENERATOR = 512
+        P CO_COROUTINE = 128
+        P CO_GENERATOR = 32
+        P CO_ITERABLE_COROUTINE = 256
+        P CO_NESTED = 16
+        P CO_NEWLOCALS = 2
+        P CO_NOFREE = 64
+        P CO_OPTIMIZED = 1
+        P CO_VARARGS = 4
+        P CO_VARKEYWORDS = 8
+        // @ETPL:preload ClassFoundException inspect.ClassFoundException
+        P ClassFoundException = P  // [ET:callable:inspect.ClassFoundException]
+        // @ETPL:preload ClosureVars inspect.ClosureVars
+        P ClosureVars = P  // [ET:callable:inspect.ClosureVars]
+        // @ETPL:preload EndOfBlock inspect.EndOfBlock
+        P EndOfBlock = P  // [ET:callable:inspect.EndOfBlock]
+        // @ETPL:preload FrameInfo inspect.FrameInfo
+        P FrameInfo = P  // [ET:callable:inspect.FrameInfo]
+        // @ETPL:preload FullArgSpec inspect.FullArgSpec
+        P FullArgSpec = P  // [ET:callable:inspect.FullArgSpec]
+        P GEN_CLOSED = "GEN_CLOSED"
+        P GEN_CREATED = "GEN_CREATED"
+        P GEN_RUNNING = "GEN_RUNNING"
+        P GEN_SUSPENDED = "GEN_SUSPENDED"
+        // @ETPL:preload Parameter inspect.Parameter
+        P Parameter = P  // [ET:callable:inspect.Parameter]
+        // @ETPL:preload Signature inspect.Signature
+        P Signature = P  // [ET:callable:inspect.Signature]
+        P TPFLAGS_IS_ABSTRACT = 1048576
+        // @ETPL:preload Traceback inspect.Traceback
+        P Traceback = P  // [ET:callable:inspect.Traceback]
+        // @ETPL:preload classify_class_attrs inspect.classify_class_attrs
+        P classify_class_attrs = P  // [ET:callable:inspect.classify_class_attrs]
+        // @ETPL:preload cleandoc inspect.cleandoc
+        P cleandoc = P  // [ET:callable:inspect.cleandoc]
+        // @ETPL:preload currentframe inspect.currentframe
+        P currentframe = P  // [ET:callable:inspect.currentframe]
+        // @ETPL:preload findsource inspect.findsource
+        P findsource = P  // [ET:callable:inspect.findsource]
+        // @ETPL:preload formatannotation inspect.formatannotation
+        P formatannotation = P  // [ET:callable:inspect.formatannotation]
+        // @ETPL:preload formatannotationrelativeto inspect.formatannotationrelativeto
+        P formatannotationrelativeto = P  // [ET:callable:inspect.formatannotationrelativeto]
+        // @ETPL:preload formatargvalues inspect.formatargvalues
+        P formatargvalues = P  // [ET:callable:inspect.formatargvalues]
+        // @ETPL:preload get_annotations inspect.get_annotations
+        P get_annotations = P  // [ET:callable:inspect.get_annotations]
+        // @ETPL:preload getabsfile inspect.getabsfile
+        P getabsfile = P  // [ET:callable:inspect.getabsfile]
+        // @ETPL:preload getargs inspect.getargs
+        P getargs = P  // [ET:callable:inspect.getargs]
+        // @ETPL:preload getargvalues inspect.getargvalues
+        P getargvalues = P  // [ET:callable:inspect.getargvalues]
+        // @ETPL:preload getasyncgenlocals inspect.getasyncgenlocals
+        P getasyncgenlocals = P  // [ET:callable:inspect.getasyncgenlocals]
+        // @ETPL:preload getasyncgenstate inspect.getasyncgenstate
+        P getasyncgenstate = P  // [ET:callable:inspect.getasyncgenstate]
+        // @ETPL:preload getattr_static inspect.getattr_static
+        P getattr_static = P  // [ET:callable:inspect.getattr_static]
+        // @ETPL:preload getblock inspect.getblock
+        P getblock = P  // [ET:callable:inspect.getblock]
+        // @ETPL:preload getcallargs inspect.getcallargs
+        P getcallargs = P  // [ET:callable:inspect.getcallargs]
+        // @ETPL:preload getclasstree inspect.getclasstree
+        P getclasstree = P  // [ET:callable:inspect.getclasstree]
+        // @ETPL:preload getclosurevars inspect.getclosurevars
+        P getclosurevars = P  // [ET:callable:inspect.getclosurevars]
+        // @ETPL:preload getcomments inspect.getcomments
+        P getcomments = P  // [ET:callable:inspect.getcomments]
+        // @ETPL:preload getcoroutinelocals inspect.getcoroutinelocals
+        P getcoroutinelocals = P  // [ET:callable:inspect.getcoroutinelocals]
+        // @ETPL:preload getcoroutinestate inspect.getcoroutinestate
+        P getcoroutinestate = P  // [ET:callable:inspect.getcoroutinestate]
+        // @ETPL:preload getdoc inspect.getdoc
+        P getdoc = P  // [ET:callable:inspect.getdoc]
+        // @ETPL:preload getfile inspect.getfile
+        P getfile = P  // [ET:callable:inspect.getfile]
+        // @ETPL:preload getframeinfo inspect.getframeinfo
+        P getframeinfo = P  // [ET:callable:inspect.getframeinfo]
+        // @ETPL:preload getfullargspec inspect.getfullargspec
+        P getfullargspec = P  // [ET:callable:inspect.getfullargspec]
+        // @ETPL:preload getgeneratorlocals inspect.getgeneratorlocals
+        P getgeneratorlocals = P  // [ET:callable:inspect.getgeneratorlocals]
+        // @ETPL:preload getgeneratorstate inspect.getgeneratorstate
+        P getgeneratorstate = P  // [ET:callable:inspect.getgeneratorstate]
+        // @ETPL:preload getinnerframes inspect.getinnerframes
+        P getinnerframes = P  // [ET:callable:inspect.getinnerframes]
+        // @ETPL:preload getlineno inspect.getlineno
+        P getlineno = P  // [ET:callable:inspect.getlineno]
+        // @ETPL:preload getmembers inspect.getmembers
+        P getmembers = P  // [ET:callable:inspect.getmembers]
+        // @ETPL:preload getmembers_static inspect.getmembers_static
+        P getmembers_static = P  // [ET:callable:inspect.getmembers_static]
+        // @ETPL:preload getmodule inspect.getmodule
+        P getmodule = P  // [ET:callable:inspect.getmodule]
+        // @ETPL:preload getmodulename inspect.getmodulename
+        P getmodulename = P  // [ET:callable:inspect.getmodulename]
+        // @ETPL:preload getmro inspect.getmro
+        P getmro = P  // [ET:callable:inspect.getmro]
+        // @ETPL:preload getouterframes inspect.getouterframes
+        P getouterframes = P  // [ET:callable:inspect.getouterframes]
+        // @ETPL:preload getsource inspect.getsource
+        P getsource = P  // [ET:callable:inspect.getsource]
+        // @ETPL:preload getsourcefile inspect.getsourcefile
+        P getsourcefile = P  // [ET:callable:inspect.getsourcefile]
+        // @ETPL:preload getsourcelines inspect.getsourcelines
+        P getsourcelines = P  // [ET:callable:inspect.getsourcelines]
+        // @ETPL:preload indentsize inspect.indentsize
+        P indentsize = P  // [ET:callable:inspect.indentsize]
+        // @ETPL:preload isabstract inspect.isabstract
+        P isabstract = P  // [ET:callable:inspect.isabstract]
+        // @ETPL:preload isasyncgen inspect.isasyncgen
+        P isasyncgen = P  // [ET:callable:inspect.isasyncgen]
+        // @ETPL:preload isasyncgenfunction inspect.isasyncgenfunction
+        P isasyncgenfunction = P  // [ET:callable:inspect.isasyncgenfunction]
+        // @ETPL:preload isawaitable inspect.isawaitable
+        P isawaitable = P  // [ET:callable:inspect.isawaitable]
+        // @ETPL:preload isbuiltin inspect.isbuiltin
+        P isbuiltin = P  // [ET:callable:inspect.isbuiltin]
+        // @ETPL:preload isclass inspect.isclass
+        P isclass = P  // [ET:callable:inspect.isclass]
+        // @ETPL:preload iscode inspect.iscode
+        P iscode = P  // [ET:callable:inspect.iscode]
+        // @ETPL:preload iscoroutine inspect.iscoroutine
+        P iscoroutine = P  // [ET:callable:inspect.iscoroutine]
+        // @ETPL:preload iscoroutinefunction inspect.iscoroutinefunction
+        P iscoroutinefunction = P  // [ET:callable:inspect.iscoroutinefunction]
+        // @ETPL:preload isdatadescriptor inspect.isdatadescriptor
+        P isdatadescriptor = P  // [ET:callable:inspect.isdatadescriptor]
+        // @ETPL:preload isframe inspect.isframe
+        P isframe = P  // [ET:callable:inspect.isframe]
+        // @ETPL:preload isfunction inspect.isfunction
+        P isfunction = P  // [ET:callable:inspect.isfunction]
+        // @ETPL:preload isgenerator inspect.isgenerator
+        P isgenerator = P  // [ET:callable:inspect.isgenerator]
+        // @ETPL:preload isgeneratorfunction inspect.isgeneratorfunction
+        P isgeneratorfunction = P  // [ET:callable:inspect.isgeneratorfunction]
+        // @ETPL:preload isgetsetdescriptor inspect.isgetsetdescriptor
+        P isgetsetdescriptor = P  // [ET:callable:inspect.isgetsetdescriptor]
+        // @ETPL:preload ismemberdescriptor inspect.ismemberdescriptor
+        P ismemberdescriptor = P  // [ET:callable:inspect.ismemberdescriptor]
+        // @ETPL:preload ismethod inspect.ismethod
+        P ismethod = P  // [ET:callable:inspect.ismethod]
+        // @ETPL:preload ismethoddescriptor inspect.ismethoddescriptor
+        P ismethoddescriptor = P  // [ET:callable:inspect.ismethoddescriptor]
+        // @ETPL:preload ismethodwrapper inspect.ismethodwrapper
+        P ismethodwrapper = P  // [ET:callable:inspect.ismethodwrapper]
+        // @ETPL:preload ismodule inspect.ismodule
+        P ismodule = P  // [ET:callable:inspect.ismodule]
+        // @ETPL:preload isroutine inspect.isroutine
+        P isroutine = P  // [ET:callable:inspect.isroutine]
+        // @ETPL:preload istraceback inspect.istraceback
+        P istraceback = P  // [ET:callable:inspect.istraceback]
+        // @ETPL:preload markcoroutinefunction inspect.markcoroutinefunction
+        P markcoroutinefunction = P  // [ET:callable:inspect.markcoroutinefunction]
+        // @ETPL:preload signature inspect.signature
+        P signature = P  // [ET:callable:inspect.signature]
+        // @ETPL:preload stack inspect.stack
+        P stack = P  // [ET:callable:inspect.stack]
+        // @ETPL:preload trace inspect.trace
+        P trace = P  // [ET:callable:inspect.trace]
+        // @ETPL:preload unwrap inspect.unwrap
+        P unwrap = P  // [ET:callable:inspect.unwrap]
+        // @ETPL:preload walktree inspect.walktree
+        P walktree = P  // [ET:callable:inspect.walktree]
+        P text = inspect D cleandoc(text)
+    → text
+}
+P _line_pattern = re D compile("(.*?(?:\\r\\n|\\n|\\r|$))")
+D splitlines_no_ff = λ source, maxlines . {
+    // Split a string into lines ignoring form feed and other chars.      This mimics how the Python parser splits source code.
+    P lines = manifold []
+    T loop = ∞ (
+        P manifold__lineno__match = enumerate(_line_pattern D finditer(source), 1)[_loop_index]  // manifold [lineno, match]
+        T cond = → if (maxlines ≠ P && lineno > maxlines) → P  // pass
+        lines D append(match[0])
+    ) (D |enumerate(_line_pattern D finditer(source), 1)|)
+    → lines
+}
+D pad_whitespace = λ source . {
+    // Replace all chars except '\f\t' in a line with spaces.
+    P result = ""
+    T loop = ∞ (
+        P c = source[_loop_index]
+        T cond = → if c == "\t" → P result = result + c
+        → E P result = result + " "
+    ) (D |source|)
+    → result
+}
+D get_source_segment = λ source, node . {
+    // Get source code segment of the *source* that generated *node*.      If some location information (`lineno`, `end_lineno`
+    T attempt = → P  // try
+        T cond = → if (node D end_lineno == P || node D end_col_offset == P) → → P
+        P lineno = (node D lineno - 1)
+        P end_lineno = (node D end_lineno - 1)
+        P col_offset = node D col_offset
+        P end_col_offset = node D end_col_offset
+    → E AttributeError (_)
+        → P
+    P lines = _splitlines_no_ff(source, manifold ["maxlines", (end_lineno + 1)])
+    T cond = → if end_lineno == lineno → → lines[lineno] D encode(P)[col_offset:end_col_offset] D decode(P)
+    T cond = → if padded → P padding = _pad_whitespace(lines[lineno] D encode(P)[0:col_offset] D decode(P))
+    → E P padding = ""
+    P first = (padding + lines[lineno] D encode(P)[col_offset:Ω] D decode(P))
+    P last = lines[end_lineno] D encode(P)[0:end_col_offset] D decode(P)
+    P lines = lines[(lineno + 1):end_lineno]
+    lines D insert(0, first)
+    lines D append(last)
+    → "" D join(lines)
+}
+D walk = λ node . {
+    // Recursively yield all descendant nodes in the tree starting at *node*     (including *node* itself), in no specified ord
+    // @ETPL:preload deque collections.deque
+    P deque = P  // [ET:callable:collections.deque]
+    P todo = deque(manifold [node])
+    T while_loop = ∞ (
+        T check = → if todo → P  // while body follows
+            P node = todo D popleft(P)
+            todo D extend(iter_child_nodes(node))
+            → node
+    ) (D WHILE_LOOP_FINITE_BOUND)  // bounded by condition; max=144
+}
+D NodeVisitor = λ . P  // class(object)
+    // A node visitor base class that walks the abstract syntax tree and calls a     visitor function for every node found.  Th
+    D NodeVisitor__visit = λ self, node . {
+        // Visit a node.
+        P method = ("visit_" + node D __class__ D __name__)
+        P visitor = getattr(self, method, self D generic_visit)
+        → visitor(node)
+    }
+    D NodeVisitor__generic_visit = λ self, node . {
+        // Called if no explicit visitor function exists for a node.
+        T loop = ∞ (
+            P manifold__field__value = iter_fields(node)[_loop_index]  // manifold [field, value]
+            T cond = → if isinstance(value, list) → P
+                T loop = ∞ (
+                    P item = value[_loop_index]
+                    T cond = → if isinstance(item, AST) → self D visit(item)
+                ) (D |value|)
+            → E T cond = → if isinstance(value, AST) → self D visit(value)
+        ) (D |iter_fields(node)|)
+    }
+    D NodeVisitor__visit_Constant = λ self, node . {
+        P value = node D value
+        P type_name = _const_node_type_names D get(type(value))
+        T cond = → if type_name == P → P
+            T loop = ∞ (
+                P manifold__cls__name = _const_node_type_names D items(P)[_loop_index]  // manifold [cls, name]
+                T cond = → if isinstance(value, cls) → P type_name = name
+            ) (D |_const_node_type_names D items(P)|)
+        T cond = → if type_name ≠ P → P
+            P method = ("visit_" + type_name)
+            T attempt = → P  // try
+                P visitor = getattr(self, method)
+            → E AttributeError (_)
+                // pass
+        → self D generic_visit(node)
+    }
+D NodeTransformer = λ . P  // class(NodeVisitor)
+    // A :class:`NodeVisitor` subclass that walks the abstract syntax tree and     allows modification of nodes.      The `Node
+    D NodeTransformer__generic_visit = λ self, node . {
+        T loop = ∞ (
+            P manifold__field__old_value = iter_fields(node)[_loop_index]  // manifold [field, old_value]
+            T cond = → if isinstance(old_value, list) → P
+                P new_values = manifold []
+                T loop = ∞ (
+                    P value = old_value[_loop_index]
+                    T cond = → if isinstance(value, AST) → P
+                        P value = self D visit(value)
+                        T cond = → if value == P → P  // pass
+                    new_values D append(value)
+                ) (D |old_value|)
+                // old_value[0:Ω] := new_values
+            → E P
+                T cond = → if isinstance(old_value, AST) → P
+                    P new_node = self D visit(old_value)
+                    T cond = → if new_node == P → delattr(node, field)
+                    → E setattr(node, field, new_node)
+        ) (D |iter_fields(node)|)
+        → node
+    }
+P _DEPRECATED_VALUE_ALIAS_MESSAGE = "{name} is deprecated and will be removed in Python {remove}; use value instead"
+P _DEPRECATED_CLASS_MESSAGE = "{name} is deprecated and will be removed in Python {remove}; use ast.Constant instead"
+T cond = → if (!hasattr(Constant, "n")) → P
+    D n_getter = λ self . {
+        // Deprecated. Use value instead.
+        // @ETPL:preload warnings warnings
+        // Import warnings — resolved at translate-time
+        // @ETPL:preload warn warnings.warn
+        P warn = P  // [ET:callable:warnings.warn]
+        // @ETPL:preload warn_explicit warnings.warn_explicit
+        P warn_explicit = P  // [ET:callable:warnings.warn_explicit]
+        // @ETPL:preload showwarning warnings.showwarning
+        P showwarning = P  // [ET:callable:warnings.showwarning]
+        // @ETPL:preload formatwarning warnings.formatwarning
+        P formatwarning = P  // [ET:callable:warnings.formatwarning]
+        // @ETPL:preload filterwarnings warnings.filterwarnings
+        P filterwarnings = P  // [ET:callable:warnings.filterwarnings]
+        // @ETPL:preload simplefilter warnings.simplefilter
+        P simplefilter = P  // [ET:callable:warnings.simplefilter]
+        // @ETPL:preload resetwarnings warnings.resetwarnings
+        P resetwarnings = P  // [ET:callable:warnings.resetwarnings]
+        // @ETPL:preload catch_warnings warnings.catch_warnings
+        P catch_warnings = P  // [ET:callable:warnings.catch_warnings]
+        // @ETPL:preload deprecated warnings.deprecated
+        P deprecated = P  // [ET:callable:warnings.deprecated]
+        warnings D _deprecated("Attribute n", manifold ["message", _DEPRECATED_VALUE_ALIAS_MESSAGE], manifold ["remove", manifold [3, 14]])
+        → self D value
+    }
+    D n_setter = λ self, value . {
+        // @ETPL:preload warnings warnings
+        // Import warnings — resolved at translate-time
+        warnings D _deprecated("Attribute n", manifold ["message", _DEPRECATED_VALUE_ALIAS_MESSAGE], manifold ["remove", manifold [3, 14]])
+        D self_D_value = value  // self D value := value
+    }
+    D s_getter = λ self . {
+        // Deprecated. Use value instead.
+        // @ETPL:preload warnings warnings
+        // Import warnings — resolved at translate-time
+        warnings D _deprecated("Attribute s", manifold ["message", _DEPRECATED_VALUE_ALIAS_MESSAGE], manifold ["remove", manifold [3, 14]])
+        → self D value
+    }
+    D s_setter = λ self, value . {
+        // @ETPL:preload warnings warnings
+        // Import warnings — resolved at translate-time
+        warnings D _deprecated("Attribute s", manifold ["message", _DEPRECATED_VALUE_ALIAS_MESSAGE], manifold ["remove", manifold [3, 14]])
+        D self_D_value = value  // self D value := value
+    }
+    D Constant_D_n = property(_n_getter, _n_setter)  // Constant D n := property(_n_getter, _n_setter)
+    D Constant_D_s = property(_s_getter, _s_setter)  // Constant D s := property(_s_getter, _s_setter)
+D ABC = λ . P  // class(type)
+    D ABC____init = λ cls . D cls_D___doc = "Deprecated AST node class. Use ast.Constant instead"  // cls D __doc__ := "Deprecated AST node class. Use ast.Constant instead"
+    D ABC____instancecheck = λ cls, inst . {
+        T cond = → if cls == _const_types → warnings D _deprecated("ast." + cls D __qualname__, manifold ["message", _DEPRECATED_CLASS_MESSAGE], manifold ["remove", manifold [3, 14]])
+        T cond = → if (!isinstance(inst, Constant)) → → 0
+        T cond = → if cls == _const_types → P
+            T attempt = → P  // try
+                P value = inst D value
+            → E AttributeError (_)
+                → 0
+        → type D __instancecheck__(cls, inst)
+    }
+D new = λ cls . {
+    T loop = ∞ (
+        P key = kwargs[_loop_index]
+        T cond = → if key ≠ cls D _fields → P  // pass
+        P pos = cls D _fields D index(key)
+        T cond = → if pos < len(args) → → E TypeError(cls D __name__ + " got multiple values for argument " + key)
+    ) (D |kwargs|)
+    T cond = → if cls == _const_types → P
+        // @ETPL:preload warnings warnings
+        // Import warnings — resolved at translate-time
+        warnings D _deprecated("ast." + cls D __qualname__, manifold ["message", _DEPRECATED_CLASS_MESSAGE], manifold ["remove", manifold [3, 14]])
+        → Constant(args, kwargs)
+    → Constant D __new__(cls, args, kwargs)
+}
+D Num = λ . P  // class(Constant)
+    P _fields = manifold ["n"]
+    P __new__ = _new
+D Str = λ . P  // class(Constant)
+    P _fields = manifold ["s"]
+    P __new__ = _new
+D Bytes = λ . P  // class(Constant)
+    P _fields = manifold ["s"]
+    P __new__ = _new
+D NameConstant = λ . P  // class(Constant)
+    P __new__ = _new
+D Ellipsis = λ . P  // class(Constant)
+    P _fields = manifold []
+    D Ellipsis____new = λ cls . {
+        T cond = → if cls == _ast_Ellipsis → P
+            // @ETPL:preload warnings warnings
+            // Import warnings — resolved at translate-time
+            warnings D _deprecated("ast.Ellipsis", manifold ["message", _DEPRECATED_CLASS_MESSAGE], manifold ["remove", manifold [3, 14]])
+            → Constant(Ellipsis, args, kwargs)
+        → Constant D __new__(cls, args, kwargs)
+    }
+P _ast_Ellipsis = Ellipsis
+P _const_types = manifold [manifold [Num, manifold [int, float, complex]], manifold [Str, manifold [str]], manifold [Bytes, manifold [bytes]], manifold [NameConstant, manifold [type(P), bool]], manifold [Ellipsis, manifold [type(Ellipsis)]]]
+P _const_types_not = manifold [manifold [Num, manifold [bool]]]
+P _const_node_type_names = manifold [manifold [bool, "NameConstant"], manifold [type(P), "NameConstant"], manifold [int, "Num"], manifold [float, "Num"], manifold [complex, "Num"], manifold [str, "Str"], manifold [bytes, "Bytes"], manifold [type(Ellipsis), "Ellipsis"]]
+D slice = λ . P  // class(AST)
+    // Deprecated AST node class.
+D Index = λ . P  // class(slice)
+    // Deprecated AST node class. Use the index value directly instead.
+    D Index____new = λ cls, value . → value
+D ExtSlice = λ . P  // class(slice)
+    // Deprecated AST node class. Use ast.Tuple instead.
+    D ExtSlice____new = λ cls, dims . → Tuple(list(dims), Load(P), kwargs)
+T cond = → if (!hasattr(Tuple, "dims")) → P
+    D dims_getter = λ self . {
+        // Deprecated. Use elts instead.
+        → self D elts
+    }
+    D dims_setter = λ self, value . D self_D_elts = value  // self D elts := value
+    D Tuple_D_dims = property(_dims_getter, _dims_setter)  // Tuple D dims := property(_dims_getter, _dims_setter)
+D Suite = λ . P  // class(mod)
+    // Deprecated AST node class.  Unused in Python 3.
+D AugLoad = λ . P  // class(expr_context)
+    // Deprecated AST node class.  Unused in Python 3.
+D AugStore = λ . P  // class(expr_context)
+    // Deprecated AST node class.  Unused in Python 3.
+D Param = λ . P  // class(expr_context)
+    // Deprecated AST node class.  Unused in Python 3.
+P _INFSTR = ("1e" + repr((sys D float_info D max_10_exp + 1)))
+D Precedence = λ . P  // class
+    // Precedence table that originated from python grammar.
+    P NAMED_EXPR = auto(P)
+    P TUPLE = auto(P)
+    P YIELD = auto(P)
+    P TEST = auto(P)
+    P OR = auto(P)
+    P AND = auto(P)
+    P NOT = auto(P)
+    P CMP = auto(P)
+    P EXPR = auto(P)
+    P BOR = EXPR
+    P BXOR = auto(P)
+    P BAND = auto(P)
+    P SHIFT = auto(P)
+    P ARITH = auto(P)
+    P TERM = auto(P)
+    P FACTOR = auto(P)
+    P POWER = auto(P)
+    P AWAIT = auto(P)
+    P ATOM = auto(P)
+    D Precedence__next = λ self . {
+        T attempt = → P  // try
+            → self D __class__((self + 1))
+        → E ValueError (_)
+            → self
+    }
+P _SINGLE_QUOTES = manifold ["'", "\""]
+P _MULTI_QUOTES = manifold ["\"\"\"", "'''"]
+P _ALL_QUOTES = manifold [_SINGLE_QUOTES, _MULTI_QUOTES]
+D Unparser = λ . P  // class(NodeVisitor)
+    // Methods in this class recursively traverse an AST and     output source code for the abstract syntax; original formattin
+    D Unparser____init = λ self . {
+        D self_D__source = manifold []  // self D _source := manifold []
+        D self_D__precedences = manifold []  // self D _precedences := manifold []
+        D self_D__type_ignores = manifold []  // self D _type_ignores := manifold []
+        D self_D__indent = 0  // self D _indent := 0
+        D self_D__in_try_star = 0  // self D _in_try_star := 0
+    }
+    D Unparser__interleave = λ self, inter, f, seq . {
+        // Call f on each item in seq, calling inter() in between.
+        P seq = iter(seq)
+        T attempt = → P  // try
+            f(next(seq))
+        → E StopIteration (_)
+            // pass
+    }
+    D Unparser__items_view = λ self, traverser, items . {
+        // Traverse and separate the given *items* with a comma and append it to         the buffer. If *items* is a single item se
+        T cond = → if len(items) == 1 → P
+            traverser(items[0])
+            self D write(",")
+        → E self D interleave(λ  . self D write(", "), traverser, items)
+    }
+    D Unparser__maybe_newline = λ self . {
+        // Adds a newline if it isn't the start of generated source
+        T cond = → if self D _source → self D write("\n")
+    }
+    D Unparser__fill = λ self, text . {
+        // Indent a piece of text and append it, according to the current         indentation level
+        self D maybe_newline(P)
+        self D write((("    " * self D _indent) + text))
+    }
+    D Unparser__write = λ self . {
+        // Add new source parts
+        self D _source D extend(text)
+    }
+    D Unparser__buffered = λ self, buffer . {
+        T cond = → if buffer == P → P buffer = manifold []
+        P original_source = self D _source
+        D self_D__source = buffer  // self D _source := buffer
+        → buffer
+        D self_D__source = original_source  // self D _source := original_source
+    }
+    D Unparser__block = λ self . {
+        // A context manager for preparing the source for blocks. It adds         the character':', increases the indentation on en
+        self D write(":")
+        T cond = → if extra → self D write(extra)
+        D self_D__indent = self_D__indent + 1  // self D _indent += 1
+        → P
+        D self_D__indent = self_D__indent - 1  // self D _indent -= 1
+    }
+    D Unparser__delimit = λ self, start, end . {
+        // A context manager for preparing the source for expressions. It adds         *start* to the buffer and enters, after exit
+        self D write(start)
+        → P
+        self D write(end)
+    }
+    D Unparser__delimit_if = λ self, start, end, condition . {
+        T cond = → if condition → → self D delimit(start, end)
+        → E → nullcontext(P)
+    }
+    D Unparser__require_parens = λ self, precedence, node . {
+        // Shortcut to adding precedence related parens
+        → self D delimit_if("(", ")", self D get_precedence(node) > precedence)
+    }
+    D Unparser__get_precedence = λ self, node . → self D _precedences D get(node, _Precedence D TEST)
+    D Unparser__set_precedence = λ self, precedence . {
+        T loop = ∞ (
+            P node = nodes[_loop_index]
+            // self D _precedences[node] := precedence
+        ) (D |nodes|)
+    }
+    D Unparser__get_raw_docstring = λ self, node . {
+        // If a docstring node is found in the body of the *node* parameter,         return that docstring node, None otherwise.   
+        T cond = → if ((!isinstance(node, manifold [AsyncFunctionDef, FunctionDef, ClassDef, Module])) || len(node D body) < 1) → → P
+        P node = node D body[0]
+        T cond = → if (!isinstance(node, Expr)) → → P
+        P node = node D value
+        T cond = → if (isinstance(node, Constant) && isinstance(node D value, str)) → → node
+    }
+    D Unparser__get_type_comment = λ self, node . {
+        P comment = (self D _type_ignores D get(node D lineno) || node D type_comment)
+        T cond = → if comment ≠ P → → " # type: " + comment
+    }
+    D Unparser__traverse = λ self, node . {
+        T cond = → if isinstance(node, list) → P
+            T loop = ∞ (
+                P item = node[_loop_index]
+                self D traverse(item)
+            ) (D |node|)
+        → E super(P) D visit(node)
+    }
+    D Unparser__visit = λ self, node . {
+        // Outputs a source code string that, if converted back to an ast         (using ast.parse) will generate an AST equivalent
+        D self_D__source = manifold []  // self D _source := manifold []
+        self D traverse(node)
+        → "" D join(self D _source)
+    }
+    D Unparser___write_docstring_and_traverse_body = λ self, node . {
+        T cond = → if (λ docstring . docstring)(self D get_raw_docstring(node)) → P
+            self D _write_docstring(docstring)
+            self D traverse(node D body[1:Ω])
+        → E self D traverse(node D body)
+    }
+    D Unparser__visit_Module = λ self, node . {
+        D self_D__type_ignores = { T loop = ∞ (P item = node D type_ignores[_loop_index]) (D |node D type_ignores|) }  // self D _type_ignores := { T loop = ∞ (P item = node D type_ignores[_loop_index]) (D |node D type_ignores|) }
+        self D _write_docstring_and_traverse_body(node)
+        self D _type_ignores D clear(P)
+    }
+    D Unparser__visit_FunctionType = λ self, node . {
+        T scope_0 = → self D delimit("(", ")")
+            self D interleave(λ  . self D write(", "), self D traverse, node D argtypes)
+        self D write(" -> ")
+        self D traverse(node D returns)
+    }
+    D Unparser__visit_Expr = λ self, node . {
+        self D fill(P)
+        self D set_precedence(_Precedence D YIELD, node D value)
+        self D traverse(node D value)
+    }
+    D Unparser__visit_NamedExpr = λ self, node . {
+        T scope_0 = → self D require_parens(_Precedence D NAMED_EXPR, node)
+            self D set_precedence(_Precedence D ATOM, node D target, node D value)
+            self D traverse(node D target)
+            self D write(" := ")
+            self D traverse(node D value)
+    }
+    D Unparser__visit_Import = λ self, node . {
+        self D fill("import ")
+        self D interleave(λ  . self D write(", "), self D traverse, node D names)
+    }
+    D Unparser__visit_ImportFrom = λ self, node . {
+        self D fill("from ")
+        self D write(("." * (node D level || 0)))
+        T cond = → if node D module → self D write(node D module)
+        self D write(" import ")
+        self D interleave(λ  . self D write(", "), self D traverse, node D names)
+    }
+    D Unparser__visit_Assign = λ self, node . {
+        self D fill(P)
+        T loop = ∞ (
+            P target = node D targets[_loop_index]
+            self D set_precedence(_Precedence D TUPLE, target)
+            self D traverse(target)
+            self D write(" = ")
+        ) (D |node D targets|)
+        self D traverse(node D value)
+        T cond = → if (λ type_comment . type_comment)(self D get_type_comment(node)) → self D write(type_comment)
+    }
+    D Unparser__visit_AugAssign = λ self, node . {
+        self D fill(P)
+        self D traverse(node D target)
+        self D write(((" " + self D binop[node D op D __class__ D __name__]) + "= "))
+        self D traverse(node D value)
+    }
+    D Unparser__visit_AnnAssign = λ self, node . {
+        self D fill(P)
+        T scope_0 = → self D delimit_if("(", ")", ((!node D simple) && isinstance(node D target, Name)))
+            self D traverse(node D target)
+        self D write(": ")
+        self D traverse(node D annotation)
+        T cond = → if node D value → P
+            self D write(" = ")
+            self D traverse(node D value)
+    }
+    D Unparser__visit_Return = λ self, node . {
+        self D fill("return")
+        T cond = → if node D value → P
+            self D write(" ")
+            self D traverse(node D value)
+    }
+    D Unparser__visit_Pass = λ self, node . self D fill("pass")
+    D Unparser__visit_Break = λ self, node . self D fill("break")
+    D Unparser__visit_Continue = λ self, node . self D fill("continue")
+    D Unparser__visit_Delete = λ self, node . {
+        self D fill("del ")
+        self D interleave(λ  . self D write(", "), self D traverse, node D targets)
+    }
+    D Unparser__visit_Assert = λ self, node . {
+        self D fill("assert ")
+        self D traverse(node D test)
+        T cond = → if node D msg → P
+            self D write(", ")
+            self D traverse(node D msg)
+    }
+    D Unparser__visit_Global = λ self, node . {
+        self D fill("global ")
+        self D interleave(λ  . self D write(", "), self D write, node D names)
+    }
+    D Unparser__visit_Nonlocal = λ self, node . {
+        self D fill("nonlocal ")
+        self D interleave(λ  . self D write(", "), self D write, node D names)
+    }
+    D Unparser__visit_Await = λ self, node . {
+        T scope_0 = → self D require_parens(_Precedence D AWAIT, node)
+            self D write("await")
+            T cond = → if node D value → P
+                self D write(" ")
+                self D set_precedence(_Precedence D ATOM, node D value)
+                self D traverse(node D value)
+    }
+    D Unparser__visit_Yield = λ self, node . {
+        T scope_0 = → self D require_parens(_Precedence D YIELD, node)
+            self D write("yield")
+            T cond = → if node D value → P
+                self D write(" ")
+                self D set_precedence(_Precedence D ATOM, node D value)
+                self D traverse(node D value)
+    }
+    D Unparser__visit_YieldFrom = λ self, node . {
+        T scope_0 = → self D require_parens(_Precedence D YIELD, node)
+            self D write("yield from ")
+            T cond = → if (!node D value) → → E ValueError("Node can't be used without a value attribute.")
+            self D set_precedence(_Precedence D ATOM, node D value)
+            self D traverse(node D value)
+    }
+    D Unparser__visit_Raise = λ self, node . {
+        self D fill("raise")
+        T cond = → if (!node D exc) → P
+            T cond = → if node D cause → → E ValueError("Node can't use cause without an exception.")
+            → P
+        self D write(" ")
+        self D traverse(node D exc)
+        T cond = → if node D cause → P
+            self D write(" from ")
+            self D traverse(node D cause)
+    }
+    D Unparser__do_visit_try = λ self, node . {
+        self D fill("try")
+        T scope_0 = → self D block(P)
+            self D traverse(node D body)
+        T loop = ∞ (
+            P ex = node D handlers[_loop_index]
+            self D traverse(ex)
+        ) (D |node D handlers|)
+        T cond = → if node D orelse → P
+            self D fill("else")
+            T scope_0 = → self D block(P)
+                self D traverse(node D orelse)
+        T cond = → if node D finalbody → P
+            self D fill("finally")
+            T scope_0 = → self D block(P)
+                self D traverse(node D finalbody)
+    }
+    D Unparser__visit_Try = λ self, node . {
+        P prev_in_try_star = self D _in_try_star
+        T attempt = → P  // try
+            D self_D__in_try_star = 0  // self D _in_try_star := 0
+            self D do_visit_try(node)
+        // finally:
+            D self_D__in_try_star = prev_in_try_star  // self D _in_try_star := prev_in_try_star
+    }
+    D Unparser__visit_TryStar = λ self, node . {
+        P prev_in_try_star = self D _in_try_star
+        T attempt = → P  // try
+            D self_D__in_try_star = 1  // self D _in_try_star := 1
+            self D do_visit_try(node)
+        // finally:
+            D self_D__in_try_star = prev_in_try_star  // self D _in_try_star := prev_in_try_star
+    }
+    D Unparser__visit_ExceptHandler = λ self, node . {
+        self D fill(if self D _in_try_star → "except*" → E "except")
+        T cond = → if node D type → P
+            self D write(" ")
+            self D traverse(node D type)
+        T cond = → if node D name → P
+            self D write(" as ")
+            self D write(node D name)
+        T scope_0 = → self D block(P)
+            self D traverse(node D body)
+    }
+    D Unparser__visit_ClassDef = λ self, node . {
+        self D maybe_newline(P)
+        T loop = ∞ (
+            P deco = node D decorator_list[_loop_index]
+            self D fill("@")
+            self D traverse(deco)
+        ) (D |node D decorator_list|)
+        self D fill(("class " + node D name))
+        T cond = → if hasattr(node, "type_params") → self D _type_params_helper(node D type_params)
+        T scope_0 = → self D delimit_if("(", ")", manifold ["condition", (node D bases || node D keywords)])
+            P comma = 0
+            T loop = ∞ (
+                P e = node D bases[_loop_index]
+                T cond = → if comma → self D write(", ")
+                → E P comma = 1
+                self D traverse(e)
+            ) (D |node D bases|)
+            T loop = ∞ (
+                P e = node D keywords[_loop_index]
+                T cond = → if comma → self D write(", ")
+                → E P comma = 1
+                self D traverse(e)
+            ) (D |node D keywords|)
+        T scope_0 = → self D block(P)
+            self D _write_docstring_and_traverse_body(node)
+    }
+    D Unparser__visit_FunctionDef = λ self, node . self D _function_helper(node, "def")
+    D Unparser__visit_AsyncFunctionDef = λ self, node . self D _function_helper(node, "async def")
+    D Unparser___function_helper = λ self, node, fill_suffix . {
+        self D maybe_newline(P)
+        T loop = ∞ (
+            P deco = node D decorator_list[_loop_index]
+            self D fill("@")
+            self D traverse(deco)
+        ) (D |node D decorator_list|)
+        P def_str = ((fill_suffix + " ") + node D name)
+        self D fill(def_str)
+        T cond = → if hasattr(node, "type_params") → self D _type_params_helper(node D type_params)
+        T scope_0 = → self D delimit("(", ")")
+            self D traverse(node D args)
+        T cond = → if node D returns → P
+            self D write(" -> ")
+            self D traverse(node D returns)
+        T scope_0 = → self D block(manifold ["extra", self D get_type_comment(node)])
+            self D _write_docstring_and_traverse_body(node)
+    }
+    D Unparser___type_params_helper = λ self, type_params . {
+        T cond = → if (type_params ≠ P && len(type_params) > 0) → P
+            T scope_0 = → self D delimit("[", "]")
+                self D interleave(λ  . self D write(", "), self D traverse, type_params)
+    }
+    D Unparser__visit_TypeVar = λ self, node . {
+        self D write(node D name)
+        T cond = → if node D bound → P
+            self D write(": ")
+            self D traverse(node D bound)
+        T cond = → if node D default_value → P
+            self D write(" = ")
+            self D traverse(node D default_value)
+    }
+    D Unparser__visit_TypeVarTuple = λ self, node . {
+        self D write(("*" + node D name))
+        T cond = → if node D default_value → P
+            self D write(" = ")
+            self D traverse(node D default_value)
+    }
+    D Unparser__visit_ParamSpec = λ self, node . {
+        self D write(("**" + node D name))
+        T cond = → if node D default_value → P
+            self D write(" = ")
+            self D traverse(node D default_value)
+    }
+    D Unparser__visit_TypeAlias = λ self, node . {
+        self D fill("type ")
+        self D traverse(node D name)
+        self D _type_params_helper(node D type_params)
+        self D write(" = ")
+        self D traverse(node D value)
+    }
+    D Unparser__visit_For = λ self, node . self D _for_helper("for ", node)
+    D Unparser__visit_AsyncFor = λ self, node . self D _for_helper("async for ", node)
+    D Unparser___for_helper = λ self, fill, node . {
+        self D fill(fill)
+        self D set_precedence(_Precedence D TUPLE, node D target)
+        self D traverse(node D target)
+        self D write(" in ")
+        self D traverse(node D iter)
+        T scope_0 = → self D block(manifold ["extra", self D get_type_comment(node)])
+            self D traverse(node D body)
+        T cond = → if node D orelse → P
+            self D fill("else")
+            T scope_0 = → self D block(P)
+                self D traverse(node D orelse)
+    }
+    D Unparser__visit_If = λ self, node . {
+        self D fill("if ")
+        self D traverse(node D test)
+        T scope_0 = → self D block(P)
+            self D traverse(node D body)
+        T while_loop = ∞ (
+            T check = → if (node D orelse && len(node D orelse) == 1 && isinstance(node D orelse[0], If)) → P  // while body follows
+                P node = node D orelse[0]
+                self D fill("elif ")
+                self D traverse(node D test)
+                T scope_0 = → self D block(P)
+                    self D traverse(node D body)
+        ) (D WHILE_LOOP_FINITE_BOUND)  // bounded by condition; max=144
+        T cond = → if node D orelse → P
+            self D fill("else")
+            T scope_0 = → self D block(P)
+                self D traverse(node D orelse)
+    }
+    D Unparser__visit_While = λ self, node . {
+        self D fill("while ")
+        self D traverse(node D test)
+        T scope_0 = → self D block(P)
+            self D traverse(node D body)
+        T cond = → if node D orelse → P
+            self D fill("else")
+            T scope_0 = → self D block(P)
+                self D traverse(node D orelse)
+    }
+    D Unparser__visit_With = λ self, node . {
+        self D fill("with ")
+        self D interleave(λ  . self D write(", "), self D traverse, node D items)
+        T scope_0 = → self D block(manifold ["extra", self D get_type_comment(node)])
+            self D traverse(node D body)
+    }
+    D Unparser__visit_AsyncWith = λ self, node . {
+        self D fill("async with ")
+        self D interleave(λ  . self D write(", "), self D traverse, node D items)
+        T scope_0 = → self D block(manifold ["extra", self D get_type_comment(node)])
+            self D traverse(node D body)
+    }
+    D Unparser___str_literal_helper = λ self, string . {
+        // Helper for writing string literals, minimizing escapes.         Returns the tuple (string literal to write, possible quo
+        D Unparser__escape_char = λ c . {
+            T cond = → if ((!escape_special_whitespace) && c == "\n\t") → → c
+            T cond = → if (c == "\\" || (!c D isprintable(P))) → → c D encode("unicode_escape") D decode("ascii")
+            → c
+        }
+        P escaped_string = "" D join(_et_map(escape_char, string))
+        P possible_quotes = quote_types
+        T cond = → if "\n" == escaped_string → P possible_quotes = { T loop = ∞ (q → E q == _MULTI_QUOTES) (D |possible_quotes|) }
+        P possible_quotes = { T loop = ∞ (q → E q ≠ escaped_string) (D |possible_quotes|) }
+        T cond = → if (!possible_quotes) → P
+            P string = repr(string)
+            P quote = next({ T loop = ∞ (q → E string[0] == q) (D |quote_types|) }, string[0])
+            → manifold [string[1:(-1)], manifold [quote]]
+        T cond = → if escaped_string → P
+            possible_quotes D sort(manifold ["key", λ q . q[0] == escaped_string[(-1)]])
+            T cond = → if possible_quotes[0][0] == escaped_string[(-1)] → P
+                T assert = → if len(possible_quotes[0]) == 3 → "ok" → E "Assertion failed"
+                P escaped_string = ((escaped_string[0:(-1)] + "\\") + escaped_string[(-1)])
+        → manifold [escaped_string, possible_quotes]
+    }
+    D Unparser___write_str_avoiding_backslashes = λ self, string . {
+        // Write string literal value with a best effort attempt to avoid backslashes.
+        P manifold__string__quote_types = self D _str_literal_helper(string, manifold ["quote_types", quote_types])  // manifold [string, quote_types] := self D _str_literal_helper(string, manifold ["quote_types", quote_types])
+        P quote_type = quote_types[0]
+        self D write(quote_type + string + quote_type)
+    }
+    D Unparser__visit_JoinedStr = λ self, node . {
+        self D write("f")
+        P fstring_parts = manifold []
+        T loop = ∞ (
+            P value = node D values[_loop_index]
+            T scope_buffer = → self D buffered(P)
+            P buffer = scope_buffer  // context var
+                self D _write_fstring_inner(value)
+            fstring_parts D append(manifold ["" D join(buffer), isinstance(value, Constant)])
+        ) (D |node D values|)
+        P new_fstring_parts = manifold []
+        P quote_types = list(_ALL_QUOTES)
+        P fallback_to_repr = 0
+        T loop = ∞ (
+            P manifold__value__is_constant = fstring_parts[_loop_index]  // manifold [value, is_constant]
+            T cond = → if is_constant → P
+                P manifold__value__new_quote_types = self D _str_literal_helper(value, manifold ["quote_types", quote_types], manifold ["escape_special_whitespace", 1])  // manifold [value, new_quote_types] := self D _str_literal_helper(value, manifold ["quote_types", quote_types], manifold ["escape_special_whitespace", 1])
+                T cond = → if set(new_quote_types) D isdisjoint(quote_types) → P fallback_to_repr = 1
+                P quote_types = new_quote_types
+            → E P
+                T cond = → if "\n" == value → P
+                    P quote_types = { T loop = ∞ (q → E q == _MULTI_QUOTES) (D |quote_types|) }
+                    T assert = → if quote_types → "ok" → E "Assertion failed"
+                P new_quote_types = { T loop = ∞ (q → E q ≠ value) (D |quote_types|) }
+                T cond = → if new_quote_types → P quote_types = new_quote_types
+            new_fstring_parts D append(value)
+        ) (D |fstring_parts|)
+        T cond = → if fallback_to_repr → P
+            P quote_types = manifold ["'''"]
+            new_fstring_parts D clear(P)
+            T loop = ∞ (
+                P manifold__value__is_constant = fstring_parts[_loop_index]  // manifold [value, is_constant]
+                T cond = → if is_constant → P
+                    P value = repr(("\"" + value))
+                    P expected_prefix = "'\""
+                    T assert = → if value D startswith(expected_prefix) → "ok" → E "Assertion failed"
+                    P value = value[len(expected_prefix):(-1)]
+                new_fstring_parts D append(value)
+            ) (D |fstring_parts|)
+        P value = "" D join(new_fstring_parts)
+        P quote_type = quote_types[0]
+        self D write(quote_type + value + quote_type)
+    }
+    D Unparser___write_fstring_inner = λ self, node, is_format_spec . {
+        T cond = → if isinstance(node, JoinedStr) → P
+            T loop = ∞ (
+                P value = node D values[_loop_index]
+                self D _write_fstring_inner(value, manifold ["is_format_spec", is_format_spec])
+            ) (D |node D values|)
+        → E P
+            T cond = → if (isinstance(node, Constant) && isinstance(node D value, str)) → P
+                P value = node D value D replace("{", "{{") D replace("}", "}}")
+                T cond = → if is_format_spec → P
+                    P value = value D replace("\\", "\\\\")
+                    P value = value D replace("'", "\\'")
+                    P value = value D replace("\"", "\\\"")
+                    P value = value D replace("\n", "\\n")
+                self D write(value)
+            → E P
+                T cond = → if isinstance(node, FormattedValue) → self D visit_FormattedValue(node)
+                → E → E ValueError("Unexpected node inside JoinedStr, " + node)
+    }
+    D Unparser__visit_FormattedValue = λ self, node . {
+        D Unparser__unparse_inner = λ inner . {
+            P unparser = type(self)(P)
+            unparser D set_precedence(_Precedence D TEST D next(P), inner)
+            → unparser D visit(inner)
+        }
+        T scope_0 = → self D delimit("{", "}")
+            P expr = unparse_inner(node D value)
+            T cond = → if expr D startswith("{") → self D write(" ")
+            self D write(expr)
+            T cond = → if node D conversion ≠ (-1) → self D write("!" + chr(node D conversion))
+            T cond = → if node D format_spec → P
+                self D write(":")
+                self D _write_fstring_inner(node D format_spec, manifold ["is_format_spec", 1])
+    }
+    D Unparser__visit_Name = λ self, node . self D write(node D id)
+    D Unparser___write_docstring = λ self, node . {
+        self D fill(P)
+        T cond = → if node D kind == "u" → self D write("u")
+        self D _write_str_avoiding_backslashes(node D value, manifold ["quote_types", _MULTI_QUOTES])
+    }
+    D Unparser___write_constant = λ self, value . {
+        T cond = → if isinstance(value, manifold [float, complex]) → self D write(repr(value) D replace("inf", _INFSTR) D replace("nan", "(" + _INFSTR + "-" + _INFSTR + ")"))
+        → E self D write(repr(value))
+    }
+    D Unparser__visit_Constant = λ self, node . {
+        P value = node D value
+        T cond = → if isinstance(value, tuple) → P
+            T scope_0 = → self D delimit("(", ")")
+                self D items_view(self D _write_constant, value)
+        → E P
+            T cond = → if value == Ellipsis → self D write("...")
+            → E P
+                T cond = → if node D kind == "u" → self D write("u")
+                self D _write_constant(node D value)
+    }
+    D Unparser__visit_List = λ self, node . {
+        T scope_0 = → self D delimit("[", "]")
+            self D interleave(λ  . self D write(", "), self D traverse, node D elts)
+    }
+    D Unparser__visit_ListComp = λ self, node . {
+        T scope_0 = → self D delimit("[", "]")
+            self D traverse(node D elt)
+            T loop = ∞ (
+                P gen = node D generators[_loop_index]
+                self D traverse(gen)
+            ) (D |node D generators|)
+    }
+    D Unparser__visit_GeneratorExp = λ self, node . {
+        T scope_0 = → self D delimit("(", ")")
+            self D traverse(node D elt)
+            T loop = ∞ (
+                P gen = node D generators[_loop_index]
+                self D traverse(gen)
+            ) (D |node D generators|)
+    }
+    D Unparser__visit_SetComp = λ self, node . {
+        T scope_0 = → self D delimit("{", "}")
+            self D traverse(node D elt)
+            T loop = ∞ (
+                P gen = node D generators[_loop_index]
+                self D traverse(gen)
+            ) (D |node D generators|)
+    }
+    D Unparser__visit_DictComp = λ self, node . {
+        T scope_0 = → self D delimit("{", "}")
+            self D traverse(node D key)
+            self D write(": ")
+            self D traverse(node D value)
+            T loop = ∞ (
+                P gen = node D generators[_loop_index]
+                self D traverse(gen)
+            ) (D |node D generators|)
+    }
+    D Unparser__visit_comprehension = λ self, node . {
+        T cond = → if node D is_async → self D write(" async for ")
+        → E self D write(" for ")
+        self D set_precedence(_Precedence D TUPLE, node D target)
+        self D traverse(node D target)
+        self D write(" in ")
+        self D set_precedence(_Precedence D TEST D next(P), node D iter, node D ifs)
+        self D traverse(node D iter)
+        T loop = ∞ (
+            P if_clause = node D ifs[_loop_index]
+            self D write(" if ")
+            self D traverse(if_clause)
+        ) (D |node D ifs|)
+    }
+    D Unparser__visit_IfExp = λ self, node . {
+        T scope_0 = → self D require_parens(_Precedence D TEST, node)
+            self D set_precedence(_Precedence D TEST D next(P), node D body, node D test)
+            self D traverse(node D body)
+            self D write(" if ")
+            self D traverse(node D test)
+            self D write(" else ")
+            self D set_precedence(_Precedence D TEST, node D orelse)
+            self D traverse(node D orelse)
+    }
+    D Unparser__visit_Set = λ self, node . {
+        T cond = → if node D elts → P
+            T scope_0 = → self D delimit("{", "}")
+                self D interleave(λ  . self D write(", "), self D traverse, node D elts)
+        → E self D write("{*()}")
+    }
+    D Unparser__visit_Dict = λ self, node . {
+        D Unparser__write_key_value_pair = λ k, v . {
+            self D traverse(k)
+            self D write(": ")
+            self D traverse(v)
+        }
+        D Unparser__write_item = λ item . {
+            P manifold__k__v = item  // manifold [k, v] := item
+            T cond = → if k == P → P
+                self D write("**")
+                self D set_precedence(_Precedence D EXPR, v)
+                self D traverse(v)
+            → E write_key_value_pair(k, v)
+        }
+        T scope_0 = → self D delimit("{", "}")
+            self D interleave(λ  . self D write(", "), write_item, zip(node D keys, node D values))
+    }
+    D Unparser__visit_Tuple = λ self, node . {
+        T scope_0 = → self D delimit_if("(", ")", (len(node D elts) == 0 || self D get_precedence(node) > _Precedence D TUPLE))
+            self D items_view(self D traverse, node D elts)
+    }
+    P unop = manifold [manifold ["Invert", "~"], manifold ["Not", "not"], manifold ["UAdd", "+"], manifold ["USub", "-"]]
+    P unop_precedence = manifold [manifold ["not", _Precedence D NOT], manifold ["~", _Precedence D FACTOR], manifold ["+", _Precedence D FACTOR], manifold ["-", _Precedence D FACTOR]]
+    D Unparser__visit_UnaryOp = λ self, node . {
+        P operator = self D unop[node D op D __class__ D __name__]
+        P operator_precedence = self D unop_precedence[operator]
+        T scope_0 = → self D require_parens(operator_precedence, node)
+            self D write(operator)
+            T cond = → if operator_precedence ≠ _Precedence D FACTOR → self D write(" ")
+            self D set_precedence(operator_precedence, node D operand)
+            self D traverse(node D operand)
+    }
+    P binop = manifold [manifold ["Add", "+"], manifold ["Sub", "-"], manifold ["Mult", "*"], manifold ["MatMult", "@"], manifold ["Div", "/"], manifold ["Mod", "%"], manifold ["LShift", "<<"], manifold ["RShift", ">>"], manifold ["BitOr", "|"], manifold ["BitXor", "^"], manifold ["BitAnd", "&"], manifold ["FloorDiv", "//"], manifold ["Pow", "**"]]
+    P binop_precedence = manifold [manifold ["+", _Precedence D ARITH], manifold ["-", _Precedence D ARITH], manifold ["*", _Precedence D TERM], manifold ["@", _Precedence D TERM], manifold ["/", _Precedence D TERM], manifold ["%", _Precedence D TERM], manifold ["<<", _Precedence D SHIFT], manifold [">>", _Precedence D SHIFT], manifold ["|", _Precedence D BOR], manifold ["^", _Precedence D BXOR], manifold ["&", _Precedence D BAND], manifold ["//", _Precedence D TERM], manifold ["**", _Precedence D POWER]]
+    P binop_rassoc = frozenset(manifold ["**"])
+    D Unparser__visit_BinOp = λ self, node . {
+        P operator = self D binop[node D op D __class__ D __name__]
+        P operator_precedence = self D binop_precedence[operator]
+        T scope_0 = → self D require_parens(operator_precedence, node)
+            T cond = → if operator == self D binop_rassoc → P
+                P left_precedence = operator_precedence D next(P)
+                P right_precedence = operator_precedence
+            → E P
+                P left_precedence = operator_precedence
+                P right_precedence = operator_precedence D next(P)
+            self D set_precedence(left_precedence, node D left)
+            self D traverse(node D left)
+            self D write(" " + operator + " ")
+            self D set_precedence(right_precedence, node D right)
+            self D traverse(node D right)
+    }
+    P cmpops = manifold [manifold ["Eq", "=="], manifold ["NotEq", "!="], manifold ["Lt", "<"], manifold ["LtE", "<="], manifold ["Gt", ">"], manifold ["GtE", ">="], manifold ["Is", "is"], manifold ["IsNot", "is not"], manifold ["In", "in"], manifold ["NotIn", "not in"]]
+    D Unparser__visit_Compare = λ self, node . {
+        T scope_0 = → self D require_parens(_Precedence D CMP, node)
+            self D set_precedence(_Precedence D CMP D next(P), node D left, node D comparators)
+            self D traverse(node D left)
+            T loop = ∞ (
+                P manifold__o__e = zip(node D ops, node D comparators)[_loop_index]  // manifold [o, e]
+                self D write(((" " + self D cmpops[o D __class__ D __name__]) + " "))
+                self D traverse(e)
+            ) (D |zip(node D ops, node D comparators)|)
+    }
+    P boolops = manifold [manifold ["And", "and"], manifold ["Or", "or"]]
+    P boolop_precedence = manifold [manifold ["and", _Precedence D AND], manifold ["or", _Precedence D OR]]
+    D Unparser__visit_BoolOp = λ self, node . {
+        P operator = self D boolops[node D op D __class__ D __name__]
+        P operator_precedence = self D boolop_precedence[operator]
+        D Unparser__increasing_level_traverse = λ node . {
+            // nonlocal operator_precedence
+            P operator_precedence = operator_precedence D next(P)
+            self D set_precedence(operator_precedence, node)
+            self D traverse(node)
+        }
+        T scope_0 = → self D require_parens(operator_precedence, node)
+            P s = " " + operator + " "
+            self D interleave(λ  . self D write(s), increasing_level_traverse, node D values)
+    }
+    D Unparser__visit_Attribute = λ self, node . {
+        self D set_precedence(_Precedence D ATOM, node D value)
+        self D traverse(node D value)
+        T cond = → if (isinstance(node D value, Constant) && isinstance(node D value D value, int)) → self D write(" ")
+        self D write(".")
+        self D write(node D attr)
+    }
+    D Unparser__visit_Call = λ self, node . {
+        self D set_precedence(_Precedence D ATOM, node D func)
+        self D traverse(node D func)
+        T scope_0 = → self D delimit("(", ")")
+            P comma = 0
+            T loop = ∞ (
+                P e = node D args[_loop_index]
+                T cond = → if comma → self D write(", ")
+                → E P comma = 1
+                self D traverse(e)
+            ) (D |node D args|)
+            T loop = ∞ (
+                P e = node D keywords[_loop_index]
+                T cond = → if comma → self D write(", ")
+                → E P comma = 1
+                self D traverse(e)
+            ) (D |node D keywords|)
+    }
+    D Unparser__visit_Subscript = λ self, node . {
+        D Unparser__is_non_empty_tuple = λ slice_value . → (isinstance(slice_value, Tuple) && slice_value D elts)
+        self D set_precedence(_Precedence D ATOM, node D value)
+        self D traverse(node D value)
+        T scope_0 = → self D delimit("[", "]")
+            T cond = → if is_non_empty_tuple(node D slice) → self D items_view(self D traverse, node D slice D elts)
+            → E self D traverse(node D slice)
+    }
+    D Unparser__visit_Starred = λ self, node . {
+        self D write("*")
+        self D set_precedence(_Precedence D EXPR, node D value)
+        self D traverse(node D value)
+    }
+    D Unparser__visit_Ellipsis = λ self, node . self D write("...")
+    D Unparser__visit_Slice = λ self, node . {
+        T cond = → if node D lower → self D traverse(node D lower)
+        self D write(":")
+        T cond = → if node D upper → self D traverse(node D upper)
+        T cond = → if node D step → P
+            self D write(":")
+            self D traverse(node D step)
+    }
+    D Unparser__visit_Match = λ self, node . {
+        self D fill("match ")
+        self D traverse(node D subject)
+        T scope_0 = → self D block(P)
+            T loop = ∞ (
+                P case = node D cases[_loop_index]
+                self D traverse(case)
+            ) (D |node D cases|)
+    }
+    D Unparser__visit_arg = λ self, node . {
+        self D write(node D arg)
+        T cond = → if node D annotation → P
+            self D write(": ")
+            self D traverse(node D annotation)
+    }
+    D Unparser__visit_arguments = λ self, node . {
+        P first = 1
+        P all_args = (node D posonlyargs + node D args)
+        P defaults = ((manifold [P] * (len(all_args) - len(node D defaults))) + node D defaults)
+        T loop = ∞ (
+            P manifold__index__elements = enumerate(zip(all_args, defaults), 1)[_loop_index]  // manifold [index, elements]
+            P manifold__a__d = elements  // manifold [a, d] := elements
+            T cond = → if first → P first = 0
+            → E self D write(", ")
+            self D traverse(a)
+            T cond = → if d → P
+                self D write("=")
+                self D traverse(d)
+            T cond = → if index == len(node D posonlyargs) → self D write(", /")
+        ) (D |enumerate(zip(all_args, defaults), 1)|)
+        T cond = → if (node D vararg || node D kwonlyargs) → P
+            T cond = → if first → P first = 0
+            → E self D write(", ")
+            self D write("*")
+            T cond = → if node D vararg → P
+                self D write(node D vararg D arg)
+                T cond = → if node D vararg D annotation → P
+                    self D write(": ")
+                    self D traverse(node D vararg D annotation)
+        T cond = → if node D kwonlyargs → P
+            T loop = ∞ (
+                P manifold__a__d = zip(node D kwonlyargs, node D kw_defaults)[_loop_index]  // manifold [a, d]
+                self D write(", ")
+                self D traverse(a)
+                T cond = → if d → P
+                    self D write("=")
+                    self D traverse(d)
+            ) (D |zip(node D kwonlyargs, node D kw_defaults)|)
+        T cond = → if node D kwarg → P
+            T cond = → if first → P first = 0
+            → E self D write(", ")
+            self D write(("**" + node D kwarg D arg))
+            T cond = → if node D kwarg D annotation → P
+                self D write(": ")
+                self D traverse(node D kwarg D annotation)
+    }
+    D Unparser__visit_keyword = λ self, node . {
+        T cond = → if node D arg == P → self D write("**")
+        → E P
+            self D write(node D arg)
+            self D write("=")
+        self D traverse(node D value)
+    }
+    D Unparser__visit_Lambda = λ self, node . {
+        T scope_0 = → self D require_parens(_Precedence D TEST, node)
+            self D write("lambda")
+            T scope_buffer = → self D buffered(P)
+            P buffer = scope_buffer  // context var
+                self D traverse(node D args)
+            T cond = → if buffer → self D write(" ", buffer)
+            self D write(": ")
+            self D set_precedence(_Precedence D TEST, node D body)
+            self D traverse(node D body)
+    }
+    D Unparser__visit_alias = λ self, node . {
+        self D write(node D name)
+        T cond = → if node D asname → self D write((" as " + node D asname))
+    }
+    D Unparser__visit_withitem = λ self, node . {
+        self D traverse(node D context_expr)
+        T cond = → if node D optional_vars → P
+            self D write(" as ")
+            self D traverse(node D optional_vars)
+    }
+    D Unparser__visit_match_case = λ self, node . {
+        self D fill("case ")
+        self D traverse(node D pattern)
+        T cond = → if node D guard → P
+            self D write(" if ")
+            self D traverse(node D guard)
+        T scope_0 = → self D block(P)
+            self D traverse(node D body)
+    }
+    D Unparser__visit_MatchValue = λ self, node . self D traverse(node D value)
+    D Unparser__visit_MatchSingleton = λ self, node . self D _write_constant(node D value)
+    D Unparser__visit_MatchSequence = λ self, node . {
+        T scope_0 = → self D delimit("[", "]")
+            self D interleave(λ  . self D write(", "), self D traverse, node D patterns)
+    }
+    D Unparser__visit_MatchStar = λ self, node . {
+        P name = node D name
+        T cond = → if name == P → P name = "_"
+        self D write("*" + name)
+    }
+    D Unparser__visit_MatchMapping = λ self, node . {
+        D Unparser__write_key_pattern_pair = λ pair . {
+            P manifold__k__p = pair  // manifold [k, p] := pair
+            self D traverse(k)
+            self D write(": ")
+            self D traverse(p)
+        }
+        T scope_0 = → self D delimit("{", "}")
+            P keys = node D keys
+            self D interleave(λ  . self D write(", "), write_key_pattern_pair, zip(keys, node D patterns, manifold ["strict", 1]))
+            P rest = node D rest
+            T cond = → if rest ≠ P → P
+                T cond = → if keys → self D write(", ")
+                self D write("**" + rest)
+    }
+    D Unparser__visit_MatchClass = λ self, node . {
+        self D set_precedence(_Precedence D ATOM, node D cls)
+        self D traverse(node D cls)
+        T scope_0 = → self D delimit("(", ")")
+            P patterns = node D patterns
+            self D interleave(λ  . self D write(", "), self D traverse, patterns)
+            P attrs = node D kwd_attrs
+            T cond = → if attrs → P
+                D Unparser__write_attr_pattern = λ pair . {
+                    P manifold__attr__pattern = pair  // manifold [attr, pattern] := pair
+                    self D write(attr + "=")
+                    self D traverse(pattern)
+                }
+                T cond = → if patterns → self D write(", ")
+                self D interleave(λ  . self D write(", "), write_attr_pattern, zip(attrs, node D kwd_patterns, manifold ["strict", 1]))
+    }
+    D Unparser__visit_MatchAs = λ self, node . {
+        P name = node D name
+        P pattern = node D pattern
+        T cond = → if name == P → self D write("_")
+        → E P
+            T cond = → if pattern == P → self D write(node D name)
+            → E P
+                T scope_0 = → self D require_parens(_Precedence D TEST, node)
+                    self D set_precedence(_Precedence D BOR, node D pattern)
+                    self D traverse(node D pattern)
+                    self D write(" as " + node D name)
+    }
+    D Unparser__visit_MatchOr = λ self, node . {
+        T scope_0 = → self D require_parens(_Precedence D BOR, node)
+            self D set_precedence(_Precedence D BOR D next(P), node D patterns)
+            self D interleave(λ  . self D write(" | "), self D traverse, node D patterns)
+    }
+D unparse = λ ast_obj . {
+    P unparser = _Unparser(P)
+    → unparser D visit(ast_obj)
+}
+P _deprecated_globals = { T loop = ∞ (P item = manifold ["Num", "Str", "Bytes", "NameConstant", "Ellipsis"][_loop_index]) (D |manifold ["Num", "Str", "Bytes", "NameConstant", "Ellipsis"]|) }
+D getattr = λ name . {
+    T cond = → if name == _deprecated_globals → P
+        // globals(P)[name] := _deprecated_globals[name]
+        P value = _deprecated_globals[name]
+        // @ETPL:preload warnings warnings
+        // Import warnings — resolved at translate-time
+        warnings D _deprecated("ast." + name, manifold ["message", _DEPRECATED_CLASS_MESSAGE], manifold ["remove", manifold [3, 14]])
+        → value
+    → E AttributeError("module 'ast' has no attribute '" + name + "'")
+}
+D main = λ  . {
+    // @ETPL:preload argparse argparse
+    // Import argparse — resolved at translate-time
+    // @ETPL:preload ArgumentParser argparse.ArgumentParser
+    P ArgumentParser = P  // [ET:callable:argparse.ArgumentParser]
+    // @ETPL:preload ArgumentError argparse.ArgumentError
+    P ArgumentError = P  // [ET:callable:argparse.ArgumentError]
+    // @ETPL:preload ArgumentTypeError argparse.ArgumentTypeError
+    P ArgumentTypeError = P  // [ET:callable:argparse.ArgumentTypeError]
+    // @ETPL:preload BooleanOptionalAction argparse.BooleanOptionalAction
+    P BooleanOptionalAction = P  // [ET:callable:argparse.BooleanOptionalAction]
+    // @ETPL:preload FileType argparse.FileType
+    P FileType = P  // [ET:callable:argparse.FileType]
+    // @ETPL:preload HelpFormatter argparse.HelpFormatter
+    P HelpFormatter = P  // [ET:callable:argparse.HelpFormatter]
+    // @ETPL:preload ArgumentDefaultsHelpFormatter argparse.ArgumentDefaultsHelpFormatter
+    P ArgumentDefaultsHelpFormatter = P  // [ET:callable:argparse.ArgumentDefaultsHelpFormatter]
+    // @ETPL:preload RawDescriptionHelpFormatter argparse.RawDescriptionHelpFormatter
+    P RawDescriptionHelpFormatter = P  // [ET:callable:argparse.RawDescriptionHelpFormatter]
+    // @ETPL:preload RawTextHelpFormatter argparse.RawTextHelpFormatter
+    P RawTextHelpFormatter = P  // [ET:callable:argparse.RawTextHelpFormatter]
+    // @ETPL:preload MetavarTypeHelpFormatter argparse.MetavarTypeHelpFormatter
+    P MetavarTypeHelpFormatter = P  // [ET:callable:argparse.MetavarTypeHelpFormatter]
+    // @ETPL:preload Namespace argparse.Namespace
+    P Namespace = P  // [ET:callable:argparse.Namespace]
+    // @ETPL:preload Action argparse.Action
+    P Action = P  // [ET:callable:argparse.Action]
+    P ONE_OR_MORE = "+"
+    P OPTIONAL = "?"
+    P PARSER = "A..."
+    P REMAINDER = "..."
+    P SUPPRESS = "==SUPPRESS=="
+    P ZERO_OR_MORE = "*"
+    P parser = argparse D ArgumentParser(manifold ["prog", "python -m ast"])
+    parser D add_argument("infile", manifold ["nargs", "?"], manifold ["default", "-"], manifold ["help", "the file to parse; defaults to stdin"])
+    parser D add_argument("-m", "--mode", manifold ["default", "exec"], manifold ["choices", manifold ["exec", "single", "eval", "func_type"]], manifold ["help", "specify what kind of code must be parsed"])
+    parser D add_argument("--no-type-comments", manifold ["default", 1], manifold ["action", "store_false"], manifold ["help", "don't add information about type comments"])
+    parser D add_argument("-a", "--include-attributes", manifold ["action", "store_true"], manifold ["help", "include attributes such as line numbers and column offsets"])
+    parser D add_argument("-i", "--indent", manifold ["type", int], manifold ["default", 3], manifold ["help", "indentation of nodes (number of spaces)"])
+    P args = parser D parse_args(P)
+    T cond = → if args D infile == "-" → P
+        P name = "<stdin>"
+        P source = sys D stdin D buffer D read(P)
+    → E P
+        P name = args D infile
+        T scope_infile = → open(args D infile, "rb")
+        P infile = scope_infile  // context var
+            P source = infile D read(P)
+    P tree = parse(source, name, args D mode, manifold ["type_comments", args D no_type_comments])
+    sovereign_print ∘ dump(tree, manifold ["include_attributes", args D include_attributes], manifold ["indent", args D indent])
+}
+T cond = → if __name__ == "__main__" → main(P)
+

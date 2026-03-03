@@ -1,0 +1,262 @@
+// ============================================================================
+// ET_Runtime_Native.pdt — ET-Native Runtime Library v1.1.0
+// ============================================================================
+// Stage 1 Implementation: Native Binary Runtime Support
+// Provides: string operations, console I/O, CLI framework, command dispatch
+//
+// All functions are D-descriptors derived from ET primitives:
+//   P (Point)      = memory substrate (byte arrays, buffers, heap)
+//   D (Descriptor) = operation constraint (string length, comparison rule)
+//   T (Traverser)  = byte-by-byte or char-by-char traversal
+//   E (Exception)  = grounded output (matched command, formatted string)
+//
+// Master Equation: P ∘ D ∘ T = E  (3=3=3=Σ)
+//
+// This file is prepended to .pdt files during native compilation.
+// It provides the runtime substrate that CRT functions implement.
+//
+// ET Constants (compiled into binary):
+//   MANIFOLD_SYMMETRY  = 12   (N=12 semitone descriptor lattice)
+//   BASE_VARIANCE      = 1/12 (fundamental variance quantum)
+//   KOIDE_RATIO        = 2/3  (mass/charge generation coupling)
+// ============================================================================
+
+// --- SECTION 1: STRING PRIMITIVES ---
+
+D et_strlen = λ s . {
+    P _sl_n = 0
+    P _sl_done = 0
+    ∞ (
+        T _sl_check = → if ((_sl_done == 0) * (s[_loop_index] != 0)) → {
+            P _sl_n = (_loop_index + 1)
+        } → E {
+            P _sl_done = 1
+        }
+    ) (D 65536)
+    → _sl_n
+}
+
+D et_strcmp = λ a, b . {
+    P _sc_r = 0
+    P _sc_done = 0
+    ∞ (
+        T _sc_step = → if (_sc_done == 0) → {
+            P _sc_ca = a[_loop_index]
+            P _sc_cb = b[_loop_index]
+            T _sc_diff = → if (_sc_ca != _sc_cb) → {
+                P _sc_r = (_sc_ca - _sc_cb)
+                P _sc_done = 1
+            } → E {
+                T _sc_end = → if (_sc_ca == 0) → P _sc_done = 1 → E P _sc_done = _sc_done
+            }
+        } → E P _sc_done = _sc_done
+    ) (D 65536)
+    → _sc_r
+}
+
+D et_strncmp = λ a, b, n . {
+    P _sn_r = 0
+    P _sn_done = 0
+    ∞ (
+        T _sn_step = → if ((_sn_done == 0) * (_loop_index < n)) → {
+            P _sn_ca = a[_loop_index]
+            P _sn_cb = b[_loop_index]
+            T _sn_diff = → if (_sn_ca != _sn_cb) → {
+                P _sn_r = (_sn_ca - _sn_cb)
+                P _sn_done = 1
+            } → E {
+                T _sn_end = → if (_sn_ca == 0) → P _sn_done = 1 → E P _sn_done = _sn_done
+            }
+        } → E P _sn_done = _sn_done
+    ) (D 65536)
+    → _sn_r
+}
+
+D et_strcpy = λ dst, src . {
+    P _cp_done = 0
+    ∞ (
+        T _cp_step = → if (_cp_done == 0) → {
+            P _cp_ch = src[_loop_index]
+            P dst[_loop_index] = _cp_ch
+            T _cp_end = → if (_cp_ch == 0) → P _cp_done = 1 → E P _cp_done = _cp_done
+        } → E P _cp_done = _cp_done
+    ) (D 65536)
+    → dst
+}
+
+D et_strcat = λ dst, src . {
+    P _cat_dlen = et_strlen(dst)
+    P _cat_done = 0
+    ∞ (
+        T _cat_step = → if (_cat_done == 0) → {
+            P _cat_ch = src[_loop_index]
+            P dst[(_cat_dlen + _loop_index)] = _cat_ch
+            T _cat_end = → if (_cat_ch == 0) → P _cat_done = 1 → E P _cat_done = _cat_done
+        } → E P _cat_done = _cat_done
+    ) (D 65536)
+    → dst
+}
+
+// --- SECTION 2: CONSOLE I/O PRIMITIVES ---
+
+D et_console_write = λ s . {
+    sovereign_print ∘ s
+    → 1
+}
+
+D et_console_writeline = λ s . {
+    sovereign_print ∘ s
+    sovereign_print ∘ "\n"
+    → 1
+}
+
+D et_console_readline = λ prompt . {
+    sovereign_print ∘ prompt
+    → (hardware_access ∘ "readline")
+}
+
+D et_console_flush = λ dummy . {
+    hardware_access ∘ "flush"
+    → 0
+}
+
+D et_console_clear = λ dummy . {
+    sovereign_print ∘ "\x1b[2J\x1b[H"
+    → 0
+}
+
+// --- SECTION 3: COMMAND-LINE ARGUMENT ACCESS ---
+
+P ET_ARGC = 0
+P ET_ARGV = manifold []
+
+D et_get_arg = λ index . {
+    → (if (index < ET_ARGC) → ET_ARGV[index] → E "")
+}
+
+D et_has_arg = λ index . {
+    → (if (index < ET_ARGC) → 1 → E 0)
+}
+
+// --- SECTION 4: CLI FRAMEWORK ---
+
+P ET_CLI_VERSION = "1.5.0"
+P ET_CLI_BUILD = "20260302-native-cli"
+
+P CMD_INTERPRET = 1
+P CMD_COMPILE = 2
+P CMD_TRANSLATE = 3
+P CMD_VERIFY = 4
+P CMD_REPL = 5
+P CMD_TOOLCHAIN = 6
+P CMD_HELP = 7
+P CMD_VERSION = 8
+P CMD_CLEAR = 9
+P CMD_EXIT = 10
+
+D et_match_command = λ input . {
+    → (if (et_strcmp(input, "exit") == 0) → CMD_EXIT → E
+       (if (et_strcmp(input, "quit") == 0) → CMD_EXIT → E
+       (if (et_strcmp(input, "q") == 0) → CMD_EXIT → E
+       (if (et_strcmp(input, "help") == 0) → CMD_HELP → E
+       (if (et_strcmp(input, "?") == 0) → CMD_HELP → E
+       (if (et_strcmp(input, "version") == 0) → CMD_VERSION → E
+       (if (et_strcmp(input, "ver") == 0) → CMD_VERSION → E
+       (if (et_strcmp(input, "verify") == 0) → CMD_VERIFY → E
+       (if (et_strcmp(input, "test") == 0) → CMD_VERIFY → E
+       (if (et_strcmp(input, "clear") == 0) → CMD_CLEAR → E
+       (if (et_strcmp(input, "cls") == 0) → CMD_CLEAR → E
+       (if (et_strcmp(input, "repl") == 0) → CMD_REPL → E
+       (if (et_strcmp(input, "shell") == 0) → CMD_REPL → E
+       0)))))))))))))
+}
+
+D et_match_prefix = λ input . {
+    → (if (et_strncmp(input, "interpret ", 10) == 0) → CMD_INTERPRET → E
+       (if (et_strncmp(input, "run ", 4) == 0) → CMD_INTERPRET → E
+       (if (et_strncmp(input, "compile ", 8) == 0) → CMD_COMPILE → E
+       (if (et_strncmp(input, "build ", 6) == 0) → CMD_COMPILE → E
+       (if (et_strncmp(input, "translate ", 10) == 0) → CMD_TRANSLATE → E
+       (if (et_strncmp(input, "trans ", 6) == 0) → CMD_TRANSLATE → E
+       (if (et_strncmp(input, "toolchain", 9) == 0) → CMD_TOOLCHAIN → E
+       0)))))))
+}
+
+// --- SECTION 5: ET VERIFICATION SUITE ---
+
+P ET_VERIFY_MANIFOLD_SYMMETRY = 12
+P ET_VERIFY_BASE_VARIANCE = 0.08333333333333333
+P ET_VERIFY_KOIDE_RATIO = 0.6666666666666666
+P ET_VERIFY_PI_APPROX = 3.14159265358979
+P ET_VERIFY_TAUTOLOGY_LHS = 3
+P ET_VERIFY_TAUTOLOGY_RHS = 3
+P ET_VERIFY_PRIMITIVES = 3
+
+D et_verify_check = λ actual, expected, tolerance . {
+    P _vc_diff = (actual - expected)
+    P _vc_abs = (if (_vc_diff < 0) → (0 - _vc_diff) → E _vc_diff)
+    → (if (_vc_abs <= tolerance) → 1 → E 0)
+}
+
+// --- SECTION 6: STRIP NEWLINE ---
+
+D et_strip_newline = λ s . {
+    P _sn_len = et_strlen(s)
+    T _sn_strip = → if (_sn_len > 0) → {
+        P _sn_last = s[(_sn_len - 1)]
+        T _sn_nl = → if ((_sn_last == 10) + (_sn_last == 13)) → {
+            P s[(_sn_len - 1)] = 0
+            P _sn_len = (_sn_len - 1)
+            T _sn_strip2 = → if (_sn_len > 0) → {
+                P _sn_last2 = s[(_sn_len - 1)]
+                T _sn_cr = → if (_sn_last2 == 13) → {
+                    P s[(_sn_len - 1)] = 0
+                    P _sn_len = (_sn_len - 1)
+                } → E P _sn_len = _sn_len
+            } → E P _sn_len = _sn_len
+        } → E P _sn_len = _sn_len
+    } → E P _sn_len = _sn_len
+    → _sn_len
+}
+
+// --- SECTION 7: INTEGER TO STRING ---
+
+D et_itoa = λ n, buf . {
+    P _it_neg = 0
+    P _it_val = n
+    T _it_sign = → if (n < 0) → {
+        P _it_neg = 1
+        P _it_val = (0 - n)
+    } → E P _it_val = n
+    P _it_pos = 0
+    P _it_done = 0
+    ∞ (
+        T _it_step = → if (_it_done == 0) → {
+            P _it_digit = (_it_val - ((_it_val / 10) * 10))
+            P buf[_it_pos] = (_it_digit + 48)
+            P _it_pos = (_it_pos + 1)
+            P _it_val = (_it_val / 10)
+            T _it_end = → if (_it_val == 0) → P _it_done = 1 → E P _it_done = _it_done
+        } → E P _it_done = _it_done
+    ) (D 20)
+    T _it_addsign = → if (_it_neg == 1) → {
+        P buf[_it_pos] = 45
+        P _it_pos = (_it_pos + 1)
+    } → E P _it_pos = _it_pos
+    P buf[_it_pos] = 0
+    P _it_lo = 0
+    P _it_hi = (_it_pos - 1)
+    ∞ (
+        T _it_rev = → if (_it_lo < _it_hi) → {
+            P _it_tmp = buf[_it_lo]
+            P buf[_it_lo] = buf[_it_hi]
+            P buf[_it_hi] = _it_tmp
+            P _it_lo = (_it_lo + 1)
+            P _it_hi = (_it_hi - 1)
+        } → E P _it_lo = _it_lo
+    ) (D 20)
+    → _it_pos
+}
+
+// --- END ET_Runtime_Native.pdt ---
+// P∘D∘T = E — CLI framework fully described in ET primitives.
