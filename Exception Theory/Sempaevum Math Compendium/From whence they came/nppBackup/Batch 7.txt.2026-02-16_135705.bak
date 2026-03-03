@@ -1,0 +1,83 @@
+BATCH 7
+
+====================
+
+1. How Traversers Navigate Descriptor Space
+
+Traversers navigate by binding to different descriptor sets, not by moving through space:
+
+**Navigation Process:**
+1. T currently binds to descriptor set $d_1$ at Point $p$ → configuration $(p \circ d_1)$
+2. T shifts binding to descriptor set $d_2$ at same or different Point → configuration $(p' \circ d_2)$
+3. "Distance" traveled = $||f(d_1) - f(d_2)||$ (descriptor difference, not spatial separation)
+4. Path through manifold = sequence of descriptor-shift steps
+
+**Traversal Routes:**
+- Paths exist as sequences of accessible configurations
+- Accessibility determined by descriptor relationships (edges in network)
+- Some configurations are neighbors (small descriptor difference)
+- Others are distant (large descriptor difference)
+- The network topology is pure relationalism—no embedding required
+
+====================
+
+2. Descriptor Gradients and Fields
+
+**Gradient Structure:**
+- Descriptor gradients show rate of D-change across P-space
+- Derivatives measure these gradients: $f'(x) = \Delta D / \Delta P$
+- Smooth gradients = continuous descriptor fields
+- Discontinuous gradients = phase transitions in manifold
+
+**Field Properties:**
+- Each descriptor type defines a field over point-configurations
+- Multiple descriptor fields can overlap at same points
+- Field interactions create emergent patterns
+- These fields are not embedded in space—they ARE the relational structure
+
+====================
+
+3. Configuration Network Visualization
+
+**Think of the manifold as a network graph:**
+
+```
+Nodes (Configurations):
+- Each node = (P ∘ D) = specific Point with specific descriptor set
+- |Nodes| = infinite (since |P| = Ω and each can have different descriptor subsets)
+
+Edges (Relationships):
+- Weighted by descriptor difference: $||f(d_1) - f(d_2)||$
+- Close descriptors = strongly connected nodes
+- Distant descriptors = weakly connected nodes
+- Traversers navigate along these edges
+
+Network Properties:
+- No external coordinate system needed
+- Pure graph structure
+- Distance = shortest path through descriptor-differences
+- Clustering = regions of similar descriptors
+- Hubs = configurations with many accessible neighbors
+```
+
+====================
+
+4. **The Exception** is the single substantiated node (T bound) at each moment. All other nodes exist as unsubstantiated potential. T navigation shifts the substantiated node across the network.
+
+#### Why This Replaces "Fibered Space"
+
+The old fibered space model (base space/fibers/sections) was a misconception because it implied:
+- Spatial embedding (base space as geometric manifold)
+- Points existing "in" a background space
+- Fibers as structures over spatial locations
+
+The correct understanding is purely relational:
+- No background space—only descriptor relationships
+- Points don't exist "in" anything—they relate through descriptors
+- Configuration space is a network, not a geometric bundle
+- All structure emerges from P-D-T bindings and their relationships
+
+This network model captures what the fibered space attempted to describe (the organization of descriptor fields and how T navigates) but without the incorrect geometric assumptions. It preserves pure relationalism throughout.
+
+====================
+

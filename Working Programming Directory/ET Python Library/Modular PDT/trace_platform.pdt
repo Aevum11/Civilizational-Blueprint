@@ -1,0 +1,1562 @@
+// @ETPL:trace-stdlib platform.py  // module=platform
+// This module tries to retrieve as much platform-identifying data as     possible. It makes this information available via
+P __copyright__ = "\n    Copyright (c) 1999-2000, Marc-Andre Lemburg; mailto:mal@lemburg.com\n    Copyright (c) 2000-2010, eGenix.com Software GmbH; mailto:info@egenix.com\n\n    Permission to use, copy, modify, and distribute this software and its\n    documentation for any purpose and without fee or royalty is hereby granted,\n    provided that the above copyright notice appear in all copies and that\n    both that copyright notice and this permission notice appear in\n    supporting documentation or portions thereof, including modifications,\n    that you make.\n\n    EGENIX.COM SOFTWARE GMBH DISCLAIMS ALL WARRANTIES WITH REGARD TO\n    THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND\n    FITNESS, IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL,\n    INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING\n    FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,\n    NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION\n    WITH THE USE OR PERFORMANCE OF THIS SOFTWARE !\n\n"
+P __version__ = "1.0.8"
+// @ETPL:preload collections collections
+// Import collections — resolved at translate-time
+// @ETPL:preload ChainMap collections.ChainMap
+P ChainMap = P  // [ET:callable:collections.ChainMap]
+// @ETPL:preload Counter collections.Counter
+P Counter = P  // [ET:callable:collections.Counter]
+// @ETPL:preload OrderedDict collections.OrderedDict
+P OrderedDict = P  // [ET:callable:collections.OrderedDict]
+// @ETPL:preload UserDict collections.UserDict
+P UserDict = P  // [ET:callable:collections.UserDict]
+// @ETPL:preload UserList collections.UserList
+P UserList = P  // [ET:callable:collections.UserList]
+// @ETPL:preload UserString collections.UserString
+P UserString = P  // [ET:callable:collections.UserString]
+// @ETPL:preload defaultdict collections.defaultdict
+P defaultdict = P  // [ET:callable:collections.defaultdict]
+// @ETPL:preload deque collections.deque
+P deque = P  // [ET:callable:collections.deque]
+// @ETPL:preload namedtuple collections.namedtuple
+P namedtuple = P  // [ET:callable:collections.namedtuple]
+// @ETPL:preload os os
+// Import os — resolved at translate-time
+P altsep = "/"
+P curdir = "."
+P pardir = ".."
+P sep = "\\"
+P pathsep = ";"
+P linesep = "\r\n"
+P defpath = ".;C:\\bin"
+P name = "nt"
+// @ETPL:preload path os.path
+P devnull = "nul"
+P SEEK_SET = 0
+P SEEK_CUR = 1
+P SEEK_END = 2
+// @ETPL:preload fsencode os.fsencode
+P fsencode = P  // [ET:callable:os.fsencode]
+// @ETPL:preload fsdecode os.fsdecode
+P fsdecode = P  // [ET:callable:os.fsdecode]
+// @ETPL:preload get_exec_path os.get_exec_path
+P get_exec_path = P  // [ET:callable:os.get_exec_path]
+// @ETPL:preload fdopen os.fdopen
+P fdopen = P  // [ET:callable:os.fdopen]
+P extsep = "."
+// @ETPL:preload _exit os._exit
+P _exit = P  // [ET:callable:os._exit]
+// @ETPL:preload DirEntry os.DirEntry
+P DirEntry = P  // [ET:callable:os.DirEntry]
+P EX_OK = 0
+P F_OK = 0
+P O_APPEND = 8
+P O_BINARY = 32768
+P O_CREAT = 256
+P O_EXCL = 1024
+P O_NOINHERIT = 128
+P O_RANDOM = 16
+P O_RDONLY = 0
+P O_RDWR = 2
+P O_SEQUENTIAL = 32
+P O_SHORT_LIVED = 4096
+P O_TEMPORARY = 64
+P O_TEXT = 16384
+P O_TRUNC = 512
+P O_WRONLY = 1
+P P_DETACH = 4
+P P_NOWAIT = 1
+P P_NOWAITO = 3
+P P_OVERLAY = 2
+P P_WAIT = 0
+P R_OK = 4
+P TMP_MAX = 2147483647
+P W_OK = 2
+P X_OK = 1
+// @ETPL:preload abort os.abort
+P abort = P  // [ET:callable:os.abort]
+// @ETPL:preload access os.access
+P access = P  // [ET:callable:os.access]
+// @ETPL:preload chdir os.chdir
+P chdir = P  // [ET:callable:os.chdir]
+// @ETPL:preload chmod os.chmod
+P chmod = P  // [ET:callable:os.chmod]
+// @ETPL:preload close os.close
+P close = P  // [ET:callable:os.close]
+// @ETPL:preload closerange os.closerange
+P closerange = P  // [ET:callable:os.closerange]
+// @ETPL:preload cpu_count os.cpu_count
+P cpu_count = P  // [ET:callable:os.cpu_count]
+// @ETPL:preload device_encoding os.device_encoding
+P device_encoding = P  // [ET:callable:os.device_encoding]
+// @ETPL:preload dup os.dup
+P dup = P  // [ET:callable:os.dup]
+// @ETPL:preload dup2 os.dup2
+P dup2 = P  // [ET:callable:os.dup2]
+P environ = P  // [ET:unrepresentable:_Environ]
+// @ETPL:preload error os.error
+P error = P  // [ET:callable:os.error]
+// @ETPL:preload execv os.execv
+P execv = P  // [ET:callable:os.execv]
+// @ETPL:preload execve os.execve
+P execve = P  // [ET:callable:os.execve]
+// @ETPL:preload fchmod os.fchmod
+P fchmod = P  // [ET:callable:os.fchmod]
+// @ETPL:preload fspath os.fspath
+P fspath = P  // [ET:callable:os.fspath]
+// @ETPL:preload fstat os.fstat
+P fstat = P  // [ET:callable:os.fstat]
+// @ETPL:preload fsync os.fsync
+P fsync = P  // [ET:callable:os.fsync]
+// @ETPL:preload ftruncate os.ftruncate
+P ftruncate = P  // [ET:callable:os.ftruncate]
+// @ETPL:preload get_blocking os.get_blocking
+P get_blocking = P  // [ET:callable:os.get_blocking]
+// @ETPL:preload get_handle_inheritable os.get_handle_inheritable
+P get_handle_inheritable = P  // [ET:callable:os.get_handle_inheritable]
+// @ETPL:preload get_inheritable os.get_inheritable
+P get_inheritable = P  // [ET:callable:os.get_inheritable]
+// @ETPL:preload get_terminal_size os.get_terminal_size
+P get_terminal_size = P  // [ET:callable:os.get_terminal_size]
+// @ETPL:preload getcwd os.getcwd
+P getcwd = P  // [ET:callable:os.getcwd]
+// @ETPL:preload getcwdb os.getcwdb
+P getcwdb = P  // [ET:callable:os.getcwdb]
+// @ETPL:preload getlogin os.getlogin
+P getlogin = P  // [ET:callable:os.getlogin]
+// @ETPL:preload getpid os.getpid
+P getpid = P  // [ET:callable:os.getpid]
+// @ETPL:preload getppid os.getppid
+P getppid = P  // [ET:callable:os.getppid]
+// @ETPL:preload isatty os.isatty
+P isatty = P  // [ET:callable:os.isatty]
+// @ETPL:preload kill os.kill
+P kill = P  // [ET:callable:os.kill]
+// @ETPL:preload lchmod os.lchmod
+P lchmod = P  // [ET:callable:os.lchmod]
+// @ETPL:preload link os.link
+P link = P  // [ET:callable:os.link]
+// @ETPL:preload listdir os.listdir
+P listdir = P  // [ET:callable:os.listdir]
+// @ETPL:preload listdrives os.listdrives
+P listdrives = P  // [ET:callable:os.listdrives]
+// @ETPL:preload listmounts os.listmounts
+P listmounts = P  // [ET:callable:os.listmounts]
+// @ETPL:preload listvolumes os.listvolumes
+P listvolumes = P  // [ET:callable:os.listvolumes]
+// @ETPL:preload lseek os.lseek
+P lseek = P  // [ET:callable:os.lseek]
+// @ETPL:preload lstat os.lstat
+P lstat = P  // [ET:callable:os.lstat]
+// @ETPL:preload mkdir os.mkdir
+P mkdir = P  // [ET:callable:os.mkdir]
+// @ETPL:preload open os.open
+P open = P  // [ET:callable:os.open]
+// @ETPL:preload pipe os.pipe
+P pipe = P  // [ET:callable:os.pipe]
+// @ETPL:preload putenv os.putenv
+P putenv = P  // [ET:callable:os.putenv]
+// @ETPL:preload read os.read
+P read = P  // [ET:callable:os.read]
+// @ETPL:preload readlink os.readlink
+P readlink = P  // [ET:callable:os.readlink]
+// @ETPL:preload remove os.remove
+P remove = P  // [ET:callable:os.remove]
+// @ETPL:preload rename os.rename
+P rename = P  // [ET:callable:os.rename]
+// @ETPL:preload replace os.replace
+P replace = P  // [ET:callable:os.replace]
+// @ETPL:preload rmdir os.rmdir
+P rmdir = P  // [ET:callable:os.rmdir]
+// @ETPL:preload scandir os.scandir
+P scandir = P  // [ET:callable:os.scandir]
+// @ETPL:preload set_blocking os.set_blocking
+P set_blocking = P  // [ET:callable:os.set_blocking]
+// @ETPL:preload set_handle_inheritable os.set_handle_inheritable
+P set_handle_inheritable = P  // [ET:callable:os.set_handle_inheritable]
+// @ETPL:preload set_inheritable os.set_inheritable
+P set_inheritable = P  // [ET:callable:os.set_inheritable]
+// @ETPL:preload spawnv os.spawnv
+P spawnv = P  // [ET:callable:os.spawnv]
+// @ETPL:preload spawnve os.spawnve
+P spawnve = P  // [ET:callable:os.spawnve]
+// @ETPL:preload startfile os.startfile
+P startfile = P  // [ET:callable:os.startfile]
+// @ETPL:preload stat os.stat
+P stat = P  // [ET:callable:os.stat]
+// @ETPL:preload stat_result os.stat_result
+P stat_result = P  // [ET:callable:os.stat_result]
+// @ETPL:preload statvfs_result os.statvfs_result
+P statvfs_result = P  // [ET:callable:os.statvfs_result]
+// @ETPL:preload strerror os.strerror
+P strerror = P  // [ET:callable:os.strerror]
+// @ETPL:preload symlink os.symlink
+P symlink = P  // [ET:callable:os.symlink]
+// @ETPL:preload system os.system
+P system = P  // [ET:callable:os.system]
+// @ETPL:preload terminal_size os.terminal_size
+P terminal_size = P  // [ET:callable:os.terminal_size]
+// @ETPL:preload times os.times
+P times = P  // [ET:callable:os.times]
+// @ETPL:preload times_result os.times_result
+P times_result = P  // [ET:callable:os.times_result]
+// @ETPL:preload truncate os.truncate
+P truncate = P  // [ET:callable:os.truncate]
+// @ETPL:preload umask os.umask
+P umask = P  // [ET:callable:os.umask]
+// @ETPL:preload uname_result os.uname_result
+P uname_result = P  // [ET:callable:os.uname_result]
+// @ETPL:preload unlink os.unlink
+P unlink = P  // [ET:callable:os.unlink]
+// @ETPL:preload unsetenv os.unsetenv
+P unsetenv = P  // [ET:callable:os.unsetenv]
+// @ETPL:preload urandom os.urandom
+P urandom = P  // [ET:callable:os.urandom]
+// @ETPL:preload utime os.utime
+P utime = P  // [ET:callable:os.utime]
+// @ETPL:preload waitpid os.waitpid
+P waitpid = P  // [ET:callable:os.waitpid]
+// @ETPL:preload waitstatus_to_exitcode os.waitstatus_to_exitcode
+P waitstatus_to_exitcode = P  // [ET:callable:os.waitstatus_to_exitcode]
+// @ETPL:preload write os.write
+P write = P  // [ET:callable:os.write]
+// @ETPL:preload makedirs os.makedirs
+P makedirs = P  // [ET:callable:os.makedirs]
+// @ETPL:preload removedirs os.removedirs
+P removedirs = P  // [ET:callable:os.removedirs]
+// @ETPL:preload renames os.renames
+P renames = P  // [ET:callable:os.renames]
+// @ETPL:preload walk os.walk
+P walk = P  // [ET:callable:os.walk]
+// @ETPL:preload execl os.execl
+P execl = P  // [ET:callable:os.execl]
+// @ETPL:preload execle os.execle
+P execle = P  // [ET:callable:os.execle]
+// @ETPL:preload execlp os.execlp
+P execlp = P  // [ET:callable:os.execlp]
+// @ETPL:preload execlpe os.execlpe
+P execlpe = P  // [ET:callable:os.execlpe]
+// @ETPL:preload execvp os.execvp
+P execvp = P  // [ET:callable:os.execvp]
+// @ETPL:preload execvpe os.execvpe
+P execvpe = P  // [ET:callable:os.execvpe]
+// @ETPL:preload getenv os.getenv
+P getenv = P  // [ET:callable:os.getenv]
+P supports_bytes_environ = 0
+// @ETPL:preload spawnl os.spawnl
+P spawnl = P  // [ET:callable:os.spawnl]
+// @ETPL:preload spawnle os.spawnle
+P spawnle = P  // [ET:callable:os.spawnle]
+// @ETPL:preload popen os.popen
+P popen = P  // [ET:callable:os.popen]
+// @ETPL:preload re re
+// Import re — resolved at translate-time
+// @ETPL:preload match re.match
+P match = P  // [ET:callable:re.match]
+// @ETPL:preload fullmatch re.fullmatch
+P fullmatch = P  // [ET:callable:re.fullmatch]
+// @ETPL:preload search re.search
+P search = P  // [ET:callable:re.search]
+// @ETPL:preload sub re.sub
+P sub = P  // [ET:callable:re.sub]
+// @ETPL:preload subn re.subn
+P subn = P  // [ET:callable:re.subn]
+// @ETPL:preload split re.split
+P split = P  // [ET:callable:re.split]
+// @ETPL:preload findall re.findall
+P findall = P  // [ET:callable:re.findall]
+// @ETPL:preload finditer re.finditer
+P finditer = P  // [ET:callable:re.finditer]
+// @ETPL:preload compile re.compile
+P compile = P  // [ET:callable:re.compile]
+// @ETPL:preload purge re.purge
+P purge = P  // [ET:callable:re.purge]
+// @ETPL:preload escape re.escape
+P escape = P  // [ET:callable:re.escape]
+// @ETPL:preload Pattern re.Pattern
+P Pattern = P  // [ET:callable:re.Pattern]
+// @ETPL:preload Match re.Match
+P Match = P  // [ET:callable:re.Match]
+P A = 256
+P I = 2
+P L = 4
+P M = 8
+P S = 16
+P X = 64
+P U = 32
+P ASCII = 256
+P IGNORECASE = 2
+P LOCALE = 4
+P MULTILINE = 8
+P DOTALL = 16
+P VERBOSE = 64
+P UNICODE = 32
+P NOFLAG = 0
+// @ETPL:preload RegexFlag re.RegexFlag
+P RegexFlag = P  // [ET:callable:re.RegexFlag]
+// @ETPL:preload PatternError re.PatternError
+P PatternError = P  // [ET:callable:re.PatternError]
+// @ETPL:preload sys sys
+// Import sys — resolved at translate-time
+// @ETPL:preload activate_stack_trampoline sys.activate_stack_trampoline
+P activate_stack_trampoline = P  // [ET:callable:sys.activate_stack_trampoline]
+// @ETPL:preload addaudithook sys.addaudithook
+P addaudithook = P  // [ET:callable:sys.addaudithook]
+P api_version = 1013
+P argv = manifold ["ETPL.py", "translate", "ETPL.py", "--lang", "python", "--output", "ETPL_self.pdt"]
+// @ETPL:preload audit sys.audit
+P audit = P  // [ET:callable:sys.audit]
+P base_exec_prefix = "C:\\Program Files\\Python313"
+P base_prefix = "C:\\Program Files\\Python313"
+// @ETPL:preload breakpointhook sys.breakpointhook
+P breakpointhook = P  // [ET:callable:sys.breakpointhook]
+P builtin_module_names = manifold ["_abc", "_ast", "_bisect", "_blake2", "_codecs", "_codecs_cn", "_codecs_hk", "_codecs_iso2022", "_codecs_jp", "_codecs_kr", "_codecs_tw", "_collections", "_contextvars", "_csv", "_datetime", "_functools", "_heapq", "_imp", "_interpchannels", "_interpqueues", "_interpreters", "_io", "_json", "_locale", "_lsprof", "_md5", "_multibytecodec", "_opcode", "_operator", "_pickle", "_random", "_sha1", "_sha2", "_sha3", "_signal", "_sre", "_stat", "_statistics", "_string", "_struct", "_suggestions", "_symtable", "_sysconfig", "_thread", "_tokenize", "_tracemalloc", "_typing", "_warnings", "_weakref", "_winapi"]
+P byteorder = "little"
+// @ETPL:preload call_tracing sys.call_tracing
+P call_tracing = P  // [ET:callable:sys.call_tracing]
+P copyright = "Copyright (c) 2001-2024 Python Software Foundation.\nAll Rights Reserved.\n\nCopyright (c) 2000 BeOpen.com.\nAll Rights Reserved.\n\nCopyright (c) 1995-2001 Corporation for National Research Initiatives.\nAll Rights Reserved.\n\nCopyright (c) 1991-1995 Stichting Mathematisch Centrum, Amsterdam.\nAll Rights Reserved."
+// @ETPL:preload deactivate_stack_trampoline sys.deactivate_stack_trampoline
+P deactivate_stack_trampoline = P  // [ET:callable:sys.deactivate_stack_trampoline]
+// @ETPL:preload displayhook sys.displayhook
+P displayhook = P  // [ET:callable:sys.displayhook]
+P dllhandle = 140730231881728
+P dont_write_bytecode = 0
+// @ETPL:preload exc_info sys.exc_info
+P exc_info = P  // [ET:callable:sys.exc_info]
+// @ETPL:preload excepthook sys.excepthook
+P excepthook = P  // [ET:callable:sys.excepthook]
+// @ETPL:preload exception sys.exception
+P exception = P  // [ET:callable:sys.exception]
+P exec_prefix = "C:\\Program Files\\Python313"
+P executable = "C:\\Program Files\\Python313\\python.exe"
+// @ETPL:preload exit sys.exit
+P exit = P  // [ET:callable:sys.exit]
+P flags = manifold [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 4300]
+P float_info = manifold [1.7976931348623157e+308, 1024, 308, 2.2250738585072014e-308, -1021, -307, 15, 53, 2.220446049250313e-16, 2, 1]
+P float_repr_style = "short"
+// @ETPL:preload get_asyncgen_hooks sys.get_asyncgen_hooks
+P get_asyncgen_hooks = P  // [ET:callable:sys.get_asyncgen_hooks]
+// @ETPL:preload get_coroutine_origin_tracking_depth sys.get_coroutine_origin_tracking_depth
+P get_coroutine_origin_tracking_depth = P  // [ET:callable:sys.get_coroutine_origin_tracking_depth]
+// @ETPL:preload get_int_max_str_digits sys.get_int_max_str_digits
+P get_int_max_str_digits = P  // [ET:callable:sys.get_int_max_str_digits]
+// @ETPL:preload getallocatedblocks sys.getallocatedblocks
+P getallocatedblocks = P  // [ET:callable:sys.getallocatedblocks]
+// @ETPL:preload getdefaultencoding sys.getdefaultencoding
+P getdefaultencoding = P  // [ET:callable:sys.getdefaultencoding]
+// @ETPL:preload getfilesystemencodeerrors sys.getfilesystemencodeerrors
+P getfilesystemencodeerrors = P  // [ET:callable:sys.getfilesystemencodeerrors]
+// @ETPL:preload getfilesystemencoding sys.getfilesystemencoding
+P getfilesystemencoding = P  // [ET:callable:sys.getfilesystemencoding]
+// @ETPL:preload getprofile sys.getprofile
+P getprofile = P  // [ET:callable:sys.getprofile]
+// @ETPL:preload getrecursionlimit sys.getrecursionlimit
+P getrecursionlimit = P  // [ET:callable:sys.getrecursionlimit]
+// @ETPL:preload getrefcount sys.getrefcount
+P getrefcount = P  // [ET:callable:sys.getrefcount]
+// @ETPL:preload getsizeof sys.getsizeof
+P getsizeof = P  // [ET:callable:sys.getsizeof]
+// @ETPL:preload getswitchinterval sys.getswitchinterval
+P getswitchinterval = P  // [ET:callable:sys.getswitchinterval]
+// @ETPL:preload gettrace sys.gettrace
+P gettrace = P  // [ET:callable:sys.gettrace]
+// @ETPL:preload getunicodeinternedsize sys.getunicodeinternedsize
+P getunicodeinternedsize = P  // [ET:callable:sys.getunicodeinternedsize]
+// @ETPL:preload getwindowsversion sys.getwindowsversion
+P getwindowsversion = P  // [ET:callable:sys.getwindowsversion]
+P hash_info = manifold [64, 2305843009213693951, 314159, 0, 1000003, "siphash13", 64, 128, 0]
+P hexversion = 51186672
+P implementation = P  // [ET:unrepresentable:SimpleNamespace]
+P int_info = manifold [30, 4, 4300, 640]
+// @ETPL:preload intern sys.intern
+P intern = P  // [ET:callable:sys.intern]
+// @ETPL:preload is_finalizing sys.is_finalizing
+P is_finalizing = P  // [ET:callable:sys.is_finalizing]
+// @ETPL:preload is_stack_trampoline_active sys.is_stack_trampoline_active
+P is_stack_trampoline_active = P  // [ET:callable:sys.is_stack_trampoline_active]
+P maxsize = 9223372036854775807
+P maxunicode = 1114111
+P meta_path = manifold [P, P, P, P]
+// @ETPL:preload modules sys.modules
+// [ET:complex-dict:modules]
+// @ETPL:preload monitoring sys.monitoring
+P orig_argv = manifold ["python", "ETPL.py", "translate", "ETPL.py", "--lang", "python", "--output", "ETPL_self.pdt"]
+P path_hooks = manifold [P, P, P]
+// @ETPL:preload path_importer_cache sys.path_importer_cache
+// [ET:complex-dict:path_importer_cache]
+P platform = "win32"
+P platlibdir = "DLLs"
+P prefix = "C:\\Program Files\\Python313"
+P pycache_prefix = P
+// @ETPL:preload set_asyncgen_hooks sys.set_asyncgen_hooks
+P set_asyncgen_hooks = P  // [ET:callable:sys.set_asyncgen_hooks]
+// @ETPL:preload set_coroutine_origin_tracking_depth sys.set_coroutine_origin_tracking_depth
+P set_coroutine_origin_tracking_depth = P  // [ET:callable:sys.set_coroutine_origin_tracking_depth]
+// @ETPL:preload set_int_max_str_digits sys.set_int_max_str_digits
+P set_int_max_str_digits = P  // [ET:callable:sys.set_int_max_str_digits]
+// @ETPL:preload setprofile sys.setprofile
+P setprofile = P  // [ET:callable:sys.setprofile]
+// @ETPL:preload setrecursionlimit sys.setrecursionlimit
+P setrecursionlimit = P  // [ET:callable:sys.setrecursionlimit]
+// @ETPL:preload setswitchinterval sys.setswitchinterval
+P setswitchinterval = P  // [ET:callable:sys.setswitchinterval]
+// @ETPL:preload settrace sys.settrace
+P settrace = P  // [ET:callable:sys.settrace]
+P stderr = P  // [ET:unrepresentable:TextIOWrapper]
+P stdin = P  // [ET:unrepresentable:TextIOWrapper]
+P stdlib_module_names = manifold ["__future__", "_abc", "_aix_support", "_android_support", "_apple_support", "_ast", "_asyncio", "_bisect", "_blake2", "_bz2", "_codecs", "_codecs_cn", "_codecs_hk", "_codecs_iso2022", "_codecs_jp", "_codecs_kr", "_codecs_tw", "_collections", "_collections_abc", "_colorize", "_compat_pickle", "_compression", "_contextvars", "_csv", "_ctypes", "_curses", "_curses_panel", "_datetime", "_dbm", "_decimal", "_elementtree", "_frozen_importlib", "_frozen_importlib_external", "_functools", "_gdbm", "_hashlib", "_heapq", "_imp", "_interpchannels", "_interpqueues", "_interpreters", "_io", "_ios_support", "_json", "_locale", "_lsprof", "_lzma", "_markupbase", "_md5", "_multibytecodec"]  // frozenset
+P stdout = P  // [ET:unrepresentable:TextIOWrapper]
+P thread_info = manifold ["nt", P, P]
+// @ETPL:preload unraisablehook sys.unraisablehook
+P unraisablehook = P  // [ET:callable:sys.unraisablehook]
+P version = "3.13.11 (tags/v3.13.11:6278944, Dec  5 2025, 16:26:58) [MSC v.1944 64 bit (AMD64)]"
+P version_info = manifold [3, 13, 11, "final", 0]
+P warnoptions = manifold []
+P winver = "3.13"
+// @ETPL:preload functools functools
+// Import functools — resolved at translate-time
+// @ETPL:preload update_wrapper functools.update_wrapper
+P update_wrapper = P  // [ET:callable:functools.update_wrapper]
+// @ETPL:preload wraps functools.wraps
+P wraps = P  // [ET:callable:functools.wraps]
+P WRAPPER_ASSIGNMENTS = manifold ["__module__", "__name__", "__qualname__", "__doc__", "__annotations__", "__type_params__"]
+P WRAPPER_UPDATES = manifold ["__dict__"]
+// @ETPL:preload total_ordering functools.total_ordering
+P total_ordering = P  // [ET:callable:functools.total_ordering]
+// @ETPL:preload cache functools.cache
+P cache = P  // [ET:callable:functools.cache]
+// @ETPL:preload cmp_to_key functools.cmp_to_key
+P cmp_to_key = P  // [ET:callable:functools.cmp_to_key]
+// @ETPL:preload lru_cache functools.lru_cache
+P lru_cache = P  // [ET:callable:functools.lru_cache]
+// @ETPL:preload reduce functools.reduce
+P reduce = P  // [ET:callable:functools.reduce]
+// @ETPL:preload partial functools.partial
+P partial = P  // [ET:callable:functools.partial]
+// @ETPL:preload partialmethod functools.partialmethod
+P partialmethod = P  // [ET:callable:functools.partialmethod]
+// @ETPL:preload singledispatch functools.singledispatch
+P singledispatch = P  // [ET:callable:functools.singledispatch]
+// @ETPL:preload singledispatchmethod functools.singledispatchmethod
+P singledispatchmethod = P  // [ET:callable:functools.singledispatchmethod]
+// @ETPL:preload cached_property functools.cached_property
+P cached_property = P  // [ET:callable:functools.cached_property]
+// @ETPL:preload itertools itertools
+// Import itertools — resolved at translate-time
+// @ETPL:preload accumulate itertools.accumulate
+P accumulate = P  // [ET:callable:itertools.accumulate]
+// @ETPL:preload batched itertools.batched
+P batched = P  // [ET:callable:itertools.batched]
+// @ETPL:preload chain itertools.chain
+P chain = P  // [ET:callable:itertools.chain]
+// @ETPL:preload combinations itertools.combinations
+P combinations = P  // [ET:callable:itertools.combinations]
+// @ETPL:preload combinations_with_replacement itertools.combinations_with_replacement
+P combinations_with_replacement = P  // [ET:callable:itertools.combinations_with_replacement]
+// @ETPL:preload compress itertools.compress
+P compress = P  // [ET:callable:itertools.compress]
+// @ETPL:preload count itertools.count
+P count = P  // [ET:callable:itertools.count]
+// @ETPL:preload cycle itertools.cycle
+P cycle = P  // [ET:callable:itertools.cycle]
+// @ETPL:preload dropwhile itertools.dropwhile
+P dropwhile = P  // [ET:callable:itertools.dropwhile]
+// @ETPL:preload filterfalse itertools.filterfalse
+P filterfalse = P  // [ET:callable:itertools.filterfalse]
+// @ETPL:preload groupby itertools.groupby
+P groupby = P  // [ET:callable:itertools.groupby]
+// @ETPL:preload islice itertools.islice
+P islice = P  // [ET:callable:itertools.islice]
+// @ETPL:preload pairwise itertools.pairwise
+P pairwise = P  // [ET:callable:itertools.pairwise]
+// @ETPL:preload permutations itertools.permutations
+P permutations = P  // [ET:callable:itertools.permutations]
+// @ETPL:preload product itertools.product
+P product = P  // [ET:callable:itertools.product]
+// @ETPL:preload repeat itertools.repeat
+P repeat = P  // [ET:callable:itertools.repeat]
+// @ETPL:preload starmap itertools.starmap
+P starmap = P  // [ET:callable:itertools.starmap]
+// @ETPL:preload takewhile itertools.takewhile
+P takewhile = P  // [ET:callable:itertools.takewhile]
+// @ETPL:preload tee itertools.tee
+P tee = P  // [ET:callable:itertools.tee]
+// @ETPL:preload zip_longest itertools.zip_longest
+P zip_longest = P  // [ET:callable:itertools.zip_longest]
+T attempt = → P  // try
+    // @ETPL:preload _wmi _wmi
+    // Import _wmi — resolved at translate-time
+    // @ETPL:preload exec_query _wmi.exec_query
+    P exec_query = P  // [ET:callable:_wmi.exec_query]
+→ E ImportError (_)
+    P _wmi = P
+P _ver_stages = manifold [manifold ["dev", 10], manifold ["alpha", 20], manifold ["a", 20], manifold ["beta", 30], manifold ["b", 30], manifold ["c", 40], manifold ["RC", 50], manifold ["rc", 50], manifold ["pl", 200], manifold ["p", 200]]
+D comparable_version = λ version . {
+    P component_re = re D compile("([0-9]+|[._+-])")
+    P result = manifold []
+    T loop = ∞ (
+        P v = component_re D split(version)[_loop_index]
+        T cond = → if v ≠ "._+-" → P
+            T attempt = → P  // try
+                P v = int(v, 10)
+                P t = 100
+            → E ValueError (_)
+                P t = _ver_stages D get(v, 0)
+            result D extend(manifold [t, v])
+    ) (D |component_re D split(version)|)
+    → result
+}
+D libc_ver = λ executable, lib, version, chunksize . {
+    // Tries to determine the libc version that the file executable         (which defaults to the Python interpreter) is linke
+    T cond = → if (!executable) → P
+        T attempt = → P  // try
+            P ver = os D confstr("CS_GNU_LIBC_VERSION")
+            P parts = ver D split(manifold ["maxsplit", 1])
+            T cond = → if len(parts) == 2 → → tuple(parts)
+        → E manifold [AttributeError, ValueError, OSError] (_)
+            // pass
+        P executable = sys D executable
+        T cond = → if (!executable) → → manifold [lib, version]
+    P libc_search = re D compile(b'(__libc_init)|(GLIBC_([0-9.]+))|(libc(_\\w+)?\\.so(?:\\.(\\d[0-9.]*))?)', re D ASCII)
+    P V = _comparable_version
+    P executable = os D path D realpath(executable)
+    T scope_f = → open(executable, "rb")
+    P f = scope_f  // context var
+        P binary = f D read(chunksize)
+        P pos = 0
+        T while_loop = ∞ (
+            T check = → if pos < len(binary) → P  // while body follows
+                T cond = → if (b'libc' == binary || b'GLIBC' == binary) → P m = libc_search D search(binary, pos)
+                → E P m = P
+                T cond = → if ((!m) || m D end(P) == len(binary)) → P
+                    P chunk = f D read(chunksize)
+                    T cond = → if chunk → P
+                        P binary = (binary[max(pos, (len(binary) - 1000)):Ω] + chunk)
+                        P pos = 0
+                        // continue
+                    T cond = → if (!m) → P  // pass
+                P manifold__libcinit__glibc__glibcversion__so__threads__soversion = { T loop = ∞ (if s ≠ P → s D decode("latin1") → E s) (D |m D groups(P)|) }  // manifold [libcinit, glibc, glibcversion, so, threads, soversion] := { T loop = ∞ (if s ≠ P → s D decode("latin1") → E s) (D |m D groups(P)|) }
+                T cond = → if (libcinit && (!lib)) → P lib = "libc"
+                → E P
+                    T cond = → if glibc → P
+                        T cond = → if lib ≠ "glibc" → P
+                            P lib = "glibc"
+                            P version = glibcversion
+                        → E T cond = → if V(glibcversion) > V(version) → P version = glibcversion
+                    → E P
+                        T cond = → if so → P
+                            T cond = → if lib ≠ "glibc" → P
+                                P lib = "libc"
+                                T cond = → if (soversion && ((!version) || V(soversion) > V(version))) → P version = soversion
+                                T cond = → if (threads && version[(-len(threads)):Ω] ≠ threads) → P version = (version + threads)
+                P pos = m D end(P)
+        ) (D WHILE_LOOP_FINITE_BOUND)  // bounded by condition; max=144
+    → manifold [lib, version]
+}
+D norm_version = λ version, build . {
+    // Normalize the version and build strings and return a single         version string using the format major.minor.build (o
+    P l = version D split(".")
+    T cond = → if build → l D append(build)
+    T attempt = → P  // try
+        P strings = list(_et_map(str, _et_map(int, l)))
+    → E ValueError (_)
+        P strings = l
+    P version = "." D join(strings[0:3])
+    → version
+}
+D syscmd_ver = λ system, release, version, supported_platforms . {
+    // Tries to figure out the OS version used and returns         a tuple (system, release, version).          It uses the "ve
+    T cond = → if sys D platform ≠ supported_platforms → → manifold [system, release, version]
+    // @ETPL:preload subprocess subprocess
+    // Import subprocess — resolved at translate-time
+    // @ETPL:preload Popen subprocess.Popen
+    P Popen = P  // [ET:callable:subprocess.Popen]
+    P PIPE = -1
+    P STDOUT = -2
+    // @ETPL:preload call subprocess.call
+    P call = P  // [ET:callable:subprocess.call]
+    // @ETPL:preload check_call subprocess.check_call
+    P check_call = P  // [ET:callable:subprocess.check_call]
+    // @ETPL:preload getstatusoutput subprocess.getstatusoutput
+    P getstatusoutput = P  // [ET:callable:subprocess.getstatusoutput]
+    // @ETPL:preload getoutput subprocess.getoutput
+    P getoutput = P  // [ET:callable:subprocess.getoutput]
+    // @ETPL:preload check_output subprocess.check_output
+    P check_output = P  // [ET:callable:subprocess.check_output]
+    // @ETPL:preload run subprocess.run
+    P run = P  // [ET:callable:subprocess.run]
+    // @ETPL:preload CalledProcessError subprocess.CalledProcessError
+    P CalledProcessError = P  // [ET:callable:subprocess.CalledProcessError]
+    P DEVNULL = -3
+    // @ETPL:preload SubprocessError subprocess.SubprocessError
+    P SubprocessError = P  // [ET:callable:subprocess.SubprocessError]
+    // @ETPL:preload TimeoutExpired subprocess.TimeoutExpired
+    P TimeoutExpired = P  // [ET:callable:subprocess.TimeoutExpired]
+    // @ETPL:preload CompletedProcess subprocess.CompletedProcess
+    P CompletedProcess = P  // [ET:callable:subprocess.CompletedProcess]
+    P CREATE_NEW_CONSOLE = 16
+    P CREATE_NEW_PROCESS_GROUP = 512
+    P STD_INPUT_HANDLE = 4294967286
+    P STD_OUTPUT_HANDLE = 4294967285
+    P STD_ERROR_HANDLE = 4294967284
+    P SW_HIDE = 0
+    P STARTF_USESTDHANDLES = 256
+    P STARTF_USESHOWWINDOW = 1
+    P STARTF_FORCEONFEEDBACK = 64
+    P STARTF_FORCEOFFFEEDBACK = 128
+    // @ETPL:preload STARTUPINFO subprocess.STARTUPINFO
+    P STARTUPINFO = P  // [ET:callable:subprocess.STARTUPINFO]
+    P ABOVE_NORMAL_PRIORITY_CLASS = 32768
+    P BELOW_NORMAL_PRIORITY_CLASS = 16384
+    P HIGH_PRIORITY_CLASS = 128
+    P IDLE_PRIORITY_CLASS = 64
+    P NORMAL_PRIORITY_CLASS = 32
+    P REALTIME_PRIORITY_CLASS = 256
+    P CREATE_NO_WINDOW = 134217728
+    P DETACHED_PROCESS = 8
+    P CREATE_DEFAULT_ERROR_MODE = 67108864
+    P CREATE_BREAKAWAY_FROM_JOB = 16777216
+    T loop = ∞ (
+        P cmd = manifold ["ver", "command /c ver", "cmd /c ver"][_loop_index]
+        T attempt = → P  // try
+            P info = subprocess D check_output(cmd, manifold ["stdin", subprocess D DEVNULL], manifold ["stderr", subprocess D DEVNULL], manifold ["text", 1], manifold ["encoding", "locale"], manifold ["shell", 1])
+        → E manifold [OSError, subprocess D CalledProcessError] (why)
+            // continue
+    ) (D |manifold ["ver", "command /c ver", "cmd /c ver"]|)
+    P ver_output = re D compile("(?:([\\w ]+) ([\\w.]+) .*\\[.* ([\\d.]+)\\])")
+    P info = info D strip(P)
+    P m = ver_output D match(info)
+    T cond = → if m ≠ P → P
+        P manifold__system__release__version = m D groups(P)  // manifold [system, release, version] := m D groups(P)
+        T cond = → if release[(-1)] == "." → P release = release[0:(-1)]
+        T cond = → if version[(-1)] == "." → P version = version[0:(-1)]
+        P version = _norm_version(version)
+    → manifold [system, release, version]
+}
+D wmi_query = λ table . {
+    // global _wmi
+    T cond = → if (!_wmi) → → E OSError("not supported")
+    P table = manifold [manifold ["OS", "Win32_OperatingSystem"], manifold ["CPU", "Win32_Processor"]][table]
+    T attempt = → P  // try
+        P data = _wmi D exec_query("SELECT {} FROM {}" D format("," D join(keys), table)) D split(" ")
+    → E OSError (_)
+        P _wmi = P
+        → E OSError("not supported")
+    P split_data = { T loop = ∞ (i D partition("=")) (D |data|) }
+    P dict_data = { T loop = ∞ (P item = split_data[_loop_index]) (D |split_data|) }
+    → { T loop = ∞ (dict_data[k]) (D |keys|) }
+}
+P _WIN32_CLIENT_RELEASES = manifold [manifold [manifold [10, 1, 0], "post11"], manifold [manifold [10, 0, 22000], "11"], manifold [manifold [6, 4, 0], "10"], manifold [manifold [6, 3, 0], "8.1"], manifold [manifold [6, 2, 0], "8"], manifold [manifold [6, 1, 0], "7"], manifold [manifold [6, 0, 0], "Vista"], manifold [manifold [5, 2, 3790], "XP64"], manifold [manifold [5, 2, 0], "XPMedia"], manifold [manifold [5, 1, 0], "XP"], manifold [manifold [5, 0, 0], "2000"]]
+P _WIN32_SERVER_RELEASES = manifold [manifold [manifold [10, 1, 0], "post2025Server"], manifold [manifold [10, 0, 26100], "2025Server"], manifold [manifold [10, 0, 20348], "2022Server"], manifold [manifold [10, 0, 17763], "2019Server"], manifold [manifold [6, 4, 0], "2016Server"], manifold [manifold [6, 3, 0], "2012ServerR2"], manifold [manifold [6, 2, 0], "2012Server"], manifold [manifold [6, 1, 0], "2008ServerR2"], manifold [manifold [6, 0, 0], "2008Server"], manifold [manifold [5, 2, 0], "2003Server"], manifold [manifold [5, 0, 0], "2000Server"]]
+D win32_is_iot = λ  . → win32_edition(P) == manifold ["IoTUAP", "NanoServer", "WindowsCoreHeadless", "IoTEdgeOS"]
+D win32_edition = λ  . {
+    T attempt = → P  // try
+        // @ETPL:preload winreg winreg
+        // Import winreg — resolved at translate-time
+        // @ETPL:preload CloseKey winreg.CloseKey
+        P CloseKey = P  // [ET:callable:winreg.CloseKey]
+        // @ETPL:preload ConnectRegistry winreg.ConnectRegistry
+        P ConnectRegistry = P  // [ET:callable:winreg.ConnectRegistry]
+        // @ETPL:preload CreateKey winreg.CreateKey
+        P CreateKey = P  // [ET:callable:winreg.CreateKey]
+        // @ETPL:preload CreateKeyEx winreg.CreateKeyEx
+        P CreateKeyEx = P  // [ET:callable:winreg.CreateKeyEx]
+        // @ETPL:preload DeleteKey winreg.DeleteKey
+        P DeleteKey = P  // [ET:callable:winreg.DeleteKey]
+        // @ETPL:preload DeleteKeyEx winreg.DeleteKeyEx
+        P DeleteKeyEx = P  // [ET:callable:winreg.DeleteKeyEx]
+        // @ETPL:preload DeleteValue winreg.DeleteValue
+        P DeleteValue = P  // [ET:callable:winreg.DeleteValue]
+        // @ETPL:preload DisableReflectionKey winreg.DisableReflectionKey
+        P DisableReflectionKey = P  // [ET:callable:winreg.DisableReflectionKey]
+        // @ETPL:preload EnableReflectionKey winreg.EnableReflectionKey
+        P EnableReflectionKey = P  // [ET:callable:winreg.EnableReflectionKey]
+        // @ETPL:preload EnumKey winreg.EnumKey
+        P EnumKey = P  // [ET:callable:winreg.EnumKey]
+        // @ETPL:preload EnumValue winreg.EnumValue
+        P EnumValue = P  // [ET:callable:winreg.EnumValue]
+        // @ETPL:preload ExpandEnvironmentStrings winreg.ExpandEnvironmentStrings
+        P ExpandEnvironmentStrings = P  // [ET:callable:winreg.ExpandEnvironmentStrings]
+        // @ETPL:preload FlushKey winreg.FlushKey
+        P FlushKey = P  // [ET:callable:winreg.FlushKey]
+        // @ETPL:preload HKEYType winreg.HKEYType
+        P HKEYType = P  // [ET:callable:winreg.HKEYType]
+        P HKEY_CLASSES_ROOT = 18446744071562067968
+        P HKEY_CURRENT_CONFIG = 18446744071562067973
+        P HKEY_CURRENT_USER = 18446744071562067969
+        P HKEY_DYN_DATA = 18446744071562067974
+        P HKEY_LOCAL_MACHINE = 18446744071562067970
+        P HKEY_PERFORMANCE_DATA = 18446744071562067972
+        P HKEY_USERS = 18446744071562067971
+        P KEY_ALL_ACCESS = 983103
+        P KEY_CREATE_LINK = 32
+        P KEY_CREATE_SUB_KEY = 4
+        P KEY_ENUMERATE_SUB_KEYS = 8
+        P KEY_EXECUTE = 131097
+        P KEY_NOTIFY = 16
+        P KEY_QUERY_VALUE = 1
+        P KEY_READ = 131097
+        P KEY_SET_VALUE = 2
+        P KEY_WOW64_32KEY = 512
+        P KEY_WOW64_64KEY = 256
+        P KEY_WRITE = 131078
+        // @ETPL:preload LoadKey winreg.LoadKey
+        P LoadKey = P  // [ET:callable:winreg.LoadKey]
+        // @ETPL:preload OpenKey winreg.OpenKey
+        P OpenKey = P  // [ET:callable:winreg.OpenKey]
+        // @ETPL:preload OpenKeyEx winreg.OpenKeyEx
+        P OpenKeyEx = P  // [ET:callable:winreg.OpenKeyEx]
+        // @ETPL:preload QueryInfoKey winreg.QueryInfoKey
+        P QueryInfoKey = P  // [ET:callable:winreg.QueryInfoKey]
+        // @ETPL:preload QueryReflectionKey winreg.QueryReflectionKey
+        P QueryReflectionKey = P  // [ET:callable:winreg.QueryReflectionKey]
+        // @ETPL:preload QueryValue winreg.QueryValue
+        P QueryValue = P  // [ET:callable:winreg.QueryValue]
+        // @ETPL:preload QueryValueEx winreg.QueryValueEx
+        P QueryValueEx = P  // [ET:callable:winreg.QueryValueEx]
+        P REG_BINARY = 3
+        P REG_CREATED_NEW_KEY = 1
+        P REG_DWORD = 4
+        P REG_DWORD_BIG_ENDIAN = 5
+        P REG_DWORD_LITTLE_ENDIAN = 4
+        P REG_EXPAND_SZ = 2
+        P REG_FULL_RESOURCE_DESCRIPTOR = 9
+        P REG_LEGAL_CHANGE_FILTER = 268435471
+        P REG_LEGAL_OPTION = 31
+        P REG_LINK = 6
+        P REG_MULTI_SZ = 7
+        P REG_NONE = 0
+        P REG_NOTIFY_CHANGE_ATTRIBUTES = 2
+        P REG_NOTIFY_CHANGE_LAST_SET = 4
+        P REG_NOTIFY_CHANGE_NAME = 1
+        P REG_NOTIFY_CHANGE_SECURITY = 8
+        P REG_NO_LAZY_FLUSH = 4
+        P REG_OPENED_EXISTING_KEY = 2
+        P REG_OPTION_BACKUP_RESTORE = 4
+        P REG_OPTION_CREATE_LINK = 2
+        P REG_OPTION_NON_VOLATILE = 0
+        P REG_OPTION_OPEN_LINK = 8
+        P REG_OPTION_RESERVED = 0
+        P REG_OPTION_VOLATILE = 1
+        P REG_QWORD = 11
+        P REG_QWORD_LITTLE_ENDIAN = 11
+        P REG_REFRESH_HIVE = 2
+        P REG_RESOURCE_LIST = 8
+        P REG_RESOURCE_REQUIREMENTS_LIST = 10
+        P REG_SZ = 1
+        P REG_WHOLE_HIVE_VOLATILE = 1
+        // @ETPL:preload SaveKey winreg.SaveKey
+        P SaveKey = P  // [ET:callable:winreg.SaveKey]
+        // @ETPL:preload SetValue winreg.SetValue
+        P SetValue = P  // [ET:callable:winreg.SetValue]
+        // @ETPL:preload SetValueEx winreg.SetValueEx
+        P SetValueEx = P  // [ET:callable:winreg.SetValueEx]
+    → E ImportError (_)
+        // pass
+    → P
+}
+D win32_ver = λ version, csd, ptype . {
+    T attempt = → P  // try
+        P manifold__version__product_type__ptype__spmajor__spminor = _wmi_query("OS", "Version", "ProductType", "BuildType", "ServicePackMajorVersion", "ServicePackMinorVersion")  // manifold [version, product_type, ptype, spmajor, spminor] := _wmi_query("OS", "Version", "ProductType", "BuildType", "ServicePackMajorVersion", "ServicePackMinorVersion")
+        P is_client = int(product_type) == 1
+        T cond = → if (spminor && spminor ≠ "0") → P csd = "SP" + spmajor + "." + spminor
+        → E P csd = "SP" + spmajor
+        → manifold [version, csd, ptype, is_client]
+    → E OSError (_)
+        // pass
+    T attempt = → P  // try
+    → E ImportError (_)
+        → manifold [version, csd, ptype, 1]
+    P winver = getwindowsversion(P)
+    P is_client = getattr(winver, "product_type", 1) == 1
+    T attempt = → P  // try
+        P version = _syscmd_ver(P)[2]
+        P manifold__major__minor__build = _et_map(int, version D split("."))  // manifold [major, minor, build] := _et_map(int, version D split("."))
+    → E ValueError (_)
+        P manifold__major__minor__build = (winver D platform_version || winver[0:3])  // manifold [major, minor, build] := (winver D platform_version || winver[0:3])
+        P version = "{0}.{1}.{2}" D format(major, minor, build)
+    T cond = → if winver[0:2] == manifold [major, minor] → P
+        T attempt = → P  // try
+            P csd = "SP{}" D format(winver D service_pack_major)
+        → E AttributeError (_)
+            T cond = → if csd[0:13] == "Service Pack " → P csd = ("SP" + csd[13:Ω])
+    T attempt = → P  // try
+        // @ETPL:preload winreg winreg
+        // Import winreg — resolved at translate-time
+    → E ImportError (_)
+        // pass
+    → manifold [version, csd, ptype, is_client]
+}
+D win32_ver = λ release, version, csd, ptype . {
+    P is_client = 0
+    P manifold__version__csd__ptype__is_client = _win32_ver(version, csd, ptype)  // manifold [version, csd, ptype, is_client] := _win32_ver(version, csd, ptype)
+    T cond = → if version → P
+        P intversion = tuple(_et_map(int, version D split(".")))
+        P releases = if is_client → _WIN32_CLIENT_RELEASES → E _WIN32_SERVER_RELEASES
+        P release = next({ T loop = ∞ (r → E v ≤ intversion) (D |releases|) }, release)
+    → manifold [release, version, csd, ptype]
+}
+D mac_ver_xml = λ  . {
+    P fn = "/System/Library/CoreServices/SystemVersion.plist"
+    T cond = → if (!os D path D exists(fn)) → → P
+    T attempt = → P  // try
+        // @ETPL:preload plistlib plistlib
+        // Import plistlib — resolved at translate-time
+        // @ETPL:preload InvalidFileException plistlib.InvalidFileException
+        P InvalidFileException = P  // [ET:callable:plistlib.InvalidFileException]
+        P FMT_XML = P  // [ET:unrepresentable:PlistFormat]
+        P FMT_BINARY = P  // [ET:unrepresentable:PlistFormat]
+        // @ETPL:preload load plistlib.load
+        P load = P  // [ET:callable:plistlib.load]
+        // @ETPL:preload dump plistlib.dump
+        P dump = P  // [ET:callable:plistlib.dump]
+        // @ETPL:preload loads plistlib.loads
+        P loads = P  // [ET:callable:plistlib.loads]
+        // @ETPL:preload dumps plistlib.dumps
+        P dumps = P  // [ET:callable:plistlib.dumps]
+        // @ETPL:preload UID plistlib.UID
+        P UID = P  // [ET:callable:plistlib.UID]
+    → E ImportError (_)
+        → P
+    T scope_f = → open(fn, "rb")
+    P f = scope_f  // context var
+        P pl = plistlib D load(f)
+    P release = pl["ProductVersion"]
+    P versioninfo = manifold ["", "", ""]
+    P machine = os D uname(P) D machine
+    T cond = → if machine == manifold ["ppc", "Power Macintosh"] → P machine = "PowerPC"
+    → manifold [release, versioninfo, machine]
+}
+D mac_ver = λ release, versioninfo, machine . {
+    // Get macOS version information and return it as tuple (release,         versioninfo, machine) with versioninfo being a tu
+    P info = _mac_ver_xml(P)
+    T cond = → if info ≠ P → → info
+    → manifold [release, versioninfo, machine]
+}
+P IOSVersionInfo = collections D namedtuple("IOSVersionInfo", manifold ["system", "release", "model", "is_simulator"])
+D ios_ver = λ system, release, model, is_simulator . {
+    // Get iOS version information, and return it as a namedtuple:         (system, release, model, is_simulator).      If valu
+    T cond = → if sys D platform == "ios" → P
+        // @ETPL:unresolvable _ios_support
+        P result = _ios_support D get_platform_ios(P)
+        T cond = → if result ≠ P → → IOSVersionInfo(result)
+    → IOSVersionInfo(system, release, model, is_simulator)
+}
+D java_getprop = λ name, default . {
+    // This private helper is deprecated in 3.13 and will be removed in 3.15
+    // @ETPL:unresolvable java.lang.System
+    T attempt = → P  // try
+        P value = System D getProperty(name)
+        T cond = → if value == P → → default
+        → value
+    → E AttributeError (_)
+        → default
+}
+D java_ver = λ release, vendor, vminfo, osinfo . {
+    // Version interface for Jython.          Returns a tuple (release, vendor, vminfo, osinfo) with vminfo being         a tup
+    // @ETPL:preload warnings warnings
+    // Import warnings — resolved at translate-time
+    // @ETPL:preload warn warnings.warn
+    P warn = P  // [ET:callable:warnings.warn]
+    // @ETPL:preload warn_explicit warnings.warn_explicit
+    P warn_explicit = P  // [ET:callable:warnings.warn_explicit]
+    // @ETPL:preload showwarning warnings.showwarning
+    P showwarning = P  // [ET:callable:warnings.showwarning]
+    // @ETPL:preload formatwarning warnings.formatwarning
+    P formatwarning = P  // [ET:callable:warnings.formatwarning]
+    // @ETPL:preload filterwarnings warnings.filterwarnings
+    P filterwarnings = P  // [ET:callable:warnings.filterwarnings]
+    // @ETPL:preload simplefilter warnings.simplefilter
+    P simplefilter = P  // [ET:callable:warnings.simplefilter]
+    // @ETPL:preload resetwarnings warnings.resetwarnings
+    P resetwarnings = P  // [ET:callable:warnings.resetwarnings]
+    // @ETPL:preload catch_warnings warnings.catch_warnings
+    P catch_warnings = P  // [ET:callable:warnings.catch_warnings]
+    // @ETPL:preload deprecated warnings.deprecated
+    P deprecated = P  // [ET:callable:warnings.deprecated]
+    warnings D _deprecated("java_ver", manifold ["remove", manifold [3, 15]])
+    T attempt = → P  // try
+        // @ETPL:unresolvable java.lang
+    → E ImportError (_)
+        → manifold [release, vendor, vminfo, osinfo]
+    P vendor = _java_getprop("java.vendor", vendor)
+    P release = _java_getprop("java.version", release)
+    P manifold__vm_name__vm_release__vm_vendor = vminfo  // manifold [vm_name, vm_release, vm_vendor] := vminfo
+    P vm_name = _java_getprop("java.vm.name", vm_name)
+    P vm_vendor = _java_getprop("java.vm.vendor", vm_vendor)
+    P vm_release = _java_getprop("java.vm.version", vm_release)
+    P vminfo = manifold [vm_name, vm_release, vm_vendor]
+    P manifold__os_name__os_version__os_arch = osinfo  // manifold [os_name, os_version, os_arch] := osinfo
+    P os_arch = _java_getprop("java.os.arch", os_arch)
+    P os_name = _java_getprop("java.os.name", os_name)
+    P os_version = _java_getprop("java.os.version", os_version)
+    P osinfo = manifold [os_name, os_version, os_arch]
+    → manifold [release, vendor, vminfo, osinfo]
+}
+P AndroidVer = collections D namedtuple("AndroidVer", "release api_level manufacturer model device is_emulator")
+D android_ver = λ release, api_level, manufacturer, model, device, is_emulator . {
+    T cond = → if sys D platform == "android" → P
+        T attempt = → P  // try
+            // @ETPL:preload CDLL ctypes.CDLL
+            P CDLL = P  // [ET:callable:ctypes.CDLL]
+            // @ETPL:preload c_char_p ctypes.c_char_p
+            P c_char_p = P  // [ET:callable:ctypes.c_char_p]
+            // @ETPL:preload create_string_buffer ctypes.create_string_buffer
+            P create_string_buffer = P  // [ET:callable:ctypes.create_string_buffer]
+        → E ImportError (_)
+            // pass
+    → AndroidVer(release, api_level, manufacturer, model, device, is_emulator)
+}
+D system_alias = λ system, release, version . {
+    // Returns (system, release, version) aliased to common         marketing names used for some systems.          It also doe
+    T cond = → if system == "SunOS" → P
+        T cond = → if release < "5" → → manifold [system, release, version]
+        P l = release D split(".")
+        T cond = → if l → P
+            T attempt = → P  // try
+                P major = int(l[0])
+            → E ValueError (_)
+                // pass
+        T cond = → if release < "6" → P system = "Solaris"
+        → E P system = "Solaris"
+    → E T cond = → if system == manifold ["win32", "win16"] → P system = "Windows"
+    → manifold [system, release, version]
+}
+D platform = λ  . {
+    // Helper to format the platform string in a filename         compatible format e.g. "system-version-machine".
+    P platform = "-" D join({ T loop = ∞ (x D strip(P)) (D |_et_filter(len, args)|) })
+    P platform = platform D replace(" ", "_")
+    P platform = platform D replace("/", "-")
+    P platform = platform D replace("\\", "-")
+    P platform = platform D replace(":", "-")
+    P platform = platform D replace(";", "-")
+    P platform = platform D replace("\"", "-")
+    P platform = platform D replace("(", "-")
+    P platform = platform D replace(")", "-")
+    P platform = platform D replace("unknown", "")
+    T while_loop = ∞ (
+        T check = → if 1 → P  // while body follows
+            P cleaned = platform D replace("--", "-")
+            T cond = → if cleaned == platform → P  // pass
+            P platform = cleaned
+    ) (D WHILE_LOOP_FINITE_BOUND)  // bounded by condition; max=144
+    T while_loop = ∞ (
+        T check = → if (platform && platform[(-1)] == "-") → P  // while body follows
+            P platform = platform[0:(-1)]
+    ) (D WHILE_LOOP_FINITE_BOUND)  // bounded by condition; max=144
+    → platform
+}
+D node = λ default . {
+    // Helper to determine the node name of this machine.
+    T attempt = → P  // try
+        // @ETPL:preload socket socket
+        // Import socket — resolved at translate-time
+        // @ETPL:preload fromfd socket.fromfd
+        P fromfd = P  // [ET:callable:socket.fromfd]
+        // @ETPL:preload getfqdn socket.getfqdn
+        P getfqdn = P  // [ET:callable:socket.getfqdn]
+        // @ETPL:preload create_connection socket.create_connection
+        P create_connection = P  // [ET:callable:socket.create_connection]
+        // @ETPL:preload create_server socket.create_server
+        P create_server = P  // [ET:callable:socket.create_server]
+        // @ETPL:preload has_dualstack_ipv6 socket.has_dualstack_ipv6
+        P has_dualstack_ipv6 = P  // [ET:callable:socket.has_dualstack_ipv6]
+        // @ETPL:preload AddressFamily socket.AddressFamily
+        P AddressFamily = P  // [ET:callable:socket.AddressFamily]
+        // @ETPL:preload SocketKind socket.SocketKind
+        P SocketKind = P  // [ET:callable:socket.SocketKind]
+        P AF_APPLETALK = 16
+        P AF_BLUETOOTH = 32
+        P AF_DECnet = 12
+        P AF_HYPERV = 34
+        P AF_INET = 2
+        P AF_INET6 = 23
+        P AF_IPX = 6
+        P AF_IRDA = 26
+        P AF_LINK = 33
+        P AF_SNA = 11
+        P AF_UNSPEC = 0
+        P AI_ADDRCONFIG = 1024
+        P AI_ALL = 256
+        P AI_CANONNAME = 2
+        P AI_NUMERICHOST = 4
+        P AI_NUMERICSERV = 8
+        P AI_PASSIVE = 1
+        P AI_V4MAPPED = 2048
+        P BDADDR_ANY = "00:00:00:00:00:00"
+        P BDADDR_LOCAL = "00:00:00:FF:FF:FF"
+        P BTPROTO_RFCOMM = 3
+        P CAPI = P  // [ET:unrepresentable:PyCapsule]
+        P EAI_AGAIN = 11002
+        P EAI_BADFLAGS = 10022
+        P EAI_FAIL = 11003
+        P EAI_FAMILY = 10047
+        P EAI_MEMORY = 8
+        P EAI_NODATA = 11001
+        P EAI_NONAME = 11001
+        P EAI_SERVICE = 10109
+        P EAI_SOCKTYPE = 10044
+        P HVSOCKET_ADDRESS_FLAG_PASSTHRU = 1
+        P HVSOCKET_CONNECTED_SUSPEND = 4
+        P HVSOCKET_CONNECT_TIMEOUT = 1
+        P HVSOCKET_CONNECT_TIMEOUT_MAX = 300000
+        P HV_GUID_BROADCAST = "FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF"
+        P HV_GUID_CHILDREN = "90DB8B89-0D35-4F79-8CE9-49EA0AC8B7CD"
+        P HV_GUID_LOOPBACK = "E0E16197-DD56-4A10-9195-5EE7A155A838"
+        P HV_GUID_PARENT = "A42E7CDA-D03F-480C-9CC2-A4DE20ABB878"
+        P HV_GUID_WILDCARD = "00000000-0000-0000-0000-000000000000"
+        P HV_GUID_ZERO = "00000000-0000-0000-0000-000000000000"
+        P HV_PROTOCOL_RAW = 1
+        P INADDR_ALLHOSTS_GROUP = -536870911
+        P INADDR_ANY = 0
+        P INADDR_BROADCAST = -1
+        P INADDR_LOOPBACK = 2130706433
+        P INADDR_MAX_LOCAL_GROUP = -536870657
+        P INADDR_NONE = -1
+        P INADDR_UNSPEC_GROUP = -536870912
+        P IPPORT_RESERVED = 1024
+        P IPPORT_USERRESERVED = 5000
+        P IPPROTO_AH = 51
+        P IPPROTO_CBT = 7
+        P IPPROTO_DSTOPTS = 60
+        P IPPROTO_EGP = 8
+        P IPPROTO_ESP = 50
+        P IPPROTO_FRAGMENT = 44
+        P IPPROTO_GGP = 3
+        P IPPROTO_HOPOPTS = 0
+        P IPPROTO_ICLFXBM = 78
+        P IPPROTO_ICMP = 1
+        P IPPROTO_ICMPV6 = 58
+        P IPPROTO_IDP = 22
+        P IPPROTO_IGMP = 2
+        P IPPROTO_IGP = 9
+        P IPPROTO_IP = 0
+        P IPPROTO_IPV4 = 4
+        P IPPROTO_IPV6 = 41
+        P IPPROTO_L2TP = 115
+        P IPPROTO_MAX = 256
+        P IPPROTO_ND = 77
+        P IPPROTO_NONE = 59
+        P IPPROTO_PGM = 113
+        P IPPROTO_PIM = 103
+        P IPPROTO_PUP = 12
+        P IPPROTO_RAW = 255
+        P IPPROTO_RDP = 27
+        P IPPROTO_ROUTING = 43
+        P IPPROTO_SCTP = 132
+        P IPPROTO_ST = 5
+        P IPPROTO_TCP = 6
+        P IPPROTO_UDP = 17
+        P IPV6_CHECKSUM = 26
+        P IPV6_DONTFRAG = 14
+        P IPV6_HOPLIMIT = 21
+        P IPV6_HOPOPTS = 1
+        P IPV6_JOIN_GROUP = 12
+        P IPV6_LEAVE_GROUP = 13
+        P IPV6_MULTICAST_HOPS = 10
+        P IPV6_MULTICAST_IF = 9
+        P IPV6_MULTICAST_LOOP = 11
+        P IPV6_PKTINFO = 19
+        P IPV6_RECVRTHDR = 38
+        P IPV6_RECVTCLASS = 40
+        P IPV6_RTHDR = 32
+        P IPV6_TCLASS = 39
+        P IPV6_UNICAST_HOPS = 4
+        P IPV6_V6ONLY = 27
+        P IP_ADD_MEMBERSHIP = 12
+        P IP_ADD_SOURCE_MEMBERSHIP = 15
+        P IP_BLOCK_SOURCE = 17
+        P IP_DROP_MEMBERSHIP = 13
+        P IP_DROP_SOURCE_MEMBERSHIP = 16
+        P IP_HDRINCL = 2
+        P IP_MULTICAST_IF = 9
+        P IP_MULTICAST_LOOP = 11
+        P IP_MULTICAST_TTL = 10
+        P IP_OPTIONS = 1
+        P IP_PKTINFO = 19
+        P IP_RECVDSTADDR = 25
+        P IP_RECVTOS = 40
+        P IP_TOS = 3
+        P IP_TTL = 4
+        P IP_UNBLOCK_SOURCE = 18
+        P MSG_BCAST = 1024
+        P MSG_CTRUNC = 512
+        P MSG_DONTROUTE = 4
+        P MSG_ERRQUEUE = 4096
+        P MSG_MCAST = 2048
+        P MSG_OOB = 1
+        P MSG_PEEK = 2
+        P MSG_TRUNC = 256
+        P MSG_WAITALL = 8
+        P NI_DGRAM = 16
+        P NI_MAXHOST = 1025
+        P NI_MAXSERV = 32
+        P NI_NAMEREQD = 4
+        P NI_NOFQDN = 1
+        P NI_NUMERICHOST = 2
+        P NI_NUMERICSERV = 8
+        P RCVALL_MAX = 3
+        P RCVALL_OFF = 0
+        P RCVALL_ON = 1
+        P RCVALL_SOCKETLEVELONLY = 2
+        P SHUT_RD = 0
+        P SHUT_RDWR = 2
+        P SHUT_WR = 1
+        P SIO_KEEPALIVE_VALS = 2550136836
+        P SIO_LOOPBACK_FAST_PATH = 2550136848
+        P SIO_RCVALL = 2550136833
+        P SOCK_DGRAM = 2
+        P SOCK_RAW = 3
+        P SOCK_RDM = 4
+        P SOCK_SEQPACKET = 5
+        P SOCK_STREAM = 1
+        P SOL_IP = 65531
+        P SOL_SOCKET = 65535
+        P SOL_TCP = 6
+        P SOL_UDP = 17
+        P SOMAXCONN = 2147483647
+        P SO_ACCEPTCONN = 2
+        P SO_BROADCAST = 32
+        P SO_DEBUG = 1
+        P SO_DONTROUTE = 16
+        P SO_ERROR = 4103
+        P SO_EXCLUSIVEADDRUSE = -5
+        P SO_KEEPALIVE = 8
+        P SO_LINGER = 128
+        P SO_OOBINLINE = 256
+        P SO_RCVBUF = 4098
+        P SO_RCVLOWAT = 4100
+        P SO_RCVTIMEO = 4102
+        P SO_REUSEADDR = 4
+        P SO_SNDBUF = 4097
+        P SO_SNDLOWAT = 4099
+        P SO_SNDTIMEO = 4101
+        P SO_TYPE = 4104
+        P SO_USELOOPBACK = 64
+        // @ETPL:preload SocketType socket.SocketType
+        P SocketType = P  // [ET:callable:socket.SocketType]
+        P TCP_FASTOPEN = 15
+        P TCP_KEEPCNT = 16
+        P TCP_KEEPIDLE = 3
+        P TCP_KEEPINTVL = 17
+        P TCP_MAXSEG = 4
+        P TCP_NODELAY = 1
+        // @ETPL:preload gaierror socket.gaierror
+        P gaierror = P  // [ET:callable:socket.gaierror]
+        // @ETPL:preload getaddrinfo socket.getaddrinfo
+        P getaddrinfo = P  // [ET:callable:socket.getaddrinfo]
+        // @ETPL:preload getdefaulttimeout socket.getdefaulttimeout
+        P getdefaulttimeout = P  // [ET:callable:socket.getdefaulttimeout]
+        // @ETPL:preload gethostbyaddr socket.gethostbyaddr
+        P gethostbyaddr = P  // [ET:callable:socket.gethostbyaddr]
+        // @ETPL:preload gethostbyname socket.gethostbyname
+        P gethostbyname = P  // [ET:callable:socket.gethostbyname]
+        // @ETPL:preload gethostbyname_ex socket.gethostbyname_ex
+        P gethostbyname_ex = P  // [ET:callable:socket.gethostbyname_ex]
+        // @ETPL:preload gethostname socket.gethostname
+        P gethostname = P  // [ET:callable:socket.gethostname]
+        // @ETPL:preload getnameinfo socket.getnameinfo
+        P getnameinfo = P  // [ET:callable:socket.getnameinfo]
+        // @ETPL:preload getprotobyname socket.getprotobyname
+        P getprotobyname = P  // [ET:callable:socket.getprotobyname]
+        // @ETPL:preload getservbyname socket.getservbyname
+        P getservbyname = P  // [ET:callable:socket.getservbyname]
+        // @ETPL:preload getservbyport socket.getservbyport
+        P getservbyport = P  // [ET:callable:socket.getservbyport]
+        P has_ipv6 = 1
+        // @ETPL:preload herror socket.herror
+        P herror = P  // [ET:callable:socket.herror]
+        // @ETPL:preload htonl socket.htonl
+        P htonl = P  // [ET:callable:socket.htonl]
+        // @ETPL:preload htons socket.htons
+        P htons = P  // [ET:callable:socket.htons]
+        // @ETPL:preload if_indextoname socket.if_indextoname
+        P if_indextoname = P  // [ET:callable:socket.if_indextoname]
+        // @ETPL:preload if_nameindex socket.if_nameindex
+        P if_nameindex = P  // [ET:callable:socket.if_nameindex]
+        // @ETPL:preload if_nametoindex socket.if_nametoindex
+        P if_nametoindex = P  // [ET:callable:socket.if_nametoindex]
+        // @ETPL:preload inet_aton socket.inet_aton
+        P inet_aton = P  // [ET:callable:socket.inet_aton]
+        // @ETPL:preload inet_ntoa socket.inet_ntoa
+        P inet_ntoa = P  // [ET:callable:socket.inet_ntoa]
+        // @ETPL:preload inet_ntop socket.inet_ntop
+        P inet_ntop = P  // [ET:callable:socket.inet_ntop]
+        // @ETPL:preload inet_pton socket.inet_pton
+        P inet_pton = P  // [ET:callable:socket.inet_pton]
+        // @ETPL:preload ntohl socket.ntohl
+        P ntohl = P  // [ET:callable:socket.ntohl]
+        // @ETPL:preload ntohs socket.ntohs
+        P ntohs = P  // [ET:callable:socket.ntohs]
+        // @ETPL:preload setdefaulttimeout socket.setdefaulttimeout
+        P setdefaulttimeout = P  // [ET:callable:socket.setdefaulttimeout]
+        // @ETPL:preload socket socket.socket
+        P socket = P  // [ET:callable:socket.socket]
+        // @ETPL:preload timeout socket.timeout
+        P timeout = P  // [ET:callable:socket.timeout]
+        // @ETPL:preload errorTab socket.errorTab
+        // [ET:complex-dict:errorTab]
+        // @ETPL:preload fromshare socket.fromshare
+        P fromshare = P  // [ET:callable:socket.fromshare]
+        // @ETPL:preload socketpair socket.socketpair
+        P socketpair = P  // [ET:callable:socket.socketpair]
+    → E ImportError (_)
+        → default
+    T attempt = → P  // try
+        → socket D gethostname(P)
+    → E OSError (_)
+        → default
+}
+D follow_symlinks = λ filepath . {
+    // In case filepath is a symlink, follow it until a         real file is reached.
+    P filepath = os D path D abspath(filepath)
+    T while_loop = ∞ (
+        T check = → if os D path D islink(filepath) → P  // while body follows
+            P filepath = os D path D normpath(os D path D join(os D path D dirname(filepath), os D readlink(filepath)))
+    ) (D WHILE_LOOP_FINITE_BOUND)  // bounded by condition; max=144
+    → filepath
+}
+D syscmd_file = λ target, default . {
+    // Interface to the system's file command.          The function uses the -b option of the file command to have it         
+    T cond = → if sys D platform == manifold ["dos", "win32", "win16", "ios", "tvos", "watchos"] → → default
+    T attempt = → P  // try
+        // @ETPL:preload subprocess subprocess
+        // Import subprocess — resolved at translate-time
+    → E ImportError (_)
+        → default
+    P target = _follow_symlinks(target)
+    P env = dict(os D environ, manifold ["LC_ALL", "C"])
+    T attempt = → P  // try
+        P output = subprocess D check_output(manifold ["file", "-b", target], manifold ["stderr", subprocess D DEVNULL], manifold ["env", env])
+    → E manifold [OSError, subprocess D CalledProcessError] (_)
+        → default
+    T cond = → if (!output) → → default
+    → output D decode("latin-1")
+}
+P _default_architecture = manifold [manifold ["win32", manifold ["", "WindowsPE"]], manifold ["win16", manifold ["", "Windows"]], manifold ["dos", manifold ["", "MSDOS"]]]
+D architecture = λ executable, bits, linkage . {
+    // Queries the given executable (defaults to the Python interpreter         binary) for various architecture information.  
+    T cond = → if (!bits) → P
+        // @ETPL:preload struct struct
+        // Import struct — resolved at translate-time
+        // @ETPL:preload calcsize struct.calcsize
+        P calcsize = P  // [ET:callable:struct.calcsize]
+        // @ETPL:preload pack struct.pack
+        P pack = P  // [ET:callable:struct.pack]
+        // @ETPL:preload pack_into struct.pack_into
+        P pack_into = P  // [ET:callable:struct.pack_into]
+        // @ETPL:preload unpack struct.unpack
+        P unpack = P  // [ET:callable:struct.unpack]
+        // @ETPL:preload unpack_from struct.unpack_from
+        P unpack_from = P  // [ET:callable:struct.unpack_from]
+        // @ETPL:preload iter_unpack struct.iter_unpack
+        P iter_unpack = P  // [ET:callable:struct.iter_unpack]
+        // @ETPL:preload Struct struct.Struct
+        P Struct = P  // [ET:callable:struct.Struct]
+        P size = struct D calcsize("P")
+        P bits = (str((size * 8)) + "bit")
+    T cond = → if executable → P fileout = _syscmd_file(executable, "")
+    → E P fileout = ""
+    T cond = → if ((!fileout) && executable == sys D executable) → P
+        T cond = → if sys D platform == _default_architecture → P
+            P manifold__b__l = _default_architecture[sys D platform]  // manifold [b, l] := _default_architecture[sys D platform]
+            T cond = → if b → P bits = b
+            T cond = → if l → P linkage = l
+        → manifold [bits, linkage]
+    T cond = → if ("executable" ≠ fileout && "shared object" ≠ fileout) → → manifold [bits, linkage]
+    T cond = → if "32-bit" == fileout → P bits = "32bit"
+    → E T cond = → if "64-bit" == fileout → P bits = "64bit"
+    T cond = → if "ELF" == fileout → P linkage = "ELF"
+    → E P
+        T cond = → if "Mach-O" == fileout → P linkage = "Mach-O"
+        → E P
+            T cond = → if "PE" == fileout → P
+                T cond = → if "Windows" == fileout → P linkage = "WindowsPE"
+                → E P linkage = "PE"
+            → E P
+                T cond = → if "COFF" == fileout → P linkage = "COFF"
+                → E P
+                    T cond = → if "MS-DOS" == fileout → P linkage = "MSDOS"
+                    → E P  // else pass
+    → manifold [bits, linkage]
+}
+D get_machine_win32 = λ  . {
+    T attempt = → P  // try
+        P manifold__arch = _wmi_query("CPU", "Architecture")  // manifold [arch, _] := _wmi_query("CPU", "Architecture")
+    → E OSError (_)
+        // pass
+    → (os D environ D get("PROCESSOR_ARCHITEW6432", "") || os D environ D get("PROCESSOR_ARCHITECTURE", ""))
+}
+D Processor = λ . P  // class
+    D Processor__get = λ cls . {
+        P func = getattr(cls, "get_" + sys D platform, cls D from_subprocess)
+        → (func(P) || "")
+    }
+    D Processor__get_win32 = λ  . {
+        T attempt = → P  // try
+            P manifold__manufacturer__caption = _wmi_query("CPU", "Manufacturer", "Caption")  // manifold [manufacturer, caption] := _wmi_query("CPU", "Manufacturer", "Caption")
+        → E OSError (_)
+            → os D environ D get("PROCESSOR_IDENTIFIER", _get_machine_win32(P))
+    }
+    D Processor__get_OpenVMS = λ  . {
+        T attempt = → P  // try
+            // @ETPL:unresolvable vms_lib
+        → E ImportError (_)
+            // pass
+    }
+    D Processor__get_ios = λ  . {
+        T cond = → if sys D implementation D _multiarch D endswith("simulator") → → os D uname(P) D machine
+        → "arm64"
+    }
+    D Processor__from_subprocess = λ  . {
+        // Fall back to `uname -p`
+        T attempt = → P  // try
+            // @ETPL:preload subprocess subprocess
+            // Import subprocess — resolved at translate-time
+        → E ImportError (_)
+            → P
+        T attempt = → P  // try
+            → subprocess D check_output(manifold ["uname", "-p"], manifold ["stderr", subprocess D DEVNULL], manifold ["text", 1], manifold ["encoding", "utf8"]) D strip(P)
+        → E manifold [OSError, subprocess D CalledProcessError] (_)
+            // pass
+    }
+D unknown_as_blank = λ val . → if val == "unknown" → "" → E val
+D uname_result = λ . P  // class(collections D namedtuple("uname_result_base", "system node release version machine"))
+    // A uname_result that's largely compatible with a     simple namedtuple except that 'processor' is     resolved late and c
+    P _fields = manifold ["system", "node", "release", "version", "machine", "processor"]
+    D uname_result__processor = λ self . → _unknown_as_blank(_Processor D get(P))
+    D uname_result____iter = λ self . → itertools D chain(super(P) D __iter__(P), manifold [self D processor])
+    D uname_result___make = λ cls, iterable . {
+        P num_fields = (len(cls D _fields) - 1)
+        P result = cls D __new__(cls, iterable)
+        T cond = → if len(result) ≠ (num_fields + 1) → P
+            P msg = "Expected " + num_fields + " arguments, got " + len(result)
+            → E TypeError(msg)
+        → result
+    }
+    D uname_result____getitem = λ self, key . → tuple(self)[key]
+    D uname_result____len = λ self . → len(tuple(iter(self)))
+    D uname_result____reduce = λ self . → manifold [uname_result, tuple(self)[0:(len(self D _fields) - 1)]]
+P _uname_cache = P
+D uname = λ  . {
+    // Fairly portable uname interface. Returns a tuple         of strings (system, node, release, version, machine, processor)
+    // global _uname_cache
+    T cond = → if _uname_cache ≠ P → → _uname_cache
+    T attempt = → P  // try
+        P manifold__system__node__release__version__machine = os D uname(P)  // manifold [system, node, release, version, machine] := os D uname(P)
+        P infos = os D uname(P)
+    → E AttributeError (_)
+        P system = sys D platform
+        P node = _node(P)
+        P release = ""
+        P version = ""
+        P machine = ""
+        P infos = manifold []
+    T cond = → if (!any(infos)) → P
+        T cond = → if system == "win32" → P
+            P manifold__release__version__csd__ptype = win32_ver(P)  // manifold [release, version, csd, ptype] := win32_ver(P)
+            P machine = (machine || _get_machine_win32(P))
+        T cond = → if (!(release && version)) → P
+            P manifold__system__release__version = _syscmd_ver(system)  // manifold [system, release, version] := _syscmd_ver(system)
+            T cond = → if system == "Microsoft Windows" → P system = "Windows"
+            → E P
+                T cond = → if (system == "Microsoft" && release == "Windows") → P
+                    P system = "Windows"
+                    T cond = → if "6.0" == version[0:3] → P release = "Vista"
+                    → E P release = ""
+        T cond = → if system == manifold ["win32", "win16"] → P
+            T cond = → if (!version) → P
+                T cond = → if system == "win32" → P version = "32bit"
+                → E P version = "16bit"
+            P system = "Windows"
+        → E P
+            T cond = → if system[0:4] == "java" → P
+                P manifold__release__vendor__vminfo__osinfo = java_ver(P)  // manifold [release, vendor, vminfo, osinfo] := java_ver(P)
+                P system = "Java"
+                P version = ", " D join(vminfo)
+                T cond = → if (!version) → P version = vendor
+    T cond = → if system == "OpenVMS" → P
+        T cond = → if ((!release) || release == "0") → P
+            P release = version
+            P version = ""
+    T cond = → if (system == "Microsoft" && release == "Windows") → P
+        P system = "Windows"
+        P release = "Vista"
+    T cond = → if sys D platform == "android" → P
+        P system = "Android"
+        P release = android_ver(P) D release
+    T cond = → if sys D platform == "ios" → P manifold__system__release = ios_ver(P)  // manifold [system, release, _, _] := ios_ver(P)
+    P vals = manifold [system, node, release, version, machine]
+    P _uname_cache = uname_result(_et_map(_unknown_as_blank, vals))
+    → _uname_cache
+}
+D system = λ  . {
+    // Returns the system/OS name, e.g. 'Linux', 'Windows' or 'Java'.          An empty string is returned if the value cannot 
+    → uname(P) D system
+}
+D node = λ  . {
+    // Returns the computer's network name (which may not be fully         qualified)          An empty string is returned if t
+    → uname(P) D node
+}
+D release = λ  . {
+    // Returns the system's release, e.g. '2.2.0' or 'NT'          An empty string is returned if the value cannot be determine
+    → uname(P) D release
+}
+D version = λ  . {
+    // Returns the system's release version, e.g. '#3 on degas'          An empty string is returned if the value cannot be det
+    → uname(P) D version
+}
+D machine = λ  . {
+    // Returns the machine type, e.g. 'i386'          An empty string is returned if the value cannot be determined.
+    → uname(P) D machine
+}
+D processor = λ  . {
+    // Returns the (true) processor name, e.g. 'amdk6'          An empty string is returned if the value cannot be         dete
+    → uname(P) D processor
+}
+P _sys_version_cache = manifold []
+D sys_version = λ sys_version . {
+    // Returns a parsed version of Python's sys.version as tuple         (name, version, branch, revision, buildno, builddate, 
+    T cond = → if sys_version == P → P sys_version = sys D version
+    P result = _sys_version_cache D get(sys_version, P)
+    T cond = → if result ≠ P → → result
+    T cond = → if sys D platform D startswith("java") → P
+        P jython_sys_version_parser = re D compile("([\\w.+]+)\\s*\\(#?([^,]+)(?:,\\s*([\\w ]*)(?:,\\s*([\\w :]*))?)?\\)\\s*\\[([^\\]]+)\\]?", re D ASCII)
+        P name = "Jython"
+        P match = jython_sys_version_parser D match(sys_version)
+        T cond = → if match == P → → E ValueError(("failed to parse Jython sys.version: %s" % repr(sys_version)))
+        P manifold__version__buildno__builddate__buildtime = match D groups(P)  // manifold [version, buildno, builddate, buildtime, _] := match D groups(P)
+        T cond = → if builddate == P → P builddate = ""
+        P compiler = sys D platform
+    → E P
+        T cond = → if "PyPy" == sys_version → P
+            P pypy_sys_version_parser = re D compile("([\\w.+]+)\\s*\\(#?([^,]+),\\s*([\\w ]+),\\s*([\\w :]+)\\)\\s*\\[PyPy [^\\]]+\\]?")
+            P name = "PyPy"
+            P match = pypy_sys_version_parser D match(sys_version)
+            T cond = → if match == P → → E ValueError(("failed to parse PyPy sys.version: %s" % repr(sys_version)))
+            P manifold__version__buildno__builddate__buildtime = match D groups(P)  // manifold [version, buildno, builddate, buildtime] := match D groups(P)
+            P compiler = ""
+        → E P
+            P cpython_sys_version_parser = re D compile("([\\w.+]+)\\s*(?:experimental free-threading build\\s+)?\\(#?([^,]+)(?:,\\s*([\\w ]*)(?:,\\s*([\\w :]*))?)?\\)\\s*\\[([^\\]]+)\\]?", re D ASCII)
+            P match = cpython_sys_version_parser D match(sys_version)
+            T cond = → if match == P → → E ValueError(("failed to parse CPython sys.version: %s" % repr(sys_version)))
+            P manifold__version__buildno__builddate__buildtime__compiler = match D groups(P)  // manifold [version, buildno, builddate, buildtime, compiler] := match D groups(P)
+            P name = "CPython"
+            T cond = → if builddate == P → P builddate = ""
+            → E T cond = → if buildtime → P builddate = ((builddate + " ") + buildtime)
+    T cond = → if hasattr(sys, "_git") → P manifold_____branch__revision = sys D _git  // manifold [_, branch, revision] := sys D _git
+    → E P
+        T cond = → if hasattr(sys, "_mercurial") → P manifold_____branch__revision = sys D _mercurial  // manifold [_, branch, revision] := sys D _mercurial
+        → E P
+            P branch = ""
+            P revision = ""
+    P l = version D split(".")
+    T cond = → if len(l) == 2 → P
+        l D append("0")
+        P version = "." D join(l)
+    P result = manifold [name, version, branch, revision, buildno, builddate, compiler]
+    // _sys_version_cache[sys_version] := result
+    → result
+}
+D python_implementation = λ  . {
+    // Returns a string identifying the Python implementation.          Currently, the following implementations are identified
+    → _sys_version(P)[0]
+}
+D python_version = λ  . {
+    // Returns the Python version as string 'major.minor.patchlevel'          Note that unlike the Python sys.version, the retu
+    → _sys_version(P)[1]
+}
+D python_version_tuple = λ  . {
+    // Returns the Python version as tuple (major, minor, patchlevel)         of strings.          Note that unlike the Python 
+    → tuple(_sys_version(P)[1] D split("."))
+}
+D python_branch = λ  . {
+    // Returns a string identifying the Python implementation         branch.          For CPython this is the SCM branch from 
+    → _sys_version(P)[2]
+}
+D python_revision = λ  . {
+    // Returns a string identifying the Python implementation         revision.          For CPython this is the SCM revision f
+    → _sys_version(P)[3]
+}
+D python_build = λ  . {
+    // Returns a tuple (buildno, builddate) stating the Python         build number and date as strings.
+    → _sys_version(P)[4:6]
+}
+D python_compiler = λ  . {
+    // Returns a string identifying the compiler used for compiling         Python.
+    → _sys_version(P)[6]
+}
+P _platform_cache = manifold []
+D platform = λ aliased, terse . {
+    // Returns a single string identifying the underlying platform         with as much useful information as possible (but no 
+    P result = _platform_cache D get(manifold [aliased, terse], P)
+    T cond = → if result ≠ P → → result
+    P manifold__system__node__release__version__machine__processor = uname(P)  // manifold [system, node, release, version, machine, processor] := uname(P)
+    T cond = → if machine == processor → P processor = ""
+    T cond = → if aliased → P manifold__system__release__version = system_alias(system, release, version)  // manifold [system, release, version] := system_alias(system, release, version)
+    T cond = → if system == "Darwin" → P
+        T cond = → if sys D platform == "ios" → P manifold__system__release = ios_ver(P)  // manifold [system, release, _, _] := ios_ver(P)
+        → E P
+            P macos_release = mac_ver(P)[0]
+            T cond = → if macos_release → P
+                P system = "macOS"
+                P release = macos_release
+    T cond = → if system == "Windows" → P
+        P manifold__rel__vers__csd__ptype = win32_ver(version)  // manifold [rel, vers, csd, ptype] := win32_ver(version)
+        T cond = → if terse → P platform = _platform(system, release)
+        → E P platform = _platform(system, release, version, csd)
+    → E P
+        T cond = → if system == "Linux" → P
+            P manifold__libcname__libcversion = libc_ver(P)  // manifold [libcname, libcversion] := libc_ver(P)
+            P platform = _platform(system, release, machine, processor, "with", (libcname + libcversion))
+        → E P
+            T cond = → if system == "Java" → P
+                P manifold__r__v__vminfo__manifold__os_name__os_version__os_arch = java_ver(P)  // manifold [r, v, vminfo, manifold [os_name, os_version, os_arch]] := java_ver(P)
+                T cond = → if (terse || (!os_name)) → P platform = _platform(system, release, version)
+                → E P platform = _platform(system, release, version, "on", os_name, os_version, os_arch)
+            → E P
+                T cond = → if terse → P platform = _platform(system, release)
+                → E P
+                    P manifold__bits__linkage = architecture(sys D executable)  // manifold [bits, linkage] := architecture(sys D executable)
+                    P platform = _platform(system, release, machine, processor, bits, linkage)
+    // _platform_cache[manifold [aliased, terse]] := platform
+    → platform
+}
+P _os_release_candidates = manifold ["/etc/os-release", "/usr/lib/os-release"]
+P _os_release_cache = P
+D parse_os_release = λ lines . {
+    P info = manifold [manifold ["NAME", "Linux"], manifold ["ID", "linux"], manifold ["PRETTY_NAME", "Linux"]]
+    P os_release_line = re D compile("^(?P<name>[a-zA-Z0-9_]+)=(?P<quote>[\"']?)(?P<value>.*)(?P=quote)$")
+    P os_release_unescape = re D compile("\\\\([\\\\\\$\\\"\\'`])")
+    T loop = ∞ (
+        P line = lines[_loop_index]
+        P mo = os_release_line D match(line)
+        T cond = → if mo ≠ P → P  // pass
+    ) (D |lines|)
+    → info
+}
+D freedesktop_os_release = λ  . {
+    // Return operation system identification from freedesktop.org os-release
+    // global _os_release_cache
+    T cond = → if _os_release_cache == P → P
+        P errno = P
+        T loop = ∞ (
+            P candidate = _os_release_candidates[_loop_index]
+            T attempt = → P  // try
+                T scope_f = → open(candidate, manifold ["encoding", "utf-8"])
+                P f = scope_f  // context var
+                    P _os_release_cache = _parse_os_release(f)
+                // break
+            → E OSError (e)
+                P errno = e D errno
+        ) (D |_os_release_candidates|)
+    → _os_release_cache D copy(P)
+}
+T cond = → if __name__ == "__main__" → P
+    P terse = ("terse" == sys D argv || "--terse" == sys D argv)
+    P aliased = ((!"nonaliased" == sys D argv) && (!"--nonaliased" == sys D argv))
+    sovereign_print ∘ platform(aliased, terse)
+    sys D exit(0)
+

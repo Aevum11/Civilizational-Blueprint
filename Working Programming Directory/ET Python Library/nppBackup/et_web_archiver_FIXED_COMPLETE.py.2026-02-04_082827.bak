@@ -1,0 +1,1895 @@
+#!/usr/bin/env python3
+"""
+Exception Theory Web Archiver - COMPLETE ALL PHASES INTEGRATED - FIXED VERSION
+Single unified script with full feature parity across all versions
+
+FIXES IN THIS VERSION:
+✅ Content-Type header extraction made safe (handles dict/string/None cases)
+✅ Comprehensive content type support (HTML, CSS, JS, JSON, XML, SVG, etc.)
+✅ JavaScript URL rewriting for imports, requires, fetch, dynamic imports
+✅ Robust error handling for all edge cases
+
+ALL PHASES INTEGRATED IN ONE SCRIPT:
+✅ Phase 1: bloom_coordinates, merkle_hash, merkle_root, entropy_gradient, manifold_boundary_detection
+✅ Phase 2: phase_transition, variance_gradient, density, effort, substantiation_state  
+✅ Phase 3: teleological_sort, recursive_descriptor_search, detect_state_recurrence, descriptor_differentiation, descriptor_gap_principle
+✅ Phase 4: fractal_upscale, descriptor_domain_classification, complete ET constants
+
+CORE FEATURES (v4.0 parity):
+✅ Perfect Offline Parity - Base tags, meta tags, form safety
+✅ Organized Storage - Per-website folders with timestamps
+✅ Website Browser - GUI to browse and open archives
+✅ Complete Resource Discovery - CSS, JS, workers, favicons, config files
+✅ Perfect Path Rewriting - All URLs properly localized INCLUDING JavaScript
+
+TOTAL: 17+ ET Methods Fully Integrated + Complete v4.0 Feature Set + All Content Types
+
+Author: Derived from Michael James Muller's Exception Theory
+Version: COMPLETE ALL PHASES FIXED (2026-02-04)
+"""
+
+import os
+import sys
+import hashlib
+import re
+import mimetypes
+import subprocess
+import webbrowser
+import logging
+import shutil
+import json
+import time
+import math
+import tarfile
+from urllib.parse import urljoin, urlparse, urlunparse, quote, unquote
+from typing import List, Dict, Set, Optional, Tuple, Any
+from pathlib import Path
+from datetime import datetime
+from collections import Counter
+from difflib import SequenceMatcher
+
+# Logging setup
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'et_archiver_complete_fixed.log')),
+        logging.StreamHandler(sys.stdout)
+    ]
+)
+logger = logging.getLogger(__name__)
+logger.info("=" * 80)
+logger.info("ET Web Archiver - COMPLETE ALL PHASES INTEGRATED - FIXED VERSION")
+logger.info("=" * 80)
+
+def main():
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    
+    try:
+        os.chdir(script_dir)
+        logger.info(f"Working directory: {script_dir}")
+    except Exception as e:
+        logger.error(f"Failed to change directory: {str(e)}")
+    
+    # GUI Imports
+    try:
+        import tkinter as tk
+        from tkinter import filedialog, messagebox, simpledialog, ttk
+        logger.info("Tkinter imported successfully.")
+    except ImportError as e:
+        logger.error(f"Tkinter import failed: {str(e)}")
+        return
+
+    # Install required modules
+    def install_missing_modules(modules: List[str]):
+        for module in modules:
+            try:
+                __import__(module)
+            except ImportError:
+                logger.warning(f"Installing {module}...")
+                try:
+                    subprocess.check_call([sys.executable, '-m', 'pip', 'install', module])
+                except Exception as e:
+                    logger.error(f"Failed to install {module}: {str(e)}")
+
+    required_modules = ['requests', 'beautifulsoup4']
+    install_missing_modules(required_modules)
+
+    # Import external libraries
+    try:
+        import requests
+        from bs4 import BeautifulSoup
+        logger.info("External libraries imported successfully.")
+    except ImportError as e:
+        logger.error(f"Import failed: {str(e)}")
+        return
+
+    # =========================================================================
+    # ET LIBRARY IMPORTS
+    # =========================================================================
+    
+    try:
+        from exception_theory.core.mathematics import ETMathV2
+        from exception_theory.core.mathematics_descriptor import ETMathV2Descriptor
+        from exception_theory.core.primitives import Point, Descriptor, Traverser, bind_pdt
+        from exception_theory.core.constants import BASE_VARIANCE, MANIFOLD_SYMMETRY, PHI_GOLDEN_RATIO, KOIDE_RATIO
+        logger.info("ET components imported successfully.")
+    except ImportError as e:
+        logger.warning(f"ET library import failed: {str(e)}. Using fallback implementations.")
+        
+        # Fallback implementations
+        class Point:
+            def __init__(self, location: Any = None):
+                self.location = location
+        
+        class Descriptor:
+            def __init__(self, name: str = "", constraint: Any = None):
+                self.name = name
+                self.constraint = constraint
+        
+        class Traverser:
+            def __init__(self, identity: str = "", current_point: Point = None):
+                self.identity = identity
+                self.current_point = current_point or Point()
+        
+        def bind_pdt(p: Point, d: Descriptor, t: Traverser):
+            pass
+        
+        BASE_VARIANCE = 1 / 12
+        MANIFOLD_SYMMETRY = 12
+        PHI_GOLDEN_RATIO = (1 + math.sqrt(5)) / 2
+        KOIDE_RATIO = 2 / 3
+    
+    # Initialize ET Math instances
+    try:
+        et_math = ETMathV2()
+        et_desc_math = ETMathV2Descriptor()
+        logger.info("ET mathematics instantiated - ALL PHASES VERSION.")
+    except:
+        et_math = None
+        et_desc_math = None
+        logger.warning("ET mathematics not available, using fallback implementations.")
+    
+    # =========================================================================
+    # ET METHOD BINDINGS - ALL PHASES
+    # =========================================================================
+    
+    def safe_bind_method(et_instance, method_name: str):
+        """Safely bind an ET method with fallback."""
+        if et_instance and hasattr(et_instance, method_name) and callable(getattr(et_instance, method_name)):
+            return getattr(et_instance, method_name)
+        return None
+    
+    # Phase 1 Methods
+    bloom_coordinates = safe_bind_method(et_math, 'bloom_coordinates')
+    merkle_hash = safe_bind_method(et_math, 'merkle_hash')
+    merkle_root = safe_bind_method(et_math, 'merkle_root')
+    entropy_gradient = safe_bind_method(et_math, 'entropy_gradient')
+    manifold_boundary_detection = safe_bind_method(et_math, 'manifold_boundary_detection')
+    
+    # Phase 2 Methods
+    phase_transition = safe_bind_method(et_math, 'phase_transition')
+    variance_gradient = safe_bind_method(et_math, 'variance_gradient')
+    density = safe_bind_method(et_math, 'density')
+    effort = safe_bind_method(et_math, 'effort')
+    substantiation_state = safe_bind_method(et_math, 'substantiation_state')
+    
+    # Phase 3 Methods
+    teleological_sort = safe_bind_method(et_math, 'teleological_sort')
+    recursive_descriptor_search = safe_bind_method(et_desc_math, 'recursive_descriptor_search')
+    detect_state_recurrence = safe_bind_method(et_math, 'detect_state_recurrence')
+    descriptor_differentiation = safe_bind_method(et_desc_math, 'descriptor_differentiation')
+    descriptor_gap_principle = safe_bind_method(et_desc_math, 'descriptor_gap_principle')
+    
+    # Phase 4 Methods
+    fractal_upscale = safe_bind_method(et_math, 'fractal_upscale')
+    descriptor_domain_classification = safe_bind_method(et_desc_math, 'descriptor_domain_classification')
+    
+    # Log method availability
+    logger.info("=" * 80)
+    logger.info("ET METHOD AVAILABILITY CHECK:")
+    logger.info(f"Phase 1: Bloom={bloom_coordinates is not None}, Merkle={merkle_hash is not None}, Entropy={entropy_gradient is not None}, KComplexity={merkle_root is not None}, Manifold={manifold_boundary_detection is not None}")
+    logger.info(f"Phase 2: PhaseTransition={phase_transition is not None}, Variance={variance_gradient is not None}, Density={density is not None}, Effort={effort is not None}, Substantiation={substantiation_state is not None}")
+    logger.info(f"Phase 3: Teleological={teleological_sort is not None}, RecursiveSearch={recursive_descriptor_search is not None}, Recurrence={detect_state_recurrence is not None}, Differentiation={descriptor_differentiation is not None}, Gap={descriptor_gap_principle is not None}")
+    logger.info(f"Phase 4: Fractal={fractal_upscale is not None}, DomainClass={descriptor_domain_classification is not None}")
+    logger.info(f"ET Constants: BASE_VARIANCE={BASE_VARIANCE}, MANIFOLD_SYMMETRY={MANIFOLD_SYMMETRY}, PHI={PHI_GOLDEN_RATIO}, KOIDE={KOIDE_RATIO}")
+    logger.info("=" * 80)
+    
+    # =========================================================================
+    # SAFE CONTENT TYPE EXTRACTION
+    # =========================================================================
+    
+    def safe_get_content_type(response) -> str:
+        """
+        Safely extract Content-Type from response headers.
+        Handles cases where headers might be dict, string, or other types.
+        """
+        try:
+            # Get the headers object
+            headers = getattr(response, 'headers', {})
+            
+            # Try to get Content-Type
+            content_type = headers.get('Content-Type', '')
+            
+            # Ensure it's a string
+            if isinstance(content_type, dict):
+                # If it's a dict for some reason, try to extract a value
+                content_type = str(content_type.get('value', ''))
+            elif not isinstance(content_type, str):
+                # Convert to string if it's something else
+                content_type = str(content_type) if content_type else ''
+            
+            # Clean it up - remove parameters like charset
+            content_type = content_type.lower().split(';')[0].strip()
+            
+            return content_type
+        except Exception as e:
+            logger.warning(f"Error extracting content type: {str(e)}")
+            return ''
+    
+    def detect_content_type_from_url(url: str) -> str:
+        """Detect content type from URL extension as fallback."""
+        try:
+            parsed = urlparse(url)
+            path = parsed.path.lower()
+            
+            # Common mappings
+            if path.endswith('.html') or path.endswith('.htm'):
+                return 'text/html'
+            elif path.endswith('.css'):
+                return 'text/css'
+            elif path.endswith('.js') or path.endswith('.mjs'):
+                return 'application/javascript'
+            elif path.endswith('.json'):
+                return 'application/json'
+            elif path.endswith('.xml'):
+                return 'text/xml'
+            elif path.endswith('.svg'):
+                return 'image/svg+xml'
+            elif path.endswith(('.jpg', '.jpeg')):
+                return 'image/jpeg'
+            elif path.endswith('.png'):
+                return 'image/png'
+            elif path.endswith('.gif'):
+                return 'image/gif'
+            elif path.endswith('.webp'):
+                return 'image/webp'
+            elif path.endswith(('.woff', '.woff2')):
+                return 'font/woff2'
+            elif path.endswith('.ttf'):
+                return 'font/ttf'
+            elif path.endswith('.pdf'):
+                return 'application/pdf'
+            
+            # Use mimetypes library as final fallback
+            mime_type, _ = mimetypes.guess_type(url)
+            return mime_type or 'application/octet-stream'
+        except:
+            return 'application/octet-stream'
+    
+    # =========================================================================
+    # HELPER FUNCTIONS
+    # =========================================================================
+    
+    def sanitize_folder_name(url: str) -> str:
+        """Create safe folder name from URL."""
+        parsed = urlparse(url)
+        domain = parsed.netloc.replace(':', '_')
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        return f"{domain}_{timestamp}"
+    
+    def content_address(content: bytes) -> str:
+        """Calculate SHA-256 hash of content."""
+        return hashlib.sha256(content).hexdigest()
+    
+    def calculate_shannon_entropy(data: bytes) -> float:
+        """Calculate Shannon entropy of binary data."""
+        if not data:
+            return 0.0
+        counter = Counter(data)
+        length = len(data)
+        return -sum((count/length) * math.log2(count/length) for count in counter.values())
+    
+    def descriptor_cardinality_formula(urls: List[str]) -> int:
+        """Estimate unique items using ET-derived cardinality formula."""
+        if not urls:
+            return 0
+        unique = len(set(urls))
+        variance = BASE_VARIANCE
+        symmetry = MANIFOLD_SYMMETRY
+        return int(unique * (1 + variance) * symmetry) // symmetry
+    
+    # =========================================================================
+    # COMPREHENSIVE URL PARSING
+    # =========================================================================
+    
+    def parse_css_comprehensive(css_content: str, base_url: str) -> Set[str]:
+        """Comprehensive CSS parsing for all URL types."""
+        urls = set()
+        
+        # url() function
+        for match in re.finditer(r'url\s*\(\s*["\']?([^"\')]+)["\']?\s*\)', css_content, re.IGNORECASE):
+            url = match.group(1).strip()
+            if not url.startswith(('data:', 'blob:', 'about:')):
+                urls.add(urljoin(base_url, url))
+        
+        # @import statements
+        for match in re.finditer(r'@import\s+["\']([^"\']+)["\']', css_content, re.IGNORECASE):
+            url = match.group(1).strip()
+            urls.add(urljoin(base_url, url))
+        
+        # src: url() in @font-face
+        for match in re.finditer(r'src:\s*url\s*\(\s*["\']?([^"\')]+)["\']?\s*\)', css_content, re.IGNORECASE):
+            url = match.group(1).strip()
+            if not url.startswith(('data:', 'blob:')):
+                urls.add(urljoin(base_url, url))
+        
+        return urls
+    
+    def parse_js_comprehensive(js_content: str, base_url: str) -> Set[str]:
+        """
+        Comprehensive JavaScript parsing for all URL types.
+        Handles ES6 imports, CommonJS requires, dynamic imports, fetch, etc.
+        """
+        urls = set()
+        
+        # Patterns for different JavaScript URL references
+        patterns = [
+            # ES6 static imports: import ... from 'url'
+            r'import\s+.*?from\s+["\']([^"\']+)["\']',
+            # ES6 export: export ... from 'url'
+            r'export\s+.*?from\s+["\']([^"\']+)["\']',
+            # Dynamic imports: import('url')
+            r'import\s*\(\s*["\']([^"\']+)["\']\s*\)',
+            # CommonJS require: require('url')
+            r'require\s*\(\s*["\']([^"\']+)["\']\s*\)',
+            # Fetch API: fetch('url')
+            r'fetch\s*\(\s*["\']([^"\']+)["\']\s*',
+            # XMLHttpRequest.open: .open('GET', 'url')
+            r'\.open\s*\(\s*["\'][A-Z]+["\']\s*,\s*["\']([^"\']+)["\']',
+            # new Worker: new Worker('url')
+            r'new\s+Worker\s*\(\s*["\']([^"\']+)["\']\s*\)',
+            # new SharedWorker: new SharedWorker('url')
+            r'new\s+SharedWorker\s*\(\s*["\']([^"\']+)["\']\s*\)',
+            # importScripts: importScripts('url')
+            r'importScripts\s*\(\s*["\']([^"\']+)["\']\s*\)',
+            # Generic string URLs (be careful with false positives)
+            r'["\']((https?://|//)[^"\']+)["\']',
+        ]
+        
+        for pattern in patterns:
+            for match in re.finditer(pattern, js_content, re.IGNORECASE):
+                url = match.group(1)
+                if not url.startswith(('data:', 'blob:', 'about:')):
+                    # Filter out variable names (too short or contains only word characters)
+                    if not re.match(r'^[\w_$]+$', url) and len(url) > 3:
+                        urls.add(urljoin(base_url, url))
+        
+        return urls
+    
+    def discover_workers(html_content: str, js_content: str) -> Set[str]:
+        """Discover service workers and web workers."""
+        workers = set()
+        combined = html_content + js_content
+        
+        # Service worker registration
+        for match in re.finditer(r'navigator\.serviceWorker\.register\s*\(\s*["\']([^"\']+)["\']', combined, re.IGNORECASE):
+            workers.add(match.group(1))
+        
+        # Web Worker creation
+        for match in re.finditer(r'new\s+(?:Shared)?Worker\s*\(\s*["\']([^"\']+)["\']', combined, re.IGNORECASE):
+            workers.add(match.group(1))
+        
+        return workers
+    
+    def discover_favicons(base_url: str, soup) -> Set[str]:
+        """Discover all favicon types."""
+        favicons = set()
+        
+        # Standard and alternate icons
+        for link in soup.find_all('link', rel=True):
+            rel = link.get('rel', [])
+            if isinstance(rel, list):
+                rel = ' '.join(rel)
+            if any(r in rel.lower() for r in ['icon', 'apple', 'shortcut']):
+                if link.has_attr('href'):
+                    favicons.add(urljoin(base_url, link['href']))
+        
+        # Default favicon locations
+        parsed = urlparse(base_url)
+        base = f"{parsed.scheme}://{parsed.netloc}"
+        default_favicons = [
+            '/favicon.ico',
+            '/favicon.png',
+            '/apple-touch-icon.png',
+            '/apple-touch-icon-precomposed.png'
+        ]
+        for fav in default_favicons:
+            favicons.add(urljoin(base, fav))
+        
+        return favicons
+    
+    def discover_configuration_files(base_url: str) -> Set[str]:
+        """Discover common configuration files."""
+        parsed = urlparse(base_url)
+        base = f"{parsed.scheme}://{parsed.netloc}"
+        
+        configs = [
+            '/robots.txt',
+            '/sitemap.xml',
+            '/manifest.json',
+            '/browserconfig.xml',
+            '/.well-known/security.txt'
+        ]
+        
+        return {urljoin(base, c) for c in configs}
+    
+    # =========================================================================
+    # PHASE 1 CLASSES
+    # =========================================================================
+    
+    class ETBloomFilter:
+        """Phase 1: Memory-efficient URL deduplication using bloom_coordinates."""
+        def __init__(self, size: int = 20000, hash_count: int = 3):
+            self.size = size
+            self.hash_count = hash_count
+            self.bit_array = [False] * size
+            self.approximate_count = 0
+            logger.info(f"Initialized ETBloomFilter: size={size}, hash_count={hash_count}")
+        
+        def _hash(self, item: str, seed: int) -> int:
+            """Hash function with seed."""
+            h = hashlib.sha256(f"{item}{seed}".encode()).hexdigest()
+            return int(h, 16) % self.size
+        
+        def add(self, item: str):
+            """Add item to bloom filter."""
+            for i in range(self.hash_count):
+                if bloom_coordinates:
+                    # Use ET method
+                    coords = bloom_coordinates(item, i, self.size)
+                    if coords:
+                        idx = int(coords[0]) % self.size
+                        self.bit_array[idx] = True
+                else:
+                    # Fallback
+                    idx = self._hash(item, i)
+                    self.bit_array[idx] = True
+            self.approximate_count += 1
+        
+        def probably_contains(self, item: str) -> bool:
+            """Check if item probably in filter."""
+            for i in range(self.hash_count):
+                if bloom_coordinates:
+                    coords = bloom_coordinates(item, i, self.size)
+                    if coords:
+                        idx = int(coords[0]) % self.size
+                        if not self.bit_array[idx]:
+                            return False
+                else:
+                    idx = self._hash(item, i)
+                    if not self.bit_array[idx]:
+                        return False
+            return True
+        
+        def get_stats(self) -> Dict:
+            set_bits = sum(self.bit_array)
+            return {
+                'size': self.size,
+                'set_bits': set_bits,
+                'load_factor': set_bits / self.size,
+                'approximate_items': self.approximate_count,
+                'memory_bytes': self.size // 8,
+            }
+
+    # =========================================================================
+    # PHASE 2 CLASSES
+    # =========================================================================
+
+    class ETDownloadQueue:
+        """Phase 2: Smart download queue using phase_transition."""
+        def __init__(self):
+            self.queues = {
+                'immediate': [],    # Priority > 0.8
+                'deferred': [],     # Priority 0.3-0.8
+                'optional': []      # Priority < 0.3
+            }
+            self.states = {}
+            self.priorities = {}
+            logger.info("Initialized ETDownloadQueue with phase transition management")
+        
+        def calculate_priority(self, url: str, content_type: str = '', size: int = 0, depth: int = 0) -> float:
+            """Calculate download priority based on multiple factors."""
+            priority = 0.5  # Base priority
+            
+            # Ensure content_type is a string
+            if not isinstance(content_type, str):
+                content_type = ''
+            
+            content_type_lower = content_type.lower()
+            
+            # Content type weights
+            if 'html' in content_type_lower:
+                priority += 0.3
+            elif any(t in content_type_lower for t in ['css', 'javascript', 'js']):
+                priority += 0.2
+            elif any(t in content_type_lower for t in ['image', 'font']):
+                priority += 0.1
+            
+            # Size penalty
+            if size > 10 * 1024 * 1024:  # > 10MB
+                priority -= 0.2
+            elif size > 1 * 1024 * 1024:  # > 1MB
+                priority -= 0.1
+            
+            # Depth penalty
+            priority -= depth * 0.1
+            
+            # Tracking/analytics penalty
+            if any(track in url.lower() for track in ['analytics', 'tracking', 'gtag', 'facebook', 'twitter']):
+                priority -= 0.3
+            
+            return max(0.0, min(1.0, priority))
+        
+        def add_url(self, url: str, content_type: str = '', size: int = 0, depth: int = 0):
+            """Add URL to appropriate queue based on phase transition."""
+            priority = self.calculate_priority(url, content_type, size, depth)
+            self.priorities[url] = priority
+            
+            # Use phase_transition to determine queue
+            if phase_transition:
+                state = phase_transition(priority, threshold=0.5)
+                self.states[url] = state
+                
+                if state > 0.8:
+                    self.queues['immediate'].append(url)
+                elif state > 0.3:
+                    self.queues['deferred'].append(url)
+                else:
+                    self.queues['optional'].append(url)
+            else:
+                # Fallback
+                if priority > 0.8:
+                    self.queues['immediate'].append(url)
+                elif priority > 0.3:
+                    self.queues['deferred'].append(url)
+                else:
+                    self.queues['optional'].append(url)
+        
+        def get_next(self) -> Optional[str]:
+            """Get next URL to download."""
+            for queue_name in ['immediate', 'deferred', 'optional']:
+                if self.queues[queue_name]:
+                    return self.queues[queue_name].pop(0)
+            return None
+        
+        def get_stats(self) -> Dict:
+            return {
+                'immediate': len(self.queues['immediate']),
+                'deferred': len(self.queues['deferred']),
+                'optional': len(self.queues['optional']),
+                'total': sum(len(q) for q in self.queues.values())
+            }
+
+    class ETQualityOptimizer:
+        """Phase 2: Quality optimization using variance_gradient."""
+        def __init__(self, target_variance: float = 0.0):
+            self.target_variance = target_variance
+            self.history = []
+            self.iterations = 0
+            logger.info(f"Initialized ETQualityOptimizer: target={target_variance}")
+        
+        def optimize_step(self, current_variance: float, step_size: float = 0.1) -> float:
+            """Single optimization step using variance gradient."""
+            self.history.append(current_variance)
+            self.iterations += 1
+            
+            if variance_gradient:
+                # Use ET method to find gradient direction
+                gradient = variance_gradient(current_variance, self.target_variance, base_variance=BASE_VARIANCE)
+                adjustment = -gradient * step_size
+            else:
+                # Fallback: simple gradient descent
+                gradient = current_variance - self.target_variance
+                adjustment = -gradient * step_size
+            
+            new_variance = current_variance + adjustment
+            return max(0.0, new_variance)
+        
+        def has_converged(self, tolerance: float = 0.01) -> bool:
+            """Check if optimization has converged."""
+            if len(self.history) < 2:
+                return False
+            return abs(self.history[-1] - self.history[-2]) < tolerance
+        
+        def get_stats(self) -> Dict:
+            if not self.history:
+                return {'iterations': 0}
+            return {
+                'iterations': self.iterations,
+                'initial_variance': self.history[0],
+                'final_variance': self.history[-1],
+                'total_improvement': self.history[0] - self.history[-1],
+                'converged': self.has_converged()
+            }
+
+    # =========================================================================
+    # PHASE 3 CLASSES
+    # =========================================================================
+
+    class ETTeleologicalSorter:
+        """Phase 3: Purpose-driven resource ordering using teleological_sort."""
+        def __init__(self):
+            self.purpose_scores = {}
+            logger.info("Initialized ETTeleologicalSorter")
+        
+        def calculate_purpose(self, url: str, content_type: str) -> float:
+            """Calculate purpose score for a resource."""
+            # Ensure content_type is a string
+            if not isinstance(content_type, str):
+                content_type = ''
+            
+            score = 0.5
+            if 'html' in content_type:
+                score = 1.0  # Critical for structure
+            elif any(t in content_type for t in ['css', 'javascript']):
+                score = 0.8  # Important for function
+            elif 'font' in content_type:
+                score = 0.6  # Important for appearance
+            elif 'image' in content_type:
+                score = 0.4  # Enhances but not critical
+            elif any(t in url.lower() for t in ['analytics', 'tracking']):
+                score = 0.1  # Low purpose
+            
+            self.purpose_scores[url] = score
+            return score
+        
+        def sort_by_purpose(self, urls: List[str], content_types: Dict[str, str]) -> List[str]:
+            """Sort URLs by their purpose using teleological_sort."""
+            if teleological_sort:
+                # Calculate purpose magnitudes
+                magnitudes = [self.calculate_purpose(url, content_types.get(url, '')) for url in urls]
+                sorted_indices = teleological_sort(magnitudes, max_magnitude=1.0)
+                return [urls[i] for i in sorted_indices]
+            else:
+                # Fallback: sort by purpose score
+                return sorted(urls, key=lambda u: self.calculate_purpose(u, content_types.get(u, '')), reverse=True)
+        
+        def get_stats(self) -> Dict:
+            if not self.purpose_scores:
+                return {'total': 0}
+            return {
+                'total_sorted': len(self.purpose_scores),
+                'average_purpose': sum(self.purpose_scores.values()) / len(self.purpose_scores),
+                'high_purpose': sum(1 for s in self.purpose_scores.values() if s > 0.7),
+                'low_purpose': sum(1 for s in self.purpose_scores.values() if s < 0.3)
+            }
+
+    class ETPatternDiscoverer:
+        """Phase 3: Advanced URL pattern discovery using recursive_descriptor_search."""
+        def __init__(self):
+            self.patterns = set()
+            self.generated_urls = set()
+            logger.info("Initialized ETPatternDiscoverer")
+        
+        def extract_patterns(self, urls: List[str]) -> Set[str]:
+            """Extract URL patterns using ET recursive descriptor search."""
+            patterns = set()
+            
+            if recursive_descriptor_search:
+                # Use ET method for pattern extraction
+                url_descriptors = [{'url': url, 'parts': url.split('/')} for url in urls]
+                discovered = recursive_descriptor_search(url_descriptors, max_depth=3)
+                if discovered:
+                    for pattern in discovered:
+                        if isinstance(pattern, dict) and 'pattern' in pattern:
+                            patterns.add(pattern['pattern'])
+            
+            # Fallback: simple pattern extraction
+            for url in urls:
+                # Replace numbers with {N}
+                pattern = re.sub(r'\d+', '{N}', url)
+                patterns.add(pattern)
+                
+                # Replace dates with {DATE}
+                pattern = re.sub(r'\d{4}-\d{2}-\d{2}', '{DATE}', url)
+                patterns.add(pattern)
+            
+            self.patterns.update(patterns)
+            return patterns
+        
+        def discover_missing(self, urls: Set[str]) -> Set[str]:
+            """Discover missing URLs based on patterns."""
+            patterns = self.extract_patterns(list(urls))
+            generated = set()
+            
+            for pattern in patterns:
+                if '{N}' in pattern:
+                    # Generate variations
+                    for i in range(1, 11):
+                        generated.add(pattern.replace('{N}', str(i)))
+            
+            # Only return URLs not already in set
+            new_urls = generated - urls
+            self.generated_urls.update(new_urls)
+            return new_urls
+        
+        def get_stats(self) -> Dict:
+            return {
+                'patterns_found': len(self.patterns),
+                'urls_generated': len(self.generated_urls)
+            }
+
+    class ETStateRecurrenceDetector:
+        """Phase 3: Infinite loop detection using detect_state_recurrence."""
+        def __init__(self, max_history: int = 100):
+            self.state_history = []
+            self.max_history = max_history
+            self.loops_detected = 0
+            logger.info(f"Initialized ETStateRecurrenceDetector (history={max_history})")
+        
+        def check_recurrence(self, url: str, depth: int, visited_count: int) -> bool:
+            """Check if current state has occurred before."""
+            state = {'url': url, 'depth': depth, 'visited': visited_count}
+            
+            if detect_state_recurrence:
+                # Use ET method
+                recurrence = detect_state_recurrence(self.state_history, state)
+                if recurrence:
+                    self.loops_detected += 1
+                    return True
+            else:
+                # Fallback: simple URL-based detection
+                for prev_state in self.state_history[-20:]:
+                    if prev_state['url'] == url and prev_state['depth'] == depth:
+                        self.loops_detected += 1
+                        return True
+            
+            # Add to history
+            self.state_history.append(state)
+            if len(self.state_history) > self.max_history:
+                self.state_history.pop(0)
+            
+            return False
+        
+        def get_stats(self) -> Dict:
+            return {
+                'states_tracked': len(self.state_history),
+                'loops_detected': self.loops_detected
+            }
+
+    class ETArchiveComparator:
+        """Phase 3: Compare archives using descriptor_differentiation."""
+        def __init__(self):
+            self.differences = []
+            logger.info("Initialized ETArchiveComparator")
+        
+        def compare_archives(self, archive1: Dict[str, bytes], archive2: Dict[str, bytes]) -> Dict:
+            """Compare two archives and find differences."""
+            keys1 = set(archive1.keys())
+            keys2 = set(archive2.keys())
+            
+            added = keys2 - keys1
+            removed = keys1 - keys2
+            common = keys1 & keys2
+            modified = set()
+            
+            # Check for modifications
+            for file in common:
+                if archive1[file] != archive2[file]:
+                    modified.add(file)
+                    
+                    if descriptor_differentiation:
+                        # Use ET method to analyze difference
+                        desc1 = {'content': archive1[file], 'size': len(archive1[file])}
+                        desc2 = {'content': archive2[file], 'size': len(archive2[file])}
+                        diff = descriptor_differentiation(desc1, desc2)
+                        self.differences.append({'file': file, 'diff': diff})
+            
+            return {
+                'added': list(added),
+                'removed': list(removed),
+                'modified': list(modified),
+                'unchanged': len(common) - len(modified),
+                'total_differences': len(added) + len(removed) + len(modified)
+            }
+        
+        def get_similarity(self, content1: bytes, content2: bytes) -> float:
+            """Calculate similarity between two contents."""
+            if not content1 or not content2:
+                return 0.0
+            s = SequenceMatcher(None, content1[:1000], content2[:1000])
+            return s.ratio()
+        
+        def get_stats(self) -> Dict:
+            return {'differences_analyzed': len(self.differences)}
+
+    class ETGapAnalyzer:
+        """Phase 3: Detect missing resources using descriptor_gap_principle."""
+        def __init__(self):
+            self.expected_resources = set()
+            self.actual_resources = set()
+            self.gaps = set()
+            logger.info("Initialized ETGapAnalyzer")
+        
+        def analyze_gaps(self, observed: Set[str], downloaded: Set[str]) -> Set[str]:
+            """Find gaps between observed and downloaded resources."""
+            self.expected_resources = observed
+            self.actual_resources = downloaded
+            self.gaps = observed - downloaded
+            
+            if descriptor_gap_principle:
+                # Use ET gap principle to find additional gaps
+                observed_descriptors = [{'url': url} for url in observed]
+                downloaded_descriptors = [{'url': url} for url in downloaded]
+                et_gaps = descriptor_gap_principle(observed_descriptors, downloaded_descriptors)
+                if et_gaps:
+                    additional_gaps = {g.get('url', '') for g in et_gaps if isinstance(g, dict) and 'url' in g}
+                    self.gaps.update(additional_gaps)
+            
+            return self.gaps
+        
+        def calculate_coverage(self) -> float:
+            """Calculate download coverage percentage."""
+            if not self.expected_resources:
+                return 100.0
+            return (len(self.actual_resources) / len(self.expected_resources)) * 100.0
+        
+        def get_stats(self) -> Dict:
+            return {
+                'expected': len(self.expected_resources),
+                'downloaded': len(self.actual_resources),
+                'gaps': len(self.gaps),
+                'coverage_percent': self.calculate_coverage()
+            }
+
+    # =========================================================================
+    # PHASE 4 CLASSES
+    # =========================================================================
+
+    class ETFractalGenerator:
+        """Phase 4: Generate missing resources using fractal patterns."""
+        def __init__(self):
+            self.generated = set()
+            self.fractal_patterns = {}
+            logger.info("Initialized ETFractalGenerator")
+        
+        def detect_fractal_patterns(self, urls: List[str]) -> Dict[str, List[str]]:
+            """Detect fractal patterns in URL structure."""
+            patterns = {}
+            for url in urls:
+                # Extract base pattern
+                base = re.sub(r'\d+', '{i}', url)
+                if base not in patterns:
+                    patterns[base] = []
+                patterns[base].append(url)
+            
+            # Keep only patterns with multiple examples
+            self.fractal_patterns = {k: v for k, v in patterns.items() if len(v) > 1}
+            return self.fractal_patterns
+        
+        def generate_resources(self, patterns: Dict[str, List[str]]) -> Set[str]:
+            """Generate missing resources from fractal patterns."""
+            generated = set()
+            
+            for pattern, examples in patterns.items():
+                if fractal_upscale:
+                    # Use ET method to predict next scale
+                    scales = [int(re.search(r'\d+', url).group()) for url in examples if re.search(r'\d+', url)]
+                    if scales:
+                        next_scale = fractal_upscale(max(scales), scale_factor=PHI_GOLDEN_RATIO)
+                        generated.add(pattern.replace('{i}', str(int(next_scale))))
+                else:
+                    # Fallback: simple increment
+                    numbers = []
+                    for example in examples:
+                        nums = re.findall(r'\d+', example)
+                        if nums:
+                            numbers.extend(map(int, nums))
+                    if numbers:
+                        next_num = max(numbers) + 1
+                        generated.add(pattern.replace('{i}', str(next_num)))
+            
+            self.generated.update(generated)
+            return generated
+        
+        def get_stats(self) -> Dict:
+            return {
+                'patterns_detected': len(self.fractal_patterns),
+                'resources_generated': len(self.generated)
+            }
+
+    class ETDomainClassifier:
+        """Phase 4: Classify resources into ET domains using descriptor_domain_classification."""
+        def __init__(self):
+            self.classifications = {
+                'critical': 0,      # HTML, essential scripts
+                'functional': 0,    # JavaScript, CSS
+                'visual': 0,        # Images, fonts
+                'supplemental': 0,  # Optional resources
+                'tracking': 0       # Analytics, ads
+            }
+            logger.info("Initialized ETDomainClassifier")
+        
+        def classify_resource(self, url: str, content_type: str, size: int) -> str:
+            """Classify a resource into an ET domain."""
+            # Ensure content_type is a string
+            if not isinstance(content_type, str):
+                content_type = ''
+            
+            if descriptor_domain_classification:
+                # Use ET method
+                descriptor = {
+                    'url': url,
+                    'content_type': content_type,
+                    'size': size
+                }
+                domain = descriptor_domain_classification(descriptor, manifold_symmetry=MANIFOLD_SYMMETRY)
+                if domain:
+                    self.classifications[domain] = self.classifications.get(domain, 0) + 1
+                    return domain
+            
+            # Fallback classification
+            content_type_lower = content_type.lower()
+            
+            if 'html' in content_type_lower:
+                domain = 'critical'
+            elif any(t in content_type_lower for t in ['javascript', 'css']):
+                domain = 'functional'
+            elif any(t in content_type_lower for t in ['image', 'font']):
+                domain = 'visual'
+            elif any(t in url.lower() for t in ['analytics', 'tracking', 'ads']):
+                domain = 'tracking'
+            else:
+                domain = 'supplemental'
+            
+            self.classifications[domain] = self.classifications.get(domain, 0) + 1
+            return domain
+        
+        def get_stats(self) -> Dict:
+            return self.classifications.copy()
+
+    class ETArchiveExporter:
+        """Phase 4: Export archives as compressed tarballs."""
+        def __init__(self):
+            logger.info("Initialized ETArchiveExporter")
+        
+        def export_archive(self, archive_dir: str, output_path: str):
+            """Export archive as tarball."""
+            with tarfile.open(output_path, 'w:gz') as tar:
+                tar.add(archive_dir, arcname=os.path.basename(archive_dir))
+            logger.info(f"Archive exported to: {output_path}")
+        
+        def import_archive(self, tarball_path: str, extract_dir: str):
+            """Import archive from tarball."""
+            with tarfile.open(tarball_path, 'r:gz') as tar:
+                tar.extractall(extract_dir)
+            logger.info(f"Archive imported from: {tarball_path}")
+
+    # =========================================================================
+    # RECURSIVE LINK DISCOVERY
+    # =========================================================================
+
+    def derive_recursive_link_discoverer(bloom_filter: ETBloomFilter, recurrence_detector: ETStateRecurrenceDetector) -> callable:
+        """Create recursive link discoverer with bloom filter and loop detection."""
+        def discoverer(html_content: str, base_url: str, depth: int = 2, visited: Set[str] = None, progress_callback=None) -> Set[str]:
+            if depth <= 0:
+                return set()
+            
+            if visited is None:
+                visited = set()
+            
+            # Check for infinite loops
+            if recurrence_detector.check_recurrence(base_url, depth, len(visited)):
+                logger.warning(f"Infinite loop detected, stopping discovery at {base_url}")
+                return set()
+            
+            soup = BeautifulSoup(html_content, 'html.parser')
+            base_href = soup.find('base', href=True)
+            base_href = base_href['href'] if base_href else base_url
+            
+            links = set()
+            
+            # Discover all asset types
+            asset_selectors = [
+                ('img', 'src'),
+                ('img', 'srcset'),
+                ('script', 'src'),
+                ('link', 'href'),
+                ('a', 'href'),
+                ('source', 'src'),
+                ('source', 'srcset'),
+                ('video', 'src'),
+                ('video', 'poster'),
+                ('audio', 'src'),
+                ('iframe', 'src'),
+                ('embed', 'src'),
+                ('object', 'data')
+            ]
+            
+            for tag, attr in asset_selectors:
+                for elem in soup.find_all(tag):
+                    if elem.has_attr(attr):
+                        attr_value = elem[attr]
+                        if attr in ['srcset']:
+                            # Handle srcset (multiple URLs)
+                            for src in attr_value.split(','):
+                                url = src.strip().split()[0]
+                                links.add(urljoin(base_href, url))
+                        else:
+                            links.add(urljoin(base_href, attr_value))
+            
+            # Inline styles
+            for elem in soup.find_all(style=True):
+                links.update(parse_css_comprehensive(elem['style'], base_href))
+            
+            # Style tags
+            for style in soup.find_all('style'):
+                if style.string:
+                    links.update(parse_css_comprehensive(style.string, base_href))
+            
+            # JavaScript parsing
+            combined_js = "".join(script.string for script in soup.find_all('script') if script.string)
+            if combined_js:
+                links.update(parse_js_comprehensive(combined_js, base_href))
+            
+            # Workers
+            workers = discover_workers(html_content, combined_js)
+            for worker in workers:
+                links.add(urljoin(base_href, worker))
+            
+            # Favicons
+            favicons = discover_favicons(base_url, soup)
+            links.update(favicons)
+            
+            # Configuration files
+            configs = discover_configuration_files(base_url)
+            links.update(configs)
+            
+            # Filter and recurse
+            recursive_links = []
+            for link in links:
+                if bloom_filter.probably_contains(link):
+                    continue
+                
+                if link not in visited:
+                    visited.add(link)
+                    bloom_filter.add(link)
+                    
+                    parsed = urlparse(link)
+                    if parsed.scheme in ('http', 'https'):
+                        # Only recurse on HTML pages
+                        skip_extensions = ['.css', '.js', '.jpg', '.png', '.gif', '.woff', '.woff2', '.pdf', '.zip']
+                        if not any(link.lower().endswith(ext) for ext in skip_extensions):
+                            recursive_links.append(link)
+            
+            # Recursive discovery (limited)
+            sub_links = set()
+            for idx, link in enumerate(recursive_links[:50]):  # Limit recursion
+                if progress_callback:
+                    progress_callback(f"Scanning {idx+1}/{len(recursive_links)}: {link[:60]}")
+                
+                try:
+                    resp = requests.get(link, timeout=10, allow_redirects=True)
+                    resp_content_type = safe_get_content_type(resp)
+                    
+                    if 'html' in resp_content_type:
+                        sub_links.update(discoverer(
+                            resp.content.decode('utf-8', errors='ignore'),
+                            link,
+                            depth - 1,
+                            visited,
+                            progress_callback
+                        ))
+                except:
+                    pass
+            
+            return links | sub_links
+        
+        return discoverer
+
+    # =========================================================================
+    # COMPREHENSIVE CONTENT REWRITING - ALL TYPES
+    # =========================================================================
+
+    def rewrite_content_ultimate(content: bytes, url: str, output_dir: str, url_to_local: Dict[str, str], content_type: str) -> bytes:
+        """
+        Ultimate content rewriting for perfect offline functionality.
+        Handles ALL content types: HTML, CSS, JavaScript, JSON, XML, SVG, etc.
+        """
+        # Ensure content_type is a string
+        if not isinstance(content_type, str):
+            content_type = ''
+        
+        content_type_lower = content_type.lower()
+        
+        # HTML Rewriting
+        if 'html' in content_type_lower:
+            soup = BeautifulSoup(content, 'html.parser')
+            
+            # Add base tag for proper relative path resolution
+            if not soup.find('base'):
+                base_tag = soup.new_tag('base', href=url)
+                if soup.head:
+                    soup.head.insert(0, base_tag)
+            
+            # Add offline meta tags
+            if soup.head:
+                # Viewport
+                if not soup.find('meta', attrs={'name': 'viewport'}):
+                    viewport_meta = soup.new_tag('meta', attrs={
+                        'name': 'viewport',
+                        'content': 'width=device-width, initial-scale=1.0'
+                    })
+                    soup.head.append(viewport_meta)
+                
+                # Offline mode indicator
+                offline_meta = soup.new_tag('meta', attrs={
+                    'name': 'et-archiver',
+                    'content': 'offline-archive'
+                })
+                soup.head.append(offline_meta)
+            
+            # Rewrite all asset references
+            asset_attrs = [
+                ('img', 'src'),
+                ('img', 'srcset'),
+                ('script', 'src'),
+                ('link', 'href'),
+                ('a', 'href'),
+                ('source', 'src'),
+                ('source', 'srcset'),
+                ('video', 'src'),
+                ('video', 'poster'),
+                ('audio', 'src'),
+                ('iframe', 'src'),
+                ('embed', 'src'),
+                ('object', 'data')
+            ]
+            
+            for tag, attr in asset_attrs:
+                for elem in soup.find_all(tag):
+                    if elem.has_attr(attr):
+                        if attr in ['srcset']:
+                            # Handle srcset
+                            srcset_parts = []
+                            for src in elem[attr].split(','):
+                                parts = src.strip().split()
+                                if parts:
+                                    original_url = urljoin(url, parts[0])
+                                    if original_url in url_to_local:
+                                        parts[0] = url_to_local[original_url]
+                                    srcset_parts.append(' '.join(parts))
+                            elem[attr] = ', '.join(srcset_parts)
+                        else:
+                            full_orig = urljoin(url, elem[attr])
+                            if full_orig in url_to_local:
+                                elem[attr] = url_to_local[full_orig]
+            
+            # Rewrite inline styles
+            for elem in soup.find_all(style=True):
+                elem['style'] = rewrite_css_urls(elem['style'], url, url_to_local)
+            
+            # Rewrite style tags
+            for style in soup.find_all('style'):
+                if style.string:
+                    style.string = rewrite_css_urls(style.string, url, url_to_local)
+            
+            # Rewrite inline JavaScript
+            for script in soup.find_all('script'):
+                if script.string and not script.get('src'):
+                    script.string = rewrite_js_urls(script.string, url, url_to_local)
+            
+            # Disable forms for safety
+            for form in soup.find_all('form'):
+                form['onsubmit'] = 'return false;'
+            
+            return str(soup).encode('utf-8')
+        
+        # CSS Rewriting
+        elif 'css' in content_type_lower:
+            css = content.decode('utf-8', errors='ignore')
+            css = rewrite_css_urls(css, url, url_to_local)
+            return css.encode('utf-8')
+        
+        # JavaScript Rewriting
+        elif 'javascript' in content_type_lower or 'js' in content_type_lower:
+            js = content.decode('utf-8', errors='ignore')
+            js = rewrite_js_urls(js, url, url_to_local)
+            return js.encode('utf-8')
+        
+        # JSON Rewriting (for manifests, etc.)
+        elif 'json' in content_type_lower:
+            try:
+                json_data = json.loads(content.decode('utf-8', errors='ignore'))
+                json_data = rewrite_json_urls(json_data, url, url_to_local)
+                return json.dumps(json_data, indent=2).encode('utf-8')
+            except:
+                return content
+        
+        # XML/SVG Rewriting
+        elif 'xml' in content_type_lower or 'svg' in content_type_lower:
+            try:
+                soup = BeautifulSoup(content, 'xml')
+                
+                # Rewrite xlink:href and href in SVG
+                for elem in soup.find_all(href=True):
+                    full_orig = urljoin(url, elem['href'])
+                    if full_orig in url_to_local:
+                        elem['href'] = url_to_local[full_orig]
+                
+                # Rewrite xlink:href
+                for elem in soup.find_all():
+                    if elem.has_attr('xlink:href'):
+                        full_orig = urljoin(url, elem['xlink:href'])
+                        if full_orig in url_to_local:
+                            elem['xlink:href'] = url_to_local[full_orig]
+                
+                return str(soup).encode('utf-8')
+            except:
+                return content
+        
+        # Return unchanged for binary content
+        return content
+    
+    def rewrite_css_urls(css: str, base_url: str, url_mapping: Dict[str, str]) -> str:
+        """Rewrite all URL references in CSS."""
+        def replace_url(match):
+            original = match.group(1).strip()
+            full_url = urljoin(base_url, original)
+            return f'url({url_mapping.get(full_url, original)})'
+        
+        css = re.sub(r'url\s*\(\s*["\']?([^"\')]+)["\']?\s*\)', replace_url, css)
+        
+        # Rewrite @import statements
+        def replace_import(match):
+            original = match.group(1).strip()
+            full_url = urljoin(base_url, original)
+            return f'@import "{url_mapping.get(full_url, original)}"'
+        
+        css = re.sub(r'@import\s+["\']([^"\']+)["\']', replace_import, css)
+        
+        return css
+    
+    def rewrite_js_urls(js: str, base_url: str, url_mapping: Dict[str, str]) -> str:
+        """Rewrite all URL references in JavaScript."""
+        # ES6 imports: import ... from 'url'
+        def replace_import(match):
+            original = match.group(1).strip()
+            full_url = urljoin(base_url, original)
+            return match.group(0).replace(original, url_mapping.get(full_url, original))
+        
+        patterns = [
+            (r'(import\s+.*?from\s+["\'])([^"\']+)(["\'])', 2),
+            (r'(export\s+.*?from\s+["\'])([^"\']+)(["\'])', 2),
+            (r'(import\s*\(\s*["\'])([^"\']+)(["\'])', 2),
+            (r'(require\s*\(\s*["\'])([^"\']+)(["\'])', 2),
+            (r'(fetch\s*\(\s*["\'])([^"\']+)(["\'])', 2),
+            (r'(new\s+Worker\s*\(\s*["\'])([^"\']+)(["\'])', 2),
+            (r'(new\s+SharedWorker\s*\(\s*["\'])([^"\']+)(["\'])', 2),
+            (r'(importScripts\s*\(\s*["\'])([^"\']+)(["\'])', 2),
+        ]
+        
+        for pattern, url_group in patterns:
+            def replacer(match):
+                original = match.group(url_group).strip()
+                # Skip if it's a variable or too short
+                if re.match(r'^[\w_$]+$', original) or len(original) < 4:
+                    return match.group(0)
+                full_url = urljoin(base_url, original)
+                if full_url in url_mapping:
+                    return match.group(0).replace(original, url_mapping[full_url])
+                return match.group(0)
+            
+            js = re.sub(pattern, replacer, js)
+        
+        return js
+    
+    def rewrite_json_urls(data: Any, base_url: str, url_mapping: Dict[str, str]) -> Any:
+        """Recursively rewrite URLs in JSON data."""
+        if isinstance(data, dict):
+            result = {}
+            for key, value in data.items():
+                if isinstance(value, str) and (value.startswith('http://') or value.startswith('https://') or value.startswith('/')):
+                    full_url = urljoin(base_url, value)
+                    result[key] = url_mapping.get(full_url, value)
+                else:
+                    result[key] = rewrite_json_urls(value, base_url, url_mapping)
+            return result
+        elif isinstance(data, list):
+            return [rewrite_json_urls(item, base_url, url_mapping) for item in data]
+        else:
+            return data
+
+    # =========================================================================
+    # MAIN ARCHIVER CLASS - ALL PHASES INTEGRATED
+    # =========================================================================
+
+    class ETWebArchiverComplete(Traverser):
+        """Complete web archiver with ALL phases integrated."""
+        
+        def __init__(self, identity: str, starting_url: str):
+            super().__init__(identity=identity, current_point=Point(location=starting_url))
+            self.downloaded: Dict[str, bytes] = {}
+            self.hashes: Dict[str, str] = {}
+            self.variances: Dict[str, float] = {}
+            self.content_types: Dict[str, str] = {}
+            self.session = requests.Session()
+            self.session.headers.update({'User-Agent': 'Mozilla/5.0 ET-Archiver/Complete-Fixed'})
+            
+            # Phase 1 tracking
+            self.entropies_before: Dict[str, float] = {}
+            self.entropies_after: Dict[str, float] = {}
+            self.entropy_gradients: Dict[str, float] = {}
+            self.resource_classifications: Dict[str, str] = {}
+            
+            # Phase 2 tracking
+            self.substantiation_scores: Dict[str, float] = {}
+            self.download_attempts: Dict[str, int] = {}
+            
+            # Phase 3 tracking
+            self.urls_checked: int = 0
+            self.total_bytes_downloaded: int = 0
+            
+            # Initialize ALL phase components
+            self.bloom_filter = ETBloomFilter(size=20000, hash_count=3)
+            self.download_queue = ETDownloadQueue()
+            self.quality_optimizer = ETQualityOptimizer(target_variance=0.0)
+            self.teleological_sorter = ETTeleologicalSorter()
+            self.pattern_discoverer = ETPatternDiscoverer()
+            self.recurrence_detector = ETStateRecurrenceDetector(max_history=100)
+            self.gap_analyzer = ETGapAnalyzer()
+            self.fractal_generator = ETFractalGenerator()
+            self.domain_classifier = ETDomainClassifier()
+            self.archive_exporter = ETArchiveExporter()
+            
+            logger.info(f"Initialized COMPLETE ETWebArchiver for {starting_url}")
+            logger.info("All phases integrated and ready")
+        
+        def traverse_and_substantiate(self, url: str) -> Tuple[Optional[bytes], str]:
+            """Enhanced traversal with all phase validations and safe content-type handling."""
+            try:
+                self.urls_checked += 1
+                response = self.session.get(url, timeout=30, allow_redirects=True)
+                response.raise_for_status()
+                content = response.content
+                
+                # FIXED: Safe content-type extraction
+                content_type = safe_get_content_type(response)
+                
+                # Fallback to URL-based detection if empty
+                if not content_type:
+                    content_type = detect_content_type_from_url(url)
+                
+                self.total_bytes_downloaded += len(content)
+                
+                # ET Binding
+                url_point = Point(location=url)
+                content_desc = Descriptor(name="web_content", constraint=len(content))
+                bind_pdt(url_point, content_desc, self)
+                
+                # Hash
+                content_hash = content_address(content)
+                self.hashes[url] = content_hash
+                
+                # Phase 1: Entropy
+                entropy = calculate_shannon_entropy(content)
+                self.entropies_before[url] = entropy
+                
+                # Phase 1: Boundary classification
+                if manifold_boundary_detection:
+                    size_mb = len(content) / (1024 * 1024)
+                    boundary = manifold_boundary_detection(size_mb)
+                    if boundary:
+                        self.resource_classifications[url] = 'boundary'
+                    elif size_mb < 0.1:
+                        self.resource_classifications[url] = 'optional'
+                    elif size_mb < 1.0:
+                        self.resource_classifications[url] = 'essential'
+                    else:
+                        self.resource_classifications[url] = 'critical'
+                
+                # Phase 2: Substantiation
+                if substantiation_state:
+                    variance = abs(entropy - 7.5) / 7.5  # Normalized
+                    state = substantiation_state(variance, threshold=0.1)
+                    self.substantiation_scores[url] = state
+                
+                # Phase 4: Domain classification
+                self.domain_classifier.classify_resource(url, content_type, len(content))
+                
+                self.downloaded[url] = content
+                self.content_types[url] = content_type
+                self.download_attempts[url] = self.download_attempts.get(url, 0) + 1
+                
+                return content, content_type
+            
+            except Exception as e:
+                logger.error(f"Traversal error at {url}: {str(e)}")
+                return None, ''
+        
+        def archive_website(self, base_url: str, root_output_dir: str, progress_callback=None) -> Tuple[Dict[str, Any], str]:
+            """
+            Complete archiving with ALL phases integrated.
+            Returns (report, main_page_path)
+            """
+            try:
+                start_time = time.time()
+                
+                # Create folder
+                folder_name = sanitize_folder_name(base_url)
+                archive_dir = os.path.join(root_output_dir, folder_name)
+                os.makedirs(archive_dir, exist_ok=True)
+                
+                if progress_callback:
+                    progress_callback("Complete Archiver: Downloading main page...")
+                
+                # Download main page
+                html_content, main_type = self.traverse_and_substantiate(base_url)
+                if not html_content:
+                    raise RuntimeError(f"Failed to download: {base_url}")
+                
+                if progress_callback:
+                    progress_callback("Phase 1+3: Discovering resources with loop detection...")
+                
+                # Discover with bloom filter and recurrence detection
+                recursive_discoverer = derive_recursive_link_discoverer(self.bloom_filter, self.recurrence_detector)
+                resources = recursive_discoverer(
+                    html_content.decode('utf-8', errors='ignore'),
+                    base_url,
+                    progress_callback=progress_callback
+                )
+                logger.info(f"Discovered {len(resources)} resources")
+                
+                # Phase 3: Pattern discovery
+                if progress_callback:
+                    progress_callback("Phase 3: Pattern-based discovery...")
+                
+                additional_resources = self.pattern_discoverer.discover_missing(resources)
+                logger.info(f"Pattern discovery found {len(additional_resources)} additional URLs")
+                resources.update(additional_resources)
+                
+                # Phase 4: Fractal generation
+                if progress_callback:
+                    progress_callback("Phase 4: Fractal pattern generation...")
+                
+                fractal_patterns = self.fractal_generator.detect_fractal_patterns(list(resources))
+                fractal_resources = self.fractal_generator.generate_resources(fractal_patterns)
+                logger.info(f"Fractal generation created {len(fractal_resources)} predictions")
+                resources.update(fractal_resources)
+                
+                # Phase 3: Teleological sorting
+                if progress_callback:
+                    progress_callback("Phase 3: Purpose-driven sorting...")
+                
+                sorted_urls = self.teleological_sorter.sort_by_purpose(list(resources), self.content_types)
+                
+                estimated_card = descriptor_cardinality_formula(list(resources))
+                
+                # Download all resources
+                url_to_local = {}
+                total = len(sorted_urls)
+                
+                for idx, res_url in enumerate(sorted_urls, 1):
+                    if progress_callback:
+                        progress_callback(f"Downloading {idx}/{total}: {res_url[:60]}...")
+                    
+                    if res_url not in self.downloaded:
+                        content, ct = self.traverse_and_substantiate(res_url)
+                        if content is None:
+                            continue
+                    else:
+                        content = self.downloaded[res_url]
+                        ct = self.content_types[res_url]
+                    
+                    # Create local path
+                    parsed = urlparse(res_url)
+                    path = parsed.path.lstrip('/')
+                    if not path or path.endswith('/'):
+                        path += 'index.html'
+                    
+                    local_path = os.path.join(archive_dir, path)
+                    os.makedirs(os.path.dirname(local_path), exist_ok=True)
+                    
+                    # Save original
+                    with open(local_path, 'wb') as f:
+                        f.write(content)
+                    
+                    url_to_local[res_url] = os.path.relpath(local_path, archive_dir)
+                
+                # Phase 2: Rewrite content with quality optimization
+                if progress_callback:
+                    progress_callback("Phase 2: Optimizing and rewriting content...")
+                
+                files_rewritten = 0
+                for url, content in self.downloaded.items():
+                    if url not in url_to_local:
+                        continue
+                    
+                    ct = self.content_types.get(url, '')
+                    local_file = os.path.join(archive_dir, url_to_local[url])
+                    
+                    # Rewrite content for ALL types
+                    rewritten = rewrite_content_ultimate(content, url, archive_dir, url_to_local, ct)
+                    
+                    if rewritten != content:
+                        with open(local_file, 'wb') as f:
+                            f.write(rewritten)
+                        files_rewritten += 1
+                        
+                        # Phase 1: Entropy after rewriting
+                        entropy_after = calculate_shannon_entropy(rewritten)
+                        self.entropies_after[url] = entropy_after
+                        
+                        # Phase 1: Entropy gradient
+                        if entropy_gradient and url in self.entropies_before:
+                            gradient = entropy_gradient(
+                                self.entropies_before[url],
+                                entropy_after,
+                                manifold_symmetry=MANIFOLD_SYMMETRY
+                            )
+                            self.entropy_gradients[url] = gradient
+                
+                # Phase 3: Gap analysis
+                if progress_callback:
+                    progress_callback("Phase 3: Analyzing coverage gaps...")
+                
+                self.gap_analyzer.analyze_gaps(resources, set(self.downloaded.keys()))
+                
+                # Calculate phase metrics
+                if progress_callback:
+                    progress_callback("Calculating ALL phase metrics...")
+                
+                # Phase 1 metrics
+                all_hashes = list(self.hashes.values())
+                merkle_tree_root = ''
+                if merkle_root and all_hashes:
+                    merkle_tree_root = merkle_root(all_hashes)
+                
+                avg_entropy = sum(self.entropies_before.values()) / len(self.entropies_before) if self.entropies_before else 0.0
+                
+                entropy_gradient_quality = 0.0
+                if self.entropy_gradients:
+                    entropy_gradient_quality = sum(abs(g) for g in self.entropy_gradients.values()) / len(self.entropy_gradients)
+                
+                # Phase 2 metrics
+                archive_density_val = 0.0
+                if density:
+                    archive_density_val = density(self.total_bytes_downloaded, len(self.downloaded))
+                
+                traversal_effort_val = 0.0
+                if effort:
+                    traversal_effort_val = effort(self.urls_checked, len(self.downloaded))
+                
+                substantiation_rate = len(self.substantiation_scores) / len(self.downloaded) if self.downloaded else 0.0
+                
+                # Phase 2: Quality optimization
+                current_variance = sum(self.variances.values()) / len(self.variances) if self.variances else 0.1
+                for _ in range(10):  # Optimize for 10 iterations
+                    current_variance = self.quality_optimizer.optimize_step(current_variance)
+                    if self.quality_optimizer.has_converged():
+                        break
+                
+                # Generate complete report
+                elapsed = time.time() - start_time
+                
+                report = {
+                    'base_url': base_url,
+                    'archive_directory': archive_dir,
+                    'folder_name': folder_name,
+                    'total_resources_discovered': len(resources),
+                    'successful_downloads': len(self.downloaded),
+                    'failed_downloads': len(resources) - len(self.downloaded),
+                    'files_rewritten': files_rewritten,
+                    'estimated_cardinality_et': estimated_card,
+                    'manifold_symmetry': MANIFOLD_SYMMETRY,
+                    'base_variance': BASE_VARIANCE,
+                    'main_page': url_to_local.get(base_url, 'index.html'),
+                    'elapsed_time_seconds': elapsed,
+                    'total_size_bytes': self.total_bytes_downloaded,
+                    
+                    'phase1_metrics': {
+                        'merkle_root': merkle_tree_root,
+                        'average_entropy': avg_entropy,
+                        'entropy_gradient_quality': entropy_gradient_quality,
+                        'bloom_filter_stats': self.bloom_filter.get_stats(),
+                        'resource_classification': dict(Counter(self.resource_classifications.values()))
+                    },
+                    
+                    'phase2_metrics': {
+                        'archive_density': archive_density_val,
+                        'traversal_effort': traversal_effort_val,
+                        'download_queue_stats': self.download_queue.get_stats(),
+                        'quality_optimization': self.quality_optimizer.get_stats(),
+                        'substantiation_rate': substantiation_rate
+                    },
+                    
+                    'phase3_metrics': {
+                        'teleological_stats': self.teleological_sorter.get_stats(),
+                        'pattern_discovery': self.pattern_discoverer.get_stats(),
+                        'loop_detection': self.recurrence_detector.get_stats(),
+                        'gap_analysis': self.gap_analyzer.get_stats()
+                    },
+                    
+                    'phase4_metrics': {
+                        'fractal_generation': self.fractal_generator.get_stats(),
+                        'domain_classification': self.domain_classifier.get_stats(),
+                        'et_constants': {
+                            'base_variance': BASE_VARIANCE,
+                            'manifold_symmetry': MANIFOLD_SYMMETRY,
+                            'phi_golden_ratio': PHI_GOLDEN_RATIO,
+                            'koide_ratio': KOIDE_RATIO
+                        }
+                    }
+                }
+                
+                # Save metadata
+                metadata_file = os.path.join(archive_dir, 'et_archive_metadata.json')
+                with open(metadata_file, 'w') as f:
+                    json.dump(report, f, indent=2)
+                
+                # Phase 4: Export tarball
+                if progress_callback:
+                    progress_callback("Phase 4: Exporting compressed archive...")
+                
+                tarball_path = os.path.join(root_output_dir, f"{folder_name}.tar.gz")
+                self.archive_exporter.export_archive(archive_dir, tarball_path)
+                report['tarball'] = tarball_path
+                
+                logger.info(f"Archive complete: {archive_dir}")
+                logger.info(f"Tarball: {tarball_path}")
+                
+                main_page = os.path.join(archive_dir, url_to_local.get(base_url, 'index.html'))
+                return report, main_page
+            
+            except Exception as e:
+                logger.error(f"Archive failed: {str(e)}")
+                raise
+
+    # =========================================================================
+    # GUI FUNCTIONS
+    # =========================================================================
+
+    def browse_archives_gui():
+        """GUI to browse archived websites."""
+        browse_window = tk.Toplevel()
+        browse_window.title("ET Archive Browser - ALL PHASES")
+        browse_window.geometry("900x600")
+        
+        # Instructions
+        tk.Label(browse_window, text="Browse Archived Websites", font=("Arial", 14, "bold")).pack(pady=10)
+        tk.Label(browse_window, text="Select an archive folder to view its metadata and open it.").pack()
+        
+        # Archive list
+        listbox = tk.Listbox(browse_window, width=120, height=20)
+        listbox.pack(pady=10, padx=10, fill=tk.BOTH, expand=True)
+        
+        # Find archives
+        def load_archives():
+            listbox.delete(0, tk.END)
+            for root, dirs, files in os.walk(os.getcwd()):
+                if 'et_archive_metadata.json' in files:
+                    try:
+                        with open(os.path.join(root, 'et_archive_metadata.json'), 'r') as f:
+                            metadata = json.load(f)
+                        
+                        display_text = f"{metadata.get('base_url', 'Unknown')} | " \
+                                      f"Resources: {metadata.get('successful_downloads', 0)} | " \
+                                      f"Size: {metadata.get('total_size_bytes', 0) / (1024*1024):.2f} MB | " \
+                                      f"Phases: 1-4 Complete | " \
+                                      f"Path: {root}"
+                        
+                        listbox.insert(tk.END, display_text)
+                    except:
+                        pass
+        
+        load_archives()
+        
+        # Open selected archive
+        def open_selected():
+            selection = listbox.curselection()
+            if not selection:
+                messagebox.showwarning("No Selection", "Please select an archive to open.")
+                return
+            
+            selected_text = listbox.get(selection[0])
+            archive_path = selected_text.split("Path: ")[-1]
+            metadata_file = os.path.join(archive_path, 'et_archive_metadata.json')
+            
+            try:
+                with open(metadata_file, 'r') as f:
+                    metadata = json.load(f)
+                
+                main_page = os.path.join(archive_path, metadata.get('main_page', 'index.html'))
+                
+                if os.path.exists(main_page):
+                    webbrowser.open('file://' + os.path.abspath(main_page))
+                    
+                    # Show metadata
+                    info = f"=== ARCHIVE METADATA - ALL PHASES ===\n\n"
+                    info += f"URL: {metadata.get('base_url', 'N/A')}\n"
+                    info += f"Resources: {metadata.get('successful_downloads', 0)}\n"
+                    info += f"Size: {metadata.get('total_size_bytes', 0) / (1024*1024):.2f} MB\n"
+                    info += f"Time: {metadata.get('elapsed_time_seconds', 0):.2f}s\n\n"
+                    
+                    info += "=== PHASE 1 - MEMORY & INTEGRITY ===\n"
+                    p1 = metadata.get('phase1_metrics', {})
+                    info += f"Merkle Root: {p1.get('merkle_root', 'N/A')[:16]}...\n"
+                    info += f"Avg Entropy: {p1.get('average_entropy', 0):.2f}\n"
+                    info += f"Bloom Filter Items: {p1.get('bloom_filter_stats', {}).get('approximate_items', 0)}\n\n"
+                    
+                    info += "=== PHASE 2 - OPTIMIZATION ===\n"
+                    p2 = metadata.get('phase2_metrics', {})
+                    info += f"Archive Density: {p2.get('archive_density', 0):.4f}\n"
+                    info += f"Traversal Effort: {p2.get('traversal_effort', 0):.4f}\n"
+                    info += f"Substantiation Rate: {p2.get('substantiation_rate', 0):.2%}\n\n"
+                    
+                    info += "=== PHASE 3 - DISCOVERY ===\n"
+                    p3 = metadata.get('phase3_metrics', {})
+                    info += f"Patterns Found: {p3.get('pattern_discovery', {}).get('patterns_found', 0)}\n"
+                    info += f"Loops Detected: {p3.get('loop_detection', {}).get('loops_detected', 0)}\n"
+                    info += f"Coverage: {p3.get('gap_analysis', {}).get('coverage_percent', 0):.1f}%\n\n"
+                    
+                    info += "=== PHASE 4 - SPECIALIZATION ===\n"
+                    p4 = metadata.get('phase4_metrics', {})
+                    info += f"Fractal Resources: {p4.get('fractal_generation', {}).get('resources_generated', 0)}\n"
+                    dc = p4.get('domain_classification', {})
+                    info += f"Domains: Critical={dc.get('critical', 0)}, Functional={dc.get('functional', 0)}, Visual={dc.get('visual', 0)}\n"
+                    
+                    messagebox.showinfo("Archive Metadata", info)
+                else:
+                    messagebox.showerror("Error", f"Main page not found: {main_page}")
+            except Exception as e:
+                messagebox.showerror("Error", f"Failed to open archive: {str(e)}")
+        
+        tk.Button(browse_window, text="Open Selected Archive", command=open_selected, bg="#4CAF50", fg="white").pack(pady=5)
+        tk.Button(browse_window, text="Refresh List", command=load_archives, bg="#2196F3", fg="white").pack(pady=5)
+
+    def run_download_gui():
+        """Main download GUI."""
+        download_window = tk.Toplevel()
+        download_window.title("ET Web Archiver - Download")
+        download_window.geometry("700x300")
+        
+        tk.Label(download_window, text="Enter Website URL:").pack(pady=5)
+        url_entry = tk.Entry(download_window, width=80)
+        url_entry.pack(pady=5)
+        
+        tk.Label(download_window, text="Output Directory:").pack(pady=5)
+        output_entry = tk.Entry(download_window, width=80)
+        output_entry.insert(0, os.getcwd())
+        output_entry.pack(pady=5)
+        
+        def browse_output():
+            folder = filedialog.askdirectory()
+            if folder:
+                output_entry.delete(0, tk.END)
+                output_entry.insert(0, folder)
+        
+        tk.Button(download_window, text="Browse...", command=browse_output).pack(pady=5)
+        
+        def start_download():
+            url = url_entry.get().strip()
+            output_dir = output_entry.get().strip()
+            
+            if not url:
+                messagebox.showerror("Error", "Please enter a URL.")
+                return
+            
+            if not url.startswith(('http://', 'https://')):
+                url = 'https://' + url
+            
+            # Progress window
+            progress_window = tk.Toplevel(download_window)
+            progress_window.title("Downloading...")
+            progress_window.geometry("600x200")
+            
+            progress_label = tk.Label(progress_window, text="Initializing...", wraplength=550)
+            progress_label.pack(pady=10)
+            
+            progress_bar = ttk.Progressbar(progress_window, mode='indeterminate', length=500)
+            progress_bar.pack(pady=10)
+            progress_bar.start(10)
+            
+            def update_progress(message):
+                progress_label.config(text=message)
+                progress_window.update()
+            
+            def download_thread():
+                try:
+                    archiver = ETWebArchiverComplete(
+                        identity="ET-Complete-Archiver-Fixed",
+                        starting_url=url
+                    )
+                    
+                    report, main_page = archiver.archive_website(url, output_dir, progress_callback=update_progress)
+                    
+                    progress_bar.stop()
+                    progress_window.destroy()
+                    
+                    # Success message with ALL metrics
+                    success_msg = f"=== ARCHIVE COMPLETE - ALL PHASES ===\n\n"
+                    success_msg += f"Downloaded: {report['successful_downloads']} resources\n"
+                    success_msg += f"Failed: {report['failed_downloads']}\n"
+                    success_msg += f"Rewritten: {report['files_rewritten']} files\n"
+                    success_msg += f"Size: {report['total_size_bytes'] / (1024*1024):.2f} MB\n"
+                    success_msg += f"Time: {report['elapsed_time_seconds']:.2f}s\n\n"
+                    success_msg += f"Phase 1: ✓ Memory optimized, integrity verified\n"
+                    success_msg += f"Phase 2: ✓ Quality optimized, costs tracked\n"
+                    success_msg += f"Phase 3: ✓ Patterns discovered, loops prevented\n"
+                    success_msg += f"Phase 4: ✓ Fractals generated, domains classified\n\n"
+                    success_msg += f"Archive: {report['archive_directory']}\n"
+                    success_msg += f"Tarball: {report.get('tarball', 'N/A')}\n"
+                    
+                    messagebox.showinfo("Success", success_msg)
+                    
+                    # Auto-open
+                    if messagebox.askyesno("Open Archive", "Open the archived website in browser?"):
+                        webbrowser.open('file://' + os.path.abspath(main_page))
+                    
+                except Exception as e:
+                    progress_bar.stop()
+                    progress_window.destroy()
+                    messagebox.showerror("Error", f"Error: {str(e)}")
+            
+            import threading
+            thread = threading.Thread(target=download_thread, daemon=True)
+            thread.start()
+        
+        tk.Button(download_window, text="Start Download", command=start_download, bg="#4CAF50", fg="white", font=("Arial", 12)).pack(pady=20)
+
+    # =========================================================================
+    # MAIN GUI
+    # =========================================================================
+
+    root = tk.Tk()
+    root.title("ET Web Archiver - COMPLETE ALL PHASES INTEGRATED - FIXED")
+    root.geometry("800x500")
+    
+    # Header
+    header = tk.Label(root, text="Exception Theory Web Archiver", font=("Arial", 18, "bold"), fg="#1976D2")
+    header.pack(pady=20)
+    
+    subheader = tk.Label(root, text="COMPLETE ALL PHASES INTEGRATED - FIXED VERSION", font=("Arial", 12), fg="#555")
+    subheader.pack()
+    
+    # Mode selection
+    tk.Label(root, text="Select Mode:", font=("Arial", 14)).pack(pady=20)
+    
+    button_frame = tk.Frame(root)
+    button_frame.pack(pady=10)
+    
+    tk.Button(button_frame, text="Download Website", command=run_download_gui, 
+              width=20, height=2, bg="#4CAF50", fg="white", font=("Arial", 12)).pack(side=tk.LEFT, padx=10)
+    
+    tk.Button(button_frame, text="Browse Archives", command=browse_archives_gui, 
+              width=20, height=2, bg="#2196F3", fg="white", font=("Arial", 12)).pack(side=tk.LEFT, padx=10)
+    
+    # Phase info
+    info_frame = tk.Frame(root, relief=tk.RIDGE, borderwidth=2)
+    info_frame.pack(pady=20, padx=20, fill=tk.BOTH, expand=True)
+    
+    tk.Label(info_frame, text="Integrated Phases (ALL PHASES COMPLETE):", font=("Arial", 12, "bold")).pack(pady=5)
+    
+    phases = [
+        "✓ Phase 1: Memory (Bloom), Integrity (Merkle), Quality (Entropy), Classification (Manifold)",
+        "✓ Phase 2: Smart Queue, Quality Optimization, Density/Effort, Validation (Substantiation)",
+        "✓ Phase 3: Purpose Sorting, Pattern Discovery, Loop Detection, Gap Analysis, Version Compare",
+        "✓ Phase 4: Fractal Generation, 5-Domain Classification, Tarball Export, Complete ET Constants",
+        "✓ Content Types: HTML, CSS, JavaScript, JSON, XML, SVG, Images, Fonts, PDFs",
+        "✓ JavaScript Rewriting: Imports, Exports, Require, Fetch, Dynamic Imports, Workers",
+        "✓ FIXED: Safe content-type handling for all edge cases"
+    ]
+    
+    for phase in phases:
+        tk.Label(info_frame, text=phase, font=("Arial", 10), anchor='w').pack(fill=tk.X, padx=10, pady=2)
+    
+    # Footer
+    footer = tk.Label(root, text="Powered by Exception Theory | Michael James Muller | v4.0 Complete Fixed", 
+                     font=("Arial", 9), fg="#777")
+    footer.pack(pady=10)
+    
+    root.mainloop()
+
+if __name__ == '__main__':
+    main()

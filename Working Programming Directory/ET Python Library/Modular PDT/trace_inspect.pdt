@@ -1,0 +1,3257 @@
+// @ETPL:trace-stdlib inspect.py  // module=inspect
+// Get useful information from live Python objects.  This module encapsulates the interface provided by the internal specia
+P __author__ = manifold ["Ka-Ping Yee <ping@lfw.org>", "Yury Selivanov <yselivanov@sprymix.com>"]
+P __all__ = manifold ["AGEN_CLOSED", "AGEN_CREATED", "AGEN_RUNNING", "AGEN_SUSPENDED", "ArgInfo", "Arguments", "Attribute", "BlockFinder", "BoundArguments", "BufferFlags", "CORO_CLOSED", "CORO_CREATED", "CORO_RUNNING", "CORO_SUSPENDED", "CO_ASYNC_GENERATOR", "CO_COROUTINE", "CO_GENERATOR", "CO_ITERABLE_COROUTINE", "CO_NESTED", "CO_NEWLOCALS", "CO_NOFREE", "CO_OPTIMIZED", "CO_VARARGS", "CO_VARKEYWORDS", "ClassFoundException", "ClosureVars", "EndOfBlock", "FrameInfo", "FullArgSpec", "GEN_CLOSED", "GEN_CREATED", "GEN_RUNNING", "GEN_SUSPENDED", "Parameter", "Signature", "TPFLAGS_IS_ABSTRACT", "Traceback", "classify_class_attrs", "cleandoc", "currentframe", "findsource", "formatannotation", "formatannotationrelativeto", "formatargvalues", "get_annotations", "getabsfile", "getargs", "getargvalues", "getasyncgenlocals", "getasyncgenstate", "getattr_static", "getblock", "getcallargs", "getclasstree", "getclosurevars", "getcomments", "getcoroutinelocals", "getcoroutinestate", "getdoc", "getfile", "getframeinfo", "getfullargspec", "getgeneratorlocals", "getgeneratorstate", "getinnerframes", "getlineno", "getmembers", "getmembers_static", "getmodule", "getmodulename", "getmro", "getouterframes", "getsource", "getsourcefile", "getsourcelines", "indentsize", "isabstract", "isasyncgen", "isasyncgenfunction", "isawaitable", "isbuiltin", "isclass", "iscode", "iscoroutine", "iscoroutinefunction", "isdatadescriptor", "isframe", "isfunction", "isgenerator", "isgeneratorfunction", "isgetsetdescriptor", "ismemberdescriptor", "ismethod", "ismethoddescriptor", "ismethodwrapper", "ismodule", "isroutine", "istraceback", "markcoroutinefunction", "signature", "stack", "trace", "unwrap", "walktree"]
+// @ETPL:preload abc abc
+// Import abc — resolved at translate-time
+// @ETPL:preload ABC abc.ABC
+P ABC = P  // [ET:callable:abc.ABC]
+// @ETPL:preload ABCMeta abc.ABCMeta
+P ABCMeta = P  // [ET:callable:abc.ABCMeta]
+// @ETPL:preload abstractclassmethod abc.abstractclassmethod
+P abstractclassmethod = P  // [ET:callable:abc.abstractclassmethod]
+// @ETPL:preload abstractmethod abc.abstractmethod
+P abstractmethod = P  // [ET:callable:abc.abstractmethod]
+// @ETPL:preload abstractproperty abc.abstractproperty
+P abstractproperty = P  // [ET:callable:abc.abstractproperty]
+// @ETPL:preload abstractstaticmethod abc.abstractstaticmethod
+P abstractstaticmethod = P  // [ET:callable:abc.abstractstaticmethod]
+// @ETPL:preload get_cache_token abc.get_cache_token
+P get_cache_token = P  // [ET:callable:abc.get_cache_token]
+// @ETPL:preload update_abstractmethods abc.update_abstractmethods
+P update_abstractmethods = P  // [ET:callable:abc.update_abstractmethods]
+// @ETPL:preload ast ast
+// Import ast — resolved at translate-time
+// @ETPL:preload AST ast.AST
+P AST = P  // [ET:callable:ast.AST]
+// @ETPL:preload Add ast.Add
+P Add = P  // [ET:callable:ast.Add]
+// @ETPL:preload And ast.And
+P And = P  // [ET:callable:ast.And]
+// @ETPL:preload AnnAssign ast.AnnAssign
+P AnnAssign = P  // [ET:callable:ast.AnnAssign]
+// @ETPL:preload Assert ast.Assert
+P Assert = P  // [ET:callable:ast.Assert]
+// @ETPL:preload Assign ast.Assign
+P Assign = P  // [ET:callable:ast.Assign]
+// @ETPL:preload AsyncFor ast.AsyncFor
+P AsyncFor = P  // [ET:callable:ast.AsyncFor]
+// @ETPL:preload AsyncFunctionDef ast.AsyncFunctionDef
+P AsyncFunctionDef = P  // [ET:callable:ast.AsyncFunctionDef]
+// @ETPL:preload AsyncWith ast.AsyncWith
+P AsyncWith = P  // [ET:callable:ast.AsyncWith]
+// @ETPL:preload Attribute ast.Attribute
+P Attribute = P  // [ET:callable:ast.Attribute]
+// @ETPL:preload AugAssign ast.AugAssign
+P AugAssign = P  // [ET:callable:ast.AugAssign]
+// @ETPL:preload AugLoad ast.AugLoad
+P AugLoad = P  // [ET:callable:ast.AugLoad]
+// @ETPL:preload AugStore ast.AugStore
+P AugStore = P  // [ET:callable:ast.AugStore]
+// @ETPL:preload Await ast.Await
+P Await = P  // [ET:callable:ast.Await]
+// @ETPL:preload BinOp ast.BinOp
+P BinOp = P  // [ET:callable:ast.BinOp]
+// @ETPL:preload BitAnd ast.BitAnd
+P BitAnd = P  // [ET:callable:ast.BitAnd]
+// @ETPL:preload BitOr ast.BitOr
+P BitOr = P  // [ET:callable:ast.BitOr]
+// @ETPL:preload BitXor ast.BitXor
+P BitXor = P  // [ET:callable:ast.BitXor]
+// @ETPL:preload BoolOp ast.BoolOp
+P BoolOp = P  // [ET:callable:ast.BoolOp]
+// @ETPL:preload Break ast.Break
+P Break = P  // [ET:callable:ast.Break]
+// @ETPL:preload Call ast.Call
+P Call = P  // [ET:callable:ast.Call]
+// @ETPL:preload ClassDef ast.ClassDef
+P ClassDef = P  // [ET:callable:ast.ClassDef]
+// @ETPL:preload Compare ast.Compare
+P Compare = P  // [ET:callable:ast.Compare]
+// @ETPL:preload Constant ast.Constant
+P Constant = P  // [ET:callable:ast.Constant]
+// @ETPL:preload Continue ast.Continue
+P Continue = P  // [ET:callable:ast.Continue]
+// @ETPL:preload Del ast.Del
+P Del = P  // [ET:callable:ast.Del]
+// @ETPL:preload Delete ast.Delete
+P Delete = P  // [ET:callable:ast.Delete]
+// @ETPL:preload Dict ast.Dict
+P Dict = P  // [ET:callable:ast.Dict]
+// @ETPL:preload DictComp ast.DictComp
+P DictComp = P  // [ET:callable:ast.DictComp]
+// @ETPL:preload Div ast.Div
+P Div = P  // [ET:callable:ast.Div]
+// @ETPL:preload Eq ast.Eq
+P Eq = P  // [ET:callable:ast.Eq]
+// @ETPL:preload ExceptHandler ast.ExceptHandler
+P ExceptHandler = P  // [ET:callable:ast.ExceptHandler]
+// @ETPL:preload Expr ast.Expr
+P Expr = P  // [ET:callable:ast.Expr]
+// @ETPL:preload Expression ast.Expression
+P Expression = P  // [ET:callable:ast.Expression]
+// @ETPL:preload ExtSlice ast.ExtSlice
+P ExtSlice = P  // [ET:callable:ast.ExtSlice]
+// @ETPL:preload FloorDiv ast.FloorDiv
+P FloorDiv = P  // [ET:callable:ast.FloorDiv]
+// @ETPL:preload For ast.For
+P For = P  // [ET:callable:ast.For]
+// @ETPL:preload FormattedValue ast.FormattedValue
+P FormattedValue = P  // [ET:callable:ast.FormattedValue]
+// @ETPL:preload FunctionDef ast.FunctionDef
+P FunctionDef = P  // [ET:callable:ast.FunctionDef]
+// @ETPL:preload FunctionType ast.FunctionType
+P FunctionType = P  // [ET:callable:ast.FunctionType]
+// @ETPL:preload GeneratorExp ast.GeneratorExp
+P GeneratorExp = P  // [ET:callable:ast.GeneratorExp]
+// @ETPL:preload Global ast.Global
+P Global = P  // [ET:callable:ast.Global]
+// @ETPL:preload Gt ast.Gt
+P Gt = P  // [ET:callable:ast.Gt]
+// @ETPL:preload GtE ast.GtE
+P GtE = P  // [ET:callable:ast.GtE]
+// @ETPL:preload If ast.If
+P If = P  // [ET:callable:ast.If]
+// @ETPL:preload IfExp ast.IfExp
+P IfExp = P  // [ET:callable:ast.IfExp]
+// @ETPL:preload Import ast.Import
+P Import = P  // [ET:callable:ast.Import]
+// @ETPL:preload ImportFrom ast.ImportFrom
+P ImportFrom = P  // [ET:callable:ast.ImportFrom]
+// @ETPL:preload In ast.In
+P In = P  // [ET:callable:ast.In]
+// @ETPL:preload Index ast.Index
+P Index = P  // [ET:callable:ast.Index]
+// @ETPL:preload IntEnum ast.IntEnum
+P IntEnum = P  // [ET:callable:ast.IntEnum]
+// @ETPL:preload Interactive ast.Interactive
+P Interactive = P  // [ET:callable:ast.Interactive]
+// @ETPL:preload Invert ast.Invert
+P Invert = P  // [ET:callable:ast.Invert]
+// @ETPL:preload Is ast.Is
+P Is = P  // [ET:callable:ast.Is]
+// @ETPL:preload IsNot ast.IsNot
+P IsNot = P  // [ET:callable:ast.IsNot]
+// @ETPL:preload JoinedStr ast.JoinedStr
+P JoinedStr = P  // [ET:callable:ast.JoinedStr]
+// @ETPL:preload LShift ast.LShift
+P LShift = P  // [ET:callable:ast.LShift]
+// @ETPL:preload Lambda ast.Lambda
+P Lambda = P  // [ET:callable:ast.Lambda]
+// @ETPL:preload List ast.List
+P List = P  // [ET:callable:ast.List]
+// @ETPL:preload ListComp ast.ListComp
+P ListComp = P  // [ET:callable:ast.ListComp]
+// @ETPL:preload Load ast.Load
+P Load = P  // [ET:callable:ast.Load]
+// @ETPL:preload Lt ast.Lt
+P Lt = P  // [ET:callable:ast.Lt]
+// @ETPL:preload LtE ast.LtE
+P LtE = P  // [ET:callable:ast.LtE]
+// @ETPL:preload MatMult ast.MatMult
+P MatMult = P  // [ET:callable:ast.MatMult]
+// @ETPL:preload Match ast.Match
+P Match = P  // [ET:callable:ast.Match]
+// @ETPL:preload MatchAs ast.MatchAs
+P MatchAs = P  // [ET:callable:ast.MatchAs]
+// @ETPL:preload MatchClass ast.MatchClass
+P MatchClass = P  // [ET:callable:ast.MatchClass]
+// @ETPL:preload MatchMapping ast.MatchMapping
+P MatchMapping = P  // [ET:callable:ast.MatchMapping]
+// @ETPL:preload MatchOr ast.MatchOr
+P MatchOr = P  // [ET:callable:ast.MatchOr]
+// @ETPL:preload MatchSequence ast.MatchSequence
+P MatchSequence = P  // [ET:callable:ast.MatchSequence]
+// @ETPL:preload MatchSingleton ast.MatchSingleton
+P MatchSingleton = P  // [ET:callable:ast.MatchSingleton]
+// @ETPL:preload MatchStar ast.MatchStar
+P MatchStar = P  // [ET:callable:ast.MatchStar]
+// @ETPL:preload MatchValue ast.MatchValue
+P MatchValue = P  // [ET:callable:ast.MatchValue]
+// @ETPL:preload Mod ast.Mod
+P Mod = P  // [ET:callable:ast.Mod]
+// @ETPL:preload Module ast.Module
+P Module = P  // [ET:callable:ast.Module]
+// @ETPL:preload Mult ast.Mult
+P Mult = P  // [ET:callable:ast.Mult]
+// @ETPL:preload Name ast.Name
+P Name = P  // [ET:callable:ast.Name]
+// @ETPL:preload NamedExpr ast.NamedExpr
+P NamedExpr = P  // [ET:callable:ast.NamedExpr]
+// @ETPL:preload NodeTransformer ast.NodeTransformer
+P NodeTransformer = P  // [ET:callable:ast.NodeTransformer]
+// @ETPL:preload NodeVisitor ast.NodeVisitor
+P NodeVisitor = P  // [ET:callable:ast.NodeVisitor]
+// @ETPL:preload Nonlocal ast.Nonlocal
+P Nonlocal = P  // [ET:callable:ast.Nonlocal]
+// @ETPL:preload Not ast.Not
+P Not = P  // [ET:callable:ast.Not]
+// @ETPL:preload NotEq ast.NotEq
+P NotEq = P  // [ET:callable:ast.NotEq]
+// @ETPL:preload NotIn ast.NotIn
+P NotIn = P  // [ET:callable:ast.NotIn]
+// @ETPL:preload Or ast.Or
+P Or = P  // [ET:callable:ast.Or]
+// @ETPL:preload Param ast.Param
+P Param = P  // [ET:callable:ast.Param]
+// @ETPL:preload ParamSpec ast.ParamSpec
+P ParamSpec = P  // [ET:callable:ast.ParamSpec]
+// @ETPL:preload Pass ast.Pass
+P Pass = P  // [ET:callable:ast.Pass]
+// @ETPL:preload Pow ast.Pow
+P Pow = P  // [ET:callable:ast.Pow]
+P PyCF_ALLOW_TOP_LEVEL_AWAIT = 8192
+P PyCF_ONLY_AST = 1024
+P PyCF_OPTIMIZED_AST = 33792
+P PyCF_TYPE_COMMENTS = 4096
+// @ETPL:preload RShift ast.RShift
+P RShift = P  // [ET:callable:ast.RShift]
+// @ETPL:preload Raise ast.Raise
+P Raise = P  // [ET:callable:ast.Raise]
+// @ETPL:preload Return ast.Return
+P Return = P  // [ET:callable:ast.Return]
+// @ETPL:preload Set ast.Set
+P Set = P  // [ET:callable:ast.Set]
+// @ETPL:preload SetComp ast.SetComp
+P SetComp = P  // [ET:callable:ast.SetComp]
+// @ETPL:preload Slice ast.Slice
+P Slice = P  // [ET:callable:ast.Slice]
+// @ETPL:preload Starred ast.Starred
+P Starred = P  // [ET:callable:ast.Starred]
+// @ETPL:preload Store ast.Store
+P Store = P  // [ET:callable:ast.Store]
+// @ETPL:preload Sub ast.Sub
+P Sub = P  // [ET:callable:ast.Sub]
+// @ETPL:preload Subscript ast.Subscript
+P Subscript = P  // [ET:callable:ast.Subscript]
+// @ETPL:preload Suite ast.Suite
+P Suite = P  // [ET:callable:ast.Suite]
+// @ETPL:preload Try ast.Try
+P Try = P  // [ET:callable:ast.Try]
+// @ETPL:preload TryStar ast.TryStar
+P TryStar = P  // [ET:callable:ast.TryStar]
+// @ETPL:preload Tuple ast.Tuple
+P Tuple = P  // [ET:callable:ast.Tuple]
+// @ETPL:preload TypeAlias ast.TypeAlias
+P TypeAlias = P  // [ET:callable:ast.TypeAlias]
+// @ETPL:preload TypeIgnore ast.TypeIgnore
+P TypeIgnore = P  // [ET:callable:ast.TypeIgnore]
+// @ETPL:preload TypeVar ast.TypeVar
+P TypeVar = P  // [ET:callable:ast.TypeVar]
+// @ETPL:preload TypeVarTuple ast.TypeVarTuple
+P TypeVarTuple = P  // [ET:callable:ast.TypeVarTuple]
+// @ETPL:preload UAdd ast.UAdd
+P UAdd = P  // [ET:callable:ast.UAdd]
+// @ETPL:preload USub ast.USub
+P USub = P  // [ET:callable:ast.USub]
+// @ETPL:preload UnaryOp ast.UnaryOp
+P UnaryOp = P  // [ET:callable:ast.UnaryOp]
+// @ETPL:preload While ast.While
+P While = P  // [ET:callable:ast.While]
+// @ETPL:preload With ast.With
+P With = P  // [ET:callable:ast.With]
+// @ETPL:preload Yield ast.Yield
+P Yield = P  // [ET:callable:ast.Yield]
+// @ETPL:preload YieldFrom ast.YieldFrom
+P YieldFrom = P  // [ET:callable:ast.YieldFrom]
+// @ETPL:preload alias ast.alias
+P alias = P  // [ET:callable:ast.alias]
+// @ETPL:preload arg ast.arg
+P arg = P  // [ET:callable:ast.arg]
+// @ETPL:preload arguments ast.arguments
+P arguments = P  // [ET:callable:ast.arguments]
+// @ETPL:preload auto ast.auto
+P auto = P  // [ET:callable:ast.auto]
+// @ETPL:preload boolop ast.boolop
+P boolop = P  // [ET:callable:ast.boolop]
+// @ETPL:preload cmpop ast.cmpop
+P cmpop = P  // [ET:callable:ast.cmpop]
+// @ETPL:preload comprehension ast.comprehension
+P comprehension = P  // [ET:callable:ast.comprehension]
+// @ETPL:preload contextmanager ast.contextmanager
+P contextmanager = P  // [ET:callable:ast.contextmanager]
+// @ETPL:preload copy_location ast.copy_location
+P copy_location = P  // [ET:callable:ast.copy_location]
+// @ETPL:preload dump ast.dump
+P dump = P  // [ET:callable:ast.dump]
+// @ETPL:preload excepthandler ast.excepthandler
+P excepthandler = P  // [ET:callable:ast.excepthandler]
+// @ETPL:preload expr ast.expr
+P expr = P  // [ET:callable:ast.expr]
+// @ETPL:preload expr_context ast.expr_context
+P expr_context = P  // [ET:callable:ast.expr_context]
+// @ETPL:preload fix_missing_locations ast.fix_missing_locations
+P fix_missing_locations = P  // [ET:callable:ast.fix_missing_locations]
+// @ETPL:preload get_docstring ast.get_docstring
+P get_docstring = P  // [ET:callable:ast.get_docstring]
+// @ETPL:preload get_source_segment ast.get_source_segment
+P get_source_segment = P  // [ET:callable:ast.get_source_segment]
+// @ETPL:preload increment_lineno ast.increment_lineno
+P increment_lineno = P  // [ET:callable:ast.increment_lineno]
+// @ETPL:preload iter_child_nodes ast.iter_child_nodes
+P iter_child_nodes = P  // [ET:callable:ast.iter_child_nodes]
+// @ETPL:preload iter_fields ast.iter_fields
+P iter_fields = P  // [ET:callable:ast.iter_fields]
+// @ETPL:preload keyword ast.keyword
+P keyword = P  // [ET:callable:ast.keyword]
+// @ETPL:preload literal_eval ast.literal_eval
+P literal_eval = P  // [ET:callable:ast.literal_eval]
+// @ETPL:preload main ast.main
+P main = P  // [ET:callable:ast.main]
+// @ETPL:preload match_case ast.match_case
+P match_case = P  // [ET:callable:ast.match_case]
+// @ETPL:preload mod ast.mod
+P mod = P  // [ET:callable:ast.mod]
+// @ETPL:preload nullcontext ast.nullcontext
+P nullcontext = P  // [ET:callable:ast.nullcontext]
+// @ETPL:preload operator ast.operator
+P operator = P  // [ET:callable:ast.operator]
+// @ETPL:preload parse ast.parse
+P parse = P  // [ET:callable:ast.parse]
+// @ETPL:preload pattern ast.pattern
+P pattern = P  // [ET:callable:ast.pattern]
+// @ETPL:preload re ast.re
+// @ETPL:preload slice ast.slice
+P slice = P  // [ET:callable:ast.slice]
+// @ETPL:preload stmt ast.stmt
+P stmt = P  // [ET:callable:ast.stmt]
+// @ETPL:preload sys ast.sys
+// @ETPL:preload type_ignore ast.type_ignore
+P type_ignore = P  // [ET:callable:ast.type_ignore]
+// @ETPL:preload type_param ast.type_param
+P type_param = P  // [ET:callable:ast.type_param]
+// @ETPL:preload unaryop ast.unaryop
+P unaryop = P  // [ET:callable:ast.unaryop]
+// @ETPL:preload unparse ast.unparse
+P unparse = P  // [ET:callable:ast.unparse]
+// @ETPL:preload walk ast.walk
+P walk = P  // [ET:callable:ast.walk]
+// @ETPL:preload withitem ast.withitem
+P withitem = P  // [ET:callable:ast.withitem]
+// @ETPL:preload dis dis
+// Import dis — resolved at translate-time
+// @ETPL:preload code_info dis.code_info
+P code_info = P  // [ET:callable:dis.code_info]
+// @ETPL:preload dis dis.dis
+P dis = P  // [ET:callable:dis.dis]
+// @ETPL:preload disassemble dis.disassemble
+P disassemble = P  // [ET:callable:dis.disassemble]
+// @ETPL:preload distb dis.distb
+P distb = P  // [ET:callable:dis.distb]
+// @ETPL:preload disco dis.disco
+P disco = P  // [ET:callable:dis.disco]
+// @ETPL:preload findlinestarts dis.findlinestarts
+P findlinestarts = P  // [ET:callable:dis.findlinestarts]
+// @ETPL:preload findlabels dis.findlabels
+P findlabels = P  // [ET:callable:dis.findlabels]
+// @ETPL:preload show_code dis.show_code
+P show_code = P  // [ET:callable:dis.show_code]
+// @ETPL:preload get_instructions dis.get_instructions
+P get_instructions = P  // [ET:callable:dis.get_instructions]
+// @ETPL:preload Instruction dis.Instruction
+P Instruction = P  // [ET:callable:dis.Instruction]
+// @ETPL:preload Bytecode dis.Bytecode
+P Bytecode = P  // [ET:callable:dis.Bytecode]
+P cmp_op = manifold ["<", "<=", "==", "!=", ">", ">="]
+// @ETPL:preload stack_effect dis.stack_effect
+P stack_effect = P  // [ET:callable:dis.stack_effect]
+P hascompare = manifold [58]
+P opname = manifold ["CACHE", "BEFORE_ASYNC_WITH", "BEFORE_WITH", "<3>", "BINARY_SLICE", "BINARY_SUBSCR", "CHECK_EG_MATCH", "CHECK_EXC_MATCH", "CLEANUP_THROW", "DELETE_SUBSCR", "END_ASYNC_FOR", "END_FOR", "END_SEND", "EXIT_INIT_CHECK", "FORMAT_SIMPLE", "FORMAT_WITH_SPEC", "GET_AITER", "RESERVED", "GET_ANEXT", "GET_ITER", "GET_LEN", "GET_YIELD_FROM_ITER", "INTERPRETER_EXIT", "LOAD_ASSERTION_ERROR", "LOAD_BUILD_CLASS", "LOAD_LOCALS", "MAKE_FUNCTION", "MATCH_KEYS", "MATCH_MAPPING", "MATCH_SEQUENCE", "NOP", "POP_EXCEPT", "POP_TOP", "PUSH_EXC_INFO", "PUSH_NULL", "RETURN_GENERATOR", "RETURN_VALUE", "SETUP_ANNOTATIONS", "STORE_SLICE", "STORE_SUBSCR", "TO_BOOL", "UNARY_INVERT", "UNARY_NEGATIVE", "UNARY_NOT", "WITH_EXCEPT_START", "BINARY_OP", "BUILD_CONST_KEY_MAP", "BUILD_LIST", "BUILD_MAP", "BUILD_SET"]
+P opmap = manifold [manifold ["CACHE", 0], manifold ["RESERVED", 17], manifold ["RESUME", 149], manifold ["INSTRUMENTED_LINE", 254], manifold ["BEFORE_ASYNC_WITH", 1], manifold ["BEFORE_WITH", 2], manifold ["BINARY_SLICE", 4], manifold ["BINARY_SUBSCR", 5], manifold ["CHECK_EG_MATCH", 6], manifold ["CHECK_EXC_MATCH", 7], manifold ["CLEANUP_THROW", 8], manifold ["DELETE_SUBSCR", 9], manifold ["END_ASYNC_FOR", 10], manifold ["END_FOR", 11], manifold ["END_SEND", 12], manifold ["EXIT_INIT_CHECK", 13], manifold ["FORMAT_SIMPLE", 14], manifold ["FORMAT_WITH_SPEC", 15], manifold ["GET_AITER", 16], manifold ["GET_ANEXT", 18]]
+P HAVE_ARGUMENT = 44
+P EXTENDED_ARG = 71
+P hasarg = manifold [149, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93]
+P hasconst = manifold [83, 103, 240]
+P hasname = manifold [63, 66, 67, 74, 75, 82, 90, 91, 92, 93, 108, 113, 114, 259, 260, 261, 262]
+P hasjump = manifold [72, 77, 78, 79, 97, 98, 99, 100, 104, 256, 257]
+P hasjrel = manifold [72, 77, 78, 79, 97, 98, 99, 100, 104, 256, 257]
+P hasjabs = manifold []
+P hasfree = manifold [64, 84, 89, 94, 109]
+P haslocal = manifold [65, 85, 86, 87, 88, 110, 111, 112, 258, 267]
+P hasexc = manifold [264, 265, 266]
+// @ETPL:preload collections_abc collections.abc
+// Import collections.abc — resolved at translate-time
+// @ETPL:preload Awaitable collections.abc.Awaitable
+P Awaitable = P  // [ET:callable:collections.abc.Awaitable]
+// @ETPL:preload Coroutine collections.abc.Coroutine
+P Coroutine = P  // [ET:callable:collections.abc.Coroutine]
+// @ETPL:preload AsyncIterable collections.abc.AsyncIterable
+P AsyncIterable = P  // [ET:callable:collections.abc.AsyncIterable]
+// @ETPL:preload AsyncIterator collections.abc.AsyncIterator
+P AsyncIterator = P  // [ET:callable:collections.abc.AsyncIterator]
+// @ETPL:preload AsyncGenerator collections.abc.AsyncGenerator
+P AsyncGenerator = P  // [ET:callable:collections.abc.AsyncGenerator]
+// @ETPL:preload Hashable collections.abc.Hashable
+P Hashable = P  // [ET:callable:collections.abc.Hashable]
+// @ETPL:preload Iterable collections.abc.Iterable
+P Iterable = P  // [ET:callable:collections.abc.Iterable]
+// @ETPL:preload Iterator collections.abc.Iterator
+P Iterator = P  // [ET:callable:collections.abc.Iterator]
+// @ETPL:preload Generator collections.abc.Generator
+P Generator = P  // [ET:callable:collections.abc.Generator]
+// @ETPL:preload Reversible collections.abc.Reversible
+P Reversible = P  // [ET:callable:collections.abc.Reversible]
+// @ETPL:preload Sized collections.abc.Sized
+P Sized = P  // [ET:callable:collections.abc.Sized]
+// @ETPL:preload Container collections.abc.Container
+P Container = P  // [ET:callable:collections.abc.Container]
+// @ETPL:preload Callable collections.abc.Callable
+P Callable = P  // [ET:callable:collections.abc.Callable]
+// @ETPL:preload Collection collections.abc.Collection
+P Collection = P  // [ET:callable:collections.abc.Collection]
+// @ETPL:preload MutableSet collections.abc.MutableSet
+P MutableSet = P  // [ET:callable:collections.abc.MutableSet]
+// @ETPL:preload Mapping collections.abc.Mapping
+P Mapping = P  // [ET:callable:collections.abc.Mapping]
+// @ETPL:preload MutableMapping collections.abc.MutableMapping
+P MutableMapping = P  // [ET:callable:collections.abc.MutableMapping]
+// @ETPL:preload MappingView collections.abc.MappingView
+P MappingView = P  // [ET:callable:collections.abc.MappingView]
+// @ETPL:preload KeysView collections.abc.KeysView
+P KeysView = P  // [ET:callable:collections.abc.KeysView]
+// @ETPL:preload ItemsView collections.abc.ItemsView
+P ItemsView = P  // [ET:callable:collections.abc.ItemsView]
+// @ETPL:preload ValuesView collections.abc.ValuesView
+P ValuesView = P  // [ET:callable:collections.abc.ValuesView]
+// @ETPL:preload Sequence collections.abc.Sequence
+P Sequence = P  // [ET:callable:collections.abc.Sequence]
+// @ETPL:preload MutableSequence collections.abc.MutableSequence
+P MutableSequence = P  // [ET:callable:collections.abc.MutableSequence]
+// @ETPL:preload ByteString collections.abc.ByteString
+P ByteString = P  // [ET:callable:collections.abc.ByteString]
+// @ETPL:preload Buffer collections.abc.Buffer
+P Buffer = P  // [ET:callable:collections.abc.Buffer]
+// @ETPL:preload enum enum
+// Import enum — resolved at translate-time
+// @ETPL:preload EnumType enum.EnumType
+P EnumType = P  // [ET:callable:enum.EnumType]
+// @ETPL:preload EnumMeta enum.EnumMeta
+P EnumMeta = P  // [ET:callable:enum.EnumMeta]
+// @ETPL:preload EnumDict enum.EnumDict
+P EnumDict = P  // [ET:callable:enum.EnumDict]
+// @ETPL:preload Enum enum.Enum
+P Enum = P  // [ET:callable:enum.Enum]
+// @ETPL:preload StrEnum enum.StrEnum
+P StrEnum = P  // [ET:callable:enum.StrEnum]
+// @ETPL:preload Flag enum.Flag
+P Flag = P  // [ET:callable:enum.Flag]
+// @ETPL:preload IntFlag enum.IntFlag
+P IntFlag = P  // [ET:callable:enum.IntFlag]
+// @ETPL:preload ReprEnum enum.ReprEnum
+P ReprEnum = P  // [ET:callable:enum.ReprEnum]
+// @ETPL:preload unique enum.unique
+P unique = P  // [ET:callable:enum.unique]
+// @ETPL:preload property enum.property
+P property = P  // [ET:callable:enum.property]
+// @ETPL:preload verify enum.verify
+P verify = P  // [ET:callable:enum.verify]
+// @ETPL:preload member enum.member
+P member = P  // [ET:callable:enum.member]
+// @ETPL:preload nonmember enum.nonmember
+P nonmember = P  // [ET:callable:enum.nonmember]
+// @ETPL:preload FlagBoundary enum.FlagBoundary
+P FlagBoundary = P  // [ET:callable:enum.FlagBoundary]
+P STRICT = "strict"
+P CONFORM = "conform"
+P EJECT = "eject"
+P KEEP = "keep"
+// @ETPL:preload global_flag_repr enum.global_flag_repr
+P global_flag_repr = P  // [ET:callable:enum.global_flag_repr]
+// @ETPL:preload global_enum_repr enum.global_enum_repr
+P global_enum_repr = P  // [ET:callable:enum.global_enum_repr]
+// @ETPL:preload global_str enum.global_str
+P global_str = P  // [ET:callable:enum.global_str]
+// @ETPL:preload global_enum enum.global_enum
+P global_enum = P  // [ET:callable:enum.global_enum]
+// @ETPL:preload EnumCheck enum.EnumCheck
+P EnumCheck = P  // [ET:callable:enum.EnumCheck]
+P CONTINUOUS = "no skipped integer values"
+P NAMED_FLAGS = "multi-flag aliases may not contain unnamed flags"
+P UNIQUE = "one name per value"
+// @ETPL:preload pickle_by_global_name enum.pickle_by_global_name
+P pickle_by_global_name = P  // [ET:callable:enum.pickle_by_global_name]
+// @ETPL:preload pickle_by_enum_name enum.pickle_by_enum_name
+P pickle_by_enum_name = P  // [ET:callable:enum.pickle_by_enum_name]
+// @ETPL:preload importlib_machinery importlib.machinery
+// Import importlib.machinery — resolved at translate-time
+// @ETPL:preload AppleFrameworkLoader importlib.machinery.AppleFrameworkLoader
+P AppleFrameworkLoader = P  // [ET:callable:importlib.machinery.AppleFrameworkLoader]
+P BYTECODE_SUFFIXES = manifold [".pyc"]
+// @ETPL:preload BuiltinImporter importlib.machinery.BuiltinImporter
+P BuiltinImporter = P  // [ET:callable:importlib.machinery.BuiltinImporter]
+P DEBUG_BYTECODE_SUFFIXES = manifold [".pyc"]
+P EXTENSION_SUFFIXES = manifold [".cp313-win_amd64.pyd", ".pyd"]
+// @ETPL:preload ExtensionFileLoader importlib.machinery.ExtensionFileLoader
+P ExtensionFileLoader = P  // [ET:callable:importlib.machinery.ExtensionFileLoader]
+// @ETPL:preload FileFinder importlib.machinery.FileFinder
+P FileFinder = P  // [ET:callable:importlib.machinery.FileFinder]
+// @ETPL:preload FrozenImporter importlib.machinery.FrozenImporter
+P FrozenImporter = P  // [ET:callable:importlib.machinery.FrozenImporter]
+// @ETPL:preload ModuleSpec importlib.machinery.ModuleSpec
+P ModuleSpec = P  // [ET:callable:importlib.machinery.ModuleSpec]
+// @ETPL:preload NamespaceLoader importlib.machinery.NamespaceLoader
+P NamespaceLoader = P  // [ET:callable:importlib.machinery.NamespaceLoader]
+P OPTIMIZED_BYTECODE_SUFFIXES = manifold [".pyc"]
+// @ETPL:preload PathFinder importlib.machinery.PathFinder
+P PathFinder = P  // [ET:callable:importlib.machinery.PathFinder]
+P SOURCE_SUFFIXES = manifold [".py", ".pyw"]
+// @ETPL:preload SourceFileLoader importlib.machinery.SourceFileLoader
+P SourceFileLoader = P  // [ET:callable:importlib.machinery.SourceFileLoader]
+// @ETPL:preload SourcelessFileLoader importlib.machinery.SourcelessFileLoader
+P SourcelessFileLoader = P  // [ET:callable:importlib.machinery.SourcelessFileLoader]
+// @ETPL:preload WindowsRegistryFinder importlib.machinery.WindowsRegistryFinder
+P WindowsRegistryFinder = P  // [ET:callable:importlib.machinery.WindowsRegistryFinder]
+// @ETPL:preload all_suffixes importlib.machinery.all_suffixes
+P all_suffixes = P  // [ET:callable:importlib.machinery.all_suffixes]
+// @ETPL:preload itertools itertools
+// Import itertools — resolved at translate-time
+// @ETPL:preload accumulate itertools.accumulate
+P accumulate = P  // [ET:callable:itertools.accumulate]
+// @ETPL:preload batched itertools.batched
+P batched = P  // [ET:callable:itertools.batched]
+// @ETPL:preload chain itertools.chain
+P chain = P  // [ET:callable:itertools.chain]
+// @ETPL:preload combinations itertools.combinations
+P combinations = P  // [ET:callable:itertools.combinations]
+// @ETPL:preload combinations_with_replacement itertools.combinations_with_replacement
+P combinations_with_replacement = P  // [ET:callable:itertools.combinations_with_replacement]
+// @ETPL:preload compress itertools.compress
+P compress = P  // [ET:callable:itertools.compress]
+// @ETPL:preload count itertools.count
+P count = P  // [ET:callable:itertools.count]
+// @ETPL:preload cycle itertools.cycle
+P cycle = P  // [ET:callable:itertools.cycle]
+// @ETPL:preload dropwhile itertools.dropwhile
+P dropwhile = P  // [ET:callable:itertools.dropwhile]
+// @ETPL:preload filterfalse itertools.filterfalse
+P filterfalse = P  // [ET:callable:itertools.filterfalse]
+// @ETPL:preload groupby itertools.groupby
+P groupby = P  // [ET:callable:itertools.groupby]
+// @ETPL:preload islice itertools.islice
+P islice = P  // [ET:callable:itertools.islice]
+// @ETPL:preload pairwise itertools.pairwise
+P pairwise = P  // [ET:callable:itertools.pairwise]
+// @ETPL:preload permutations itertools.permutations
+P permutations = P  // [ET:callable:itertools.permutations]
+// @ETPL:preload product itertools.product
+P product = P  // [ET:callable:itertools.product]
+// @ETPL:preload repeat itertools.repeat
+P repeat = P  // [ET:callable:itertools.repeat]
+// @ETPL:preload starmap itertools.starmap
+P starmap = P  // [ET:callable:itertools.starmap]
+// @ETPL:preload takewhile itertools.takewhile
+P takewhile = P  // [ET:callable:itertools.takewhile]
+// @ETPL:preload tee itertools.tee
+P tee = P  // [ET:callable:itertools.tee]
+// @ETPL:preload zip_longest itertools.zip_longest
+P zip_longest = P  // [ET:callable:itertools.zip_longest]
+// @ETPL:preload linecache linecache
+// Import linecache — resolved at translate-time
+// @ETPL:preload getline linecache.getline
+P getline = P  // [ET:callable:linecache.getline]
+// @ETPL:preload clearcache linecache.clearcache
+P clearcache = P  // [ET:callable:linecache.clearcache]
+// @ETPL:preload checkcache linecache.checkcache
+P checkcache = P  // [ET:callable:linecache.checkcache]
+// @ETPL:preload lazycache linecache.lazycache
+P lazycache = P  // [ET:callable:linecache.lazycache]
+// @ETPL:preload os os
+// Import os — resolved at translate-time
+P altsep = "/"
+P curdir = "."
+P pardir = ".."
+P sep = "\\"
+P pathsep = ";"
+P linesep = "\r\n"
+P defpath = ".;C:\\bin"
+P name = "nt"
+// @ETPL:preload path os.path
+P devnull = "nul"
+P SEEK_SET = 0
+P SEEK_CUR = 1
+P SEEK_END = 2
+// @ETPL:preload fsencode os.fsencode
+P fsencode = P  // [ET:callable:os.fsencode]
+// @ETPL:preload fsdecode os.fsdecode
+P fsdecode = P  // [ET:callable:os.fsdecode]
+// @ETPL:preload get_exec_path os.get_exec_path
+P get_exec_path = P  // [ET:callable:os.get_exec_path]
+// @ETPL:preload fdopen os.fdopen
+P fdopen = P  // [ET:callable:os.fdopen]
+P extsep = "."
+// @ETPL:preload _exit os._exit
+P _exit = P  // [ET:callable:os._exit]
+// @ETPL:preload DirEntry os.DirEntry
+P DirEntry = P  // [ET:callable:os.DirEntry]
+P EX_OK = 0
+P F_OK = 0
+P O_APPEND = 8
+P O_BINARY = 32768
+P O_CREAT = 256
+P O_EXCL = 1024
+P O_NOINHERIT = 128
+P O_RANDOM = 16
+P O_RDONLY = 0
+P O_RDWR = 2
+P O_SEQUENTIAL = 32
+P O_SHORT_LIVED = 4096
+P O_TEMPORARY = 64
+P O_TEXT = 16384
+P O_TRUNC = 512
+P O_WRONLY = 1
+P P_DETACH = 4
+P P_NOWAIT = 1
+P P_NOWAITO = 3
+P P_OVERLAY = 2
+P P_WAIT = 0
+P R_OK = 4
+P TMP_MAX = 2147483647
+P W_OK = 2
+P X_OK = 1
+// @ETPL:preload abort os.abort
+P abort = P  // [ET:callable:os.abort]
+// @ETPL:preload access os.access
+P access = P  // [ET:callable:os.access]
+// @ETPL:preload chdir os.chdir
+P chdir = P  // [ET:callable:os.chdir]
+// @ETPL:preload chmod os.chmod
+P chmod = P  // [ET:callable:os.chmod]
+// @ETPL:preload close os.close
+P close = P  // [ET:callable:os.close]
+// @ETPL:preload closerange os.closerange
+P closerange = P  // [ET:callable:os.closerange]
+// @ETPL:preload cpu_count os.cpu_count
+P cpu_count = P  // [ET:callable:os.cpu_count]
+// @ETPL:preload device_encoding os.device_encoding
+P device_encoding = P  // [ET:callable:os.device_encoding]
+// @ETPL:preload dup os.dup
+P dup = P  // [ET:callable:os.dup]
+// @ETPL:preload dup2 os.dup2
+P dup2 = P  // [ET:callable:os.dup2]
+P environ = P  // [ET:unrepresentable:_Environ]
+// @ETPL:preload error os.error
+P error = P  // [ET:callable:os.error]
+// @ETPL:preload execv os.execv
+P execv = P  // [ET:callable:os.execv]
+// @ETPL:preload execve os.execve
+P execve = P  // [ET:callable:os.execve]
+// @ETPL:preload fchmod os.fchmod
+P fchmod = P  // [ET:callable:os.fchmod]
+// @ETPL:preload fspath os.fspath
+P fspath = P  // [ET:callable:os.fspath]
+// @ETPL:preload fstat os.fstat
+P fstat = P  // [ET:callable:os.fstat]
+// @ETPL:preload fsync os.fsync
+P fsync = P  // [ET:callable:os.fsync]
+// @ETPL:preload ftruncate os.ftruncate
+P ftruncate = P  // [ET:callable:os.ftruncate]
+// @ETPL:preload get_blocking os.get_blocking
+P get_blocking = P  // [ET:callable:os.get_blocking]
+// @ETPL:preload get_handle_inheritable os.get_handle_inheritable
+P get_handle_inheritable = P  // [ET:callable:os.get_handle_inheritable]
+// @ETPL:preload get_inheritable os.get_inheritable
+P get_inheritable = P  // [ET:callable:os.get_inheritable]
+// @ETPL:preload get_terminal_size os.get_terminal_size
+P get_terminal_size = P  // [ET:callable:os.get_terminal_size]
+// @ETPL:preload getcwd os.getcwd
+P getcwd = P  // [ET:callable:os.getcwd]
+// @ETPL:preload getcwdb os.getcwdb
+P getcwdb = P  // [ET:callable:os.getcwdb]
+// @ETPL:preload getlogin os.getlogin
+P getlogin = P  // [ET:callable:os.getlogin]
+// @ETPL:preload getpid os.getpid
+P getpid = P  // [ET:callable:os.getpid]
+// @ETPL:preload getppid os.getppid
+P getppid = P  // [ET:callable:os.getppid]
+// @ETPL:preload isatty os.isatty
+P isatty = P  // [ET:callable:os.isatty]
+// @ETPL:preload kill os.kill
+P kill = P  // [ET:callable:os.kill]
+// @ETPL:preload lchmod os.lchmod
+P lchmod = P  // [ET:callable:os.lchmod]
+// @ETPL:preload link os.link
+P link = P  // [ET:callable:os.link]
+// @ETPL:preload listdir os.listdir
+P listdir = P  // [ET:callable:os.listdir]
+// @ETPL:preload listdrives os.listdrives
+P listdrives = P  // [ET:callable:os.listdrives]
+// @ETPL:preload listmounts os.listmounts
+P listmounts = P  // [ET:callable:os.listmounts]
+// @ETPL:preload listvolumes os.listvolumes
+P listvolumes = P  // [ET:callable:os.listvolumes]
+// @ETPL:preload lseek os.lseek
+P lseek = P  // [ET:callable:os.lseek]
+// @ETPL:preload lstat os.lstat
+P lstat = P  // [ET:callable:os.lstat]
+// @ETPL:preload mkdir os.mkdir
+P mkdir = P  // [ET:callable:os.mkdir]
+// @ETPL:preload open os.open
+P open = P  // [ET:callable:os.open]
+// @ETPL:preload pipe os.pipe
+P pipe = P  // [ET:callable:os.pipe]
+// @ETPL:preload putenv os.putenv
+P putenv = P  // [ET:callable:os.putenv]
+// @ETPL:preload read os.read
+P read = P  // [ET:callable:os.read]
+// @ETPL:preload readlink os.readlink
+P readlink = P  // [ET:callable:os.readlink]
+// @ETPL:preload remove os.remove
+P remove = P  // [ET:callable:os.remove]
+// @ETPL:preload rename os.rename
+P rename = P  // [ET:callable:os.rename]
+// @ETPL:preload replace os.replace
+P replace = P  // [ET:callable:os.replace]
+// @ETPL:preload rmdir os.rmdir
+P rmdir = P  // [ET:callable:os.rmdir]
+// @ETPL:preload scandir os.scandir
+P scandir = P  // [ET:callable:os.scandir]
+// @ETPL:preload set_blocking os.set_blocking
+P set_blocking = P  // [ET:callable:os.set_blocking]
+// @ETPL:preload set_handle_inheritable os.set_handle_inheritable
+P set_handle_inheritable = P  // [ET:callable:os.set_handle_inheritable]
+// @ETPL:preload set_inheritable os.set_inheritable
+P set_inheritable = P  // [ET:callable:os.set_inheritable]
+// @ETPL:preload spawnv os.spawnv
+P spawnv = P  // [ET:callable:os.spawnv]
+// @ETPL:preload spawnve os.spawnve
+P spawnve = P  // [ET:callable:os.spawnve]
+// @ETPL:preload startfile os.startfile
+P startfile = P  // [ET:callable:os.startfile]
+// @ETPL:preload stat os.stat
+P stat = P  // [ET:callable:os.stat]
+// @ETPL:preload stat_result os.stat_result
+P stat_result = P  // [ET:callable:os.stat_result]
+// @ETPL:preload statvfs_result os.statvfs_result
+P statvfs_result = P  // [ET:callable:os.statvfs_result]
+// @ETPL:preload strerror os.strerror
+P strerror = P  // [ET:callable:os.strerror]
+// @ETPL:preload symlink os.symlink
+P symlink = P  // [ET:callable:os.symlink]
+// @ETPL:preload system os.system
+P system = P  // [ET:callable:os.system]
+// @ETPL:preload terminal_size os.terminal_size
+P terminal_size = P  // [ET:callable:os.terminal_size]
+// @ETPL:preload times os.times
+P times = P  // [ET:callable:os.times]
+// @ETPL:preload times_result os.times_result
+P times_result = P  // [ET:callable:os.times_result]
+// @ETPL:preload truncate os.truncate
+P truncate = P  // [ET:callable:os.truncate]
+// @ETPL:preload umask os.umask
+P umask = P  // [ET:callable:os.umask]
+// @ETPL:preload uname_result os.uname_result
+P uname_result = P  // [ET:callable:os.uname_result]
+// @ETPL:preload unlink os.unlink
+P unlink = P  // [ET:callable:os.unlink]
+// @ETPL:preload unsetenv os.unsetenv
+P unsetenv = P  // [ET:callable:os.unsetenv]
+// @ETPL:preload urandom os.urandom
+P urandom = P  // [ET:callable:os.urandom]
+// @ETPL:preload utime os.utime
+P utime = P  // [ET:callable:os.utime]
+// @ETPL:preload waitpid os.waitpid
+P waitpid = P  // [ET:callable:os.waitpid]
+// @ETPL:preload waitstatus_to_exitcode os.waitstatus_to_exitcode
+P waitstatus_to_exitcode = P  // [ET:callable:os.waitstatus_to_exitcode]
+// @ETPL:preload write os.write
+P write = P  // [ET:callable:os.write]
+// @ETPL:preload makedirs os.makedirs
+P makedirs = P  // [ET:callable:os.makedirs]
+// @ETPL:preload removedirs os.removedirs
+P removedirs = P  // [ET:callable:os.removedirs]
+// @ETPL:preload renames os.renames
+P renames = P  // [ET:callable:os.renames]
+// @ETPL:preload execl os.execl
+P execl = P  // [ET:callable:os.execl]
+// @ETPL:preload execle os.execle
+P execle = P  // [ET:callable:os.execle]
+// @ETPL:preload execlp os.execlp
+P execlp = P  // [ET:callable:os.execlp]
+// @ETPL:preload execlpe os.execlpe
+P execlpe = P  // [ET:callable:os.execlpe]
+// @ETPL:preload execvp os.execvp
+P execvp = P  // [ET:callable:os.execvp]
+// @ETPL:preload execvpe os.execvpe
+P execvpe = P  // [ET:callable:os.execvpe]
+// @ETPL:preload getenv os.getenv
+P getenv = P  // [ET:callable:os.getenv]
+P supports_bytes_environ = 0
+// @ETPL:preload spawnl os.spawnl
+P spawnl = P  // [ET:callable:os.spawnl]
+// @ETPL:preload spawnle os.spawnle
+P spawnle = P  // [ET:callable:os.spawnle]
+// @ETPL:preload popen os.popen
+P popen = P  // [ET:callable:os.popen]
+// @ETPL:preload re re
+// Import re — resolved at translate-time
+// @ETPL:preload match re.match
+P match = P  // [ET:callable:re.match]
+// @ETPL:preload fullmatch re.fullmatch
+P fullmatch = P  // [ET:callable:re.fullmatch]
+// @ETPL:preload search re.search
+P search = P  // [ET:callable:re.search]
+// @ETPL:preload sub re.sub
+P sub = P  // [ET:callable:re.sub]
+// @ETPL:preload subn re.subn
+P subn = P  // [ET:callable:re.subn]
+// @ETPL:preload split re.split
+P split = P  // [ET:callable:re.split]
+// @ETPL:preload findall re.findall
+P findall = P  // [ET:callable:re.findall]
+// @ETPL:preload finditer re.finditer
+P finditer = P  // [ET:callable:re.finditer]
+// @ETPL:preload compile re.compile
+P compile = P  // [ET:callable:re.compile]
+// @ETPL:preload purge re.purge
+P purge = P  // [ET:callable:re.purge]
+// @ETPL:preload escape re.escape
+P escape = P  // [ET:callable:re.escape]
+// @ETPL:preload Pattern re.Pattern
+P Pattern = P  // [ET:callable:re.Pattern]
+P A = 256
+P I = 2
+P L = 4
+P M = 8
+P S = 16
+P X = 64
+P U = 32
+P ASCII = 256
+P IGNORECASE = 2
+P LOCALE = 4
+P MULTILINE = 8
+P DOTALL = 16
+P VERBOSE = 64
+P UNICODE = 32
+P NOFLAG = 0
+// @ETPL:preload RegexFlag re.RegexFlag
+P RegexFlag = P  // [ET:callable:re.RegexFlag]
+// @ETPL:preload PatternError re.PatternError
+P PatternError = P  // [ET:callable:re.PatternError]
+// @ETPL:preload sys sys
+// Import sys — resolved at translate-time
+// @ETPL:preload activate_stack_trampoline sys.activate_stack_trampoline
+P activate_stack_trampoline = P  // [ET:callable:sys.activate_stack_trampoline]
+// @ETPL:preload addaudithook sys.addaudithook
+P addaudithook = P  // [ET:callable:sys.addaudithook]
+P api_version = 1013
+P argv = manifold ["ETPL.py", "translate", "ETPL.py", "--lang", "python", "--output", "ETPL_self.pdt"]
+// @ETPL:preload audit sys.audit
+P audit = P  // [ET:callable:sys.audit]
+P base_exec_prefix = "C:\\Program Files\\Python313"
+P base_prefix = "C:\\Program Files\\Python313"
+// @ETPL:preload breakpointhook sys.breakpointhook
+P breakpointhook = P  // [ET:callable:sys.breakpointhook]
+P builtin_module_names = manifold ["_abc", "_ast", "_bisect", "_blake2", "_codecs", "_codecs_cn", "_codecs_hk", "_codecs_iso2022", "_codecs_jp", "_codecs_kr", "_codecs_tw", "_collections", "_contextvars", "_csv", "_datetime", "_functools", "_heapq", "_imp", "_interpchannels", "_interpqueues", "_interpreters", "_io", "_json", "_locale", "_lsprof", "_md5", "_multibytecodec", "_opcode", "_operator", "_pickle", "_random", "_sha1", "_sha2", "_sha3", "_signal", "_sre", "_stat", "_statistics", "_string", "_struct", "_suggestions", "_symtable", "_sysconfig", "_thread", "_tokenize", "_tracemalloc", "_typing", "_warnings", "_weakref", "_winapi"]
+P byteorder = "little"
+// @ETPL:preload call_tracing sys.call_tracing
+P call_tracing = P  // [ET:callable:sys.call_tracing]
+P copyright = "Copyright (c) 2001-2024 Python Software Foundation.\nAll Rights Reserved.\n\nCopyright (c) 2000 BeOpen.com.\nAll Rights Reserved.\n\nCopyright (c) 1995-2001 Corporation for National Research Initiatives.\nAll Rights Reserved.\n\nCopyright (c) 1991-1995 Stichting Mathematisch Centrum, Amsterdam.\nAll Rights Reserved."
+// @ETPL:preload deactivate_stack_trampoline sys.deactivate_stack_trampoline
+P deactivate_stack_trampoline = P  // [ET:callable:sys.deactivate_stack_trampoline]
+// @ETPL:preload displayhook sys.displayhook
+P displayhook = P  // [ET:callable:sys.displayhook]
+P dllhandle = 140730231881728
+P dont_write_bytecode = 0
+// @ETPL:preload exc_info sys.exc_info
+P exc_info = P  // [ET:callable:sys.exc_info]
+// @ETPL:preload excepthook sys.excepthook
+P excepthook = P  // [ET:callable:sys.excepthook]
+// @ETPL:preload exception sys.exception
+P exception = P  // [ET:callable:sys.exception]
+P exec_prefix = "C:\\Program Files\\Python313"
+P executable = "C:\\Program Files\\Python313\\python.exe"
+// @ETPL:preload exit sys.exit
+P exit = P  // [ET:callable:sys.exit]
+P flags = manifold [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 4300]
+P float_info = manifold [1.7976931348623157e+308, 1024, 308, 2.2250738585072014e-308, -1021, -307, 15, 53, 2.220446049250313e-16, 2, 1]
+P float_repr_style = "short"
+// @ETPL:preload get_asyncgen_hooks sys.get_asyncgen_hooks
+P get_asyncgen_hooks = P  // [ET:callable:sys.get_asyncgen_hooks]
+// @ETPL:preload get_coroutine_origin_tracking_depth sys.get_coroutine_origin_tracking_depth
+P get_coroutine_origin_tracking_depth = P  // [ET:callable:sys.get_coroutine_origin_tracking_depth]
+// @ETPL:preload get_int_max_str_digits sys.get_int_max_str_digits
+P get_int_max_str_digits = P  // [ET:callable:sys.get_int_max_str_digits]
+// @ETPL:preload getallocatedblocks sys.getallocatedblocks
+P getallocatedblocks = P  // [ET:callable:sys.getallocatedblocks]
+// @ETPL:preload getdefaultencoding sys.getdefaultencoding
+P getdefaultencoding = P  // [ET:callable:sys.getdefaultencoding]
+// @ETPL:preload getfilesystemencodeerrors sys.getfilesystemencodeerrors
+P getfilesystemencodeerrors = P  // [ET:callable:sys.getfilesystemencodeerrors]
+// @ETPL:preload getfilesystemencoding sys.getfilesystemencoding
+P getfilesystemencoding = P  // [ET:callable:sys.getfilesystemencoding]
+// @ETPL:preload getprofile sys.getprofile
+P getprofile = P  // [ET:callable:sys.getprofile]
+// @ETPL:preload getrecursionlimit sys.getrecursionlimit
+P getrecursionlimit = P  // [ET:callable:sys.getrecursionlimit]
+// @ETPL:preload getrefcount sys.getrefcount
+P getrefcount = P  // [ET:callable:sys.getrefcount]
+// @ETPL:preload getsizeof sys.getsizeof
+P getsizeof = P  // [ET:callable:sys.getsizeof]
+// @ETPL:preload getswitchinterval sys.getswitchinterval
+P getswitchinterval = P  // [ET:callable:sys.getswitchinterval]
+// @ETPL:preload gettrace sys.gettrace
+P gettrace = P  // [ET:callable:sys.gettrace]
+// @ETPL:preload getunicodeinternedsize sys.getunicodeinternedsize
+P getunicodeinternedsize = P  // [ET:callable:sys.getunicodeinternedsize]
+// @ETPL:preload getwindowsversion sys.getwindowsversion
+P getwindowsversion = P  // [ET:callable:sys.getwindowsversion]
+P hash_info = manifold [64, 2305843009213693951, 314159, 0, 1000003, "siphash13", 64, 128, 0]
+P hexversion = 51186672
+P implementation = P  // [ET:unrepresentable:SimpleNamespace]
+P int_info = manifold [30, 4, 4300, 640]
+// @ETPL:preload intern sys.intern
+P intern = P  // [ET:callable:sys.intern]
+// @ETPL:preload is_finalizing sys.is_finalizing
+P is_finalizing = P  // [ET:callable:sys.is_finalizing]
+// @ETPL:preload is_stack_trampoline_active sys.is_stack_trampoline_active
+P is_stack_trampoline_active = P  // [ET:callable:sys.is_stack_trampoline_active]
+P maxsize = 9223372036854775807
+P maxunicode = 1114111
+P meta_path = manifold [P, P, P, P]
+// @ETPL:preload modules sys.modules
+// [ET:complex-dict:modules]
+// @ETPL:preload monitoring sys.monitoring
+P orig_argv = manifold ["python", "ETPL.py", "translate", "ETPL.py", "--lang", "python", "--output", "ETPL_self.pdt"]
+P path_hooks = manifold [P, P, P]
+// @ETPL:preload path_importer_cache sys.path_importer_cache
+// [ET:complex-dict:path_importer_cache]
+P platform = "win32"
+P platlibdir = "DLLs"
+P prefix = "C:\\Program Files\\Python313"
+P pycache_prefix = P
+// @ETPL:preload set_asyncgen_hooks sys.set_asyncgen_hooks
+P set_asyncgen_hooks = P  // [ET:callable:sys.set_asyncgen_hooks]
+// @ETPL:preload set_coroutine_origin_tracking_depth sys.set_coroutine_origin_tracking_depth
+P set_coroutine_origin_tracking_depth = P  // [ET:callable:sys.set_coroutine_origin_tracking_depth]
+// @ETPL:preload set_int_max_str_digits sys.set_int_max_str_digits
+P set_int_max_str_digits = P  // [ET:callable:sys.set_int_max_str_digits]
+// @ETPL:preload setprofile sys.setprofile
+P setprofile = P  // [ET:callable:sys.setprofile]
+// @ETPL:preload setrecursionlimit sys.setrecursionlimit
+P setrecursionlimit = P  // [ET:callable:sys.setrecursionlimit]
+// @ETPL:preload setswitchinterval sys.setswitchinterval
+P setswitchinterval = P  // [ET:callable:sys.setswitchinterval]
+// @ETPL:preload settrace sys.settrace
+P settrace = P  // [ET:callable:sys.settrace]
+P stderr = P  // [ET:unrepresentable:TextIOWrapper]
+P stdin = P  // [ET:unrepresentable:TextIOWrapper]
+P stdlib_module_names = manifold ["__future__", "_abc", "_aix_support", "_android_support", "_apple_support", "_ast", "_asyncio", "_bisect", "_blake2", "_bz2", "_codecs", "_codecs_cn", "_codecs_hk", "_codecs_iso2022", "_codecs_jp", "_codecs_kr", "_codecs_tw", "_collections", "_collections_abc", "_colorize", "_compat_pickle", "_compression", "_contextvars", "_csv", "_ctypes", "_curses", "_curses_panel", "_datetime", "_dbm", "_decimal", "_elementtree", "_frozen_importlib", "_frozen_importlib_external", "_functools", "_gdbm", "_hashlib", "_heapq", "_imp", "_interpchannels", "_interpqueues", "_interpreters", "_io", "_ios_support", "_json", "_locale", "_lsprof", "_lzma", "_markupbase", "_md5", "_multibytecodec"]  // frozenset
+P stdout = P  // [ET:unrepresentable:TextIOWrapper]
+P thread_info = manifold ["nt", P, P]
+// @ETPL:preload unraisablehook sys.unraisablehook
+P unraisablehook = P  // [ET:callable:sys.unraisablehook]
+P version = "3.13.11 (tags/v3.13.11:6278944, Dec  5 2025, 16:26:58) [MSC v.1944 64 bit (AMD64)]"
+P version_info = manifold [3, 13, 11, "final", 0]
+P warnoptions = manifold []
+P winver = "3.13"
+// @ETPL:preload tokenize tokenize
+// Import tokenize — resolved at translate-time
+// @ETPL:preload tok_name tokenize.tok_name
+// [ET:complex-dict:tok_name]
+// @ETPL:preload ISTERMINAL tokenize.ISTERMINAL
+P ISTERMINAL = P  // [ET:callable:tokenize.ISTERMINAL]
+// @ETPL:preload ISNONTERMINAL tokenize.ISNONTERMINAL
+P ISNONTERMINAL = P  // [ET:callable:tokenize.ISNONTERMINAL]
+// @ETPL:preload ISEOF tokenize.ISEOF
+P ISEOF = P  // [ET:callable:tokenize.ISEOF]
+P EXACT_TOKEN_TYPES = manifold [manifold ["!", 54], manifold ["!=", 28], manifold ["%", 24], manifold ["%=", 40], manifold ["&", 19], manifold ["&=", 41], manifold ["(", 7], manifold [")", 8], manifold ["*", 16], manifold ["**", 35], manifold ["**=", 46], manifold ["*=", 38], manifold ["+", 14], manifold ["+=", 36], manifold [",", 12], manifold ["-", 15], manifold ["-=", 37], manifold ["->", 51], manifold [".", 23], manifold ["...", 52]]
+P ENDMARKER = 0
+P NAME = 1
+P NUMBER = 2
+P STRING = 3
+P NEWLINE = 4
+P INDENT = 5
+P DEDENT = 6
+P LPAR = 7
+P RPAR = 8
+P LSQB = 9
+P RSQB = 10
+P COLON = 11
+P COMMA = 12
+P SEMI = 13
+P PLUS = 14
+P MINUS = 15
+P STAR = 16
+P SLASH = 17
+P VBAR = 18
+P AMPER = 19
+P LESS = 20
+P GREATER = 21
+P EQUAL = 22
+P DOT = 23
+P PERCENT = 24
+P LBRACE = 25
+P RBRACE = 26
+P EQEQUAL = 27
+P NOTEQUAL = 28
+P LESSEQUAL = 29
+P GREATEREQUAL = 30
+P TILDE = 31
+P CIRCUMFLEX = 32
+P LEFTSHIFT = 33
+P RIGHTSHIFT = 34
+P DOUBLESTAR = 35
+P PLUSEQUAL = 36
+P MINEQUAL = 37
+P STAREQUAL = 38
+P SLASHEQUAL = 39
+P PERCENTEQUAL = 40
+P AMPEREQUAL = 41
+P VBAREQUAL = 42
+P CIRCUMFLEXEQUAL = 43
+P LEFTSHIFTEQUAL = 44
+P RIGHTSHIFTEQUAL = 45
+P DOUBLESTAREQUAL = 46
+P DOUBLESLASH = 47
+P DOUBLESLASHEQUAL = 48
+P AT = 49
+P ATEQUAL = 50
+P RARROW = 51
+P ELLIPSIS = 52
+P COLONEQUAL = 53
+P EXCLAMATION = 54
+P OP = 55
+P TYPE_IGNORE = 56
+P TYPE_COMMENT = 57
+P SOFT_KEYWORD = 58
+P FSTRING_START = 59
+P FSTRING_MIDDLE = 60
+P FSTRING_END = 61
+P COMMENT = 62
+P NL = 63
+P ERRORTOKEN = 64
+P ENCODING = 65
+P N_TOKENS = 66
+P NT_OFFSET = 256
+// @ETPL:preload tokenize tokenize.tokenize
+P tokenize = P  // [ET:callable:tokenize.tokenize]
+// @ETPL:preload generate_tokens tokenize.generate_tokens
+P generate_tokens = P  // [ET:callable:tokenize.generate_tokens]
+// @ETPL:preload detect_encoding tokenize.detect_encoding
+P detect_encoding = P  // [ET:callable:tokenize.detect_encoding]
+// @ETPL:preload untokenize tokenize.untokenize
+P untokenize = P  // [ET:callable:tokenize.untokenize]
+// @ETPL:preload TokenInfo tokenize.TokenInfo
+P TokenInfo = P  // [ET:callable:tokenize.TokenInfo]
+// @ETPL:preload TokenError tokenize.TokenError
+P TokenError = P  // [ET:callable:tokenize.TokenError]
+// @ETPL:preload token token
+// Import token — resolved at translate-time
+// @ETPL:preload types types
+// Import types — resolved at translate-time
+// @ETPL:preload LambdaType types.LambdaType
+P LambdaType = P  // [ET:callable:types.LambdaType]
+// @ETPL:preload CodeType types.CodeType
+P CodeType = P  // [ET:callable:types.CodeType]
+// @ETPL:preload MappingProxyType types.MappingProxyType
+P MappingProxyType = P  // [ET:callable:types.MappingProxyType]
+// @ETPL:preload SimpleNamespace types.SimpleNamespace
+P SimpleNamespace = P  // [ET:callable:types.SimpleNamespace]
+// @ETPL:preload CellType types.CellType
+P CellType = P  // [ET:callable:types.CellType]
+// @ETPL:preload GeneratorType types.GeneratorType
+P GeneratorType = P  // [ET:callable:types.GeneratorType]
+// @ETPL:preload CoroutineType types.CoroutineType
+P CoroutineType = P  // [ET:callable:types.CoroutineType]
+// @ETPL:preload AsyncGeneratorType types.AsyncGeneratorType
+P AsyncGeneratorType = P  // [ET:callable:types.AsyncGeneratorType]
+// @ETPL:preload MethodType types.MethodType
+P MethodType = P  // [ET:callable:types.MethodType]
+// @ETPL:preload BuiltinFunctionType types.BuiltinFunctionType
+P BuiltinFunctionType = P  // [ET:callable:types.BuiltinFunctionType]
+// @ETPL:preload BuiltinMethodType types.BuiltinMethodType
+P BuiltinMethodType = P  // [ET:callable:types.BuiltinMethodType]
+// @ETPL:preload WrapperDescriptorType types.WrapperDescriptorType
+P WrapperDescriptorType = P  // [ET:callable:types.WrapperDescriptorType]
+// @ETPL:preload MethodWrapperType types.MethodWrapperType
+P MethodWrapperType = P  // [ET:callable:types.MethodWrapperType]
+// @ETPL:preload MethodDescriptorType types.MethodDescriptorType
+P MethodDescriptorType = P  // [ET:callable:types.MethodDescriptorType]
+// @ETPL:preload ClassMethodDescriptorType types.ClassMethodDescriptorType
+P ClassMethodDescriptorType = P  // [ET:callable:types.ClassMethodDescriptorType]
+// @ETPL:preload ModuleType types.ModuleType
+P ModuleType = P  // [ET:callable:types.ModuleType]
+// @ETPL:preload TracebackType types.TracebackType
+P TracebackType = P  // [ET:callable:types.TracebackType]
+// @ETPL:preload FrameType types.FrameType
+P FrameType = P  // [ET:callable:types.FrameType]
+// @ETPL:preload GetSetDescriptorType types.GetSetDescriptorType
+P GetSetDescriptorType = P  // [ET:callable:types.GetSetDescriptorType]
+// @ETPL:preload MemberDescriptorType types.MemberDescriptorType
+P MemberDescriptorType = P  // [ET:callable:types.MemberDescriptorType]
+// @ETPL:preload new_class types.new_class
+P new_class = P  // [ET:callable:types.new_class]
+// @ETPL:preload resolve_bases types.resolve_bases
+P resolve_bases = P  // [ET:callable:types.resolve_bases]
+// @ETPL:preload prepare_class types.prepare_class
+P prepare_class = P  // [ET:callable:types.prepare_class]
+// @ETPL:preload get_original_bases types.get_original_bases
+P get_original_bases = P  // [ET:callable:types.get_original_bases]
+// @ETPL:preload DynamicClassAttribute types.DynamicClassAttribute
+P DynamicClassAttribute = P  // [ET:callable:types.DynamicClassAttribute]
+// @ETPL:preload coroutine types.coroutine
+P coroutine = P  // [ET:callable:types.coroutine]
+// @ETPL:preload GenericAlias types.GenericAlias
+P GenericAlias = P  // [ET:callable:types.GenericAlias]
+// @ETPL:preload UnionType types.UnionType
+P UnionType = P  // [ET:callable:types.UnionType]
+// @ETPL:preload EllipsisType types.EllipsisType
+P EllipsisType = P  // [ET:callable:types.EllipsisType]
+// @ETPL:preload NoneType types.NoneType
+P NoneType = P  // [ET:callable:types.NoneType]
+// @ETPL:preload NotImplementedType types.NotImplementedType
+P NotImplementedType = P  // [ET:callable:types.NotImplementedType]
+// @ETPL:preload CapsuleType types.CapsuleType
+P CapsuleType = P  // [ET:callable:types.CapsuleType]
+// @ETPL:preload functools functools
+// Import functools — resolved at translate-time
+// @ETPL:preload update_wrapper functools.update_wrapper
+P update_wrapper = P  // [ET:callable:functools.update_wrapper]
+// @ETPL:preload wraps functools.wraps
+P wraps = P  // [ET:callable:functools.wraps]
+P WRAPPER_ASSIGNMENTS = manifold ["__module__", "__name__", "__qualname__", "__doc__", "__annotations__", "__type_params__"]
+P WRAPPER_UPDATES = manifold ["__dict__"]
+// @ETPL:preload total_ordering functools.total_ordering
+P total_ordering = P  // [ET:callable:functools.total_ordering]
+// @ETPL:preload cache functools.cache
+P cache = P  // [ET:callable:functools.cache]
+// @ETPL:preload cmp_to_key functools.cmp_to_key
+P cmp_to_key = P  // [ET:callable:functools.cmp_to_key]
+// @ETPL:preload lru_cache functools.lru_cache
+P lru_cache = P  // [ET:callable:functools.lru_cache]
+// @ETPL:preload reduce functools.reduce
+P reduce = P  // [ET:callable:functools.reduce]
+// @ETPL:preload partial functools.partial
+P partial = P  // [ET:callable:functools.partial]
+// @ETPL:preload partialmethod functools.partialmethod
+P partialmethod = P  // [ET:callable:functools.partialmethod]
+// @ETPL:preload singledispatch functools.singledispatch
+P singledispatch = P  // [ET:callable:functools.singledispatch]
+// @ETPL:preload singledispatchmethod functools.singledispatchmethod
+P singledispatchmethod = P  // [ET:callable:functools.singledispatchmethod]
+// @ETPL:preload cached_property functools.cached_property
+P cached_property = P  // [ET:callable:functools.cached_property]
+// @ETPL:preload builtins builtins
+// Import builtins — resolved at translate-time
+// @ETPL:preload ArithmeticError builtins.ArithmeticError
+P ArithmeticError = P  // [ET:callable:builtins.ArithmeticError]
+// @ETPL:preload AssertionError builtins.AssertionError
+P AssertionError = P  // [ET:callable:builtins.AssertionError]
+// @ETPL:preload AttributeError builtins.AttributeError
+P AttributeError = P  // [ET:callable:builtins.AttributeError]
+// @ETPL:preload BaseException builtins.BaseException
+P BaseException = P  // [ET:callable:builtins.BaseException]
+// @ETPL:preload BaseExceptionGroup builtins.BaseExceptionGroup
+P BaseExceptionGroup = P  // [ET:callable:builtins.BaseExceptionGroup]
+// @ETPL:preload BlockingIOError builtins.BlockingIOError
+P BlockingIOError = P  // [ET:callable:builtins.BlockingIOError]
+// @ETPL:preload BrokenPipeError builtins.BrokenPipeError
+P BrokenPipeError = P  // [ET:callable:builtins.BrokenPipeError]
+// @ETPL:preload BufferError builtins.BufferError
+P BufferError = P  // [ET:callable:builtins.BufferError]
+// @ETPL:preload BytesWarning builtins.BytesWarning
+P BytesWarning = P  // [ET:callable:builtins.BytesWarning]
+// @ETPL:preload ChildProcessError builtins.ChildProcessError
+P ChildProcessError = P  // [ET:callable:builtins.ChildProcessError]
+// @ETPL:preload ConnectionAbortedError builtins.ConnectionAbortedError
+P ConnectionAbortedError = P  // [ET:callable:builtins.ConnectionAbortedError]
+// @ETPL:preload ConnectionError builtins.ConnectionError
+P ConnectionError = P  // [ET:callable:builtins.ConnectionError]
+// @ETPL:preload ConnectionRefusedError builtins.ConnectionRefusedError
+P ConnectionRefusedError = P  // [ET:callable:builtins.ConnectionRefusedError]
+// @ETPL:preload ConnectionResetError builtins.ConnectionResetError
+P ConnectionResetError = P  // [ET:callable:builtins.ConnectionResetError]
+// @ETPL:preload DeprecationWarning builtins.DeprecationWarning
+P DeprecationWarning = P  // [ET:callable:builtins.DeprecationWarning]
+// @ETPL:preload EOFError builtins.EOFError
+P EOFError = P  // [ET:callable:builtins.EOFError]
+P Ellipsis = P  // [ET:unrepresentable:ellipsis]
+// @ETPL:preload EncodingWarning builtins.EncodingWarning
+P EncodingWarning = P  // [ET:callable:builtins.EncodingWarning]
+// @ETPL:preload EnvironmentError builtins.EnvironmentError
+P EnvironmentError = P  // [ET:callable:builtins.EnvironmentError]
+// @ETPL:preload Exception builtins.Exception
+P Exception = P  // [ET:callable:builtins.Exception]
+// @ETPL:preload ExceptionGroup builtins.ExceptionGroup
+P ExceptionGroup = P  // [ET:callable:builtins.ExceptionGroup]
+P False = 0
+// @ETPL:preload FileExistsError builtins.FileExistsError
+P FileExistsError = P  // [ET:callable:builtins.FileExistsError]
+// @ETPL:preload FileNotFoundError builtins.FileNotFoundError
+P FileNotFoundError = P  // [ET:callable:builtins.FileNotFoundError]
+// @ETPL:preload FloatingPointError builtins.FloatingPointError
+P FloatingPointError = P  // [ET:callable:builtins.FloatingPointError]
+// @ETPL:preload FutureWarning builtins.FutureWarning
+P FutureWarning = P  // [ET:callable:builtins.FutureWarning]
+// @ETPL:preload GeneratorExit builtins.GeneratorExit
+P GeneratorExit = P  // [ET:callable:builtins.GeneratorExit]
+// @ETPL:preload IOError builtins.IOError
+P IOError = P  // [ET:callable:builtins.IOError]
+// @ETPL:preload ImportError builtins.ImportError
+P ImportError = P  // [ET:callable:builtins.ImportError]
+// @ETPL:preload ImportWarning builtins.ImportWarning
+P ImportWarning = P  // [ET:callable:builtins.ImportWarning]
+// @ETPL:preload IndentationError builtins.IndentationError
+P IndentationError = P  // [ET:callable:builtins.IndentationError]
+// @ETPL:preload IndexError builtins.IndexError
+P IndexError = P  // [ET:callable:builtins.IndexError]
+// @ETPL:preload InterruptedError builtins.InterruptedError
+P InterruptedError = P  // [ET:callable:builtins.InterruptedError]
+// @ETPL:preload IsADirectoryError builtins.IsADirectoryError
+P IsADirectoryError = P  // [ET:callable:builtins.IsADirectoryError]
+// @ETPL:preload KeyError builtins.KeyError
+P KeyError = P  // [ET:callable:builtins.KeyError]
+// @ETPL:preload KeyboardInterrupt builtins.KeyboardInterrupt
+P KeyboardInterrupt = P  // [ET:callable:builtins.KeyboardInterrupt]
+// @ETPL:preload LookupError builtins.LookupError
+P LookupError = P  // [ET:callable:builtins.LookupError]
+// @ETPL:preload MemoryError builtins.MemoryError
+P MemoryError = P  // [ET:callable:builtins.MemoryError]
+// @ETPL:preload ModuleNotFoundError builtins.ModuleNotFoundError
+P ModuleNotFoundError = P  // [ET:callable:builtins.ModuleNotFoundError]
+// @ETPL:preload NameError builtins.NameError
+P NameError = P  // [ET:callable:builtins.NameError]
+P None = P
+// @ETPL:preload NotADirectoryError builtins.NotADirectoryError
+P NotADirectoryError = P  // [ET:callable:builtins.NotADirectoryError]
+P NotImplemented = P  // [ET:unrepresentable:NotImplementedType]
+// @ETPL:preload NotImplementedError builtins.NotImplementedError
+P NotImplementedError = P  // [ET:callable:builtins.NotImplementedError]
+// @ETPL:preload OSError builtins.OSError
+P OSError = P  // [ET:callable:builtins.OSError]
+// @ETPL:preload OverflowError builtins.OverflowError
+P OverflowError = P  // [ET:callable:builtins.OverflowError]
+// @ETPL:preload PendingDeprecationWarning builtins.PendingDeprecationWarning
+P PendingDeprecationWarning = P  // [ET:callable:builtins.PendingDeprecationWarning]
+// @ETPL:preload PermissionError builtins.PermissionError
+P PermissionError = P  // [ET:callable:builtins.PermissionError]
+// @ETPL:preload ProcessLookupError builtins.ProcessLookupError
+P ProcessLookupError = P  // [ET:callable:builtins.ProcessLookupError]
+// @ETPL:preload PythonFinalizationError builtins.PythonFinalizationError
+P PythonFinalizationError = P  // [ET:callable:builtins.PythonFinalizationError]
+// @ETPL:preload RecursionError builtins.RecursionError
+P RecursionError = P  // [ET:callable:builtins.RecursionError]
+// @ETPL:preload ReferenceError builtins.ReferenceError
+P ReferenceError = P  // [ET:callable:builtins.ReferenceError]
+// @ETPL:preload ResourceWarning builtins.ResourceWarning
+P ResourceWarning = P  // [ET:callable:builtins.ResourceWarning]
+// @ETPL:preload RuntimeError builtins.RuntimeError
+P RuntimeError = P  // [ET:callable:builtins.RuntimeError]
+// @ETPL:preload RuntimeWarning builtins.RuntimeWarning
+P RuntimeWarning = P  // [ET:callable:builtins.RuntimeWarning]
+// @ETPL:preload StopAsyncIteration builtins.StopAsyncIteration
+P StopAsyncIteration = P  // [ET:callable:builtins.StopAsyncIteration]
+// @ETPL:preload StopIteration builtins.StopIteration
+P StopIteration = P  // [ET:callable:builtins.StopIteration]
+// @ETPL:preload SyntaxError builtins.SyntaxError
+P SyntaxError = P  // [ET:callable:builtins.SyntaxError]
+// @ETPL:preload SyntaxWarning builtins.SyntaxWarning
+P SyntaxWarning = P  // [ET:callable:builtins.SyntaxWarning]
+// @ETPL:preload SystemError builtins.SystemError
+P SystemError = P  // [ET:callable:builtins.SystemError]
+// @ETPL:preload SystemExit builtins.SystemExit
+P SystemExit = P  // [ET:callable:builtins.SystemExit]
+// @ETPL:preload TabError builtins.TabError
+P TabError = P  // [ET:callable:builtins.TabError]
+// @ETPL:preload TimeoutError builtins.TimeoutError
+P TimeoutError = P  // [ET:callable:builtins.TimeoutError]
+P True = 1
+// @ETPL:preload TypeError builtins.TypeError
+P TypeError = P  // [ET:callable:builtins.TypeError]
+// @ETPL:preload UnboundLocalError builtins.UnboundLocalError
+P UnboundLocalError = P  // [ET:callable:builtins.UnboundLocalError]
+// @ETPL:preload UnicodeDecodeError builtins.UnicodeDecodeError
+P UnicodeDecodeError = P  // [ET:callable:builtins.UnicodeDecodeError]
+// @ETPL:preload UnicodeEncodeError builtins.UnicodeEncodeError
+P UnicodeEncodeError = P  // [ET:callable:builtins.UnicodeEncodeError]
+// @ETPL:preload UnicodeError builtins.UnicodeError
+P UnicodeError = P  // [ET:callable:builtins.UnicodeError]
+// @ETPL:preload UnicodeTranslateError builtins.UnicodeTranslateError
+P UnicodeTranslateError = P  // [ET:callable:builtins.UnicodeTranslateError]
+// @ETPL:preload UnicodeWarning builtins.UnicodeWarning
+P UnicodeWarning = P  // [ET:callable:builtins.UnicodeWarning]
+// @ETPL:preload UserWarning builtins.UserWarning
+P UserWarning = P  // [ET:callable:builtins.UserWarning]
+// @ETPL:preload ValueError builtins.ValueError
+P ValueError = P  // [ET:callable:builtins.ValueError]
+// @ETPL:preload Warning builtins.Warning
+P Warning = P  // [ET:callable:builtins.Warning]
+// @ETPL:preload WindowsError builtins.WindowsError
+P WindowsError = P  // [ET:callable:builtins.WindowsError]
+// @ETPL:preload ZeroDivisionError builtins.ZeroDivisionError
+P ZeroDivisionError = P  // [ET:callable:builtins.ZeroDivisionError]
+// [ET:reserved:abs]
+// @ETPL:preload aiter builtins.aiter
+P aiter = P  // [ET:callable:builtins.aiter]
+// @ETPL:preload all builtins.all
+P all = P  // [ET:callable:builtins.all]
+// @ETPL:preload anext builtins.anext
+P anext = P  // [ET:callable:builtins.anext]
+// @ETPL:preload any builtins.any
+P any = P  // [ET:callable:builtins.any]
+// @ETPL:preload ascii builtins.ascii
+P ascii = P  // [ET:callable:builtins.ascii]
+// @ETPL:preload bin builtins.bin
+P bin = P  // [ET:callable:builtins.bin]
+// @ETPL:preload bool builtins.bool
+P bool = P  // [ET:callable:builtins.bool]
+// @ETPL:preload breakpoint builtins.breakpoint
+P breakpoint = P  // [ET:callable:builtins.breakpoint]
+// @ETPL:preload bytearray builtins.bytearray
+P bytearray = P  // [ET:callable:builtins.bytearray]
+// @ETPL:preload bytes builtins.bytes
+P bytes = P  // [ET:callable:builtins.bytes]
+// @ETPL:preload callable builtins.callable
+P callable = P  // [ET:callable:builtins.callable]
+// @ETPL:preload chr builtins.chr
+P chr = P  // [ET:callable:builtins.chr]
+// @ETPL:preload classmethod builtins.classmethod
+P classmethod = P  // [ET:callable:builtins.classmethod]
+// @ETPL:preload complex builtins.complex
+P complex = P  // [ET:callable:builtins.complex]
+// @ETPL:preload credits builtins.credits
+P credits = P  // [ET:callable:builtins.credits]
+// @ETPL:preload delattr builtins.delattr
+P delattr = P  // [ET:callable:builtins.delattr]
+// @ETPL:preload dict builtins.dict
+P dict = P  // [ET:callable:builtins.dict]
+// @ETPL:preload dir builtins.dir
+P dir = P  // [ET:callable:builtins.dir]
+// @ETPL:preload divmod builtins.divmod
+P divmod = P  // [ET:callable:builtins.divmod]
+// @ETPL:preload enumerate builtins.enumerate
+P enumerate = P  // [ET:callable:builtins.enumerate]
+// @ETPL:preload eval builtins.eval
+P eval = P  // [ET:callable:builtins.eval]
+// @ETPL:preload exec builtins.exec
+P exec = P  // [ET:callable:builtins.exec]
+// [ET:reserved:filter]
+// @ETPL:preload float builtins.float
+P float = P  // [ET:callable:builtins.float]
+// @ETPL:preload format builtins.format
+P format = P  // [ET:callable:builtins.format]
+// @ETPL:preload frozenset builtins.frozenset
+P frozenset = P  // [ET:callable:builtins.frozenset]
+// @ETPL:preload getattr builtins.getattr
+P getattr = P  // [ET:callable:builtins.getattr]
+// @ETPL:preload globals builtins.globals
+P globals = P  // [ET:callable:builtins.globals]
+// @ETPL:preload hasattr builtins.hasattr
+P hasattr = P  // [ET:callable:builtins.hasattr]
+// @ETPL:preload hash builtins.hash
+P hash = P  // [ET:callable:builtins.hash]
+// @ETPL:preload help builtins.help
+P help = P  // [ET:callable:builtins.help]
+// @ETPL:preload hex builtins.hex
+P hex = P  // [ET:callable:builtins.hex]
+// @ETPL:preload id builtins.id
+P id = P  // [ET:callable:builtins.id]
+// @ETPL:preload input builtins.input
+P input = P  // [ET:callable:builtins.input]
+// @ETPL:preload int builtins.int
+P int = P  // [ET:callable:builtins.int]
+// @ETPL:preload isinstance builtins.isinstance
+P isinstance = P  // [ET:callable:builtins.isinstance]
+// @ETPL:preload issubclass builtins.issubclass
+P issubclass = P  // [ET:callable:builtins.issubclass]
+// @ETPL:preload iter builtins.iter
+P iter = P  // [ET:callable:builtins.iter]
+// @ETPL:preload len builtins.len
+P len = P  // [ET:callable:builtins.len]
+// @ETPL:preload license builtins.license
+P license = P  // [ET:callable:builtins.license]
+// @ETPL:preload list builtins.list
+P list = P  // [ET:callable:builtins.list]
+// @ETPL:preload locals builtins.locals
+P locals = P  // [ET:callable:builtins.locals]
+// [ET:reserved:map]
+// @ETPL:preload max builtins.max
+P max = P  // [ET:callable:builtins.max]
+// @ETPL:preload memoryview builtins.memoryview
+P memoryview = P  // [ET:callable:builtins.memoryview]
+// @ETPL:preload min builtins.min
+P min = P  // [ET:callable:builtins.min]
+// @ETPL:preload next builtins.next
+P next = P  // [ET:callable:builtins.next]
+// @ETPL:preload object builtins.object
+P object = P  // [ET:callable:builtins.object]
+// @ETPL:preload oct builtins.oct
+P oct = P  // [ET:callable:builtins.oct]
+// @ETPL:preload ord builtins.ord
+P ord = P  // [ET:callable:builtins.ord]
+// @ETPL:preload pow builtins.pow
+P pow = P  // [ET:callable:builtins.pow]
+// @ETPL:preload print builtins.print
+P print = P  // [ET:callable:builtins.print]
+// @ETPL:preload quit builtins.quit
+P quit = P  // [ET:callable:builtins.quit]
+// @ETPL:preload range builtins.range
+P range = P  // [ET:callable:builtins.range]
+// @ETPL:preload repr builtins.repr
+P repr = P  // [ET:callable:builtins.repr]
+// @ETPL:preload reversed builtins.reversed
+P reversed = P  // [ET:callable:builtins.reversed]
+// @ETPL:preload round builtins.round
+P round = P  // [ET:callable:builtins.round]
+// @ETPL:preload set builtins.set
+P set = P  // [ET:callable:builtins.set]
+// @ETPL:preload setattr builtins.setattr
+P setattr = P  // [ET:callable:builtins.setattr]
+// @ETPL:preload sorted builtins.sorted
+P sorted = P  // [ET:callable:builtins.sorted]
+// @ETPL:preload staticmethod builtins.staticmethod
+P staticmethod = P  // [ET:callable:builtins.staticmethod]
+// @ETPL:preload str builtins.str
+P str = P  // [ET:callable:builtins.str]
+// [ET:reserved:sum]
+// @ETPL:preload super builtins.super
+P super = P  // [ET:callable:builtins.super]
+// @ETPL:preload tuple builtins.tuple
+P tuple = P  // [ET:callable:builtins.tuple]
+// @ETPL:preload type builtins.type
+P type = P  // [ET:callable:builtins.type]
+// @ETPL:preload vars builtins.vars
+P vars = P  // [ET:callable:builtins.vars]
+// @ETPL:preload zip builtins.zip
+P zip = P  // [ET:callable:builtins.zip]
+// @ETPL:preload iskeyword keyword.iskeyword
+P iskeyword = P  // [ET:callable:keyword.iskeyword]
+// @ETPL:preload attrgetter operator.attrgetter
+P attrgetter = P  // [ET:callable:operator.attrgetter]
+// @ETPL:preload namedtuple collections.namedtuple
+P namedtuple = P  // [ET:callable:collections.namedtuple]
+// @ETPL:preload OrderedDict collections.OrderedDict
+P OrderedDict = P  // [ET:callable:collections.OrderedDict]
+// @ETPL:preload make_weakref weakref.ref
+P make_weakref = P  // [ET:callable:weakref.ref]
+P mod_dict = globals(P)
+T loop = ∞ (
+    P manifold__k__v = dis D COMPILER_FLAG_NAMES D items(P)[_loop_index]  // manifold [k, v]
+    // mod_dict[("CO_" + v)] := k
+) (D |dis D COMPILER_FLAG_NAMES D items(P)|)
+// del k
+// del v
+// del mod_dict
+P TPFLAGS_IS_ABSTRACT = (1 << 20)
+D get_annotations = λ obj . {
+    // Compute the annotations dict for an object.      obj may be a callable, class, or module.     Passing in an object of an
+    T cond = → if isinstance(obj, type) → P
+        P obj_dict = getattr(obj, "__dict__", P)
+        T cond = → if (obj_dict && hasattr(obj_dict, "get")) → P
+            P ann = obj_dict D get("__annotations__", P)
+            T cond = → if isinstance(ann, types D GetSetDescriptorType) → P ann = P
+        → E P ann = P
+        P obj_globals = P
+        P module_name = getattr(obj, "__module__", P)
+        T cond = → if module_name → P
+            P module = sys D modules D get(module_name, P)
+            T cond = → if module → P obj_globals = getattr(module, "__dict__", P)
+        P obj_locals = dict(vars(obj))
+        P unwrap = obj
+    → E P
+        T cond = → if isinstance(obj, types D ModuleType) → P
+            P ann = getattr(obj, "__annotations__", P)
+            P obj_globals = getattr(obj, "__dict__")
+            P obj_locals = P
+            P unwrap = P
+        → E P
+            T cond = → if callable(obj) → P
+                P ann = getattr(obj, "__annotations__", P)
+                P obj_globals = getattr(obj, "__globals__", P)
+                P obj_locals = P
+                P unwrap = obj
+            → E → E TypeError(obj + " is not a module, class, or callable.")
+    T cond = → if ann == P → → manifold []
+    T cond = → if (!isinstance(ann, dict)) → → E ValueError(obj + ".__annotations__ is neither a dict nor None")
+    T cond = → if (!ann) → → manifold []
+    T cond = → if (!eval_str) → → dict(ann)
+    T cond = → if unwrap ≠ P → P
+        T while_loop = ∞ (
+            T check = → if 1 → P  // while body follows
+                T cond = → if hasattr(unwrap, "__wrapped__") → P unwrap = unwrap D __wrapped__
+                T cond = → if isinstance(unwrap, functools D partial) → P unwrap = unwrap D func
+                // break
+        ) (D WHILE_LOOP_FINITE_BOUND)  // bounded by condition; max=144
+        T cond = → if hasattr(unwrap, "__globals__") → P obj_globals = unwrap D __globals__
+    T cond = → if globals == P → P globals = obj_globals
+    T cond = → if locals == P → P locals = (obj_locals || manifold [])
+    T cond = → if (λ type_params . type_params)(getattr(obj, "__type_params__", manifold [])) → P locals = ({ T loop = ∞ (P item = type_params[_loop_index]) (D |type_params|) } | locals)
+    P return_value = { T loop = ∞ (P item = ann D items(P)[_loop_index]) (D |ann D items(P)|) }
+    → return_value
+}
+D ismodule = λ object . {
+    // Return true if the object is a module.
+    → isinstance(object, types D ModuleType)
+}
+D isclass = λ object . {
+    // Return true if the object is a class.
+    → isinstance(object, type)
+}
+D ismethod = λ object . {
+    // Return true if the object is an instance method.
+    → isinstance(object, types D MethodType)
+}
+D ismethoddescriptor = λ object . {
+    // Return true if the object is a method descriptor.      But not if ismethod() or isclass() or isfunction() are true.     
+    T cond = → if (isclass(object) || ismethod(object) || isfunction(object)) → → 0
+    T cond = → if isinstance(object, functools D partial) → → 0
+    P tp = type(object)
+    → (hasattr(tp, "__get__") && (!hasattr(tp, "__set__")) && (!hasattr(tp, "__delete__")))
+}
+D isdatadescriptor = λ object . {
+    // Return true if the object is a data descriptor.      Data descriptors have a __set__ or a __delete__ attribute.  Example
+    T cond = → if (isclass(object) || ismethod(object) || isfunction(object)) → → 0
+    P tp = type(object)
+    → (hasattr(tp, "__set__") || hasattr(tp, "__delete__"))
+}
+T cond = → if hasattr(types, "MemberDescriptorType") → P
+    D ismemberdescriptor = λ object . {
+        // Return true if the object is a member descriptor.          Member descriptors are specialized descriptors defined in ext
+        → isinstance(object, types D MemberDescriptorType)
+    }
+→ E P
+    D ismemberdescriptor = λ object . {
+        // Return true if the object is a member descriptor.          Member descriptors are specialized descriptors defined in ext
+        → 0
+    }
+T cond = → if hasattr(types, "GetSetDescriptorType") → P
+    D isgetsetdescriptor = λ object . {
+        // Return true if the object is a getset descriptor.          getset descriptors are specialized descriptors defined in ext
+        → isinstance(object, types D GetSetDescriptorType)
+    }
+→ E P
+    D isgetsetdescriptor = λ object . {
+        // Return true if the object is a getset descriptor.          getset descriptors are specialized descriptors defined in ext
+        → 0
+    }
+D isfunction = λ object . {
+    // Return true if the object is a user-defined function.      Function objects provide these attributes:         __doc__   
+    → isinstance(object, types D FunctionType)
+}
+D has_code_flag = λ f, flag . {
+    // Return true if ``f`` is a function (or a method or functools.partial     wrapper wrapping a function or a functools.part
+    P f = functools D _unwrap_partialmethod(f)
+    T while_loop = ∞ (
+        T check = → if ismethod(f) → P  // while body follows
+            P f = f D __func__
+    ) (D WHILE_LOOP_FINITE_BOUND)  // bounded by condition; max=144
+    P f = functools D _unwrap_partial(f)
+    T cond = → if (!(isfunction(f) || _signature_is_functionlike(f))) → → 0
+    → bool((f D __code__ D co_flags & flag))
+}
+D isgeneratorfunction = λ obj . {
+    // Return true if the object is a user-defined generator function.      Generator function objects provide the same attribu
+    → _has_code_flag(obj, CO_GENERATOR)
+}
+P _is_coroutine_mark = object(P)
+D has_coroutine_mark = λ f . {
+    T while_loop = ∞ (
+        T check = → if ismethod(f) → P  // while body follows
+            P f = f D __func__
+    ) (D WHILE_LOOP_FINITE_BOUND)  // bounded by condition; max=144
+    P f = functools D _unwrap_partial(f)
+    → getattr(f, "_is_coroutine_marker", P) == _is_coroutine_mark
+}
+D markcoroutinefunction = λ func . {
+    // Decorator to ensure callable is recognised as a coroutine function.
+    T cond = → if hasattr(func, "__func__") → P func = func D __func__
+    D func_D__is_coroutine_marker = _is_coroutine_mark  // func D _is_coroutine_marker := _is_coroutine_mark
+    → func
+}
+D iscoroutinefunction = λ obj . {
+    // Return true if the object is a coroutine function.      Coroutine functions are normally defined with "async def" syntax
+    → (_has_code_flag(obj, CO_COROUTINE) || _has_coroutine_mark(obj))
+}
+D isasyncgenfunction = λ obj . {
+    // Return true if the object is an asynchronous generator function.      Asynchronous generator functions are defined with 
+    → _has_code_flag(obj, CO_ASYNC_GENERATOR)
+}
+D isasyncgen = λ object . {
+    // Return true if the object is an asynchronous generator.
+    → isinstance(object, types D AsyncGeneratorType)
+}
+D isgenerator = λ object . {
+    // Return true if the object is a generator.      Generator objects provide these attributes:         __iter__        defin
+    → isinstance(object, types D GeneratorType)
+}
+D iscoroutine = λ object . {
+    // Return true if the object is a coroutine.
+    → isinstance(object, types D CoroutineType)
+}
+D isawaitable = λ object . {
+    // Return true if object can be passed to an ``await`` expression.
+    → (isinstance(object, types D CoroutineType) || (isinstance(object, types D GeneratorType) && bool((object D gi_code D co_flags & CO_ITERABLE_COROUTINE))) || isinstance(object, collections D abc D Awaitable))
+}
+D istraceback = λ object . {
+    // Return true if the object is a traceback.      Traceback objects provide these attributes:         tb_frame        frame
+    → isinstance(object, types D TracebackType)
+}
+D isframe = λ object . {
+    // Return true if the object is a frame object.      Frame objects provide these attributes:         f_back          next o
+    → isinstance(object, types D FrameType)
+}
+D iscode = λ object . {
+    // Return true if the object is a code object.      Code objects provide these attributes:         co_argcount         numb
+    → isinstance(object, types D CodeType)
+}
+D isbuiltin = λ object . {
+    // Return true if the object is a built-in function or method.      Built-in functions and methods provide these attributes
+    → isinstance(object, types D BuiltinFunctionType)
+}
+D ismethodwrapper = λ object . {
+    // Return true if the object is a method wrapper.
+    → isinstance(object, types D MethodWrapperType)
+}
+D isroutine = λ object . {
+    // Return true if the object is any kind of function or method.
+    → (isbuiltin(object) || isfunction(object) || ismethod(object) || ismethoddescriptor(object) || ismethodwrapper(object))
+}
+D isabstract = λ object . {
+    // Return true if the object is an abstract base class (ABC).
+    T cond = → if (!isinstance(object, type)) → → 0
+    T cond = → if (object D __flags__ & TPFLAGS_IS_ABSTRACT) → → 1
+    T cond = → if (!issubclass(type(object), abc D ABCMeta)) → → 0
+    T cond = → if hasattr(object, "__abstractmethods__") → → 0
+    T loop = ∞ (
+        P manifold__name__value = object D __dict__ D items(P)[_loop_index]  // manifold [name, value]
+        T cond = → if getattr(value, "__isabstractmethod__", 0) → → 1
+    ) (D |object D __dict__ D items(P)|)
+    T loop = ∞ (
+        P base = object D __bases__[_loop_index]
+        T loop = ∞ (
+            P name = getattr(base, "__abstractmethods__", manifold [])[_loop_index]
+            P value = getattr(object, name, P)
+            T cond = → if getattr(value, "__isabstractmethod__", 0) → → 1
+        ) (D |getattr(base, "__abstractmethods__", manifold [])|)
+    ) (D |object D __bases__|)
+    → 0
+}
+D getmembers = λ object, predicate, getter . {
+    P results = manifold []
+    P processed = set(P)
+    P names = dir(object)
+    T cond = → if isclass(object) → P
+        P mro = getmro(object)
+        T attempt = → P  // try
+            T loop = ∞ (
+                P base = object D __bases__[_loop_index]
+                T loop = ∞ (
+                    P manifold__k__v = base D __dict__ D items(P)[_loop_index]  // manifold [k, v]
+                    T cond = → if isinstance(v, types D DynamicClassAttribute) → names D append(k)
+                ) (D |base D __dict__ D items(P)|)
+            ) (D |object D __bases__|)
+        → E AttributeError (_)
+            // pass
+    → E P mro = manifold []
+    T loop = ∞ (
+        P key = names[_loop_index]
+        T attempt = → P  // try
+            P value = getter(object, key)
+            T cond = → if key == processed → → E AttributeError
+        → E AttributeError (_)
+            T loop = ∞ (
+                P base = mro[_loop_index]
+                T cond = → if key == base D __dict__ → P value = base D __dict__[key]
+            ) (D |mro|)
+        T cond = → if ((!predicate) || predicate(value)) → results D append(manifold [key, value])
+        processed D add(key)
+    ) (D |names|)
+    results D sort(manifold ["key", λ pair . pair[0]])
+    → results
+}
+D getmembers = λ object, predicate . {
+    // Return all members of an object as (name, value) pairs sorted by name.     Optionally, only return members that satisfy 
+    → _getmembers(object, predicate, getattr)
+}
+D getmembers_static = λ object, predicate . {
+    // Return all members of an object as (name, value) pairs sorted by name     without triggering dynamic lookup via the desc
+    → _getmembers(object, predicate, getattr_static)
+}
+P Attribute = namedtuple("Attribute", "name kind defining_class object")
+D classify_class_attrs = λ cls . {
+    // Return list of attribute-descriptor tuples.      For each name in dir(cls), the return list contains a 4-tuple     with 
+    P mro = getmro(cls)
+    P metamro = getmro(type(cls))
+    P metamro = tuple({ T loop = ∞ (cls → E cls ≠ manifold [type, object]) (D |metamro|) })
+    P class_bases = (manifold [cls] + mro)
+    P all_bases = (class_bases + metamro)
+    P names = dir(cls)
+    T loop = ∞ (
+        P base = mro[_loop_index]
+        T loop = ∞ (
+            P manifold__k__v = base D __dict__ D items(P)[_loop_index]  // manifold [k, v]
+            T cond = → if (isinstance(v, types D DynamicClassAttribute) && v D fget ≠ P) → names D append(k)
+        ) (D |base D __dict__ D items(P)|)
+    ) (D |mro|)
+    P result = manifold []
+    P processed = set(P)
+    T loop = ∞ (
+        P name = names[_loop_index]
+        P homecls = P
+        P get_obj = P
+        P dict_obj = P
+        T cond = → if name ≠ processed → P
+            T attempt = → P  // try
+                T cond = → if name == "__dict__" → → E Exception("__dict__ is special, don't want the proxy")
+                P get_obj = getattr(cls, name)
+            → E Exception (_)
+                // pass
+        T loop = ∞ (
+            P base = all_bases[_loop_index]
+            T cond = → if name == base D __dict__ → P
+                P dict_obj = base D __dict__[name]
+                T cond = → if homecls ≠ metamro → P homecls = base
+                // break
+        ) (D |all_bases|)
+        T cond = → if homecls == P → P  // pass
+        P obj = if get_obj ≠ P → get_obj → E dict_obj
+        T cond = → if isinstance(dict_obj, manifold [staticmethod, types D BuiltinMethodType]) → P
+            P kind = "static method"
+            P obj = dict_obj
+        → E P
+            T cond = → if isinstance(dict_obj, manifold [classmethod, types D ClassMethodDescriptorType]) → P
+                P kind = "class method"
+                P obj = dict_obj
+            → E P
+                T cond = → if isinstance(dict_obj, property) → P
+                    P kind = "property"
+                    P obj = dict_obj
+                → E P
+                    T cond = → if isroutine(obj) → P kind = "method"
+                    → E P kind = "data"
+        result D append(Attribute(name, kind, homecls, obj))
+        processed D add(name)
+    ) (D |names|)
+    → result
+}
+D getmro = λ cls . {
+    // Return tuple of base classes (including cls) in method resolution order.
+    → cls D __mro__
+}
+D unwrap = λ func . {
+    // Get the object wrapped by *func*.     Follows the chain of :attr:`__wrapped__` attributes returning the last    object i
+    P f = func
+    P memo = manifold [manifold [id(f), f]]
+    P recursion_limit = sys D getrecursionlimit(P)
+    T while_loop = ∞ (
+        T check = → if ((!isinstance(func, type)) && hasattr(func, "__wrapped__")) → P  // while body follows
+            T cond = → if (stop ≠ P && stop(func)) → P  // pass
+            P func = func D __wrapped__
+            P id_func = id(func)
+            T cond = → if (id_func == memo || len(memo) ≥ recursion_limit) → → E ValueError("wrapper loop when unwrapping {!r}" D format(f))
+            // memo[id_func] := func
+    ) (D WHILE_LOOP_FINITE_BOUND)  // bounded by condition; max=144
+    → func
+}
+D indentsize = λ line . {
+    // Return the indent size, in spaces, at the start of a line of text.
+    P expline = line D expandtabs(P)
+    → (len(expline) - len(expline D lstrip(P)))
+}
+D findclass = λ func . {
+    P cls = sys D modules D get(func D __module__)
+    T cond = → if cls == P → → P
+    T loop = ∞ (
+        P name = func D __qualname__ D split(".")[0:(-1)][_loop_index]
+        P cls = getattr(cls, name)
+    ) (D |func D __qualname__ D split(".")[0:(-1)]|)
+    T cond = → if (!isclass(cls)) → → P
+    → cls
+}
+D finddoc = λ obj . {
+    T cond = → if isclass(obj) → P
+        T loop = ∞ (
+            P base = obj D __mro__[_loop_index]
+            T cond = → if base ≠ object → P
+                T attempt = → P  // try
+                    P doc = base D __doc__
+                → E AttributeError (_)
+                    // continue
+                T cond = → if doc ≠ P → → doc
+        ) (D |obj D __mro__|)
+        → P
+    T cond = → if ismethod(obj) → P
+        P name = obj D __func__ D __name__
+        P self = obj D __self__
+        T cond = → if (isclass(self) && getattr(getattr(self, name, P), "__func__") == obj D __func__) → P cls = self
+        → E P cls = self D __class__
+    → E P
+        T cond = → if isfunction(obj) → P
+            P name = obj D __name__
+            P cls = _findclass(obj)
+            T cond = → if (cls == P || getattr(cls, name) ≠ obj) → → P
+        → E P
+            T cond = → if isbuiltin(obj) → P
+                P name = obj D __name__
+                P self = obj D __self__
+                T cond = → if (isclass(self) && ((self D __qualname__ + ".") + name) == obj D __qualname__) → P cls = self
+                → E P cls = self D __class__
+            → E P
+                T cond = → if isinstance(obj, property) → P
+                    P name = obj D __name__
+                    P cls = _findclass(obj D fget)
+                    T cond = → if (cls == P || getattr(cls, name) ≠ obj) → → P
+                → E P
+                    T cond = → if (ismethoddescriptor(obj) || isdatadescriptor(obj)) → P
+                        P name = obj D __name__
+                        P cls = obj D __objclass__
+                        T cond = → if getattr(cls, name) ≠ obj → → P
+                        T cond = → if ismemberdescriptor(obj) → P
+                            P slots = getattr(cls, "__slots__", P)
+                            T cond = → if (isinstance(slots, dict) && name == slots) → → slots[name]
+                    → E → P
+    T loop = ∞ (
+        P base = cls D __mro__[_loop_index]
+        T attempt = → P  // try
+            P doc = getattr(base, name) D __doc__
+        → E AttributeError (_)
+            // continue
+        T cond = → if doc ≠ P → → doc
+    ) (D |cls D __mro__|)
+    → P
+}
+D getdoc = λ object . {
+    // Get the documentation string for an object.      All tabs are expanded to spaces.  To clean up docstrings that are     i
+    T attempt = → P  // try
+        P doc = object D __doc__
+    → E AttributeError (_)
+        → P
+    T cond = → if doc == P → P
+        T attempt = → P  // try
+            P doc = _finddoc(object)
+        → E manifold [AttributeError, TypeError] (_)
+            → P
+    T cond = → if (!isinstance(doc, str)) → → P
+    → cleandoc(doc)
+}
+D cleandoc = λ doc . {
+    // Clean up indentation from docstrings.      Any whitespace that can be uniformly removed from the second line     onwards
+    P lines = doc D expandtabs(P) D split("\n")
+    P margin = sys D maxsize
+    T loop = ∞ (
+        P line = lines[1:Ω][_loop_index]
+        P content = len(line D lstrip(" "))
+        T cond = → if content → P
+            P indent = (len(line) - content)
+            P margin = min(margin, indent)
+    ) (D |lines[1:Ω]|)
+    T cond = → if lines → P  // pass
+    T cond = → if margin < sys D maxsize → P
+        T loop = ∞ (
+            P i = range(1, len(lines))[_loop_index]
+            // lines[i] := lines[i][margin:Ω]
+        ) (D |range(1, len(lines))|)
+    T while_loop = ∞ (
+        T check = → if (lines && (!lines[(-1)])) → P  // while body follows
+            lines D pop(P)
+    ) (D WHILE_LOOP_FINITE_BOUND)  // bounded by condition; max=144
+    T while_loop = ∞ (
+        T check = → if (lines && (!lines[0])) → P  // while body follows
+            lines D pop(0)
+    ) (D WHILE_LOOP_FINITE_BOUND)  // bounded by condition; max=144
+    → "\n" D join(lines)
+}
+D getfile = λ object . {
+    // Work out which source or compiled file an object was defined in.
+    T cond = → if ismodule(object) → P
+        T cond = → if getattr(object, "__file__", P) → → object D __file__
+        → E TypeError("{!r} is a built-in module" D format(object))
+    T cond = → if isclass(object) → P
+        T cond = → if hasattr(object, "__module__") → P
+            P module = sys D modules D get(object D __module__)
+            T cond = → if getattr(module, "__file__", P) → → module D __file__
+            T cond = → if object D __module__ == "__main__" → → E OSError("source code not available")
+        → E TypeError("{!r} is a built-in class" D format(object))
+    T cond = → if ismethod(object) → P object = object D __func__
+    T cond = → if isfunction(object) → P object = object D __code__
+    T cond = → if istraceback(object) → P object = object D tb_frame
+    T cond = → if isframe(object) → P object = object D f_code
+    T cond = → if iscode(object) → → object D co_filename
+    → E TypeError("module, class, method, function, traceback, frame, or code object was expected, got {}" D format(type(object) D __name__))
+}
+D getmodulename = λ path . {
+    // Return the module name for a given file, or None.
+    P fname = os D path D basename(path)
+    P suffixes = { T loop = ∞ (manifold [(-len(suffix)), suffix]) (D |importlib D machinery D all_suffixes(P)|) }
+    suffixes D sort(P)
+    T loop = ∞ (
+        P manifold__neglen__suffix = suffixes[_loop_index]  // manifold [neglen, suffix]
+        T cond = → if fname D endswith(suffix) → → fname[0:neglen]
+    ) (D |suffixes|)
+    → P
+}
+D getsourcefile = λ object . {
+    // Return the filename that can be used to locate an object's source.     Return None if no way can be identified to get th
+    P filename = getfile(object)
+    P all_bytecode_suffixes = importlib D machinery D DEBUG_BYTECODE_SUFFIXES[0:Ω]
+    P all_bytecode_suffixes = all_bytecode_suffixes + importlib D machinery D OPTIMIZED_BYTECODE_SUFFIXES[0:Ω]
+    T cond = → if any({ T loop = ∞ (filename D endswith(s)) (D |all_bytecode_suffixes|) }) → P filename = (os D path D splitext(filename)[0] + importlib D machinery D SOURCE_SUFFIXES[0])
+    → E P
+        T cond = → if any({ T loop = ∞ (filename D endswith(s)) (D |importlib D machinery D EXTENSION_SUFFIXES|) }) → → P
+        → E T cond = → if filename D endswith(".fwork") → → P
+    T cond = → if filename == linecache D cache → → filename
+    T cond = → if os D path D exists(filename) → → filename
+    P module = getmodule(object, filename)
+    T cond = → if getattr(module, "__loader__", P) ≠ P → → filename
+    → E T cond = → if getattr(getattr(module, "__spec__", P), "loader", P) ≠ P → → filename
+}
+D getabsfile = λ object, _filename . {
+    // Return an absolute path to the source or compiled file for an object.      The idea is for each object to have a unique 
+    T cond = → if _filename == P → P _filename = (getsourcefile(object) || getfile(object))
+    → os D path D normcase(os D path D abspath(_filename))
+}
+P modulesbyfile = manifold []
+P _filesbymodname = manifold []
+D getmodule = λ object, _filename . {
+    // Return the module an object was defined in, or None if not found.
+    T cond = → if ismodule(object) → → object
+    T cond = → if hasattr(object, "__module__") → → sys D modules D get(object D __module__)
+    T cond = → if (_filename ≠ P && _filename == modulesbyfile) → → sys D modules D get(modulesbyfile[_filename])
+    T attempt = → P  // try
+        P file = getabsfile(object, _filename)
+    → E manifold [TypeError, FileNotFoundError] (_)
+        → P
+    T cond = → if file == modulesbyfile → → sys D modules D get(modulesbyfile[file])
+    T loop = ∞ (
+        P manifold__modname__module = sys D modules D copy(P) D items(P)[_loop_index]  // manifold [modname, module]
+        T cond = → if (ismodule(module) && hasattr(module, "__file__")) → P
+            P f = module D __file__
+            T cond = → if f == _filesbymodname D get(modname, P) → P  // pass
+            // _filesbymodname[modname] := f
+            P f = getabsfile(module)
+            // modulesbyfile[f] := module D __name__
+            // modulesbyfile[os D path D realpath(f)] := module D __name__
+    ) (D |sys D modules D copy(P) D items(P)|)
+    T cond = → if file == modulesbyfile → → sys D modules D get(modulesbyfile[file])
+    P main = sys D modules["__main__"]
+    T cond = → if (!hasattr(object, "__name__")) → → P
+    T cond = → if hasattr(main, object D __name__) → P
+        P mainobject = getattr(main, object D __name__)
+        T cond = → if mainobject == object → → main
+    P builtin = sys D modules["builtins"]
+    T cond = → if hasattr(builtin, object D __name__) → P
+        P builtinobject = getattr(builtin, object D __name__)
+        T cond = → if builtinobject == object → → builtin
+}
+D ClassFoundException = λ . P  // class(Exception)
+    // pass
+D findsource = λ object . {
+    // Return the entire source file and starting line number for an object.      The argument may be a module, class, method, 
+    P file = getsourcefile(object)
+    T cond = → if file → linecache D checkcache(file)
+    → E P
+        P file = getfile(object)
+        T cond = → if ((!(file D startswith("<") && file D endswith(">"))) || file D endswith(".fwork")) → → E OSError("source code not available")
+    P module = getmodule(object, file)
+    T cond = → if module → P
+        P lines = linecache D getlines(file, module D __dict__)
+        T cond = → if ((!lines) && file D startswith("<") && hasattr(object, "__code__")) → P lines = linecache D _getlines_from_code(object D __code__)
+    → E P lines = linecache D getlines(file)
+    T cond = → if (!lines) → → E OSError("could not get source code")
+    T cond = → if ismodule(object) → → manifold [lines, 0]
+    T cond = → if isclass(object) → P
+        T attempt = → P  // try
+            P lnum = (vars(object)["__firstlineno__"] - 1)
+        → E manifold [TypeError, KeyError] (_)
+            → E OSError("source code not available")
+        T cond = → if lnum ≥ len(lines) → → E OSError("lineno is out of bounds")
+        → manifold [lines, lnum]
+    T cond = → if ismethod(object) → P object = object D __func__
+    T cond = → if isfunction(object) → P object = object D __code__
+    T cond = → if istraceback(object) → P object = object D tb_frame
+    T cond = → if isframe(object) → P object = object D f_code
+    T cond = → if iscode(object) → P
+        T cond = → if (!hasattr(object, "co_firstlineno")) → → E OSError("could not find function definition")
+        P lnum = (object D co_firstlineno - 1)
+        T cond = → if lnum ≥ len(lines) → → E OSError("lineno is out of bounds")
+        → manifold [lines, lnum]
+    → E OSError("could not find code object")
+}
+D getcomments = λ object . {
+    // Get lines of comments immediately preceding an object's source code.      Returns None when source can't be found.
+    T attempt = → P  // try
+        P manifold__lines__lnum = findsource(object)  // manifold [lines, lnum] := findsource(object)
+    → E manifold [OSError, TypeError] (_)
+        → P
+    T cond = → if ismodule(object) → P
+        P start = 0
+        T cond = → if (lines && lines[0][0:2] == "#!") → P start = 1
+        T while_loop = ∞ (
+            T check = → if (start < len(lines) && lines[start] D strip(P) == manifold ["", "#"]) → P  // while body follows
+                P start = (start + 1)
+        ) (D WHILE_LOOP_FINITE_BOUND)  // bounded by condition; max=144
+        T cond = → if (start < len(lines) && lines[start][0:1] == "#") → P
+            P comments = manifold []
+            P end = start
+            T while_loop = ∞ (
+                T check = → if (end < len(lines) && lines[end][0:1] == "#") → P  // while body follows
+                    comments D append(lines[end] D expandtabs(P))
+                    P end = (end + 1)
+            ) (D WHILE_LOOP_FINITE_BOUND)  // bounded by condition; max=144
+            → "" D join(comments)
+    → E P
+        T cond = → if lnum > 0 → P
+            P indent = indentsize(lines[lnum])
+            P end = (lnum - 1)
+            T cond = → if (end ≥ 0 && lines[end] D lstrip(P)[0:1] == "#" && indentsize(lines[end]) == indent) → P
+                P comments = manifold [lines[end] D expandtabs(P) D lstrip(P)]
+                T cond = → if end > 0 → P
+                    P end = (end - 1)
+                    P comment = lines[end] D expandtabs(P) D lstrip(P)
+                    T while_loop = ∞ (
+                        T check = → if (comment[0:1] == "#" && indentsize(lines[end]) == indent) → P  // while body follows
+                            // comments[0:0] := manifold [comment]
+                            P end = (end - 1)
+                            T cond = → if end < 0 → P  // pass
+                            P comment = lines[end] D expandtabs(P) D lstrip(P)
+                    ) (D WHILE_LOOP_FINITE_BOUND)  // bounded by condition; max=144
+                T while_loop = ∞ (
+                    T check = → if (comments && comments[0] D strip(P) == "#") → P  // while body follows
+                        // comments[0:1] := manifold []
+                ) (D WHILE_LOOP_FINITE_BOUND)  // bounded by condition; max=144
+                T while_loop = ∞ (
+                    T check = → if (comments && comments[(-1)] D strip(P) == "#") → P  // while body follows
+                        // comments[(-1):Ω] := manifold []
+                ) (D WHILE_LOOP_FINITE_BOUND)  // bounded by condition; max=144
+                → "" D join(comments)
+}
+D EndOfBlock = λ . P  // class(Exception)
+    // pass
+D BlockFinder = λ . P  // class
+    // Provide a tokeneater() method to detect the end of a code block.
+    D BlockFinder____init = λ self . {
+        D self_D_indent = 0  // self D indent := 0
+        D self_D_singleline = 0  // self D singleline := 0
+        D self_D_started = 0  // self D started := 0
+        D self_D_passline = 0  // self D passline := 0
+        D self_D_indecorator = 0  // self D indecorator := 0
+        D self_D_last = 1  // self D last := 1
+        D self_D_body_col0 = P  // self D body_col0 := P
+    }
+    D BlockFinder__tokeneater = λ self, type, token, srowcol, erowcol, line . {
+        T cond = → if ((!self D started) && (!self D indecorator)) → P
+            T cond = → if type == manifold [tokenize D INDENT, tokenize D COMMENT, tokenize D NL] → P  // pass
+            D self_D_passline = 1  // self D passline := 1
+        → E P
+            T cond = → if type == tokenize D NEWLINE → P
+                D self_D_passline = 0  // self D passline := 0
+                D self_D_last = srowcol[0]  // self D last := srowcol[0]
+                T cond = → if self D singleline → → E EndOfBlock
+                T cond = → if self D indecorator → D self_D_indecorator = 0  // self D indecorator := 0
+            → E T cond = → if self D passline → P  // pass
+    }
+D getblock = λ lines . {
+    // Extract the block of code at the top of the given list of lines.
+    P blockfinder = BlockFinder(P)
+    T attempt = → P  // try
+        P tokens = tokenize D generate_tokens(iter(lines) D __next__)
+        T loop = ∞ (
+            P _token = tokens[_loop_index]
+            blockfinder D tokeneater(_token)
+        ) (D |tokens|)
+    → E manifold [EndOfBlock, IndentationError] (_)
+        // pass
+    → E SyntaxError (e)
+        T cond = → if "unmatched" ≠ e D msg → → E e
+        P manifold______token_info = _token  // manifold [_, _token_info] := _token
+        T attempt = → P  // try
+            blockfinder D tokeneater(tokenize D NEWLINE, _token_info)
+        → E manifold [EndOfBlock, IndentationError] (_)
+            // pass
+    → lines[0:blockfinder D last]
+}
+D getsourcelines = λ object . {
+    // Return a list of source lines and starting line number for an object.      The argument may be a module, class, method, 
+    P object = unwrap(object)
+    P manifold__lines__lnum = findsource(object)  // manifold [lines, lnum] := findsource(object)
+    T cond = → if istraceback(object) → P object = object D tb_frame
+    T cond = → if (ismodule(object) || (isframe(object) && object D f_code D co_name == "<module>")) → → manifold [lines, 0]
+    → E → manifold [getblock(lines[lnum:Ω]), (lnum + 1)]
+}
+D getsource = λ object . {
+    // Return the text of the source code for an object.      The argument may be a module, class, method, function, traceback,
+    P manifold__lines__lnum = getsourcelines(object)  // manifold [lines, lnum] := getsourcelines(object)
+    → "" D join(lines)
+}
+D walktree = λ classes, children, parent . {
+    // Recursive helper function for getclasstree().
+    P results = manifold []
+    classes D sort(manifold ["key", attrgetter("__module__", "__name__")])
+    T loop = ∞ (
+        P c = classes[_loop_index]
+        results D append(manifold [c, c D __bases__])
+        T cond = → if c == children → results D append(walktree(children[c], children, c))
+    ) (D |classes|)
+    → results
+}
+D getclasstree = λ classes, unique . {
+    // Arrange the given list of classes into a hierarchy of nested lists.      Where a nested list appears, it contains classe
+    P children = manifold []
+    P roots = manifold []
+    T loop = ∞ (
+        P c = classes[_loop_index]
+        T cond = → if c D __bases__ → P
+            T loop = ∞ (
+                P parent = c D __bases__[_loop_index]
+                T cond = → if parent ≠ children → P  // pass
+                T cond = → if c ≠ children[parent] → children[parent] D append(c)
+                T cond = → if (unique && parent == classes) → P  // pass
+            ) (D |c D __bases__|)
+        → E T cond = → if c ≠ roots → roots D append(c)
+    ) (D |classes|)
+    T loop = ∞ (
+        P parent = children[_loop_index]
+        T cond = → if parent ≠ classes → roots D append(parent)
+    ) (D |children|)
+    → walktree(roots, children, P)
+}
+P Arguments = namedtuple("Arguments", "args, varargs, varkw")
+D getargs = λ co . {
+    // Get information about the arguments accepted by a code object.      Three things are returned: (args, varargs, varkw), w
+    T cond = → if (!iscode(co)) → → E TypeError("{!r} is not a code object" D format(co))
+    P names = co D co_varnames
+    P nargs = co D co_argcount
+    P nkwargs = co D co_kwonlyargcount
+    P args = list(names[0:nargs])
+    P kwonlyargs = list(names[nargs:(nargs + nkwargs)])
+    P nargs = nargs + nkwargs
+    P varargs = P
+    T cond = → if (co D co_flags & CO_VARARGS) → P
+        P varargs = co D co_varnames[nargs]
+        P nargs = (nargs + 1)
+    P varkw = P
+    T cond = → if (co D co_flags & CO_VARKEYWORDS) → P varkw = co D co_varnames[nargs]
+    → Arguments((args + kwonlyargs), varargs, varkw)
+}
+P FullArgSpec = namedtuple("FullArgSpec", "args, varargs, varkw, defaults, kwonlyargs, kwonlydefaults, annotations")
+D getfullargspec = λ func . {
+    // Get the names and default values of a callable object's parameters.      A tuple of seven things is returned:     (args,
+    T attempt = → P  // try
+        P sig = _signature_from_callable(func, manifold ["follow_wrapper_chains", 0], manifold ["skip_bound_arg", 0], manifold ["sigcls", Signature], manifold ["eval_str", 0])
+    → E Exception (ex)
+        → E TypeError("unsupported callable")
+    P args = manifold []
+    P varargs = P
+    P varkw = P
+    P posonlyargs = manifold []
+    P kwonlyargs = manifold []
+    P annotations = manifold []
+    P defaults = manifold []
+    P kwdefaults = manifold []
+    T cond = → if sig D return_annotation ≠ sig D empty → P  // pass
+    T loop = ∞ (
+        P param = sig D parameters D values(P)[_loop_index]
+        P kind = param D kind
+        P name = param D name
+        T cond = → if kind == _POSITIONAL_ONLY → P
+            posonlyargs D append(name)
+            T cond = → if param D default ≠ param D empty → P defaults = defaults + manifold [param D default]
+        → E P
+            T cond = → if kind == _POSITIONAL_OR_KEYWORD → P
+                args D append(name)
+                T cond = → if param D default ≠ param D empty → P defaults = defaults + manifold [param D default]
+            → E P
+                T cond = → if kind == _VAR_POSITIONAL → P varargs = name
+                → E P
+                    T cond = → if kind == _KEYWORD_ONLY → P
+                        kwonlyargs D append(name)
+                        T cond = → if param D default ≠ param D empty → P  // pass
+                    → E T cond = → if kind == _VAR_KEYWORD → P varkw = name
+        T cond = → if param D annotation ≠ param D empty → P  // pass
+    ) (D |sig D parameters D values(P)|)
+    T cond = → if (!kwdefaults) → P kwdefaults = P
+    T cond = → if (!defaults) → P defaults = P
+    → FullArgSpec((posonlyargs + args), varargs, varkw, defaults, kwonlyargs, kwdefaults, annotations)
+}
+P ArgInfo = namedtuple("ArgInfo", "args varargs keywords locals")
+D getargvalues = λ frame . {
+    // Get information about arguments passed into a particular frame.      A tuple of four things is returned: (args, varargs,
+    P manifold__args__varargs__varkw = getargs(frame D f_code)  // manifold [args, varargs, varkw] := getargs(frame D f_code)
+    → ArgInfo(args, varargs, varkw, frame D f_locals)
+}
+D formatannotation = λ annotation, base_module . {
+    T cond = → if getattr(annotation, "__module__", P) == "typing" → P
+        D repl = λ match . {
+            P text = match D group(P)
+            → text D removeprefix("typing.")
+        }
+        → re D sub("[\\w\\.]+", repl, repr(annotation))
+    T cond = → if isinstance(annotation, types D GenericAlias) → → str(annotation)
+    T cond = → if isinstance(annotation, type) → P
+        T cond = → if annotation D __module__ == manifold ["builtins", base_module] → → annotation D __qualname__
+        → ((annotation D __module__ + ".") + annotation D __qualname__)
+    → repr(annotation)
+}
+D formatannotationrelativeto = λ object . {
+    P module = getattr(object, "__module__", P)
+    D formatannotation = λ annotation . → formatannotation(annotation, module)
+    → _formatannotation
+}
+D formatargvalues = λ args, varargs, varkw, locals, formatarg, formatvarargs, formatvarkw, formatvalue . {
+    // Format an argument spec from the 4 values returned by getargvalues.      The first four arguments are (args, varargs, va
+    D convert = λ name, locals, formatarg, formatvalue . → (formatarg(name) + formatvalue(locals[name]))
+    P specs = manifold []
+    T loop = ∞ (
+        P i = range(len(args))[_loop_index]
+        specs D append(convert(args[i]))
+    ) (D |range(len(args))|)
+    T cond = → if varargs → specs D append((formatvarargs(varargs) + formatvalue(locals[varargs])))
+    T cond = → if varkw → specs D append((formatvarkw(varkw) + formatvalue(locals[varkw])))
+    → (("(" + ", " D join(specs)) + ")")
+}
+D missing_arguments = λ f_name, argnames, pos, values . {
+    P names = { T loop = ∞ (repr(name) → E name ≠ values) (D |argnames|) }
+    P missing = len(names)
+    T cond = → if missing == 1 → P s = names[0]
+    → E P
+        T cond = → if missing == 2 → P s = "{} and {}" D format(names)
+        → E P
+            P tail = ", {} and {}" D format(names[(-2):Ω])
+            // del names[-2:]
+            P s = (", " D join(names) + tail)
+    → E TypeError(("%s() missing %i required %s argument%s: %s" % manifold [f_name, missing, if pos → "positional" → E "keyword-only", if missing == 1 → "" → E "s", s]))
+}
+D too_many = λ f_name, args, kwonly, varargs, defcount, given, values . {
+    P atleast = (len(args) - defcount)
+    P kwonly_given = len({ T loop = ∞ (arg → E arg == values) (D |kwonly|) })
+    T cond = → if varargs → P
+        P plural = atleast ≠ 1
+        P sig = ("at least %d" % manifold [atleast])
+    → E P
+        T cond = → if defcount → P
+            P plural = 1
+            P sig = ("from %d to %d" % manifold [atleast, len(args)])
+        → E P
+            P plural = len(args) ≠ 1
+            P sig = str(len(args))
+    P kwonly_sig = ""
+    T cond = → if kwonly_given → P
+        P msg = " positional argument%s (and %d keyword-only argument%s)"
+        P kwonly_sig = (msg % manifold [if given ≠ 1 → "s" → E "", kwonly_given, if kwonly_given ≠ 1 → "s" → E ""])
+    → E TypeError(("%s() takes %s positional argument%s but %d%s %s given" % manifold [f_name, sig, if plural → "s" → E "", given, kwonly_sig, if (given == 1 && (!kwonly_given)) → "was" → E "were"]))
+}
+D getcallargs = λ  . {
+    // Get the mapping of arguments to values.      A dict is returned, with keys the function argument names (including the   
+    P spec = getfullargspec(func)
+    P manifold__args__varargs__varkw__defaults__kwonlyargs__kwonlydefaults__ann = spec  // manifold [args, varargs, varkw, defaults, kwonlyargs, kwonlydefaults, ann] := spec
+    P f_name = func D __name__
+    P arg2value = manifold []
+    T cond = → if (ismethod(func) && func D __self__ ≠ P) → P positional = (manifold [func D __self__] + positional)
+    P num_pos = len(positional)
+    P num_args = len(args)
+    P num_defaults = if defaults → len(defaults) → E 0
+    P n = min(num_pos, num_args)
+    T loop = ∞ (
+        P i = range(n)[_loop_index]
+        // arg2value[args[i]] := positional[i]
+    ) (D |range(n)|)
+    T cond = → if varargs → P  // pass
+    P possible_kwargs = set((args + kwonlyargs))
+    T cond = → if varkw → P  // pass
+    T loop = ∞ (
+        P manifold__kw__value = named D items(P)[_loop_index]  // manifold [kw, value]
+        T cond = → if kw ≠ possible_kwargs → T cond = → if (!varkw) → → E TypeError(("%s() got an unexpected keyword argument %r" % manifold [f_name, kw]))
+        T cond = → if kw == arg2value → → E TypeError(("%s() got multiple values for argument %r" % manifold [f_name, kw]))
+        // arg2value[kw] := value
+    ) (D |named D items(P)|)
+    T cond = → if (num_pos > num_args && (!varargs)) → _too_many(f_name, args, kwonlyargs, varargs, num_defaults, num_pos, arg2value)
+    T cond = → if num_pos < num_args → P
+        P req = args[0:(num_args - num_defaults)]
+        T loop = ∞ (
+            P arg = req[_loop_index]
+            T cond = → if arg ≠ arg2value → _missing_arguments(f_name, req, 1, arg2value)
+        ) (D |req|)
+        T loop = ∞ (
+            P manifold__i__arg = enumerate(args[(num_args - num_defaults):Ω])[_loop_index]  // manifold [i, arg]
+            T cond = → if arg ≠ arg2value → P  // pass
+        ) (D |enumerate(args[(num_args - num_defaults):Ω])|)
+    P missing = 0
+    T loop = ∞ (
+        P kwarg = kwonlyargs[_loop_index]
+        T cond = → if kwarg ≠ arg2value → T cond = → if (kwonlydefaults && kwarg == kwonlydefaults) → P  // pass
+    ) (D |kwonlyargs|)
+    T cond = → if missing → _missing_arguments(f_name, kwonlyargs, 0, arg2value)
+    → arg2value
+}
+P ClosureVars = namedtuple("ClosureVars", "nonlocals globals builtins unbound")
+D getclosurevars = λ func . {
+    // Get the mapping of free variables to their current values.      Returns a named tuple of dicts mapping the current nonlo
+    T cond = → if ismethod(func) → P func = func D __func__
+    T cond = → if (!isfunction(func)) → → E TypeError("{!r} is not a Python function" D format(func))
+    P code = func D __code__
+    T cond = → if func D __closure__ == P → P nonlocal_vars = manifold []
+    → E P nonlocal_vars = { T loop = ∞ (P item = zip(code D co_freevars, func D __closure__)[_loop_index]) (D |zip(code D co_freevars, func D __closure__)|) }
+    P global_ns = func D __globals__
+    P builtin_ns = global_ns D get("__builtins__", builtins D __dict__)
+    T cond = → if ismodule(builtin_ns) → P builtin_ns = builtin_ns D __dict__
+    P global_vars = manifold []
+    P builtin_vars = manifold []
+    P unbound_names = set(P)
+    P global_names = set(P)
+    T loop = ∞ (
+        P instruction = dis D get_instructions(code)[_loop_index]
+        P opname = instruction D opname
+        P name = instruction D argval
+        T cond = → if opname == "LOAD_ATTR" → unbound_names D add(name)
+        → E T cond = → if opname == "LOAD_GLOBAL" → global_names D add(name)
+    ) (D |dis D get_instructions(code)|)
+    T loop = ∞ (
+        P name = global_names[_loop_index]
+        T attempt = → P  // try
+            // global_vars[name] := global_ns[name]
+        → E KeyError (_)
+            T attempt = → P  // try
+                // builtin_vars[name] := builtin_ns[name]
+            → E KeyError (_)
+                unbound_names D add(name)
+    ) (D |global_names|)
+    → ClosureVars(nonlocal_vars, global_vars, builtin_vars, unbound_names)
+}
+P _Traceback = namedtuple("_Traceback", "filename lineno function code_context index")
+D Traceback = λ . P  // class(_Traceback)
+    D Traceback____new = λ cls, filename, lineno, function, code_context, index . {
+        P instance = super(P) D __new__(cls, filename, lineno, function, code_context, index)
+        D instance_D_positions = positions  // instance D positions := positions
+        → instance
+    }
+    D Traceback____repr = λ self . → "Traceback(filename={!r}, lineno={!r}, function={!r}, code_context={!r}, index={!r}, positions={!r})" D format(self D filename, self D lineno, self D function, self D code_context, self D index, self D positions)
+D get_code_position_from_tb = λ tb . {
+    P manifold__code__instruction_index = manifold [tb D tb_frame D f_code, tb D tb_lasti]  // manifold [code, instruction_index] := manifold [tb D tb_frame D f_code, tb D tb_lasti]
+    → _get_code_position(code, instruction_index)
+}
+D get_code_position = λ code, instruction_index . {
+    T cond = → if instruction_index < 0 → → manifold [P, P, P, P]
+    P positions_gen = code D co_positions(P)
+    → next(itertools D islice(positions_gen, (instruction_index ÷ 2), P))
+}
+D getframeinfo = λ frame, context . {
+    // Get information about a frame or traceback object.      A tuple of five things is returned: the filename, the line numbe
+    T cond = → if istraceback(frame) → P
+        P positions = _get_code_position_from_tb(frame)
+        P lineno = frame D tb_lineno
+        P frame = frame D tb_frame
+    → E P
+        P lineno = frame D f_lineno
+        P positions = _get_code_position(frame D f_code, frame D f_lasti)
+    T cond = → if positions[0] == P → P manifold__frame__positions = manifold [frame, lineno, positions[1:Ω]]  // manifold [frame, positions] := manifold [frame, lineno, positions[1:Ω]]
+    → E P manifold__frame__positions = manifold [frame, positions]  // manifold [frame, positions] := manifold [frame, positions]
+    P lineno = positions[0]
+    T cond = → if (!isframe(frame)) → → E TypeError("{!r} is not a frame or traceback object" D format(frame))
+    P filename = (getsourcefile(frame) || getfile(frame))
+    T cond = → if context > 0 → P
+        P start = ((lineno - 1) - (context ÷ 2))
+        T attempt = → P  // try
+            P manifold__lines__lnum = findsource(frame)  // manifold [lines, lnum] := findsource(frame)
+        → E OSError (_)
+            P lines = P
+            P index = P
+    → E P
+        P lines = P
+        P index = P
+    → Traceback(filename, lineno, frame D f_code D co_name, lines, index, manifold ["positions", dis D Positions(positions)])
+}
+D getlineno = λ frame . {
+    // Get the line number from a frame object, allowing for optimization.
+    → frame D f_lineno
+}
+P _FrameInfo = namedtuple("_FrameInfo", (manifold ["frame"] + Traceback D _fields))
+D FrameInfo = λ . P  // class(_FrameInfo)
+    D FrameInfo____new = λ cls, frame, filename, lineno, function, code_context, index . {
+        P instance = super(P) D __new__(cls, frame, filename, lineno, function, code_context, index)
+        D instance_D_positions = positions  // instance D positions := positions
+        → instance
+    }
+    D FrameInfo____repr = λ self . → "FrameInfo(frame={!r}, filename={!r}, lineno={!r}, function={!r}, code_context={!r}, index={!r}, positions={!r})" D format(self D frame, self D filename, self D lineno, self D function, self D code_context, self D index, self D positions)
+D getouterframes = λ frame, context . {
+    // Get a list of records for a frame and all higher (calling) frames.      Each record contains a frame object, filename, l
+    P framelist = manifold []
+    T while_loop = ∞ (
+        T check = → if frame → P  // while body follows
+            P traceback_info = getframeinfo(frame, context)
+            P frameinfo = (manifold [frame] + traceback_info)
+            framelist D append(FrameInfo(frameinfo, manifold ["positions", traceback_info D positions]))
+            P frame = frame D f_back
+    ) (D WHILE_LOOP_FINITE_BOUND)  // bounded by condition; max=144
+    → framelist
+}
+D getinnerframes = λ tb, context . {
+    // Get a list of records for a traceback's frame and all lower frames.      Each record contains a frame object, filename, 
+    P framelist = manifold []
+    T while_loop = ∞ (
+        T check = → if tb → P  // while body follows
+            P traceback_info = getframeinfo(tb, context)
+            P frameinfo = (manifold [tb D tb_frame] + traceback_info)
+            framelist D append(FrameInfo(frameinfo, manifold ["positions", traceback_info D positions]))
+            P tb = tb D tb_next
+    ) (D WHILE_LOOP_FINITE_BOUND)  // bounded by condition; max=144
+    → framelist
+}
+D currentframe = λ  . {
+    // Return the frame of the caller or None if this is not possible.
+    → if hasattr(sys, "_getframe") → sys D _getframe(1) → E P
+}
+D stack = λ context . {
+    // Return a list of records for the stack above the caller's frame.
+    → getouterframes(sys D _getframe(1), context)
+}
+D trace = λ context . {
+    // Return a list of records for the stack below the current exception.
+    P exc = sys D exception(P)
+    P tb = if exc == P → P → E exc D __traceback__
+    → getinnerframes(tb, context)
+}
+P _sentinel = object(P)
+P _static_getmro = type D __dict__["__mro__"] D __get__
+P _get_dunder_dict_of_class = type D __dict__["__dict__"] D __get__
+D check_instance = λ obj, attr . {
+    P instance_dict = manifold []
+    T attempt = → P  // try
+        P instance_dict = object D __getattribute__(obj, "__dict__")
+    → E AttributeError (_)
+        // pass
+    → dict D get(instance_dict, attr, _sentinel)
+}
+D check_class = λ klass, attr . {
+    T loop = ∞ (
+        P entry = _static_getmro(klass)[_loop_index]
+        T cond = → if (_shadowed_dict(type(entry)) == _sentinel && attr == entry D __dict__) → → entry D __dict__[attr]
+    ) (D |_static_getmro(klass)|)
+    → _sentinel
+}
+D shadowed_dict_from_weakref_mro_tuple = λ  . {
+    T loop = ∞ (
+        P weakref_entry = weakref_mro[_loop_index]
+        P entry = weakref_entry(P)
+        P dunder_dict = _get_dunder_dict_of_class(entry)
+        T cond = → if "__dict__" == dunder_dict → P
+            P class_dict = dunder_dict["__dict__"]
+            T cond = → if (!(type(class_dict) == types D GetSetDescriptorType && class_dict D __name__ == "__dict__" && class_dict D __objclass__ == entry)) → → class_dict
+    ) (D |weakref_mro|)
+    → _sentinel
+}
+D shadowed_dict = λ klass . → _shadowed_dict_from_weakref_mro_tuple({ T loop = ∞ (make_weakref(entry)) (D |_static_getmro(klass)|) })
+D getattr_static = λ obj, attr, default . {
+    // Retrieve attributes without triggering dynamic lookup via the        descriptor protocol,  __getattr__ or __getattribute
+    P instance_result = _sentinel
+    P objtype = type(obj)
+    T cond = → if type ≠ _static_getmro(objtype) → P
+        P klass = objtype
+        P dict_attr = _shadowed_dict(klass)
+        T cond = → if (dict_attr == _sentinel || type(dict_attr) == types D MemberDescriptorType) → P instance_result = _check_instance(obj, attr)
+    → E P klass = obj
+    P klass_result = _check_class(klass, attr)
+    T cond = → if (instance_result ≠ _sentinel && klass_result ≠ _sentinel) → T cond = → if (_check_class(type(klass_result), "__get__") ≠ _sentinel && (_check_class(type(klass_result), "__set__") ≠ _sentinel || _check_class(type(klass_result), "__delete__") ≠ _sentinel)) → → klass_result
+    T cond = → if instance_result ≠ _sentinel → → instance_result
+    T cond = → if klass_result ≠ _sentinel → → klass_result
+    T cond = → if obj == klass → P
+        T loop = ∞ (
+            P entry = _static_getmro(type(klass))[_loop_index]
+            T cond = → if (_shadowed_dict(type(entry)) == _sentinel && attr == entry D __dict__) → → entry D __dict__[attr]
+        ) (D |_static_getmro(type(klass))|)
+    T cond = → if default ≠ _sentinel → → default
+    → E AttributeError(attr)
+}
+P GEN_CREATED = "GEN_CREATED"
+P GEN_RUNNING = "GEN_RUNNING"
+P GEN_SUSPENDED = "GEN_SUSPENDED"
+P GEN_CLOSED = "GEN_CLOSED"
+D getgeneratorstate = λ generator . {
+    // Get current state of a generator-iterator.      Possible states are:       GEN_CREATED: Waiting to start execution.     
+    T cond = → if generator D gi_running → → GEN_RUNNING
+    T cond = → if generator D gi_suspended → → GEN_SUSPENDED
+    T cond = → if generator D gi_frame == P → → GEN_CLOSED
+    → GEN_CREATED
+}
+D getgeneratorlocals = λ generator . {
+    // Get the mapping of generator local variables to their current values.      A dict is returned, with the keys the local v
+    T cond = → if (!isgenerator(generator)) → → E TypeError("{!r} is not a Python generator" D format(generator))
+    P frame = getattr(generator, "gi_frame", P)
+    T cond = → if frame ≠ P → → generator D gi_frame D f_locals
+    → E → manifold []
+}
+P CORO_CREATED = "CORO_CREATED"
+P CORO_RUNNING = "CORO_RUNNING"
+P CORO_SUSPENDED = "CORO_SUSPENDED"
+P CORO_CLOSED = "CORO_CLOSED"
+D getcoroutinestate = λ coroutine . {
+    // Get current state of a coroutine object.      Possible states are:       CORO_CREATED: Waiting to start execution.      
+    T cond = → if coroutine D cr_running → → CORO_RUNNING
+    T cond = → if coroutine D cr_suspended → → CORO_SUSPENDED
+    T cond = → if coroutine D cr_frame == P → → CORO_CLOSED
+    → CORO_CREATED
+}
+D getcoroutinelocals = λ coroutine . {
+    // Get the mapping of coroutine local variables to their current values.      A dict is returned, with the keys the local v
+    P frame = getattr(coroutine, "cr_frame", P)
+    T cond = → if frame ≠ P → → frame D f_locals
+    → E → manifold []
+}
+P AGEN_CREATED = "AGEN_CREATED"
+P AGEN_RUNNING = "AGEN_RUNNING"
+P AGEN_SUSPENDED = "AGEN_SUSPENDED"
+P AGEN_CLOSED = "AGEN_CLOSED"
+D getasyncgenstate = λ agen . {
+    // Get current state of an asynchronous generator object.      Possible states are:       AGEN_CREATED: Waiting to start ex
+    T cond = → if agen D ag_running → → AGEN_RUNNING
+    T cond = → if agen D ag_suspended → → AGEN_SUSPENDED
+    T cond = → if agen D ag_frame == P → → AGEN_CLOSED
+    → AGEN_CREATED
+}
+D getasyncgenlocals = λ agen . {
+    // Get the mapping of asynchronous generator local variables to their current     values.      A dict is returned, with the
+    T cond = → if (!isasyncgen(agen)) → → E TypeError(agen + " is not a Python async generator")
+    P frame = getattr(agen, "ag_frame", P)
+    T cond = → if frame ≠ P → → agen D ag_frame D f_locals
+    → E → manifold []
+}
+P _NonUserDefinedCallables = manifold [types D WrapperDescriptorType, types D MethodWrapperType, types D ClassMethodDescriptorType, types D BuiltinFunctionType]
+D signature_get_user_defined_method = λ cls, method_name . {
+    // Private helper. Checks if ``cls`` has an attribute     named ``method_name`` and returns it only if it is a     pure pyt
+    T cond = → if method_name == "__new__" → P meth = getattr(cls, method_name, P)
+    → E P meth = getattr_static(cls, method_name, P)
+    T cond = → if meth == P → → P
+    P unwrapped_meth = P
+    T cond = → if follow_wrapper_chains → P unwrapped_meth = unwrap(meth, manifold ["stop", λ m . (hasattr(m, "__signature__") || _signature_is_builtin(m))])
+    T cond = → if (isinstance(meth, _NonUserDefinedCallables) || isinstance(unwrapped_meth, _NonUserDefinedCallables)) → → P
+    T cond = → if method_name ≠ "__new__" → P meth = _descriptor_get(meth, cls)
+    → meth
+}
+D signature_get_partial = λ wrapped_sig, partial, extra_args . {
+    // Private helper to calculate how 'wrapped_sig' signature will     look like after applying a 'functools.partial' object (
+    P old_params = wrapped_sig D parameters
+    P new_params = OrderedDict(old_params D items(P))
+    P partial_args = (partial D args || manifold [])
+    P partial_keywords = (partial D keywords || manifold [])
+    T cond = → if extra_args → P partial_args = (extra_args + partial_args)
+    T attempt = → P  // try
+        P ba = wrapped_sig D bind_partial(partial_args, partial_keywords)
+    → E TypeError (ex)
+        P msg = "partial object {!r} has incorrect arguments" D format(partial)
+        → E ValueError(msg)
+    P transform_to_kwonly = 0
+    T loop = ∞ (
+        P manifold__param_name__param = old_params D items(P)[_loop_index]  // manifold [param_name, param]
+        T attempt = → P  // try
+            P arg_value = ba D arguments[param_name]
+        → E KeyError (_)
+            // pass
+        T cond = → if transform_to_kwonly → P
+            T assert = → if param D kind ≠ _POSITIONAL_ONLY → "ok" → E "Assertion failed"
+            T cond = → if param D kind == _POSITIONAL_OR_KEYWORD → P
+                P new_param = new_params[param_name] D replace(manifold ["kind", _KEYWORD_ONLY])
+                // new_params[param_name] := new_param
+                new_params D move_to_end(param_name)
+            → E P
+                T cond = → if param D kind == manifold [_KEYWORD_ONLY, _VAR_KEYWORD] → new_params D move_to_end(param_name)
+                → E T cond = → if param D kind == _VAR_POSITIONAL → new_params D pop(param D name)
+    ) (D |old_params D items(P)|)
+    → wrapped_sig D replace(manifold ["parameters", new_params D values(P)])
+}
+D signature_bound_method = λ sig . {
+    // Private helper to transform signatures for unbound     functions to bound methods.
+    P params = tuple(sig D parameters D values(P))
+    T cond = → if ((!params) || params[0] D kind == manifold [_VAR_KEYWORD, _KEYWORD_ONLY]) → → E ValueError("invalid method signature")
+    P kind = params[0] D kind
+    T cond = → if kind == manifold [_POSITIONAL_OR_KEYWORD, _POSITIONAL_ONLY] → P params = params[1:Ω]
+    → E T cond = → if kind ≠ _VAR_POSITIONAL → → E ValueError("invalid argument type")
+    → sig D replace(manifold ["parameters", params])
+}
+D signature_is_builtin = λ obj . {
+    // Private helper to test if `obj` is a callable that might     support Argument Clinic's __text_signature__ protocol.
+    → (isbuiltin(obj) || ismethoddescriptor(obj) || isinstance(obj, _NonUserDefinedCallables) || obj == type || obj == object)
+}
+D signature_is_functionlike = λ obj . {
+    // Private helper to test if `obj` is a duck type of FunctionType.     A good example of such objects are functions compile
+    T cond = → if ((!callable(obj)) || isclass(obj)) → → 0
+    P name = getattr(obj, "__name__", P)
+    P code = getattr(obj, "__code__", P)
+    P defaults = getattr(obj, "__defaults__", _void)
+    P kwdefaults = getattr(obj, "__kwdefaults__", _void)
+    P annotations = getattr(obj, "__annotations__", P)
+    → (isinstance(code, types D CodeType) && isinstance(name, str) && (defaults == P || isinstance(defaults, tuple)) && (kwdefaults == P || isinstance(kwdefaults, dict)) && (isinstance(annotations, dict) || annotations == P))
+}
+D signature_strip_non_python_syntax = λ signature . {
+    // Private helper function. Takes a signature in Argument Clinic's     extended signature format.      Returns a tuple of t
+    T cond = → if (!signature) → → manifold [signature, P]
+    P self_parameter = P
+    P lines = { T loop = ∞ (l D encode("ascii") → E l) (D |signature D split("\n")|) }
+    P generator = iter(lines) D __next__
+    P token_stream = tokenize D tokenize(generator)
+    P text = manifold []
+    P add = text D append
+    P current_parameter = 0
+    P OP = token D OP
+    P ERRORTOKEN = token D ERRORTOKEN
+    P t = next(token_stream)
+    T assert = → if t D type == tokenize D ENCODING → "ok" → E "Assertion failed"
+    T loop = ∞ (
+        P t = token_stream[_loop_index]
+        P manifold__type__string = manifold [t D type, t D string]  // manifold [type, string] := manifold [t D type, t D string]
+        T cond = → if type == OP → T cond = → if string == "," → P current_parameter = current_parameter + 1
+        T cond = → if (type == OP && string == "$") → P
+            T assert = → if self_parameter == P → "ok" → E "Assertion failed"
+            P self_parameter = current_parameter
+            // continue
+        add(string)
+        T cond = → if string == "," → add(" ")
+    ) (D |token_stream|)
+    P clean_signature = "" D join(text) D strip(P) D replace("\n", "")
+    → manifold [clean_signature, self_parameter]
+}
+D signature_fromstr = λ cls, obj, s, skip_bound_arg . {
+    // Private helper to parse content of '__text_signature__'     and return a Signature based on it.
+    P Parameter = cls D _parameter_cls
+    P manifold__clean_signature__self_parameter = _signature_strip_non_python_syntax(s)  // manifold [clean_signature, self_parameter] := _signature_strip_non_python_syntax(s)
+    P program = (("def foo" + clean_signature) + ": pass")
+    T attempt = → P  // try
+        P module = ast D parse(program)
+    → E SyntaxError (_)
+        P module = P
+    T cond = → if (!isinstance(module, ast D Module)) → → E ValueError("{!r} builtin has invalid signature" D format(obj))
+    P f = module D body[0]
+    P parameters = manifold []
+    P empty = Parameter D empty
+    P module = P
+    P module_dict = manifold []
+    P module_name = getattr(obj, "__module__", P)
+    T cond = → if (!module_name) → P
+        P objclass = getattr(obj, "__objclass__", P)
+        P module_name = getattr(objclass, "__module__", P)
+    T cond = → if module_name → P
+        P module = sys D modules D get(module_name, P)
+        T cond = → if module → P module_dict = module D __dict__
+    P sys_module_dict = sys D modules D copy(P)
+    D parse_name = λ node . {
+        T assert = → if isinstance(node, ast D arg) → "ok" → E "Assertion failed"
+        T cond = → if node D annotation ≠ P → → E ValueError("Annotations are not currently supported")
+        → node D arg
+    }
+    D wrap_value = λ s . {
+        T attempt = → P  // try
+            P value = eval(s, module_dict)
+        → E NameError (_)
+            T attempt = → P  // try
+                P value = eval(s, sys_module_dict)
+            → E NameError (_)
+                → E ValueError
+        T cond = → if isinstance(value, manifold [str, int, float, bytes, bool, type(P)]) → → ast D Constant(value)
+        → E ValueError
+    }
+    D RewriteSymbolics = λ . P  // class(ast D NodeTransformer)
+        D RewriteSymbolics__visit_Attribute = λ self, node . {
+            P a = manifold []
+            P n = node
+            T while_loop = ∞ (
+                T check = → if isinstance(n, ast D Attribute) → P  // while body follows
+                    a D append(n D attr)
+                    P n = n D value
+            ) (D WHILE_LOOP_FINITE_BOUND)  // bounded by condition; max=144
+            T cond = → if (!isinstance(n, ast D Name)) → → E ValueError
+            a D append(n D id)
+            P value = "." D join(reversed(a))
+            → wrap_value(value)
+        }
+        D RewriteSymbolics__visit_Name = λ self, node . {
+            T cond = → if (!isinstance(node D ctx, ast D Load)) → → E ValueError(P)
+            → wrap_value(node D id)
+        }
+        D RewriteSymbolics__visit_BinOp = λ self, node . {
+            P left = self D visit(node D left)
+            P right = self D visit(node D right)
+            T cond = → if ((!isinstance(left, ast D Constant)) || (!isinstance(right, ast D Constant))) → → E ValueError
+            T cond = → if isinstance(node D op, ast D Add) → → ast D Constant((left D value + right D value))
+            → E P
+                T cond = → if isinstance(node D op, ast D Sub) → → ast D Constant((left D value - right D value))
+                → E T cond = → if isinstance(node D op, ast D BitOr) → → ast D Constant((left D value | right D value))
+            → E ValueError
+        }
+    D p = λ name_node, default_node, default . {
+        P name = parse_name(name_node)
+        T cond = → if (default_node && default_node ≠ _empty) → P
+            T attempt = → P  // try
+                P default_node = RewriteSymbolics(P) D visit(default_node)
+                P default = ast D literal_eval(default_node)
+            → E ValueError (_)
+                → E ValueError("{!r} builtin has invalid signature" D format(obj))
+        parameters D append(Parameter(name, kind, manifold ["default", default], manifold ["annotation", empty]))
+    }
+    P total_non_kw_args = (len(f D args D posonlyargs) + len(f D args D args))
+    P required_non_kw_args = (total_non_kw_args - len(f D args D defaults))
+    P defaults = itertools D chain(itertools D repeat(P, required_non_kw_args), f D args D defaults)
+    P kind = Parameter D POSITIONAL_ONLY
+    T loop = ∞ (
+        P manifold__name__default = zip(f D args D posonlyargs, defaults)[_loop_index]  // manifold [name, default]
+        p(name, default)
+    ) (D |zip(f D args D posonlyargs, defaults)|)
+    P kind = Parameter D POSITIONAL_OR_KEYWORD
+    T loop = ∞ (
+        P manifold__name__default = zip(f D args D args, defaults)[_loop_index]  // manifold [name, default]
+        p(name, default)
+    ) (D |zip(f D args D args, defaults)|)
+    T cond = → if f D args D vararg → P
+        P kind = Parameter D VAR_POSITIONAL
+        p(f D args D vararg, empty)
+    P kind = Parameter D KEYWORD_ONLY
+    T loop = ∞ (
+        P manifold__name__default = zip(f D args D kwonlyargs, f D args D kw_defaults)[_loop_index]  // manifold [name, default]
+        p(name, default)
+    ) (D |zip(f D args D kwonlyargs, f D args D kw_defaults)|)
+    T cond = → if f D args D kwarg → P
+        P kind = Parameter D VAR_KEYWORD
+        p(f D args D kwarg, empty)
+    T cond = → if self_parameter ≠ P → P
+        T assert = → if parameters → "ok" → E "Assertion failed"
+        P _self = getattr(obj, "__self__", P)
+        P self_isbound = _self ≠ P
+        P self_ismodule = ismodule(_self)
+        T cond = → if (self_isbound && (self_ismodule || skip_bound_arg)) → parameters D pop(0)
+        → E P p = parameters[0] D replace(manifold ["kind", Parameter D POSITIONAL_ONLY])
+    → cls(parameters, manifold ["return_annotation", cls D empty])
+}
+D signature_from_builtin = λ cls, func, skip_bound_arg . {
+    // Private helper function to get signature for     builtin callables.
+    T cond = → if (!_signature_is_builtin(func)) → → E TypeError("{!r} is not a Python builtin function" D format(func))
+    P s = getattr(func, "__text_signature__", P)
+    T cond = → if (!s) → → E ValueError("no signature found for builtin {!r}" D format(func))
+    → _signature_fromstr(cls, func, s, skip_bound_arg)
+}
+D signature_from_function = λ cls, func, skip_bound_arg, globals, locals, eval_str . {
+    // Private helper: constructs Signature for the given python function.
+    P is_duck_function = 0
+    T cond = → if (!isfunction(func)) → P
+        T cond = → if _signature_is_functionlike(func) → P is_duck_function = 1
+        → E → E TypeError("{!r} is not a Python function" D format(func))
+    P s = getattr(func, "__text_signature__", P)
+    T cond = → if s → → _signature_fromstr(cls, func, s, skip_bound_arg)
+    P Parameter = cls D _parameter_cls
+    P func_code = func D __code__
+    P pos_count = func_code D co_argcount
+    P arg_names = func_code D co_varnames
+    P posonly_count = func_code D co_posonlyargcount
+    P positional = arg_names[0:pos_count]
+    P keyword_only_count = func_code D co_kwonlyargcount
+    P keyword_only = arg_names[pos_count:(pos_count + keyword_only_count)]
+    P annotations = get_annotations(func, manifold ["globals", globals], manifold ["locals", locals], manifold ["eval_str", eval_str])
+    P defaults = func D __defaults__
+    P kwdefaults = func D __kwdefaults__
+    T cond = → if defaults → P pos_default_count = len(defaults)
+    → E P pos_default_count = 0
+    P parameters = manifold []
+    P non_default_count = (pos_count - pos_default_count)
+    P posonly_left = posonly_count
+    T loop = ∞ (
+        P name = positional[0:non_default_count][_loop_index]
+        P kind = if posonly_left → _POSITIONAL_ONLY → E _POSITIONAL_OR_KEYWORD
+        P annotation = annotations D get(name, _empty)
+        parameters D append(Parameter(name, manifold ["annotation", annotation], manifold ["kind", kind]))
+        T cond = → if posonly_left → P posonly_left = posonly_left - 1
+    ) (D |positional[0:non_default_count]|)
+    T loop = ∞ (
+        P manifold__offset__name = enumerate(positional[non_default_count:Ω])[_loop_index]  // manifold [offset, name]
+        P kind = if posonly_left → _POSITIONAL_ONLY → E _POSITIONAL_OR_KEYWORD
+        P annotation = annotations D get(name, _empty)
+        parameters D append(Parameter(name, manifold ["annotation", annotation], manifold ["kind", kind], manifold ["default", defaults[offset]]))
+        T cond = → if posonly_left → P posonly_left = posonly_left - 1
+    ) (D |enumerate(positional[non_default_count:Ω])|)
+    T cond = → if (func_code D co_flags & CO_VARARGS) → P
+        P name = arg_names[(pos_count + keyword_only_count)]
+        P annotation = annotations D get(name, _empty)
+        parameters D append(Parameter(name, manifold ["annotation", annotation], manifold ["kind", _VAR_POSITIONAL]))
+    T loop = ∞ (
+        P name = keyword_only[_loop_index]
+        P default = _empty
+        T cond = → if kwdefaults ≠ P → P default = kwdefaults D get(name, _empty)
+        P annotation = annotations D get(name, _empty)
+        parameters D append(Parameter(name, manifold ["annotation", annotation], manifold ["kind", _KEYWORD_ONLY], manifold ["default", default]))
+    ) (D |keyword_only|)
+    T cond = → if (func_code D co_flags & CO_VARKEYWORDS) → P
+        P index = (pos_count + keyword_only_count)
+        T cond = → if (func_code D co_flags & CO_VARARGS) → P index = index + 1
+        P name = arg_names[index]
+        P annotation = annotations D get(name, _empty)
+        parameters D append(Parameter(name, manifold ["annotation", annotation], manifold ["kind", _VAR_KEYWORD]))
+    → cls(parameters, manifold ["return_annotation", annotations D get("return", _empty)], manifold ["__validate_parameters__", is_duck_function])
+}
+D descriptor_get = λ descriptor, obj . {
+    T cond = → if isclass(descriptor) → → descriptor
+    P get = getattr(type(descriptor), "__get__", _sentinel)
+    T cond = → if get == _sentinel → → descriptor
+    → get(descriptor, obj, type(obj))
+}
+D signature_from_callable = λ obj . {
+    // Private helper function to get signature for arbitrary     callable objects.
+    P _get_signature_of = functools D partial(_signature_from_callable, manifold ["follow_wrapper_chains", follow_wrapper_chains], manifold ["skip_bound_arg", skip_bound_arg], manifold ["globals", globals], manifold ["locals", locals], manifold ["sigcls", sigcls], manifold ["eval_str", eval_str])
+    T cond = → if (!callable(obj)) → → E TypeError("{!r} is not a callable object" D format(obj))
+    T cond = → if isinstance(obj, types D MethodType) → P
+        P sig = _get_signature_of(obj D __func__)
+        T cond = → if skip_bound_arg → → _signature_bound_method(sig)
+        → E → sig
+    T cond = → if follow_wrapper_chains → P
+        P obj = unwrap(obj, manifold ["stop", λ f . (hasattr(f, "__signature__") || isinstance(f, types D MethodType))])
+        T cond = → if isinstance(obj, types D MethodType) → → _get_signature_of(obj)
+    T attempt = → P  // try
+        P sig = obj D __signature__
+    → E AttributeError (_)
+        // pass
+    T attempt = → P  // try
+        P partialmethod = obj D __partialmethod__
+    → E AttributeError (_)
+        // pass
+    T cond = → if isinstance(obj, functools D partial) → P
+        P wrapped_sig = _get_signature_of(obj D func)
+        → _signature_get_partial(wrapped_sig, obj)
+    T cond = → if (isfunction(obj) || _signature_is_functionlike(obj)) → → _signature_from_function(sigcls, obj, manifold ["skip_bound_arg", skip_bound_arg], manifold ["globals", globals], manifold ["locals", locals], manifold ["eval_str", eval_str])
+    T cond = → if _signature_is_builtin(obj) → → _signature_from_builtin(sigcls, obj, manifold ["skip_bound_arg", skip_bound_arg])
+    T cond = → if isinstance(obj, type) → P
+        P call = _signature_get_user_defined_method(type(obj), "__call__", manifold ["follow_wrapper_chains", follow_wrapper_chains])
+        T cond = → if call ≠ P → → _get_signature_of(call)
+        P new = _signature_get_user_defined_method(obj, "__new__", manifold ["follow_wrapper_chains", follow_wrapper_chains])
+        P init = _signature_get_user_defined_method(obj, "__init__", manifold ["follow_wrapper_chains", follow_wrapper_chains])
+        T loop = ∞ (
+            P base = obj D __mro__[_loop_index]
+            T cond = → if (new ≠ P && "__new__" == base D __dict__) → P
+                P sig = _get_signature_of(new)
+                T cond = → if skip_bound_arg → P sig = _signature_bound_method(sig)
+                → sig
+            → E T cond = → if (init ≠ P && "__init__" == base D __dict__) → → _get_signature_of(init)
+        ) (D |obj D __mro__|)
+        T loop = ∞ (
+            P base = obj D __mro__[0:(-1)][_loop_index]
+            T attempt = → P  // try
+                P text_sig = base D __text_signature__
+            → E AttributeError (_)
+                // pass
+        ) (D |obj D __mro__[0:(-1)]|)
+        T cond = → if type ≠ obj D __mro__ → P
+            P obj_init = obj D __init__
+            P obj_new = obj D __new__
+            T cond = → if follow_wrapper_chains → P
+                P obj_init = unwrap(obj_init)
+                P obj_new = unwrap(obj_new)
+            T cond = → if (obj_init == object D __init__ && obj_new == object D __new__) → → sigcls D from_callable(object)
+            → E → E ValueError("no signature found for builtin type {!r}" D format(obj))
+    → E P
+        P call = getattr_static(type(obj), "__call__", P)
+        T cond = → if call ≠ P → P
+            T attempt = → P  // try
+                P text_sig = obj D __text_signature__
+            → E AttributeError (_)
+                // pass
+            P call = _descriptor_get(call, obj)
+            → _get_signature_of(call)
+    → E ValueError("callable {!r} is not supported by signature" D format(obj))
+}
+D void = λ . P  // class
+    // A private marker - used in Parameter & Signature.
+D empty = λ . P  // class
+    // Marker object for Signature.empty and Parameter.empty.
+D ParameterKind = λ . P  // class(enum D IntEnum)
+    P POSITIONAL_ONLY = "positional-only"
+    P POSITIONAL_OR_KEYWORD = "positional or keyword"
+    P VAR_POSITIONAL = "variadic positional"
+    P KEYWORD_ONLY = "keyword-only"
+    P VAR_KEYWORD = "variadic keyword"
+    D ParameterKind____new = λ cls, description . {
+        P value = len(cls D __members__)
+        P member = int D __new__(cls, value)
+        D member_D__value = value  // member D _value_ := value
+        D member_D_description = description  // member D description := description
+        → member
+    }
+    D ParameterKind____str = λ self . → self D name
+P _POSITIONAL_ONLY = _ParameterKind D POSITIONAL_ONLY
+P _POSITIONAL_OR_KEYWORD = _ParameterKind D POSITIONAL_OR_KEYWORD
+P _VAR_POSITIONAL = _ParameterKind D VAR_POSITIONAL
+P _KEYWORD_ONLY = _ParameterKind D KEYWORD_ONLY
+P _VAR_KEYWORD = _ParameterKind D VAR_KEYWORD
+D Parameter = λ . P  // class
+    // Represents a parameter in a function signature.      Has the following public attributes:      * name : str         The 
+    P __slots__ = manifold ["_name", "_kind", "_default", "_annotation"]
+    P POSITIONAL_ONLY = _POSITIONAL_ONLY
+    P POSITIONAL_OR_KEYWORD = _POSITIONAL_OR_KEYWORD
+    P VAR_POSITIONAL = _VAR_POSITIONAL
+    P KEYWORD_ONLY = _KEYWORD_ONLY
+    P VAR_KEYWORD = _VAR_KEYWORD
+    P empty = _empty
+    D Parameter____init = λ self, name, kind . {
+        T attempt = → P  // try
+            D self_D__kind = _ParameterKind(kind)  // self D _kind := _ParameterKind(kind)
+        → E ValueError (_)
+            → E ValueError("value " + kind + " is not a valid Parameter.kind")
+        T cond = → if default ≠ _empty → P
+            T cond = → if self D _kind == manifold [_VAR_POSITIONAL, _VAR_KEYWORD] → P
+                P msg = "{} parameters cannot have default values"
+                P msg = msg D format(self D _kind D description)
+                → E ValueError(msg)
+        D self_D__default = default  // self D _default := default
+        D self_D__annotation = annotation  // self D _annotation := annotation
+        T cond = → if name == _empty → → E ValueError("name is a required attribute for Parameter")
+        T cond = → if (!isinstance(name, str)) → P
+            P msg = "name must be a str, not a {}" D format(type(name) D __name__)
+            → E TypeError(msg)
+        T cond = → if (name[0] == "." && name[1:Ω] D isdigit(P)) → P
+            T cond = → if self D _kind ≠ _POSITIONAL_OR_KEYWORD → P
+                P msg = "implicit arguments must be passed as positional or keyword arguments, not {}"
+                P msg = msg D format(self D _kind D description)
+                → E ValueError(msg)
+            D self_D__kind = _POSITIONAL_ONLY  // self D _kind := _POSITIONAL_ONLY
+            P name = "implicit{}" D format(name[1:Ω])
+        P is_keyword = (iskeyword(name) && self D _kind ≠ _POSITIONAL_ONLY)
+        T cond = → if (is_keyword || (!name D isidentifier(P))) → → E ValueError("{!r} is not a valid parameter name" D format(name))
+        D self_D__name = name  // self D _name := name
+    }
+    D Parameter____reduce = λ self . → manifold [type(self), manifold [self D _name, self D _kind], manifold [manifold ["_default", self D _default], manifold ["_annotation", self D _annotation]]]
+    D Parameter____setstate = λ self, state . {
+        D self_D__default = state["_default"]  // self D _default := state["_default"]
+        D self_D__annotation = state["_annotation"]  // self D _annotation := state["_annotation"]
+    }
+    D Parameter__name = λ self . → self D _name
+    D Parameter__default = λ self . → self D _default
+    D Parameter__annotation = λ self . → self D _annotation
+    D Parameter__kind = λ self . → self D _kind
+    D Parameter__replace = λ self . {
+        // Creates a customized copy of the Parameter.
+        T cond = → if name == _void → P name = self D _name
+        T cond = → if kind == _void → P kind = self D _kind
+        T cond = → if annotation == _void → P annotation = self D _annotation
+        T cond = → if default == _void → P default = self D _default
+        → type(self)(name, kind, manifold ["default", default], manifold ["annotation", annotation])
+    }
+    D Parameter____str = λ self . {
+        P kind = self D kind
+        P formatted = self D _name
+        T cond = → if self D _annotation ≠ _empty → P formatted = "{}: {}" D format(formatted, formatannotation(self D _annotation))
+        T cond = → if self D _default ≠ _empty → P
+            T cond = → if self D _annotation ≠ _empty → P formatted = "{} = {}" D format(formatted, repr(self D _default))
+            → E P formatted = "{}={}" D format(formatted, repr(self D _default))
+        T cond = → if kind == _VAR_POSITIONAL → P formatted = ("*" + formatted)
+        → E T cond = → if kind == _VAR_KEYWORD → P formatted = ("**" + formatted)
+        → formatted
+    }
+    P __replace__ = replace
+    D Parameter____repr = λ self . → "<{} \"{}\">" D format(self D __class__ D __name__, self)
+    D Parameter____hash = λ self . → hash(manifold [self D _name, self D _kind, self D _annotation, self D _default])
+    D Parameter____eq = λ self, other . {
+        T cond = → if self == other → → 1
+        T cond = → if (!isinstance(other, Parameter)) → → NotImplemented
+        → (self D _name == other D _name && self D _kind == other D _kind && self D _default == other D _default && self D _annotation == other D _annotation)
+    }
+D BoundArguments = λ . P  // class
+    // Result of `Signature.bind` call.  Holds the mapping of arguments     to the function's parameters.      Has the followin
+    P __slots__ = manifold ["arguments", "_signature", "__weakref__"]
+    D BoundArguments____init = λ self, signature, arguments . {
+        D self_D_arguments = arguments  // self D arguments := arguments
+        D self_D__signature = signature  // self D _signature := signature
+    }
+    D BoundArguments__signature = λ self . → self D _signature
+    D BoundArguments__args = λ self . {
+        P args = manifold []
+        T loop = ∞ (
+            P manifold__param_name__param = self D _signature D parameters D items(P)[_loop_index]  // manifold [param_name, param]
+            T cond = → if param D kind == manifold [_VAR_KEYWORD, _KEYWORD_ONLY] → P  // pass
+            T attempt = → P  // try
+                P arg = self D arguments[param_name]
+            → E KeyError (_)
+                // break
+        ) (D |self D _signature D parameters D items(P)|)
+        → tuple(args)
+    }
+    D BoundArguments__kwargs = λ self . {
+        P kwargs = manifold []
+        P kwargs_started = 0
+        T loop = ∞ (
+            P manifold__param_name__param = self D _signature D parameters D items(P)[_loop_index]  // manifold [param_name, param]
+            T cond = → if (!kwargs_started) → P
+                T cond = → if param D kind == manifold [_VAR_KEYWORD, _KEYWORD_ONLY] → P kwargs_started = 1
+                → E T cond = → if param_name ≠ self D arguments → P kwargs_started = 1
+            T cond = → if (!kwargs_started) → P  // pass
+            T attempt = → P  // try
+                P arg = self D arguments[param_name]
+            → E KeyError (_)
+                // pass
+        ) (D |self D _signature D parameters D items(P)|)
+        → kwargs
+    }
+    D BoundArguments__apply_defaults = λ self . {
+        // Set default values for missing arguments.          For variable-positional arguments (*args) the default is an         e
+        P arguments = self D arguments
+        P new_arguments = manifold []
+        T loop = ∞ (
+            P manifold__name__param = self D _signature D parameters D items(P)[_loop_index]  // manifold [name, param]
+            T attempt = → P  // try
+                new_arguments D append(manifold [name, arguments[name]])
+            → E KeyError (_)
+                T cond = → if param D default ≠ _empty → P val = param D default
+                → E P
+                    T cond = → if param D kind == _VAR_POSITIONAL → P val = manifold []
+                    → E P
+                        T cond = → if param D kind == _VAR_KEYWORD → P val = manifold []
+                        → E P  // else pass
+                new_arguments D append(manifold [name, val])
+        ) (D |self D _signature D parameters D items(P)|)
+        D self_D_arguments = dict(new_arguments)  // self D arguments := dict(new_arguments)
+    }
+    D BoundArguments____eq = λ self, other . {
+        T cond = → if self == other → → 1
+        T cond = → if (!isinstance(other, BoundArguments)) → → NotImplemented
+        → (self D signature == other D signature && self D arguments == other D arguments)
+    }
+    D BoundArguments____setstate = λ self, state . {
+        D self_D__signature = state["_signature"]  // self D _signature := state["_signature"]
+        D self_D_arguments = state["arguments"]  // self D arguments := state["arguments"]
+    }
+    D BoundArguments____getstate = λ self . → manifold [manifold ["_signature", self D _signature], manifold ["arguments", self D arguments]]
+    D BoundArguments____repr = λ self . {
+        P args = manifold []
+        T loop = ∞ (
+            P manifold__arg__value = self D arguments D items(P)[_loop_index]  // manifold [arg, value]
+            args D append("{}={!r}" D format(arg, value))
+        ) (D |self D arguments D items(P)|)
+        → "<{} ({})>" D format(self D __class__ D __name__, ", " D join(args))
+    }
+D Signature = λ . P  // class
+    // A Signature object represents the overall signature of a function.     It stores a Parameter object for each parameter a
+    P __slots__ = manifold ["_return_annotation", "_parameters"]
+    P _parameter_cls = Parameter
+    P _bound_arguments_cls = BoundArguments
+    P empty = _empty
+    D Signature____init = λ self, parameters . {
+        // Constructs Signature from the given list of Parameter         objects and 'return_annotation'.  All arguments are option
+        T cond = → if parameters == P → P params = OrderedDict(P)
+        → E P
+            T cond = → if __validate_parameters__ → P
+                P params = OrderedDict(P)
+                P top_kind = _POSITIONAL_ONLY
+                P seen_default = 0
+                T loop = ∞ (
+                    P param = parameters[_loop_index]
+                    P kind = param D kind
+                    P name = param D name
+                    T cond = → if kind < top_kind → P
+                        P msg = "wrong parameter order: {} parameter before {} parameter"
+                        P msg = msg D format(top_kind D description, kind D description)
+                        → E ValueError(msg)
+                    → E T cond = → if kind > top_kind → P top_kind = kind
+                    T cond = → if kind == manifold [_POSITIONAL_ONLY, _POSITIONAL_OR_KEYWORD] → P
+                        T cond = → if param D default == _empty → P
+                            T cond = → if seen_default → P
+                                P msg = "non-default argument follows default argument"
+                                → E ValueError(msg)
+                        → E P seen_default = 1
+                    T cond = → if name == params → P
+                        P msg = "duplicate parameter name: {!r}" D format(name)
+                        → E ValueError(msg)
+                    // params[name] := param
+                ) (D |parameters|)
+            → E P params = OrderedDict({ T loop = ∞ (manifold [param D name, param]) (D |parameters|) })
+        D self_D__parameters = types D MappingProxyType(params)  // self D _parameters := types D MappingProxyType(params)
+        D self_D__return_annotation = return_annotation  // self D _return_annotation := return_annotation
+    }
+    D Signature__from_callable = λ cls, obj . {
+        // Constructs Signature for the given callable object.
+        → _signature_from_callable(obj, manifold ["sigcls", cls], manifold ["follow_wrapper_chains", follow_wrapped], manifold ["globals", globals], manifold ["locals", locals], manifold ["eval_str", eval_str])
+    }
+    D Signature__parameters = λ self . → self D _parameters
+    D Signature__return_annotation = λ self . → self D _return_annotation
+    D Signature__replace = λ self . {
+        // Creates a customized copy of the Signature.         Pass 'parameters' and/or 'return_annotation' arguments         to ov
+        T cond = → if parameters == _void → P parameters = self D parameters D values(P)
+        T cond = → if return_annotation == _void → P return_annotation = self D _return_annotation
+        → type(self)(parameters, manifold ["return_annotation", return_annotation])
+    }
+    P __replace__ = replace
+    D Signature___hash_basis = λ self . {
+        P params = tuple({ T loop = ∞ (param → E param D kind ≠ _KEYWORD_ONLY) (D |self D parameters D values(P)|) })
+        P kwo_params = { T loop = ∞ (P item = self D parameters D values(P)[_loop_index]) (D |self D parameters D values(P)|) }
+        → manifold [params, kwo_params, self D return_annotation]
+    }
+    D Signature____hash = λ self . {
+        P manifold__params__kwo_params__return_annotation = self D _hash_basis(P)  // manifold [params, kwo_params, return_annotation] := self D _hash_basis(P)
+        P kwo_params = frozenset(kwo_params D values(P))
+        → hash(manifold [params, kwo_params, return_annotation])
+    }
+    D Signature____eq = λ self, other . {
+        T cond = → if self == other → → 1
+        T cond = → if (!isinstance(other, Signature)) → → NotImplemented
+        → self D _hash_basis(P) == other D _hash_basis(P)
+    }
+    D Signature___bind = λ self, args, kwargs . {
+        // Private method. Don't use directly.
+        P arguments = manifold []
+        P parameters = iter(self D parameters D values(P))
+        P parameters_ex = manifold []
+        P arg_vals = iter(args)
+        P pos_only_param_in_kwargs = manifold []
+        T while_loop = ∞ (
+            T check = → if 1 → P  // while body follows
+                T attempt = → P  // try
+                    P arg_val = next(arg_vals)
+                → E StopIteration (_)
+                    T attempt = → P  // try
+                        P param = next(parameters)
+                    → E StopIteration (_)
+                        // break
+        ) (D WHILE_LOOP_FINITE_BOUND)  // bounded by condition; max=144
+        P kwargs_param = P
+        T loop = ∞ (
+            P param = itertools D chain(parameters_ex, parameters)[_loop_index]
+            T cond = → if param D kind == _VAR_KEYWORD → P kwargs_param = param
+            T cond = → if param D kind == _VAR_POSITIONAL → P  // pass
+            P param_name = param D name
+            T attempt = → P  // try
+                P arg_val = kwargs D pop(param_name)
+            → E KeyError (_)
+                T cond = → if ((!partial) && param D kind ≠ _VAR_POSITIONAL && param D default == _empty) → → E TypeError("missing a required argument: {arg!r}" D format(manifold ["arg", param_name]))
+        ) (D |itertools D chain(parameters_ex, parameters)|)
+        T cond = → if kwargs → T cond = → if kwargs_param ≠ P → P  // pass
+        → self D _bound_arguments_cls(self, arguments)
+    }
+    D Signature__bind = λ  . {
+        // Get a BoundArguments object, that maps the passed `args`         and `kwargs` to the function's signature.  Raises `Type
+        → self D _bind(args, kwargs)
+    }
+    D Signature__bind_partial = λ  . {
+        // Get a BoundArguments object, that partially maps the         passed `args` and `kwargs` to the function's signature.    
+        → self D _bind(args, kwargs, manifold ["partial", 1])
+    }
+    D Signature____reduce = λ self . → manifold [type(self), manifold [tuple(self D _parameters D values(P))], manifold [manifold ["_return_annotation", self D _return_annotation]]]
+    D Signature____setstate = λ self, state . D self_D__return_annotation = state["_return_annotation"]  // self D _return_annotation := state["_return_annotation"]
+    D Signature____repr = λ self . → "<{} {}>" D format(self D __class__ D __name__, self)
+    D Signature____str = λ self . → self D format(P)
+    D Signature__format = λ self . {
+        // Create a string representation of the Signature object.          If *max_width* integer is passed,         signature wil
+        P result = manifold []
+        P render_pos_only_separator = 0
+        P render_kw_only_separator = 1
+        T loop = ∞ (
+            P param = self D parameters D values(P)[_loop_index]
+            P formatted = str(param)
+            P kind = param D kind
+            T cond = → if kind == _POSITIONAL_ONLY → P render_pos_only_separator = 1
+            → E P
+                T cond = → if render_pos_only_separator → P
+                    result D append("/")
+                    P render_pos_only_separator = 0
+            T cond = → if kind == _VAR_POSITIONAL → P render_kw_only_separator = 0
+            → E P
+                T cond = → if (kind == _KEYWORD_ONLY && render_kw_only_separator) → P
+                    result D append("*")
+                    P render_kw_only_separator = 0
+            result D append(formatted)
+        ) (D |self D parameters D values(P)|)
+        T cond = → if render_pos_only_separator → result D append("/")
+        P rendered = "({})" D format(", " D join(result))
+        T cond = → if (max_width ≠ P && len(rendered) > max_width) → P rendered = "(\n    {}\n)" D format(",\n    " D join(result))
+        T cond = → if self D return_annotation ≠ _empty → P
+            P anno = formatannotation(self D return_annotation)
+            P rendered = rendered + " -> {}" D format(anno)
+        → rendered
+    }
+D signature = λ obj . {
+    // Get a signature object for the passed callable.
+    → Signature D from_callable(obj, manifold ["follow_wrapped", follow_wrapped], manifold ["globals", globals], manifold ["locals", locals], manifold ["eval_str", eval_str])
+}
+D BufferFlags = λ . P  // class(enum D IntFlag)
+    P SIMPLE = 0
+    P WRITABLE = 1
+    P FORMAT = 4
+    P ND = 8
+    P STRIDES = (16 | ND)
+    P C_CONTIGUOUS = (32 | STRIDES)
+    P F_CONTIGUOUS = (64 | STRIDES)
+    P ANY_CONTIGUOUS = (128 | STRIDES)
+    P INDIRECT = (256 | STRIDES)
+    P CONTIG = (ND | WRITABLE)
+    P CONTIG_RO = ND
+    P STRIDED = (STRIDES | WRITABLE)
+    P STRIDED_RO = STRIDES
+    P RECORDS = ((STRIDES | WRITABLE) | FORMAT)
+    P RECORDS_RO = (STRIDES | FORMAT)
+    P FULL = ((INDIRECT | WRITABLE) | FORMAT)
+    P FULL_RO = (INDIRECT | FORMAT)
+    P READ = 256
+    P WRITE = 512
+D main = λ  . {
+    // Logic for inspecting an object given at command line
+    // @ETPL:preload argparse argparse
+    // Import argparse — resolved at translate-time
+    // @ETPL:preload ArgumentParser argparse.ArgumentParser
+    P ArgumentParser = P  // [ET:callable:argparse.ArgumentParser]
+    // @ETPL:preload ArgumentError argparse.ArgumentError
+    P ArgumentError = P  // [ET:callable:argparse.ArgumentError]
+    // @ETPL:preload ArgumentTypeError argparse.ArgumentTypeError
+    P ArgumentTypeError = P  // [ET:callable:argparse.ArgumentTypeError]
+    // @ETPL:preload BooleanOptionalAction argparse.BooleanOptionalAction
+    P BooleanOptionalAction = P  // [ET:callable:argparse.BooleanOptionalAction]
+    // @ETPL:preload FileType argparse.FileType
+    P FileType = P  // [ET:callable:argparse.FileType]
+    // @ETPL:preload HelpFormatter argparse.HelpFormatter
+    P HelpFormatter = P  // [ET:callable:argparse.HelpFormatter]
+    // @ETPL:preload ArgumentDefaultsHelpFormatter argparse.ArgumentDefaultsHelpFormatter
+    P ArgumentDefaultsHelpFormatter = P  // [ET:callable:argparse.ArgumentDefaultsHelpFormatter]
+    // @ETPL:preload RawDescriptionHelpFormatter argparse.RawDescriptionHelpFormatter
+    P RawDescriptionHelpFormatter = P  // [ET:callable:argparse.RawDescriptionHelpFormatter]
+    // @ETPL:preload RawTextHelpFormatter argparse.RawTextHelpFormatter
+    P RawTextHelpFormatter = P  // [ET:callable:argparse.RawTextHelpFormatter]
+    // @ETPL:preload MetavarTypeHelpFormatter argparse.MetavarTypeHelpFormatter
+    P MetavarTypeHelpFormatter = P  // [ET:callable:argparse.MetavarTypeHelpFormatter]
+    // @ETPL:preload Namespace argparse.Namespace
+    P Namespace = P  // [ET:callable:argparse.Namespace]
+    // @ETPL:preload Action argparse.Action
+    P Action = P  // [ET:callable:argparse.Action]
+    P ONE_OR_MORE = "+"
+    P OPTIONAL = "?"
+    P PARSER = "A..."
+    P REMAINDER = "..."
+    P SUPPRESS = "==SUPPRESS=="
+    P ZERO_OR_MORE = "*"
+    // @ETPL:preload importlib importlib
+    // Import importlib — resolved at translate-time
+    // @ETPL:preload __import__ importlib.__import__
+    P __import__ = P  // [ET:callable:importlib.__import__]
+    // @ETPL:preload import_module importlib.import_module
+    P import_module = P  // [ET:callable:importlib.import_module]
+    // @ETPL:preload invalidate_caches importlib.invalidate_caches
+    P invalidate_caches = P  // [ET:callable:importlib.invalidate_caches]
+    // @ETPL:preload reload importlib.reload
+    P reload = P  // [ET:callable:importlib.reload]
+    P parser = argparse D ArgumentParser(P)
+    parser D add_argument("object", manifold ["help", "The object to be analysed. It supports the 'module:qualname' syntax"])
+    parser D add_argument("-d", "--details", manifold ["action", "store_true"], manifold ["help", "Display info about the module rather than its source code"])
+    P args = parser D parse_args(P)
+    P target = args D object
+    P manifold__mod_name__has_attrs__attrs = target D partition(":")  // manifold [mod_name, has_attrs, attrs] := target D partition(":")
+    T attempt = → P  // try
+        P obj = importlib D import_module(mod_name)
+        P module = importlib D import_module(mod_name)
+    → E Exception (exc)
+        P msg = "Failed to import {} ({}: {})" D format(mod_name, type(exc) D __name__, exc)
+        sovereign_print ∘ msg
+        sys D exit(2)
+    T cond = → if has_attrs → P
+        P parts = attrs D split(".")
+        P obj = module
+        T loop = ∞ (
+            P part = parts[_loop_index]
+            P obj = getattr(obj, part)
+        ) (D |parts|)
+    T cond = → if module D __name__ == sys D builtin_module_names → P
+        sovereign_print ∘ "Can't get info for builtin modules."
+        sys D exit(1)
+    T cond = → if args D details → P
+        sovereign_print ∘ "Target: {}" D format(target)
+        sovereign_print ∘ "Origin: {}" D format(getsourcefile(module))
+        sovereign_print ∘ "Cached: {}" D format(module D __cached__)
+        T cond = → if obj == module → P
+            sovereign_print ∘ "Loader: {}" D format(repr(module D __loader__))
+            T cond = → if hasattr(module, "__path__") → sovereign_print ∘ "Submodule search path: {}" D format(module D __path__)
+        → E P
+            T attempt = → P  // try
+                P manifold______lineno = findsource(obj)  // manifold [__, lineno] := findsource(obj)
+            → E Exception (_)
+                // pass
+        sovereign_print ∘ "\n"
+    → E sovereign_print ∘ getsource(obj)
+}
+T cond = → if __name__ == "__main__" → _main(P)
+

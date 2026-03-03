@@ -1,0 +1,16 @@
+// @ETPL:trace-c-extension marshal
+// C extension module "marshal" — no Python source available.
+// Interface (constants, flags, type stubs) inlined as P/D bindings.
+// Callable implementations are native C — cannot be source-translated.
+// @ETPL:c-extension-caveat callables bound as P stubs (C ABI required)
+// @ETPL:module-start marshal
+// @ETPL:preload dump marshal.dump
+P dump = P  // [ET:callable:marshal.dump]
+// @ETPL:preload dumps marshal.dumps
+P dumps = P  // [ET:callable:marshal.dumps]
+// @ETPL:preload load marshal.load
+P load = P  // [ET:callable:marshal.load]
+// @ETPL:preload loads marshal.loads
+P loads = P  // [ET:callable:marshal.loads]
+// @ETPL:module-end marshal
+// @ETPL:trace-c-extension-end marshal

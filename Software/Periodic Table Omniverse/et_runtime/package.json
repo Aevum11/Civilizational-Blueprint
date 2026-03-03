@@ -1,0 +1,14 @@
+{ 
+  "name": "et-omniverse", 
+  "private": true, 
+  "version": "1.0.0", 
+  "type": "module", 
+  "scripts": { "start": "node server.js" }, 
+  "dependencies": { 
+    "react": "18.2.0", 
+    "react-dom": "18.2.0", 
+    "lucide-react": "0.300.0", 
+    "vite": "5.0.0", 
+    "@vitejs/plugin-react": "4.2.1" 
+  } 
+} 

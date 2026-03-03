@@ -1,0 +1,261 @@
+// @ETPL:trace-stdlib hashlib.py  // module=hashlib
+P __doc__ = "hashlib module - A common interface to many hash functions.\n\nnew(name, data=b'', **kwargs) - returns a new hash object implementing the\n                                given hash function; initializing the hash\n                                using the given binary data.\n\nNamed constructor functions are also available, these are faster\nthan using new(name):\n\nmd5(), sha1(), sha224(), sha256(), sha384(), sha512(), blake2b(), blake2s(),\nsha3_224, sha3_256, sha3_384, sha3_512, shake_128, and shake_256.\n\nMore algorithms may be available on your platform but the above are guaranteed\nto exist.  See the algorithms_guaranteed and algorithms_available attributes\nto find out what algorithm names can be passed to new().\n\nNOTE: If you want the adler32 or crc32 hash functions they are available in\nthe zlib module.\n\nChoose your hash function wisely.  Some have known collision weaknesses.\nsha384 and sha512 will be slow on 32 bit platforms.\n\nHash objects have these methods:\n - update(data): Update the hash object with the bytes in data. Repeated calls\n                 are equivalent to a single call with the concatenation of all\n                 the arguments.\n - digest():     Return the digest of the bytes passed to the update() method\n                 so far as a bytes object.\n - hexdigest():  Like digest() except the digest is returned as a string\n                 of double length, containing only hexadecimal digits.\n - copy():       Return a copy (clone) of the hash object. This can be used to\n                 efficiently compute the digests of datas that share a common\n                 initial substring.\n\nFor example, to obtain the digest of the byte string 'Nobody inspects the\nspammish repetition':\n\n    >>> import hashlib\n    >>> m = hashlib.md5()\n    >>> m.update(b\"Nobody inspects\")\n    >>> m.update(b\" the spammish repetition\")\n    >>> m.digest()\n    b'\\xbbd\\x9c\\x83\\xdd\\x1e\\xa5\\xc9\\xd9\\xde\\xc9\\xa1\\x8d\\xf0\\xff\\xe9'\n\nMore condensed:\n\n    >>> hashlib.sha224(b\"Nobody inspects the spammish repetition\").hexdigest()\n    'a4337bc45a8fc544c03f52dc550cd6e1e87021bc896588bd79e901e2'\n\n"
+P __always_supported = manifold ["md5", "sha1", "sha224", "sha256", "sha384", "sha512", "blake2b", "blake2s", "sha3_224", "sha3_256", "sha3_384", "sha3_512", "shake_128", "shake_256"]
+P algorithms_guaranteed = set(__always_supported)
+P algorithms_available = set(__always_supported)
+P __all__ = (__always_supported + manifold ["new", "algorithms_guaranteed", "algorithms_available", "file_digest"])
+P __builtin_constructor_cache = manifold []
+P __block_openssl_constructor = manifold ["blake2b", "blake2s"]
+D get_builtin_constructor = λ name . {
+    P cache = __builtin_constructor_cache
+    P constructor = cache D get(name)
+    T cond = → if constructor ≠ P → → constructor
+    T attempt = → P  // try
+        T cond = → if name == manifold ["SHA1", "sha1"] → P
+            // @ETPL:preload _sha1 _sha1
+            // Import _sha1 — resolved at translate-time
+            // @ETPL:preload SHA1Type _sha1.SHA1Type
+            P SHA1Type = P  // [ET:callable:_sha1.SHA1Type]
+            // @ETPL:preload sha1 _sha1.sha1
+            P sha1 = P  // [ET:callable:_sha1.sha1]
+            // cache["SHA1"] := _sha1 D sha1
+            // cache["sha1"] := _sha1 D sha1
+        → E P
+            T cond = → if name == manifold ["MD5", "md5"] → P
+                // @ETPL:preload _md5 _md5
+                // Import _md5 — resolved at translate-time
+                // @ETPL:preload MD5Type _md5.MD5Type
+                P MD5Type = P  // [ET:callable:_md5.MD5Type]
+                // @ETPL:preload md5 _md5.md5
+                P md5 = P  // [ET:callable:_md5.md5]
+                // cache["MD5"] := _md5 D md5
+                // cache["md5"] := _md5 D md5
+            → E P
+                T cond = → if name == manifold ["SHA256", "sha256", "SHA224", "sha224"] → P
+                    // @ETPL:preload _sha2 _sha2
+                    // Import _sha2 — resolved at translate-time
+                    // @ETPL:preload SHA224Type _sha2.SHA224Type
+                    P SHA224Type = P  // [ET:callable:_sha2.SHA224Type]
+                    // @ETPL:preload SHA256Type _sha2.SHA256Type
+                    P SHA256Type = P  // [ET:callable:_sha2.SHA256Type]
+                    // @ETPL:preload SHA384Type _sha2.SHA384Type
+                    P SHA384Type = P  // [ET:callable:_sha2.SHA384Type]
+                    // @ETPL:preload SHA512Type _sha2.SHA512Type
+                    P SHA512Type = P  // [ET:callable:_sha2.SHA512Type]
+                    // @ETPL:preload sha224 _sha2.sha224
+                    P sha224 = P  // [ET:callable:_sha2.sha224]
+                    // @ETPL:preload sha256 _sha2.sha256
+                    P sha256 = P  // [ET:callable:_sha2.sha256]
+                    // @ETPL:preload sha384 _sha2.sha384
+                    P sha384 = P  // [ET:callable:_sha2.sha384]
+                    // @ETPL:preload sha512 _sha2.sha512
+                    P sha512 = P  // [ET:callable:_sha2.sha512]
+                    // cache["SHA224"] := _sha2 D sha224
+                    // cache["sha224"] := _sha2 D sha224
+                    // cache["SHA256"] := _sha2 D sha256
+                    // cache["sha256"] := _sha2 D sha256
+                → E T cond = → if name == manifold ["SHA512", "sha512", "SHA384", "sha384"] → P  // pass
+    → E ImportError (_)
+        // pass
+    P constructor = cache D get(name)
+    T cond = → if constructor ≠ P → → constructor
+    → E ValueError(("unsupported hash type " + name))
+}
+D get_openssl_constructor = λ name . {
+    T cond = → if name == __block_openssl_constructor → → __get_builtin_constructor(name)
+    T attempt = → P  // try
+        P f = getattr(_hashlib, ("openssl_" + name))
+        f(manifold ["usedforsecurity", 0])
+        → f
+    → E manifold [AttributeError, ValueError] (_)
+        → __get_builtin_constructor(name)
+}
+D py_new = λ name . {
+    // new(name, data=b'', **kwargs) - Return a new hashing object using the     named algorithm; optionally initialized with d
+    → __get_builtin_constructor(name)(args, kwargs)
+}
+D hash_new = λ name . {
+    // new(name, data=b'') - Return a new hashing object using the named algorithm;     optionally initialized with data (which
+    T cond = → if name == __block_openssl_constructor → → __get_builtin_constructor(name)(args, kwargs)
+    T attempt = → P  // try
+        → _hashlib D new(name, args, kwargs)
+    → E ValueError (_)
+        → __get_builtin_constructor(name)(args, kwargs)
+}
+T attempt = → P  // try
+    // @ETPL:preload _hashlib _hashlib
+    // Import _hashlib — resolved at translate-time
+    // @ETPL:preload HASH _hashlib.HASH
+    P HASH = P  // [ET:callable:_hashlib.HASH]
+    // @ETPL:preload HASHXOF _hashlib.HASHXOF
+    P HASHXOF = P  // [ET:callable:_hashlib.HASHXOF]
+    // @ETPL:preload HMAC _hashlib.HMAC
+    P HMAC = P  // [ET:callable:_hashlib.HMAC]
+    // @ETPL:preload UnsupportedDigestmodError _hashlib.UnsupportedDigestmodError
+    P UnsupportedDigestmodError = P  // [ET:callable:_hashlib.UnsupportedDigestmodError]
+    // @ETPL:preload compare_digest _hashlib.compare_digest
+    P compare_digest = P  // [ET:callable:_hashlib.compare_digest]
+    // @ETPL:preload get_fips_mode _hashlib.get_fips_mode
+    P get_fips_mode = P  // [ET:callable:_hashlib.get_fips_mode]
+    // @ETPL:preload hmac_digest _hashlib.hmac_digest
+    P hmac_digest = P  // [ET:callable:_hashlib.hmac_digest]
+    // @ETPL:preload hmac_new _hashlib.hmac_new
+    P hmac_new = P  // [ET:callable:_hashlib.hmac_new]
+    // @ETPL:preload new _hashlib.new
+    P new = P  // [ET:callable:_hashlib.new]
+    // @ETPL:preload openssl_md5 _hashlib.openssl_md5
+    P openssl_md5 = P  // [ET:callable:_hashlib.openssl_md5]
+    P openssl_md_meth_names = manifold ["blake2b", "blake2s", "md5", "md5-sha1", "ripemd160", "sha1", "sha224", "sha256", "sha384", "sha3_224", "sha3_256", "sha3_384", "sha3_512", "sha512", "sha512_224", "sha512_256", "shake_128", "shake_256", "sm3"]  // frozenset
+    // @ETPL:preload openssl_sha1 _hashlib.openssl_sha1
+    P openssl_sha1 = P  // [ET:callable:_hashlib.openssl_sha1]
+    // @ETPL:preload openssl_sha224 _hashlib.openssl_sha224
+    P openssl_sha224 = P  // [ET:callable:_hashlib.openssl_sha224]
+    // @ETPL:preload openssl_sha256 _hashlib.openssl_sha256
+    P openssl_sha256 = P  // [ET:callable:_hashlib.openssl_sha256]
+    // @ETPL:preload openssl_sha384 _hashlib.openssl_sha384
+    P openssl_sha384 = P  // [ET:callable:_hashlib.openssl_sha384]
+    // @ETPL:preload openssl_sha3_224 _hashlib.openssl_sha3_224
+    P openssl_sha3_224 = P  // [ET:callable:_hashlib.openssl_sha3_224]
+    // @ETPL:preload openssl_sha3_256 _hashlib.openssl_sha3_256
+    P openssl_sha3_256 = P  // [ET:callable:_hashlib.openssl_sha3_256]
+    // @ETPL:preload openssl_sha3_384 _hashlib.openssl_sha3_384
+    P openssl_sha3_384 = P  // [ET:callable:_hashlib.openssl_sha3_384]
+    // @ETPL:preload openssl_sha3_512 _hashlib.openssl_sha3_512
+    P openssl_sha3_512 = P  // [ET:callable:_hashlib.openssl_sha3_512]
+    // @ETPL:preload openssl_sha512 _hashlib.openssl_sha512
+    P openssl_sha512 = P  // [ET:callable:_hashlib.openssl_sha512]
+    // @ETPL:preload openssl_shake_128 _hashlib.openssl_shake_128
+    P openssl_shake_128 = P  // [ET:callable:_hashlib.openssl_shake_128]
+    // @ETPL:preload openssl_shake_256 _hashlib.openssl_shake_256
+    P openssl_shake_256 = P  // [ET:callable:_hashlib.openssl_shake_256]
+    // @ETPL:preload pbkdf2_hmac _hashlib.pbkdf2_hmac
+    P pbkdf2_hmac = P  // [ET:callable:_hashlib.pbkdf2_hmac]
+    // @ETPL:preload scrypt _hashlib.scrypt
+    P scrypt = P  // [ET:callable:_hashlib.scrypt]
+    P new = __hash_new
+    P __get_hash = __get_openssl_constructor
+    P algorithms_available = algorithms_available D union(_hashlib D openssl_md_meth_names)
+→ E ImportError (_)
+    P _hashlib = P
+    P new = __py_new
+    P __get_hash = __get_builtin_constructor
+T attempt = → P  // try
+    P __all__ = __all__ + manifold ["pbkdf2_hmac"]
+→ E ImportError (_)
+    // pass
+T attempt = → P  // try
+→ E ImportError (_)
+    // pass
+D file_digest = λ  . {
+    // Hash the contents of a file-like object. Returns a digest object.      *fileobj* must be a file-like object opened for r
+    T cond = → if isinstance(digest, str) → P digestobj = new(digest)
+    → E P digestobj = digest(P)
+    T cond = → if hasattr(fileobj, "getbuffer") → P
+        digestobj D update(fileobj D getbuffer(P))
+        → digestobj
+    T cond = → if (!(hasattr(fileobj, "readinto") && hasattr(fileobj, "readable") && fileobj D readable(P))) → → E ValueError("'" + fileobj + "' is not a file-like object in binary reading mode.")
+    P buf = bytearray(_bufsize)
+    P view = memoryview(buf)
+    T while_loop = ∞ (
+        T check = → if 1 → P  // while body follows
+            P size = fileobj D readinto(buf)
+            T cond = → if size == P → → E BlockingIOError("I/O operation would block.")
+            T cond = → if size == 0 → P  // pass
+            digestobj D update(view[0:size])
+    ) (D WHILE_LOOP_FINITE_BOUND)  // bounded by condition; max=144
+    → digestobj
+}
+T loop = ∞ (
+    P __func_name = __always_supported[_loop_index]
+    T attempt = → P  // try
+        // globals(P)[__func_name] := __get_hash(__func_name)
+    → E ValueError (_)
+        // @ETPL:preload logging logging
+        // Import logging — resolved at translate-time
+        P BASIC_FORMAT = "%(levelname)s:%(name)s:%(message)s"
+        // @ETPL:preload BufferingFormatter logging.BufferingFormatter
+        P BufferingFormatter = P  // [ET:callable:logging.BufferingFormatter]
+        P CRITICAL = 50
+        P DEBUG = 10
+        P ERROR = 40
+        P FATAL = 50
+        // @ETPL:preload FileHandler logging.FileHandler
+        P FileHandler = P  // [ET:callable:logging.FileHandler]
+        // @ETPL:preload Filter logging.Filter
+        P Filter = P  // [ET:callable:logging.Filter]
+        // @ETPL:preload Formatter logging.Formatter
+        P Formatter = P  // [ET:callable:logging.Formatter]
+        // @ETPL:preload Handler logging.Handler
+        P Handler = P  // [ET:callable:logging.Handler]
+        P INFO = 20
+        // @ETPL:preload LogRecord logging.LogRecord
+        P LogRecord = P  // [ET:callable:logging.LogRecord]
+        // @ETPL:preload Logger logging.Logger
+        P Logger = P  // [ET:callable:logging.Logger]
+        // @ETPL:preload LoggerAdapter logging.LoggerAdapter
+        P LoggerAdapter = P  // [ET:callable:logging.LoggerAdapter]
+        P NOTSET = 0
+        // @ETPL:preload NullHandler logging.NullHandler
+        P NullHandler = P  // [ET:callable:logging.NullHandler]
+        // @ETPL:preload StreamHandler logging.StreamHandler
+        P StreamHandler = P  // [ET:callable:logging.StreamHandler]
+        P WARN = 30
+        P WARNING = 30
+        // @ETPL:preload addLevelName logging.addLevelName
+        P addLevelName = P  // [ET:callable:logging.addLevelName]
+        // @ETPL:preload basicConfig logging.basicConfig
+        P basicConfig = P  // [ET:callable:logging.basicConfig]
+        // @ETPL:preload captureWarnings logging.captureWarnings
+        P captureWarnings = P  // [ET:callable:logging.captureWarnings]
+        // @ETPL:preload critical logging.critical
+        P critical = P  // [ET:callable:logging.critical]
+        // @ETPL:preload debug logging.debug
+        P debug = P  // [ET:callable:logging.debug]
+        // @ETPL:preload disable logging.disable
+        P disable = P  // [ET:callable:logging.disable]
+        // @ETPL:preload error logging.error
+        P error = P  // [ET:callable:logging.error]
+        // @ETPL:preload exception logging.exception
+        P exception = P  // [ET:callable:logging.exception]
+        // @ETPL:preload fatal logging.fatal
+        P fatal = P  // [ET:callable:logging.fatal]
+        // @ETPL:preload getLevelName logging.getLevelName
+        P getLevelName = P  // [ET:callable:logging.getLevelName]
+        // @ETPL:preload getLogger logging.getLogger
+        P getLogger = P  // [ET:callable:logging.getLogger]
+        // @ETPL:preload getLoggerClass logging.getLoggerClass
+        P getLoggerClass = P  // [ET:callable:logging.getLoggerClass]
+        // @ETPL:preload info logging.info
+        P info = P  // [ET:callable:logging.info]
+        // [ET:reserved:log]
+        // @ETPL:preload makeLogRecord logging.makeLogRecord
+        P makeLogRecord = P  // [ET:callable:logging.makeLogRecord]
+        // @ETPL:preload setLoggerClass logging.setLoggerClass
+        P setLoggerClass = P  // [ET:callable:logging.setLoggerClass]
+        // @ETPL:preload shutdown logging.shutdown
+        P shutdown = P  // [ET:callable:logging.shutdown]
+        // @ETPL:preload warn logging.warn
+        P warn = P  // [ET:callable:logging.warn]
+        // @ETPL:preload warning logging.warning
+        P warning = P  // [ET:callable:logging.warning]
+        // @ETPL:preload getLogRecordFactory logging.getLogRecordFactory
+        P getLogRecordFactory = P  // [ET:callable:logging.getLogRecordFactory]
+        // @ETPL:preload setLogRecordFactory logging.setLogRecordFactory
+        P setLogRecordFactory = P  // [ET:callable:logging.setLogRecordFactory]
+        P lastResort = P  // [ET:unrepresentable:_StderrHandler]
+        P raiseExceptions = 1
+        // @ETPL:preload getLevelNamesMapping logging.getLevelNamesMapping
+        P getLevelNamesMapping = P  // [ET:callable:logging.getLevelNamesMapping]
+        // @ETPL:preload getHandlerByName logging.getHandlerByName
+        P getHandlerByName = P  // [ET:callable:logging.getHandlerByName]
+        // @ETPL:preload getHandlerNames logging.getHandlerNames
+        P getHandlerNames = P  // [ET:callable:logging.getHandlerNames]
+        logging D exception("code for hash %s was not found.", __func_name)
+) (D |__always_supported|)
+// del __always_supported
+// del __func_name
+// del __get_hash
+// del __py_new
+// del __hash_new
+// del __get_openssl_constructor
+

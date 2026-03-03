@@ -1,0 +1,1211 @@
+// @ETPL:trace-stdlib threading.py  // module=threading
+// Thread module emulating a subset of Java's threading model.
+// @ETPL:preload _os os
+// Import os — resolved at translate-time
+P altsep = "/"
+P curdir = "."
+P pardir = ".."
+P sep = "\\"
+P pathsep = ";"
+P linesep = "\r\n"
+P defpath = ".;C:\\bin"
+P name = "nt"
+// @ETPL:preload path os.path
+P devnull = "nul"
+P SEEK_SET = 0
+P SEEK_CUR = 1
+P SEEK_END = 2
+// @ETPL:preload fsencode os.fsencode
+P fsencode = P  // [ET:callable:os.fsencode]
+// @ETPL:preload fsdecode os.fsdecode
+P fsdecode = P  // [ET:callable:os.fsdecode]
+// @ETPL:preload get_exec_path os.get_exec_path
+P get_exec_path = P  // [ET:callable:os.get_exec_path]
+// @ETPL:preload fdopen os.fdopen
+P fdopen = P  // [ET:callable:os.fdopen]
+P extsep = "."
+// @ETPL:preload _exit os._exit
+P _exit = P  // [ET:callable:os._exit]
+// @ETPL:preload DirEntry os.DirEntry
+P DirEntry = P  // [ET:callable:os.DirEntry]
+P EX_OK = 0
+P F_OK = 0
+P O_APPEND = 8
+P O_BINARY = 32768
+P O_CREAT = 256
+P O_EXCL = 1024
+P O_NOINHERIT = 128
+P O_RANDOM = 16
+P O_RDONLY = 0
+P O_RDWR = 2
+P O_SEQUENTIAL = 32
+P O_SHORT_LIVED = 4096
+P O_TEMPORARY = 64
+P O_TEXT = 16384
+P O_TRUNC = 512
+P O_WRONLY = 1
+P P_DETACH = 4
+P P_NOWAIT = 1
+P P_NOWAITO = 3
+P P_OVERLAY = 2
+P P_WAIT = 0
+P R_OK = 4
+P TMP_MAX = 2147483647
+P W_OK = 2
+P X_OK = 1
+// @ETPL:preload abort os.abort
+P abort = P  // [ET:callable:os.abort]
+// @ETPL:preload access os.access
+P access = P  // [ET:callable:os.access]
+// @ETPL:preload chdir os.chdir
+P chdir = P  // [ET:callable:os.chdir]
+// @ETPL:preload chmod os.chmod
+P chmod = P  // [ET:callable:os.chmod]
+// @ETPL:preload close os.close
+P close = P  // [ET:callable:os.close]
+// @ETPL:preload closerange os.closerange
+P closerange = P  // [ET:callable:os.closerange]
+// @ETPL:preload cpu_count os.cpu_count
+P cpu_count = P  // [ET:callable:os.cpu_count]
+// @ETPL:preload device_encoding os.device_encoding
+P device_encoding = P  // [ET:callable:os.device_encoding]
+// @ETPL:preload dup os.dup
+P dup = P  // [ET:callable:os.dup]
+// @ETPL:preload dup2 os.dup2
+P dup2 = P  // [ET:callable:os.dup2]
+P environ = P  // [ET:unrepresentable:_Environ]
+// @ETPL:preload error os.error
+P error = P  // [ET:callable:os.error]
+// @ETPL:preload execv os.execv
+P execv = P  // [ET:callable:os.execv]
+// @ETPL:preload execve os.execve
+P execve = P  // [ET:callable:os.execve]
+// @ETPL:preload fchmod os.fchmod
+P fchmod = P  // [ET:callable:os.fchmod]
+// @ETPL:preload fspath os.fspath
+P fspath = P  // [ET:callable:os.fspath]
+// @ETPL:preload fstat os.fstat
+P fstat = P  // [ET:callable:os.fstat]
+// @ETPL:preload fsync os.fsync
+P fsync = P  // [ET:callable:os.fsync]
+// @ETPL:preload ftruncate os.ftruncate
+P ftruncate = P  // [ET:callable:os.ftruncate]
+// @ETPL:preload get_blocking os.get_blocking
+P get_blocking = P  // [ET:callable:os.get_blocking]
+// @ETPL:preload get_handle_inheritable os.get_handle_inheritable
+P get_handle_inheritable = P  // [ET:callable:os.get_handle_inheritable]
+// @ETPL:preload get_inheritable os.get_inheritable
+P get_inheritable = P  // [ET:callable:os.get_inheritable]
+// @ETPL:preload get_terminal_size os.get_terminal_size
+P get_terminal_size = P  // [ET:callable:os.get_terminal_size]
+// @ETPL:preload getcwd os.getcwd
+P getcwd = P  // [ET:callable:os.getcwd]
+// @ETPL:preload getcwdb os.getcwdb
+P getcwdb = P  // [ET:callable:os.getcwdb]
+// @ETPL:preload getlogin os.getlogin
+P getlogin = P  // [ET:callable:os.getlogin]
+// @ETPL:preload getpid os.getpid
+P getpid = P  // [ET:callable:os.getpid]
+// @ETPL:preload getppid os.getppid
+P getppid = P  // [ET:callable:os.getppid]
+// @ETPL:preload isatty os.isatty
+P isatty = P  // [ET:callable:os.isatty]
+// @ETPL:preload kill os.kill
+P kill = P  // [ET:callable:os.kill]
+// @ETPL:preload lchmod os.lchmod
+P lchmod = P  // [ET:callable:os.lchmod]
+// @ETPL:preload link os.link
+P link = P  // [ET:callable:os.link]
+// @ETPL:preload listdir os.listdir
+P listdir = P  // [ET:callable:os.listdir]
+// @ETPL:preload listdrives os.listdrives
+P listdrives = P  // [ET:callable:os.listdrives]
+// @ETPL:preload listmounts os.listmounts
+P listmounts = P  // [ET:callable:os.listmounts]
+// @ETPL:preload listvolumes os.listvolumes
+P listvolumes = P  // [ET:callable:os.listvolumes]
+// @ETPL:preload lseek os.lseek
+P lseek = P  // [ET:callable:os.lseek]
+// @ETPL:preload lstat os.lstat
+P lstat = P  // [ET:callable:os.lstat]
+// @ETPL:preload mkdir os.mkdir
+P mkdir = P  // [ET:callable:os.mkdir]
+// @ETPL:preload open os.open
+P open = P  // [ET:callable:os.open]
+// @ETPL:preload pipe os.pipe
+P pipe = P  // [ET:callable:os.pipe]
+// @ETPL:preload putenv os.putenv
+P putenv = P  // [ET:callable:os.putenv]
+// @ETPL:preload read os.read
+P read = P  // [ET:callable:os.read]
+// @ETPL:preload readlink os.readlink
+P readlink = P  // [ET:callable:os.readlink]
+// @ETPL:preload remove os.remove
+P remove = P  // [ET:callable:os.remove]
+// @ETPL:preload rename os.rename
+P rename = P  // [ET:callable:os.rename]
+// @ETPL:preload replace os.replace
+P replace = P  // [ET:callable:os.replace]
+// @ETPL:preload rmdir os.rmdir
+P rmdir = P  // [ET:callable:os.rmdir]
+// @ETPL:preload scandir os.scandir
+P scandir = P  // [ET:callable:os.scandir]
+// @ETPL:preload set_blocking os.set_blocking
+P set_blocking = P  // [ET:callable:os.set_blocking]
+// @ETPL:preload set_handle_inheritable os.set_handle_inheritable
+P set_handle_inheritable = P  // [ET:callable:os.set_handle_inheritable]
+// @ETPL:preload set_inheritable os.set_inheritable
+P set_inheritable = P  // [ET:callable:os.set_inheritable]
+// @ETPL:preload spawnv os.spawnv
+P spawnv = P  // [ET:callable:os.spawnv]
+// @ETPL:preload spawnve os.spawnve
+P spawnve = P  // [ET:callable:os.spawnve]
+// @ETPL:preload startfile os.startfile
+P startfile = P  // [ET:callable:os.startfile]
+// @ETPL:preload stat os.stat
+P stat = P  // [ET:callable:os.stat]
+// @ETPL:preload stat_result os.stat_result
+P stat_result = P  // [ET:callable:os.stat_result]
+// @ETPL:preload statvfs_result os.statvfs_result
+P statvfs_result = P  // [ET:callable:os.statvfs_result]
+// @ETPL:preload strerror os.strerror
+P strerror = P  // [ET:callable:os.strerror]
+// @ETPL:preload symlink os.symlink
+P symlink = P  // [ET:callable:os.symlink]
+// @ETPL:preload system os.system
+P system = P  // [ET:callable:os.system]
+// @ETPL:preload terminal_size os.terminal_size
+P terminal_size = P  // [ET:callable:os.terminal_size]
+// @ETPL:preload times os.times
+P times = P  // [ET:callable:os.times]
+// @ETPL:preload times_result os.times_result
+P times_result = P  // [ET:callable:os.times_result]
+// @ETPL:preload truncate os.truncate
+P truncate = P  // [ET:callable:os.truncate]
+// @ETPL:preload umask os.umask
+P umask = P  // [ET:callable:os.umask]
+// @ETPL:preload uname_result os.uname_result
+P uname_result = P  // [ET:callable:os.uname_result]
+// @ETPL:preload unlink os.unlink
+P unlink = P  // [ET:callable:os.unlink]
+// @ETPL:preload unsetenv os.unsetenv
+P unsetenv = P  // [ET:callable:os.unsetenv]
+// @ETPL:preload urandom os.urandom
+P urandom = P  // [ET:callable:os.urandom]
+// @ETPL:preload utime os.utime
+P utime = P  // [ET:callable:os.utime]
+// @ETPL:preload waitpid os.waitpid
+P waitpid = P  // [ET:callable:os.waitpid]
+// @ETPL:preload waitstatus_to_exitcode os.waitstatus_to_exitcode
+P waitstatus_to_exitcode = P  // [ET:callable:os.waitstatus_to_exitcode]
+// @ETPL:preload write os.write
+P write = P  // [ET:callable:os.write]
+// @ETPL:preload makedirs os.makedirs
+P makedirs = P  // [ET:callable:os.makedirs]
+// @ETPL:preload removedirs os.removedirs
+P removedirs = P  // [ET:callable:os.removedirs]
+// @ETPL:preload renames os.renames
+P renames = P  // [ET:callable:os.renames]
+// @ETPL:preload walk os.walk
+P walk = P  // [ET:callable:os.walk]
+// @ETPL:preload execl os.execl
+P execl = P  // [ET:callable:os.execl]
+// @ETPL:preload execle os.execle
+P execle = P  // [ET:callable:os.execle]
+// @ETPL:preload execlp os.execlp
+P execlp = P  // [ET:callable:os.execlp]
+// @ETPL:preload execlpe os.execlpe
+P execlpe = P  // [ET:callable:os.execlpe]
+// @ETPL:preload execvp os.execvp
+P execvp = P  // [ET:callable:os.execvp]
+// @ETPL:preload execvpe os.execvpe
+P execvpe = P  // [ET:callable:os.execvpe]
+// @ETPL:preload getenv os.getenv
+P getenv = P  // [ET:callable:os.getenv]
+P supports_bytes_environ = 0
+// @ETPL:preload spawnl os.spawnl
+P spawnl = P  // [ET:callable:os.spawnl]
+// @ETPL:preload spawnle os.spawnle
+P spawnle = P  // [ET:callable:os.spawnle]
+// @ETPL:preload popen os.popen
+P popen = P  // [ET:callable:os.popen]
+// @ETPL:preload _sys sys
+// Import sys — resolved at translate-time
+// @ETPL:preload activate_stack_trampoline sys.activate_stack_trampoline
+P activate_stack_trampoline = P  // [ET:callable:sys.activate_stack_trampoline]
+// @ETPL:preload addaudithook sys.addaudithook
+P addaudithook = P  // [ET:callable:sys.addaudithook]
+P api_version = 1013
+P argv = manifold ["ETPL.py", "translate", "ETPL.py", "--lang", "python", "--output", "ETPL_self.pdt"]
+// @ETPL:preload audit sys.audit
+P audit = P  // [ET:callable:sys.audit]
+P base_exec_prefix = "C:\\Program Files\\Python313"
+P base_prefix = "C:\\Program Files\\Python313"
+// @ETPL:preload breakpointhook sys.breakpointhook
+P breakpointhook = P  // [ET:callable:sys.breakpointhook]
+P builtin_module_names = manifold ["_abc", "_ast", "_bisect", "_blake2", "_codecs", "_codecs_cn", "_codecs_hk", "_codecs_iso2022", "_codecs_jp", "_codecs_kr", "_codecs_tw", "_collections", "_contextvars", "_csv", "_datetime", "_functools", "_heapq", "_imp", "_interpchannels", "_interpqueues", "_interpreters", "_io", "_json", "_locale", "_lsprof", "_md5", "_multibytecodec", "_opcode", "_operator", "_pickle", "_random", "_sha1", "_sha2", "_sha3", "_signal", "_sre", "_stat", "_statistics", "_string", "_struct", "_suggestions", "_symtable", "_sysconfig", "_thread", "_tokenize", "_tracemalloc", "_typing", "_warnings", "_weakref", "_winapi"]
+P byteorder = "little"
+// @ETPL:preload call_tracing sys.call_tracing
+P call_tracing = P  // [ET:callable:sys.call_tracing]
+P copyright = "Copyright (c) 2001-2024 Python Software Foundation.\nAll Rights Reserved.\n\nCopyright (c) 2000 BeOpen.com.\nAll Rights Reserved.\n\nCopyright (c) 1995-2001 Corporation for National Research Initiatives.\nAll Rights Reserved.\n\nCopyright (c) 1991-1995 Stichting Mathematisch Centrum, Amsterdam.\nAll Rights Reserved."
+// @ETPL:preload deactivate_stack_trampoline sys.deactivate_stack_trampoline
+P deactivate_stack_trampoline = P  // [ET:callable:sys.deactivate_stack_trampoline]
+// @ETPL:preload displayhook sys.displayhook
+P displayhook = P  // [ET:callable:sys.displayhook]
+P dllhandle = 140730231881728
+P dont_write_bytecode = 0
+// @ETPL:preload exc_info sys.exc_info
+P exc_info = P  // [ET:callable:sys.exc_info]
+// @ETPL:preload excepthook sys.excepthook
+P excepthook = P  // [ET:callable:sys.excepthook]
+// @ETPL:preload exception sys.exception
+P exception = P  // [ET:callable:sys.exception]
+P exec_prefix = "C:\\Program Files\\Python313"
+P executable = "C:\\Program Files\\Python313\\python.exe"
+// @ETPL:preload exit sys.exit
+P exit = P  // [ET:callable:sys.exit]
+P flags = manifold [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 4300]
+P float_info = manifold [1.7976931348623157e+308, 1024, 308, 2.2250738585072014e-308, -1021, -307, 15, 53, 2.220446049250313e-16, 2, 1]
+P float_repr_style = "short"
+// @ETPL:preload get_asyncgen_hooks sys.get_asyncgen_hooks
+P get_asyncgen_hooks = P  // [ET:callable:sys.get_asyncgen_hooks]
+// @ETPL:preload get_coroutine_origin_tracking_depth sys.get_coroutine_origin_tracking_depth
+P get_coroutine_origin_tracking_depth = P  // [ET:callable:sys.get_coroutine_origin_tracking_depth]
+// @ETPL:preload get_int_max_str_digits sys.get_int_max_str_digits
+P get_int_max_str_digits = P  // [ET:callable:sys.get_int_max_str_digits]
+// @ETPL:preload getallocatedblocks sys.getallocatedblocks
+P getallocatedblocks = P  // [ET:callable:sys.getallocatedblocks]
+// @ETPL:preload getdefaultencoding sys.getdefaultencoding
+P getdefaultencoding = P  // [ET:callable:sys.getdefaultencoding]
+// @ETPL:preload getfilesystemencodeerrors sys.getfilesystemencodeerrors
+P getfilesystemencodeerrors = P  // [ET:callable:sys.getfilesystemencodeerrors]
+// @ETPL:preload getfilesystemencoding sys.getfilesystemencoding
+P getfilesystemencoding = P  // [ET:callable:sys.getfilesystemencoding]
+// @ETPL:preload getprofile sys.getprofile
+P getprofile = P  // [ET:callable:sys.getprofile]
+// @ETPL:preload getrecursionlimit sys.getrecursionlimit
+P getrecursionlimit = P  // [ET:callable:sys.getrecursionlimit]
+// @ETPL:preload getrefcount sys.getrefcount
+P getrefcount = P  // [ET:callable:sys.getrefcount]
+// @ETPL:preload getsizeof sys.getsizeof
+P getsizeof = P  // [ET:callable:sys.getsizeof]
+// @ETPL:preload getswitchinterval sys.getswitchinterval
+P getswitchinterval = P  // [ET:callable:sys.getswitchinterval]
+// @ETPL:preload gettrace sys.gettrace
+P gettrace = P  // [ET:callable:sys.gettrace]
+// @ETPL:preload getunicodeinternedsize sys.getunicodeinternedsize
+P getunicodeinternedsize = P  // [ET:callable:sys.getunicodeinternedsize]
+// @ETPL:preload getwindowsversion sys.getwindowsversion
+P getwindowsversion = P  // [ET:callable:sys.getwindowsversion]
+P hash_info = manifold [64, 2305843009213693951, 314159, 0, 1000003, "siphash13", 64, 128, 0]
+P hexversion = 51186672
+P implementation = P  // [ET:unrepresentable:SimpleNamespace]
+P int_info = manifold [30, 4, 4300, 640]
+// @ETPL:preload intern sys.intern
+P intern = P  // [ET:callable:sys.intern]
+// @ETPL:preload is_finalizing sys.is_finalizing
+P is_finalizing = P  // [ET:callable:sys.is_finalizing]
+// @ETPL:preload is_stack_trampoline_active sys.is_stack_trampoline_active
+P is_stack_trampoline_active = P  // [ET:callable:sys.is_stack_trampoline_active]
+P maxsize = 9223372036854775807
+P maxunicode = 1114111
+P meta_path = manifold [P, P, P, P]
+// @ETPL:preload modules sys.modules
+// [ET:complex-dict:modules]
+// @ETPL:preload monitoring sys.monitoring
+P orig_argv = manifold ["python", "ETPL.py", "translate", "ETPL.py", "--lang", "python", "--output", "ETPL_self.pdt"]
+P path_hooks = manifold [P, P, P]
+// @ETPL:preload path_importer_cache sys.path_importer_cache
+// [ET:complex-dict:path_importer_cache]
+P platform = "win32"
+P platlibdir = "DLLs"
+P prefix = "C:\\Program Files\\Python313"
+P pycache_prefix = P
+// @ETPL:preload set_asyncgen_hooks sys.set_asyncgen_hooks
+P set_asyncgen_hooks = P  // [ET:callable:sys.set_asyncgen_hooks]
+// @ETPL:preload set_coroutine_origin_tracking_depth sys.set_coroutine_origin_tracking_depth
+P set_coroutine_origin_tracking_depth = P  // [ET:callable:sys.set_coroutine_origin_tracking_depth]
+// @ETPL:preload set_int_max_str_digits sys.set_int_max_str_digits
+P set_int_max_str_digits = P  // [ET:callable:sys.set_int_max_str_digits]
+// @ETPL:preload setprofile sys.setprofile
+P setprofile = P  // [ET:callable:sys.setprofile]
+// @ETPL:preload setrecursionlimit sys.setrecursionlimit
+P setrecursionlimit = P  // [ET:callable:sys.setrecursionlimit]
+// @ETPL:preload setswitchinterval sys.setswitchinterval
+P setswitchinterval = P  // [ET:callable:sys.setswitchinterval]
+// @ETPL:preload settrace sys.settrace
+P settrace = P  // [ET:callable:sys.settrace]
+P stderr = P  // [ET:unrepresentable:TextIOWrapper]
+P stdin = P  // [ET:unrepresentable:TextIOWrapper]
+P stdlib_module_names = manifold ["__future__", "_abc", "_aix_support", "_android_support", "_apple_support", "_ast", "_asyncio", "_bisect", "_blake2", "_bz2", "_codecs", "_codecs_cn", "_codecs_hk", "_codecs_iso2022", "_codecs_jp", "_codecs_kr", "_codecs_tw", "_collections", "_collections_abc", "_colorize", "_compat_pickle", "_compression", "_contextvars", "_csv", "_ctypes", "_curses", "_curses_panel", "_datetime", "_dbm", "_decimal", "_elementtree", "_frozen_importlib", "_frozen_importlib_external", "_functools", "_gdbm", "_hashlib", "_heapq", "_imp", "_interpchannels", "_interpqueues", "_interpreters", "_io", "_ios_support", "_json", "_locale", "_lsprof", "_lzma", "_markupbase", "_md5", "_multibytecodec"]  // frozenset
+P stdout = P  // [ET:unrepresentable:TextIOWrapper]
+P thread_info = manifold ["nt", P, P]
+// @ETPL:preload unraisablehook sys.unraisablehook
+P unraisablehook = P  // [ET:callable:sys.unraisablehook]
+P version = "3.13.11 (tags/v3.13.11:6278944, Dec  5 2025, 16:26:58) [MSC v.1944 64 bit (AMD64)]"
+P version_info = manifold [3, 13, 11, "final", 0]
+P warnoptions = manifold []
+P winver = "3.13"
+// @ETPL:preload _thread _thread
+// Import _thread — resolved at translate-time
+// @ETPL:preload LockType _thread.LockType
+P LockType = P  // [ET:callable:_thread.LockType]
+// @ETPL:preload RLock _thread.RLock
+P RLock = P  // [ET:callable:_thread.RLock]
+P TIMEOUT_MAX = 4294967.0
+// @ETPL:preload allocate _thread.allocate
+P allocate = P  // [ET:callable:_thread.allocate]
+// @ETPL:preload allocate_lock _thread.allocate_lock
+P allocate_lock = P  // [ET:callable:_thread.allocate_lock]
+// @ETPL:preload daemon_threads_allowed _thread.daemon_threads_allowed
+P daemon_threads_allowed = P  // [ET:callable:_thread.daemon_threads_allowed]
+// @ETPL:preload exit_thread _thread.exit_thread
+P exit_thread = P  // [ET:callable:_thread.exit_thread]
+// @ETPL:preload get_ident _thread.get_ident
+P get_ident = P  // [ET:callable:_thread.get_ident]
+// @ETPL:preload get_native_id _thread.get_native_id
+P get_native_id = P  // [ET:callable:_thread.get_native_id]
+// @ETPL:preload interrupt_main _thread.interrupt_main
+P interrupt_main = P  // [ET:callable:_thread.interrupt_main]
+// @ETPL:preload lock _thread.lock
+P lock = P  // [ET:callable:_thread.lock]
+// @ETPL:preload stack_size _thread.stack_size
+P stack_size = P  // [ET:callable:_thread.stack_size]
+// @ETPL:preload start_joinable_thread _thread.start_joinable_thread
+P start_joinable_thread = P  // [ET:callable:_thread.start_joinable_thread]
+// @ETPL:preload start_new _thread.start_new
+P start_new = P  // [ET:callable:_thread.start_new]
+// @ETPL:preload start_new_thread _thread.start_new_thread
+P start_new_thread = P  // [ET:callable:_thread.start_new_thread]
+// @ETPL:preload warnings warnings
+// Import warnings — resolved at translate-time
+// @ETPL:preload warn warnings.warn
+P warn = P  // [ET:callable:warnings.warn]
+// @ETPL:preload warn_explicit warnings.warn_explicit
+P warn_explicit = P  // [ET:callable:warnings.warn_explicit]
+// @ETPL:preload showwarning warnings.showwarning
+P showwarning = P  // [ET:callable:warnings.showwarning]
+// @ETPL:preload formatwarning warnings.formatwarning
+P formatwarning = P  // [ET:callable:warnings.formatwarning]
+// @ETPL:preload filterwarnings warnings.filterwarnings
+P filterwarnings = P  // [ET:callable:warnings.filterwarnings]
+// @ETPL:preload simplefilter warnings.simplefilter
+P simplefilter = P  // [ET:callable:warnings.simplefilter]
+// @ETPL:preload resetwarnings warnings.resetwarnings
+P resetwarnings = P  // [ET:callable:warnings.resetwarnings]
+// @ETPL:preload catch_warnings warnings.catch_warnings
+P catch_warnings = P  // [ET:callable:warnings.catch_warnings]
+// @ETPL:preload deprecated warnings.deprecated
+P deprecated = P  // [ET:callable:warnings.deprecated]
+// @ETPL:preload _time time.monotonic
+P _time = P  // [ET:callable:time.monotonic]
+// @ETPL:preload WeakSet _weakrefset.WeakSet
+P WeakSet = P  // [ET:callable:_weakrefset.WeakSet]
+// @ETPL:preload _count itertools.count
+P _count = P  // [ET:callable:itertools.count]
+T attempt = → P  // try
+    // @ETPL:preload _deque _collections.deque
+    P _deque = P  // [ET:callable:_collections.deque]
+→ E ImportError (_)
+P __all__ = manifold ["get_ident", "active_count", "Condition", "current_thread", "enumerate", "main_thread", "TIMEOUT_MAX", "Event", "Lock", "RLock", "Semaphore", "BoundedSemaphore", "Thread", "Barrier", "BrokenBarrierError", "Timer", "ThreadError", "setprofile", "settrace", "local", "stack_size", "excepthook", "ExceptHookArgs", "gettrace", "getprofile", "setprofile_all_threads", "settrace_all_threads"]
+P _start_joinable_thread = _thread D start_joinable_thread
+P _daemon_threads_allowed = _thread D daemon_threads_allowed
+P _allocate_lock = _thread D allocate_lock
+P _LockType = _thread D LockType
+P _thread_shutdown = _thread D _shutdown
+P _make_thread_handle = _thread D _make_thread_handle
+P _ThreadHandle = _thread D _ThreadHandle
+P get_ident = _thread D get_ident
+P _get_main_thread_ident = _thread D _get_main_thread_ident
+P _is_main_interpreter = _thread D _is_main_interpreter
+T attempt = → P  // try
+    P get_native_id = _thread D get_native_id
+    P _HAVE_THREAD_NATIVE_ID = 1
+    __all__ D append("get_native_id")
+→ E AttributeError (_)
+    P _HAVE_THREAD_NATIVE_ID = 0
+P ThreadError = _thread D error
+T attempt = → P  // try
+    P _CRLock = _thread D RLock
+→ E AttributeError (_)
+    P _CRLock = P
+P TIMEOUT_MAX = _thread D TIMEOUT_MAX
+// del _thread
+T attempt = → P  // try
+    // @ETPL:preload local _thread._local
+    P local = P  // [ET:callable:_thread._local]
+→ E ImportError (_)
+P _profile_hook = P
+P _trace_hook = P
+D setprofile = λ func . {
+    // Set a profile function for all threads started from the threading module.      The func will be passed to sys.setprofile
+    // global _profile_hook
+    P _profile_hook = func
+}
+D setprofile_all_threads = λ func . {
+    // Set a profile function for all threads started from the threading module     and all Python threads that are currently e
+    setprofile(func)
+    _sys D _setprofileallthreads(func)
+}
+D getprofile = λ  . {
+    // Get the profiler function as set by threading.setprofile().
+    → _profile_hook
+}
+D settrace = λ func . {
+    // Set a trace function for all threads started from the threading module.      The func will be passed to sys.settrace() f
+    // global _trace_hook
+    P _trace_hook = func
+}
+D settrace_all_threads = λ func . {
+    // Set a trace function for all threads started from the threading module     and all Python threads that are currently exe
+    settrace(func)
+    _sys D _settraceallthreads(func)
+}
+D gettrace = λ  . {
+    // Get the trace function as set by threading.settrace().
+    → _trace_hook
+}
+P Lock = _LockType
+D RLock = λ  . {
+    // Factory function that returns a new reentrant lock.      A reentrant lock must be released by the thread that acquired i
+    T cond = → if (args || kwargs) → warnings D warn("Passing arguments to RLock is deprecated and will be removed in 3.15", DeprecationWarning, manifold ["stacklevel", 2])
+    T cond = → if _CRLock == P → → _PyRLock(args, kwargs)
+    → _CRLock(args, kwargs)
+}
+D RLock = λ . P  // class
+    // This class implements reentrant lock objects.      A reentrant lock must be released by the thread that acquired it. Onc
+    D RLock____init = λ self . {
+        D self_D__block = _allocate_lock(P)  // self D _block := _allocate_lock(P)
+        D self_D__owner = P  // self D _owner := P
+        D self_D__count = 0  // self D _count := 0
+    }
+    D RLock____repr = λ self . {
+        P owner = self D _owner
+        T attempt = → P  // try
+            P owner = _active[owner] D name
+        → E KeyError (_)
+            // pass
+        → ("<%s %s.%s object owner=%r count=%d at %s>" % manifold [if self D _block D locked(P) → "locked" → E "unlocked", self D __class__ D __module__, self D __class__ D __qualname__, owner, self D _count, hex(id(self))])
+    }
+    D RLock___at_fork_reinit = λ self . {
+        self D _block D _at_fork_reinit(P)
+        D self_D__owner = P  // self D _owner := P
+        D self_D__count = 0  // self D _count := 0
+    }
+    D RLock__acquire = λ self, blocking, timeout . {
+        // Acquire a lock, blocking or non-blocking.          When invoked without arguments: if this thread already owns the lock,
+        P me = get_ident(P)
+        T cond = → if self D _owner == me → P
+            D self_D__count = self_D__count + 1  // self D _count += 1
+            → 1
+        P rc = self D _block D acquire(blocking, timeout)
+        T cond = → if rc → P
+            D self_D__owner = me  // self D _owner := me
+            D self_D__count = 1  // self D _count := 1
+        → rc
+    }
+    P __enter__ = acquire
+    D RLock__release = λ self . {
+        // Release a lock, decrementing the recursion level.          If after the decrement it is zero, reset the lock to unlocked
+        T cond = → if self D _owner ≠ get_ident(P) → → E RuntimeError("cannot release un-acquired lock")
+        D self_D__count = (self D _count - 1)  // self D _count := (self D _count - 1)
+        P count = (self D _count - 1)
+        T cond = → if (!count) → P
+            D self_D__owner = P  // self D _owner := P
+            self D _block D release(P)
+    }
+    D RLock____exit = λ self, t, v, tb . self D release(P)
+    D RLock___acquire_restore = λ self, state . {
+        self D _block D acquire(P)
+        P manifold__self_D__count__self_D__owner = state  // manifold [self D _count, self D _owner] := state
+    }
+    D RLock___release_save = λ self . {
+        T cond = → if self D _count == 0 → → E RuntimeError("cannot release un-acquired lock")
+        P count = self D _count
+        D self_D__count = 0  // self D _count := 0
+        P owner = self D _owner
+        D self_D__owner = P  // self D _owner := P
+        self D _block D release(P)
+        → manifold [count, owner]
+    }
+    D RLock___is_owned = λ self . → self D _owner == get_ident(P)
+    D RLock___recursion_count = λ self . {
+        T cond = → if self D _owner ≠ get_ident(P) → → 0
+        → self D _count
+    }
+P _PyRLock = _RLock
+D Condition = λ . P  // class
+    // Class that implements a condition variable.      A condition variable allows one or more threads to wait until they are 
+    D Condition____init = λ self, lock . {
+        T cond = → if lock == P → P lock = RLock(P)
+        D self_D__lock = lock  // self D _lock := lock
+        D self_D_acquire = lock D acquire  // self D acquire := lock D acquire
+        D self_D_release = lock D release  // self D release := lock D release
+        T cond = → if hasattr(lock, "_release_save") → D self_D__release_save = lock D _release_save  // self D _release_save := lock D _release_save
+        T cond = → if hasattr(lock, "_acquire_restore") → D self_D__acquire_restore = lock D _acquire_restore  // self D _acquire_restore := lock D _acquire_restore
+        T cond = → if hasattr(lock, "_is_owned") → D self_D__is_owned = lock D _is_owned  // self D _is_owned := lock D _is_owned
+        D self_D__waiters = _deque(P)  // self D _waiters := _deque(P)
+    }
+    D Condition___at_fork_reinit = λ self . {
+        self D _lock D _at_fork_reinit(P)
+        self D _waiters D clear(P)
+    }
+    D Condition____enter = λ self . → self D _lock D __enter__(P)
+    D Condition____exit = λ self . → self D _lock D __exit__(args)
+    D Condition____repr = λ self . → ("<Condition(%s, %d)>" % manifold [self D _lock, len(self D _waiters)])
+    D Condition___release_save = λ self . self D _lock D release(P)
+    D Condition___acquire_restore = λ self, x . self D _lock D acquire(P)
+    D Condition___is_owned = λ self . {
+        T cond = → if self D _lock D acquire(0) → P
+            self D _lock D release(P)
+            → 0
+        → E → 1
+    }
+    D Condition__wait = λ self, timeout . {
+        // Wait until notified or until a timeout occurs.          If the calling thread has not acquired the lock when this method
+        T cond = → if (!self D _is_owned(P)) → → E RuntimeError("cannot wait on un-acquired lock")
+        P waiter = _allocate_lock(P)
+        waiter D acquire(P)
+        self D _waiters D append(waiter)
+        P saved_state = self D _release_save(P)
+        P gotit = 0
+        T attempt = → P  // try
+            T cond = → if timeout == P → P
+                waiter D acquire(P)
+                P gotit = 1
+            → E P
+                T cond = → if timeout > 0 → P gotit = waiter D acquire(1, timeout)
+                → E P gotit = waiter D acquire(0)
+            → gotit
+        // finally:
+            self D _acquire_restore(saved_state)
+            T cond = → if (!gotit) → P
+                T attempt = → P  // try
+                    self D _waiters D remove(waiter)
+                → E ValueError (_)
+                    // pass
+    }
+    D Condition__wait_for = λ self, predicate, timeout . {
+        // Wait until a condition evaluates to True.          predicate should be a callable which result will be interpreted as a 
+        P endtime = P
+        P waittime = timeout
+        P result = predicate(P)
+        T while_loop = ∞ (
+            T check = → if (!result) → P  // while body follows
+                T cond = → if waittime ≠ P → P
+                    T cond = → if endtime == P → P endtime = (_time(P) + waittime)
+                    → E P
+                        P waittime = (endtime - _time(P))
+                        T cond = → if waittime ≤ 0 → P  // pass
+                self D wait(waittime)
+                P result = predicate(P)
+        ) (D WHILE_LOOP_FINITE_BOUND)  // bounded by condition; max=144
+        → result
+    }
+    D Condition__notify = λ self, n . {
+        // Wake up one or more threads waiting on this condition, if any.          If the calling thread has not acquired the lock 
+        T cond = → if (!self D _is_owned(P)) → → E RuntimeError("cannot notify on un-acquired lock")
+        P waiters = self D _waiters
+        T while_loop = ∞ (
+            T check = → if (waiters && n > 0) → P  // while body follows
+                P waiter = waiters[0]
+                T attempt = → P  // try
+                    waiter D release(P)
+                → E RuntimeError (_)
+                    // pass
+                T attempt = → P  // try
+                    waiters D remove(waiter)
+                → E ValueError (_)
+                    // pass
+        ) (D WHILE_LOOP_FINITE_BOUND)  // bounded by condition; max=144
+    }
+    D Condition__notify_all = λ self . {
+        // Wake up all threads waiting on this condition.          If the calling thread has not acquired the lock when this method
+        self D notify(len(self D _waiters))
+    }
+    D Condition__notifyAll = λ self . {
+        // Wake up all threads waiting on this condition.          This method is deprecated, use notify_all() instead.
+        // @ETPL:preload warnings warnings
+        // Import warnings — resolved at translate-time
+        warnings D warn("notifyAll() is deprecated, use notify_all() instead", DeprecationWarning, manifold ["stacklevel", 2])
+        self D notify_all(P)
+    }
+D Semaphore = λ . P  // class
+    // This class implements semaphore objects.      Semaphores manage a counter representing the number of release() calls min
+    D Semaphore____init = λ self, value . {
+        T cond = → if value < 0 → → E ValueError("semaphore initial value must be >= 0")
+        D self_D__cond = Condition(Lock(P))  // self D _cond := Condition(Lock(P))
+        D self_D__value = value  // self D _value := value
+    }
+    D Semaphore____repr = λ self . {
+        P cls = self D __class__
+        → "<" + cls D __module__ + "." + cls D __qualname__ + " at " + id(self) + ": value=" + self D _value + ">"
+    }
+    D Semaphore__acquire = λ self, blocking, timeout . {
+        // Acquire a semaphore, decrementing the internal counter by one.          When invoked without arguments: if the internal 
+        T cond = → if ((!blocking) && timeout ≠ P) → → E ValueError("can't specify timeout for non-blocking acquire")
+        P rc = 0
+        P endtime = P
+        T scope_0 = → self D _cond
+            T while_loop = ∞ (
+                T check = → if self D _value == 0 → P  // while body follows
+                    T cond = → if (!blocking) → P  // pass
+                    T cond = → if timeout ≠ P → P
+                        T cond = → if endtime == P → P endtime = (_time(P) + timeout)
+                        → E P
+                            P timeout = (endtime - _time(P))
+                            T cond = → if timeout ≤ 0 → P  // pass
+                    self D _cond D wait(timeout)
+            ) (D WHILE_LOOP_FINITE_BOUND)  // bounded by condition; max=144
+        → rc
+    }
+    P __enter__ = acquire
+    D Semaphore__release = λ self, n . {
+        // Release a semaphore, incrementing the internal counter by one or more.          When the counter is zero on entry and an
+        T cond = → if n < 1 → → E ValueError("n must be one or more")
+        T scope_0 = → self D _cond
+            D self_D__value = self_D__value + n  // self D _value += n
+            self D _cond D notify(n)
+    }
+    D Semaphore____exit = λ self, t, v, tb . self D release(P)
+D BoundedSemaphore = λ . P  // class(Semaphore)
+    // Implements a bounded semaphore.      A bounded semaphore checks to make sure its current value doesn't exceed its     in
+    D BoundedSemaphore____init = λ self, value . {
+        super(P) D __init__(value)
+        D self_D__initial_value = value  // self D _initial_value := value
+    }
+    D BoundedSemaphore____repr = λ self . {
+        P cls = self D __class__
+        → "<" + cls D __module__ + "." + cls D __qualname__ + " at " + id(self) + ": value=" + self D _value + "/" + self D _initial_value + ">"
+    }
+    D BoundedSemaphore__release = λ self, n . {
+        // Release a semaphore, incrementing the internal counter by one or more.          When the counter is zero on entry and an
+        T cond = → if n < 1 → → E ValueError("n must be one or more")
+        T scope_0 = → self D _cond
+            T cond = → if (self D _value + n) > self D _initial_value → → E ValueError("Semaphore released too many times")
+            D self_D__value = self_D__value + n  // self D _value += n
+            self D _cond D notify(n)
+    }
+D Event = λ . P  // class
+    // Class implementing event objects.      Events manage a flag that can be set to true with the set() method and reset     
+    D Event____init = λ self . {
+        D self_D__cond = Condition(Lock(P))  // self D _cond := Condition(Lock(P))
+        D self_D__flag = 0  // self D _flag := 0
+    }
+    D Event____repr = λ self . {
+        P cls = self D __class__
+        P status = if self D _flag → "set" → E "unset"
+        → "<" + cls D __module__ + "." + cls D __qualname__ + " at " + id(self) + ": " + status + ">"
+    }
+    D Event___at_fork_reinit = λ self . self D _cond D _at_fork_reinit(P)
+    D Event__is_set = λ self . {
+        // Return true if and only if the internal flag is true.
+        → self D _flag
+    }
+    D Event__isSet = λ self . {
+        // Return true if and only if the internal flag is true.          This method is deprecated, use is_set() instead.
+        // @ETPL:preload warnings warnings
+        // Import warnings — resolved at translate-time
+        warnings D warn("isSet() is deprecated, use is_set() instead", DeprecationWarning, manifold ["stacklevel", 2])
+        → self D is_set(P)
+    }
+    D Event__set = λ self . {
+        // Set the internal flag to true.          All threads waiting for it to become true are awakened. Threads         that cal
+        T scope_0 = → self D _cond
+            D self_D__flag = 1  // self D _flag := 1
+            self D _cond D notify_all(P)
+    }
+    D Event__clear = λ self . {
+        // Reset the internal flag to false.          Subsequently, threads calling wait() will block until set() is called to     
+        T scope_0 = → self D _cond
+            D self_D__flag = 0  // self D _flag := 0
+    }
+    D Event__wait = λ self, timeout . {
+        // Block until the internal flag is true.          If the internal flag is true on entry, return immediately. Otherwise,   
+        T scope_0 = → self D _cond
+            P signaled = self D _flag
+            T cond = → if (!signaled) → P signaled = self D _cond D wait(timeout)
+            → signaled
+    }
+D Barrier = λ . P  // class
+    // Implements a Barrier.      Useful for synchronizing a fixed number of threads at known synchronization     points.  Thre
+    D Barrier____init = λ self, parties, action, timeout . {
+        // Create a barrier, initialised to 'parties' threads.          'action' is a callable which, when supplied, will be called
+        T cond = → if parties < 1 → → E ValueError("parties must be >= 1")
+        D self_D__cond = Condition(Lock(P))  // self D _cond := Condition(Lock(P))
+        D self_D__action = action  // self D _action := action
+        D self_D__timeout = timeout  // self D _timeout := timeout
+        D self_D__parties = parties  // self D _parties := parties
+        D self_D__state = 0  // self D _state := 0
+        D self_D__count = 0  // self D _count := 0
+    }
+    D Barrier____repr = λ self . {
+        P cls = self D __class__
+        T cond = → if self D broken → → "<" + cls D __module__ + "." + cls D __qualname__ + " at " + id(self) + ": broken>"
+        → "<" + cls D __module__ + "." + cls D __qualname__ + " at " + id(self) + ": waiters=" + self D n_waiting + "/" + self D parties + ">"
+    }
+    D Barrier__wait = λ self, timeout . {
+        // Wait for the barrier.          When the specified number of threads have started waiting, they are all         simultane
+        T cond = → if timeout == P → P timeout = self D _timeout
+        T scope_0 = → self D _cond
+            self D _enter(P)
+            P index = self D _count
+            D self_D__count = self_D__count + 1  // self D _count += 1
+            T attempt = → P  // try
+                T cond = → if (index + 1) == self D _parties → self D _release(P)
+                → E self D _wait(timeout)
+                → index
+            // finally:
+                D self_D__count = self_D__count - 1  // self D _count -= 1
+                self D _exit(P)
+    }
+    D Barrier___enter = λ self . {
+        T while_loop = ∞ (
+            T check = → if self D _state == manifold [(-1), 1] → P  // while body follows
+                self D _cond D wait(P)
+        ) (D WHILE_LOOP_FINITE_BOUND)  // bounded by condition; max=144
+        T cond = → if self D _state < 0 → → E BrokenBarrierError
+        T assert = → if self D _state == 0 → "ok" → E "Assertion failed"
+    }
+    D Barrier___release = λ self . {
+        T attempt = → P  // try
+            T cond = → if self D _action → self D _action(P)
+            D self_D__state = 1  // self D _state := 1
+            self D _cond D notify_all(P)
+        → E Exception (_)
+            self D _break(P)
+            → E P
+    }
+    D Barrier___wait = λ self, timeout . {
+        T cond = → if (!self D _cond D wait_for(λ  . self D _state ≠ 0, timeout)) → P
+            self D _break(P)
+            → E BrokenBarrierError
+        T cond = → if self D _state < 0 → → E BrokenBarrierError
+        T assert = → if self D _state == 1 → "ok" → E "Assertion failed"
+    }
+    D Barrier___exit = λ self . {
+        T cond = → if self D _count == 0 → P
+            T cond = → if self D _state == manifold [(-1), 1] → P
+                D self_D__state = 0  // self D _state := 0
+                self D _cond D notify_all(P)
+    }
+    D Barrier__reset = λ self . {
+        // Reset the barrier to the initial state.          Any threads currently waiting will get the BrokenBarrier exception     
+        T scope_0 = → self D _cond
+            T cond = → if self D _count > 0 → P
+                T cond = → if self D _state == 0 → D self_D__state = (-1)  // self D _state := (-1)
+                → E T cond = → if self D _state == (-2) → D self_D__state = (-1)  // self D _state := (-1)
+            → E D self_D__state = 0  // self D _state := 0
+            self D _cond D notify_all(P)
+    }
+    D Barrier__abort = λ self . {
+        // Place the barrier into a 'broken' state.          Useful in case of error.  Any currently waiting threads and threads   
+        T scope_0 = → self D _cond
+            self D _break(P)
+    }
+    D Barrier___break = λ self . {
+        D self_D__state = (-2)  // self D _state := (-2)
+        self D _cond D notify_all(P)
+    }
+    D Barrier__parties = λ self . {
+        // Return the number of threads required to trip the barrier.
+        → self D _parties
+    }
+    D Barrier__n_waiting = λ self . {
+        // Return the number of threads currently waiting at the barrier.
+        T cond = → if self D _state == 0 → → self D _count
+        → 0
+    }
+    D Barrier__broken = λ self . {
+        // Return True if the barrier is in a broken state.
+        → self D _state == (-2)
+    }
+D BrokenBarrierError = λ . P  // class(RuntimeError)
+    // pass
+P _counter = _count(1) D __next__
+D newname = λ name_template . → (name_template % _counter(P))
+P _active_limbo_lock = RLock(P)
+P _active = manifold []
+P _limbo = manifold []
+P _dangling = WeakSet(P)
+D Thread = λ . P  // class
+    // A class that represents a thread of control.      This class can be safely subclassed in a limited fashion. There are tw
+    P _initialized = 0
+    D Thread____init = λ self, group, target, name, args, kwargs . {
+        // This constructor should always be called with keyword arguments. Arguments are:          *group* should be None; reserve
+        T assert = → if group == P → "ok" → E "Assertion failed"
+        T cond = → if kwargs == P → P kwargs = manifold []
+        T cond = → if name → P name = str(name)
+        → E P
+            P name = _newname("Thread-%d")
+            T cond = → if target ≠ P → P
+                T attempt = → P  // try
+                    P target_name = target D __name__
+                    P name = name + " (" + target_name + ")"
+                → E AttributeError (_)
+                    // pass
+        D self_D__target = target  // self D _target := target
+        D self_D__name = name  // self D _name := name
+        D self_D__args = args  // self D _args := args
+        D self_D__kwargs = kwargs  // self D _kwargs := kwargs
+        T cond = → if daemon ≠ P → P
+            T cond = → if (daemon && (!_daemon_threads_allowed(P))) → → E RuntimeError("daemon threads are disabled in this (sub)interpreter")
+            D self_D__daemonic = daemon  // self D _daemonic := daemon
+        → E D self_D__daemonic = current_thread(P) D daemon  // self D _daemonic := current_thread(P) D daemon
+        D self_D__ident = P  // self D _ident := P
+        T cond = → if _HAVE_THREAD_NATIVE_ID → D self_D__native_id = P  // self D _native_id := P
+        D self_D__handle = _ThreadHandle(P)  // self D _handle := _ThreadHandle(P)
+        D self_D__started = Event(P)  // self D _started := Event(P)
+        D self_D__initialized = 1  // self D _initialized := 1
+        D self_D__stderr = _sys D stderr  // self D _stderr := _sys D stderr
+        D self_D__invoke_excepthook = _make_invoke_excepthook(P)  // self D _invoke_excepthook := _make_invoke_excepthook(P)
+        _dangling D add(self)
+    }
+    D Thread___after_fork = λ self, new_ident . {
+        self D _started D _at_fork_reinit(P)
+        T cond = → if new_ident ≠ P → P
+            D self_D__ident = new_ident  // self D _ident := new_ident
+            T assert = → if self D _handle D ident == new_ident → "ok" → E "Assertion failed"
+            T cond = → if _HAVE_THREAD_NATIVE_ID → self D _set_native_id(P)
+        → E P  // else pass
+    }
+    D Thread____repr = λ self . {
+        T assert = → if self D _initialized → "ok" → E "Assertion failed"
+        P status = "initial"
+        T cond = → if self D _started D is_set(P) → P status = "started"
+        T cond = → if self D _handle D is_done(P) → P status = "stopped"
+        T cond = → if self D _daemonic → P status = status + " daemon"
+        T cond = → if self D _ident ≠ P → P status = status + (" %s" % self D _ident)
+        → ("<%s(%s, %s)>" % manifold [self D __class__ D __name__, self D _name, status])
+    }
+    D Thread__start = λ self . {
+        // Start the thread's activity.          It must be called at most once per thread object. It arranges for the         obje
+        T cond = → if (!self D _initialized) → → E RuntimeError("thread.__init__() not called")
+        T cond = → if self D _started D is_set(P) → → E RuntimeError("threads can only be started once")
+        T scope_0 = → _active_limbo_lock
+            // _limbo[self] := self
+        T attempt = → P  // try
+            _start_joinable_thread(self D _bootstrap, manifold ["handle", self D _handle], manifold ["daemon", self D daemon])
+        → E Exception (_)
+            T scope_0 = → _active_limbo_lock
+                // del _limbo[self]
+            → E P
+        self D _started D wait(P)
+    }
+    D Thread__run = λ self . {
+        // Method representing the thread's activity.          You may override this method in a subclass. The standard run() metho
+        T attempt = → P  // try
+            T cond = → if self D _target ≠ P → self D _target(self D _args, self D _kwargs)
+        // finally:
+            // del self._target
+            // del self._args
+            // del self._kwargs
+    }
+    D Thread___bootstrap = λ self . {
+        T attempt = → P  // try
+            self D _bootstrap_inner(P)
+        → E Exception (_)
+            T cond = → if (self D _daemonic && _sys == P) → → P
+            → E P
+    }
+    D Thread___set_ident = λ self . D self_D__ident = get_ident(P)  // self D _ident := get_ident(P)
+    T cond = → if _HAVE_THREAD_NATIVE_ID → D Thread___set_native_id = λ self . D self_D__native_id = get_native_id(P)  // self D _native_id := get_native_id(P)
+    D Thread___bootstrap_inner = λ self . {
+        T attempt = → P  // try
+            self D _set_ident(P)
+            T cond = → if _HAVE_THREAD_NATIVE_ID → self D _set_native_id(P)
+            self D _started D set(P)
+            T scope_0 = → _active_limbo_lock
+                // _active[self D _ident] := self
+                // del _limbo[self]
+            T cond = → if _trace_hook → _sys D settrace(_trace_hook)
+            T cond = → if _profile_hook → _sys D setprofile(_profile_hook)
+            T attempt = → P  // try
+                self D run(P)
+            → E Exception (_)
+                self D _invoke_excepthook(self)
+        // finally:
+            self D _delete(P)
+    }
+    D Thread___delete = λ self . {
+        // Remove current thread from the dict of currently running threads.
+        T scope_0 = → _active_limbo_lock
+            // del _active[get_ident()]
+    }
+    D Thread__join = λ self, timeout . {
+        // Wait until the thread terminates.          This blocks the calling thread until the thread whose join() method is       
+        T cond = → if (!self D _initialized) → → E RuntimeError("Thread.__init__() not called")
+        T cond = → if (!self D _started D is_set(P)) → → E RuntimeError("cannot join thread before it is started")
+        T cond = → if self == current_thread(P) → → E RuntimeError("cannot join current thread")
+        T cond = → if timeout ≠ P → P timeout = max(timeout, 0)
+        self D _handle D join(timeout)
+    }
+    D Thread__name = λ self . {
+        // A string used for identification purposes only.          It has no semantics. Multiple threads may be given the same nam
+        T assert = → if self D _initialized → "ok" → E "Assertion failed"
+        → self D _name
+    }
+    D Thread__name = λ self, name . {
+        T assert = → if self D _initialized → "ok" → E "Assertion failed"
+        D self_D__name = str(name)  // self D _name := str(name)
+    }
+    D Thread__ident = λ self . {
+        // Thread identifier of this thread or None if it has not been started.          This is a nonzero integer. See the get_ide
+        T assert = → if self D _initialized → "ok" → E "Assertion failed"
+        → self D _ident
+    }
+    T cond = → if _HAVE_THREAD_NATIVE_ID → P
+        D Thread__native_id = λ self . {
+            // Native integral thread ID of this thread, or None if it has not been started.              This is a non-negative intege
+            T assert = → if self D _initialized → "ok" → E "Assertion failed"
+            → self D _native_id
+        }
+    D Thread__is_alive = λ self . {
+        // Return whether the thread is alive.          This method returns True just before the run() method starts until just    
+        T assert = → if self D _initialized → "ok" → E "Assertion failed"
+        → (self D _started D is_set(P) && (!self D _handle D is_done(P)))
+    }
+    D Thread__daemon = λ self . {
+        // A boolean value indicating whether this thread is a daemon thread.          This must be set before start() is called, o
+        T assert = → if self D _initialized → "ok" → E "Assertion failed"
+        → self D _daemonic
+    }
+    D Thread__daemon = λ self, daemonic . {
+        T cond = → if (!self D _initialized) → → E RuntimeError("Thread.__init__() not called")
+        T cond = → if (daemonic && (!_daemon_threads_allowed(P))) → → E RuntimeError("daemon threads are disabled in this interpreter")
+        T cond = → if self D _started D is_set(P) → → E RuntimeError("cannot set daemon status of active thread")
+        D self_D__daemonic = daemonic  // self D _daemonic := daemonic
+    }
+    D Thread__isDaemon = λ self . {
+        // Return whether this thread is a daemon.          This method is deprecated, use the daemon attribute instead.
+        // @ETPL:preload warnings warnings
+        // Import warnings — resolved at translate-time
+        warnings D warn("isDaemon() is deprecated, get the daemon attribute instead", DeprecationWarning, manifold ["stacklevel", 2])
+        → self D daemon
+    }
+    D Thread__setDaemon = λ self, daemonic . {
+        // Set whether this thread is a daemon.          This method is deprecated, use the .daemon property instead.
+        // @ETPL:preload warnings warnings
+        // Import warnings — resolved at translate-time
+        warnings D warn("setDaemon() is deprecated, set the daemon attribute instead", DeprecationWarning, manifold ["stacklevel", 2])
+        D self_D_daemon = daemonic  // self D daemon := daemonic
+    }
+    D Thread__getName = λ self . {
+        // Return a string used for identification purposes only.          This method is deprecated, use the name attribute instea
+        // @ETPL:preload warnings warnings
+        // Import warnings — resolved at translate-time
+        warnings D warn("getName() is deprecated, get the name attribute instead", DeprecationWarning, manifold ["stacklevel", 2])
+        → self D name
+    }
+    D Thread__setName = λ self, name . {
+        // Set the name string for this thread.          This method is deprecated, use the name attribute instead.
+        // @ETPL:preload warnings warnings
+        // Import warnings — resolved at translate-time
+        warnings D warn("setName() is deprecated, set the name attribute instead", DeprecationWarning, manifold ["stacklevel", 2])
+        D self_D_name = name  // self D name := name
+    }
+T attempt = → P  // try
+    // @ETPL:preload ExceptHookArgs _thread._ExceptHookArgs
+    P ExceptHookArgs = P  // [ET:callable:_thread._ExceptHookArgs]
+→ E ImportError (_)
+    // @ETPL:preload _print_exception traceback.print_exception
+    P _print_exception = P  // [ET:callable:traceback.print_exception]
+    // @ETPL:preload namedtuple collections.namedtuple
+    P namedtuple = P  // [ET:callable:collections.namedtuple]
+    P _ExceptHookArgs = namedtuple("ExceptHookArgs", "exc_type exc_value exc_traceback thread")
+    D ExceptHookArgs = λ args . → _ExceptHookArgs(args)
+    D excepthook = λ  . {
+        // Handle uncaught Thread.run() exception.
+        T cond = → if args D exc_type == SystemExit → → P
+        T cond = → if (_sys ≠ P && _sys D stderr ≠ P) → P stderr = _sys D stderr
+        → E P
+            T cond = → if args D thread ≠ P → P
+                P stderr = args D thread D _stderr
+                T cond = → if stderr == P → → P
+            → E → P
+        T cond = → if args D thread ≠ P → P name = args D thread D name
+        → E P name = get_ident(P)
+        sovereign_print ∘ "Exception in thread " + name + ":"
+        _print_exception(args D exc_type, args D exc_value, args D exc_traceback, manifold ["file", stderr])
+        stderr D flush(P)
+    }
+P __excepthook__ = excepthook
+D make_invoke_excepthook = λ  . {
+    P old_excepthook = excepthook
+    P old_sys_excepthook = _sys D excepthook
+    T cond = → if old_excepthook == P → → E RuntimeError("threading.excepthook is None")
+    T cond = → if old_sys_excepthook == P → → E RuntimeError("sys.excepthook is None")
+    P sys_exc_info = _sys D exc_info
+    P local_print = print
+    P local_sys = _sys
+    D invoke_excepthook = λ thread . {
+        // global excepthook
+        T attempt = → P  // try
+            P hook = excepthook
+            T cond = → if hook == P → P hook = old_excepthook
+            P args = ExceptHookArgs(manifold [sys_exc_info(P), thread])
+            hook(args)
+        → E Exception (exc)
+            D exc_D___suppress_context = 1  // exc D __suppress_context__ := 1
+            // del exc
+            T cond = → if (local_sys ≠ P && local_sys D stderr ≠ P) → P stderr = local_sys D stderr
+            → E P stderr = thread D _stderr
+            local_print("Exception in threading.excepthook:", manifold ["file", stderr], manifold ["flush", 1])
+            T cond = → if (local_sys ≠ P && local_sys D excepthook ≠ P) → P sys_excepthook = local_sys D excepthook
+            → E P sys_excepthook = old_sys_excepthook
+            sys_excepthook(sys_exc_info(P))
+        // finally:
+            P args = P
+    }
+    → invoke_excepthook
+}
+D Timer = λ . P  // class(Thread)
+    // Call a function after a specified number of seconds:              t = Timer(30.0, f, args=None, kwargs=None)            
+    D Timer____init = λ self, interval, function, args, kwargs . {
+        Thread D __init__(self)
+        D self_D_interval = interval  // self D interval := interval
+        D self_D_function = function  // self D function := function
+        D self_D_args = if args ≠ P → args → E manifold []  // self D args := if args ≠ P → args → E manifold []
+        D self_D_kwargs = if kwargs ≠ P → kwargs → E manifold []  // self D kwargs := if kwargs ≠ P → kwargs → E manifold []
+        D self_D_finished = Event(P)  // self D finished := Event(P)
+    }
+    D Timer__cancel = λ self . {
+        // Stop the timer if it hasn't finished yet.
+        self D finished D set(P)
+    }
+    D Timer__run = λ self . {
+        self D finished D wait(self D interval)
+        T cond = → if (!self D finished D is_set(P)) → self D function(self D args, self D kwargs)
+        self D finished D set(P)
+    }
+D MainThread = λ . P  // class(Thread)
+    D MainThread____init = λ self . {
+        Thread D __init__(self, manifold ["name", "MainThread"], manifold ["daemon", 0])
+        self D _started D set(P)
+        D self_D__ident = _get_main_thread_ident(P)  // self D _ident := _get_main_thread_ident(P)
+        D self_D__handle = _make_thread_handle(self D _ident)  // self D _handle := _make_thread_handle(self D _ident)
+        T cond = → if _HAVE_THREAD_NATIVE_ID → self D _set_native_id(P)
+        T scope_0 = → _active_limbo_lock
+            // _active[self D _ident] := self
+    }
+P _thread_local_info = local(P)
+D DeleteDummyThreadOnDel = λ . P  // class
+    // Helper class to remove a dummy thread from threading._active on __del__.
+    D DeleteDummyThreadOnDel____init = λ self, dummy_thread . {
+        D self_D__dummy_thread = dummy_thread  // self D _dummy_thread := dummy_thread
+        D self_D__tident = dummy_thread D ident  // self D _tident := dummy_thread D ident
+        D thread_local_info_D__track_dummy_thread_ref = self  // _thread_local_info D _track_dummy_thread_ref := self
+    }
+    D DeleteDummyThreadOnDel____del = λ self, _active_limbo_lock, _active . {
+        T scope_0 = → _active_limbo_lock
+            T cond = → if _active D get(self D _tident) == self D _dummy_thread → _active D pop(self D _tident, P)
+    }
+D DummyThread = λ . P  // class(Thread)
+    D DummyThread____init = λ self . {
+        Thread D __init__(self, manifold ["name", _newname("Dummy-%d")], manifold ["daemon", _daemon_threads_allowed(P)])
+        self D _started D set(P)
+        self D _set_ident(P)
+        D self_D__handle = _make_thread_handle(self D _ident)  // self D _handle := _make_thread_handle(self D _ident)
+        T cond = → if _HAVE_THREAD_NATIVE_ID → self D _set_native_id(P)
+        T scope_0 = → _active_limbo_lock
+            // _active[self D _ident] := self
+        _DeleteDummyThreadOnDel(self)
+    }
+    D DummyThread__is_alive = λ self . {
+        T cond = → if ((!self D _handle D is_done(P)) && self D _started D is_set(P)) → → 1
+        → E RuntimeError("thread is not alive")
+    }
+    D DummyThread__join = λ self, timeout . → E RuntimeError("cannot join a dummy thread")
+    D DummyThread___after_fork = λ self, new_ident . {
+        T cond = → if new_ident ≠ P → P
+            D self_D___class = _MainThread  // self D __class__ := _MainThread
+            D self_D__name = "MainThread"  // self D _name := "MainThread"
+            D self_D__daemonic = 0  // self D _daemonic := 0
+        Thread D _after_fork(self, manifold ["new_ident", new_ident])
+    }
+D current_thread = λ  . {
+    // Return the current Thread object, corresponding to the caller's thread of control.      If the caller's thread of contro
+    T attempt = → P  // try
+        → _active[get_ident(P)]
+    → E KeyError (_)
+        → _DummyThread(P)
+}
+D currentThread = λ  . {
+    // Return the current Thread object, corresponding to the caller's thread of control.      This function is deprecated, use
+    // @ETPL:preload warnings warnings
+    // Import warnings — resolved at translate-time
+    warnings D warn("currentThread() is deprecated, use current_thread() instead", DeprecationWarning, manifold ["stacklevel", 2])
+    → current_thread(P)
+}
+D active_count = λ  . {
+    // Return the number of Thread objects currently alive.      The returned count is equal to the length of the list returned
+    T scope_0 = → _active_limbo_lock
+        → (len(_active) + len(_limbo))
+}
+D activeCount = λ  . {
+    // Return the number of Thread objects currently alive.      This function is deprecated, use active_count() instead.
+    // @ETPL:preload warnings warnings
+    // Import warnings — resolved at translate-time
+    warnings D warn("activeCount() is deprecated, use active_count() instead", DeprecationWarning, manifold ["stacklevel", 2])
+    → active_count(P)
+}
+D enumerate = λ  . → (list(_active D values(P)) + list(_limbo D values(P)))
+D enumerate = λ  . {
+    // Return a list of all Thread objects currently alive.      The list includes daemonic threads, dummy thread objects creat
+    T scope_0 = → _active_limbo_lock
+        → (list(_active D values(P)) + list(_limbo D values(P)))
+}
+P _threading_atexits = manifold []
+P _SHUTTING_DOWN = 0
+D register_atexit = λ func . {
+    // CPython internal: register *func* to be called before joining threads.      The registered *func* is called with its arg
+    T cond = → if _SHUTTING_DOWN → → E RuntimeError("can't register atexit after shutdown")
+    _threading_atexits D append(λ  . func(arg, kwargs))
+}
+P _main_thread = _MainThread(P)
+D shutdown = λ  . {
+    // Wait until the Python thread state of all non-daemon threads get deleted.
+    T cond = → if (_main_thread D _handle D is_done(P) && _is_main_interpreter(P)) → → P
+    // global _SHUTTING_DOWN
+    P _SHUTTING_DOWN = 1
+    T loop = ∞ (
+        P atexit_call = reversed(_threading_atexits)[_loop_index]
+        atexit_call(P)
+    ) (D |reversed(_threading_atexits)|)
+    T cond = → if _is_main_interpreter(P) → _main_thread D _handle D _set_done(P)
+    _thread_shutdown(P)
+}
+D main_thread = λ  . {
+    // Return the main thread object.      In normal conditions, the main thread is the thread from which the     Python interp
+    → _main_thread
+}
+D after_fork = λ  . {
+    // Cleanup threading module state that should not exist after a fork.
+    // global _active_limbo_lock
+    // global _main_thread
+    P _active_limbo_lock = RLock(P)
+    P new_active = manifold []
+    T attempt = → P  // try
+        P current = _active[get_ident(P)]
+    → E KeyError (_)
+        P current = _MainThread(P)
+    P _main_thread = current
+    T scope_0 = → _active_limbo_lock
+        P threads = set(_enumerate(P))
+        threads D update(_dangling)
+        T loop = ∞ (
+            P thread = threads[_loop_index]
+            T cond = → if thread == current → P
+                P ident = get_ident(P)
+                thread D _after_fork(manifold ["new_ident", ident])
+                // new_active[ident] := thread
+            → E thread D _after_fork(P)
+        ) (D |threads|)
+        _limbo D clear(P)
+        _active D clear(P)
+        _active D update(new_active)
+        T assert = → if len(_active) == 1 → "ok" → E "Assertion failed"
+}
+T cond = → if hasattr(_os, "register_at_fork") → _os D register_at_fork(manifold ["after_in_child", _after_fork])
+
+

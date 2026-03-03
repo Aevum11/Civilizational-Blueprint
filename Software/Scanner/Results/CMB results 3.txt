@@ -1,0 +1,192 @@
+
+╔══════════════════════════════════════════════════════════════════════╗
+║        EXCEPTION THEORY SCANNER v6.0 - COMPLETE VERIFICATION         ║
+║                                                                      ║
+║     All mathematics derived from Exception Theory by M.J.M.          ║
+╚══════════════════════════════════════════════════════════════════════╝
+
+  ┌─────────────────────────────────────────────────────────────────┐
+  │  SCAN OPTIONS                                                   │
+  ├─────────────────────────────────────────────────────────────────┤
+  │  [1] Scan Hardware Entropy (Raw Substrate)                      │
+  │  [2] Scan File (Opens File Browser)                             │
+  │  [3] Scan URL                                                   │
+  │  [4] Scan Process                                               │
+  │  [5] Scan Clipboard                                             │
+  │  [6] Scan Custom Text                                           │
+  ├─────────────────────────────────────────────────────────────────┤
+  │  [C] Continuous Entropy Scan                                    │
+  │  [F] Continuous File Scan                                       │
+  │  [P] Continuous Process Scan                                    │
+  ├─────────────────────────────────────────────────────────────────┤
+  │  [E] Log External Event                                         │
+  │  [R] Event Correlation Report                                   │
+  │  [S] Session Summary                                            │
+  │  [X] Export Session                                             │
+  │  [H] Reset History                                              │
+  ├─────────────────────────────────────────────────────────────────┤
+  │  [Q] Quit                                                       │
+  └─────────────────────────────────────────────────────────────────┘
+
+  Enter choice: 2
+  Opening file browser...
+
+========================================================================
+  EXCEPTION THEORY SCANNER 6.1.2 - Windows-Fixed Edition
+========================================================================
+  Timestamp: 2026-01-06 11:06:21
+  Source:    C:\Users\aevum\Desktop\Exception Theory\programs\HFI_SkyMap_857_2048_R3.01_full_raw_data.bin
+  Type:      file
+  Size:      201,326,592 bytes
+========================================================================
+
+┌──────────────────────────────────────────────────────────────────────┐
+│  DUAL TIME SYSTEM                                                    │
+│  D_time (Descriptor/Coordinate) vs T_time (Agential/Proper)          │
+└──────────────────────────────────────────────────────────────────────┘
+    D_time elapsed:       394.6697 seconds
+    D_time samples:       201,326,592
+    D_time rate:          510,114 samples/sec
+
+    T_time τ (proper):    64618.153615
+    T_time events:        0
+    dτ/dt ratio:          0.3210
+
+    Binding strength:     67.90%
+    Time dilation:        0.7341
+    Variance thickness:   0.000212
+    [!] LOW dτ/dt: Time flowing slowly (weak D_time binding)
+
+┌──────────────────────────────────────────────────────────────────────┐
+│  PDT CLASSIFICATION                                                  │
+│  P=Ω (Infinite)  D=n (Finite)  T=[0/0] (Indeterminate)               │
+└──────────────────────────────────────────────────────────────────────┘
+    P (Infinite):                  0 (  0.0000%)
+    D (Finite):           201,323,828 ( 99.9986%)
+    T (Indeterminate):         2,762 (  0.0014%)
+
+    1/12 = 8.3333%
+    D alignment with 1/12: 8.33%
+    T alignment with 1/12: 50.00%
+
+┌──────────────────────────────────────────────────────────────────────┐
+│  VARIANCE FUNCTION                                                   │
+│  Variance(E)=0, σ²=(n²-1)/12                                         │
+└──────────────────────────────────────────────────────────────────────┘
+    Observed σ²:          4,725.67
+    Theoretical:          5,461.25
+    Ratio:                0.865309
+    Distance from E:      86.5309%
+
+┌──────────────────────────────────────────────────────────────────────┐
+│  DESCRIPTOR GRADIENT: f'(x) = ΔD/ΔP                                  │
+└──────────────────────────────────────────────────────────────────────┘
+    Mean |ΔD/ΔP|:         81.8453
+    Gradient variance:    9918.6595
+    Sign changes:         135,032,661
+    Discontinuities:      168,452
+    Power-of-2 bounds:    5
+
+┌──────────────────────────────────────────────────────────────────────┐
+│  DESCRIPTOR DISTANCE: Δs(pᵢ,pⱼ) = ‖f(dᵢ) - f(dⱼ)‖                    │
+└──────────────────────────────────────────────────────────────────────┘
+    Normalized Δs:        0.295841
+    (Pure relationalism: distance IS descriptor difference)
+
+┌──────────────────────────────────────────────────────────────────────┐
+│  INDETERMINATE FORMS (T Signatures)                                  │
+│  L'Hôpital = T's navigation algorithm                                │
+└──────────────────────────────────────────────────────────────────────┘
+    [0/0] forms:          2762
+    [∞/∞] forms:          0
+    [0×∞] forms:          0
+    [∞-∞] forms:          0
+    [1^∞] forms:          0
+    [0^0] forms:          1884
+    Total indeterminate:  4646
+    Density:              0.002308%
+
+    L'Hôpital resolutions: 4644
+    L'Hôpital failures:    0 (PURE T SIGNATURES)
+    Traverser density:     0.00%
+
+┌──────────────────────────────────────────────────────────────────────┐
+│  MANIFOLD METRICS (v6.0)                                             │
+└──────────────────────────────────────────────────────────────────────┘
+    Shimmer index:        8.2721 (12-fold chaos/order)
+    Binding strength:     67.90%
+
+    Shannon entropy:      7.1865 bits
+    Normalized entropy:   0.8983
+
+    Cosmological Alignments (ET predicts 2/3, 1/4, 1/12):
+      Dark Energy (2/3):  75.00%
+      Dark Matter (1/4):  80.00%
+      Baryonic (1/12):    92.31%
+      Koide ratio (2/3):  83.43%
+
+┌──────────────────────────────────────────────────────────────────────┐
+│  ET STATE                                                            │
+└──────────────────────────────────────────────────────────────────────┘
+    State: STATE_1
+    P ∘ D₁ (Unsubstantiated, D-dominant)
+
+┌──────────────────────────────────────────────────────────────────────┐
+│  TRAVERSER COMPLEXITY (Gravity vs Intent)                            │
+│  v6.0 - Distinguishing Source of Agency                              │
+└──────────────────────────────────────────────────────────────────────┘
+    Class:           UNKNOWN
+    Periodicity:     0.0000 (Gravity echo)
+    Progression:     0.0000 (Intent signal)
+    Fractal Dim:     1.0000
+    T Nesting:       0 layers (T within T)
+
+┌──────────────────────────────────────────────────────────────────────┐
+│  GAZE DETECTION (Observer Effect)                                    │
+│  v6.0 - Thresholds: 1.0833 (subliminal), 1.20 (detect), 1.50 (lock)  │
+└──────────────────────────────────────────────────────────────────────┘
+    Status:          LOCKED <<< TARGET LOCKED >>>
+    Raw Pressure:    1.3581x Baseline
+    Corrected:       10.8646x (×8 for VM)
+    Threshold:       1.2x (1.20)
+    Collapse:        13.47% Variance Loss
+
+┌──────────────────────────────────────────────────────────────────────┐
+│  ET PROOF REPORT (21 Rules Verification)                             │
+└──────────────────────────────────────────────────────────────────────┘
+    Overall status:       VERIFIED
+    Verified:             12
+    Failed:               0
+    Indeterminate:        1
+    Confidence:           92.3%
+
+    PDT = EIM (3=3):      [+] VERIFIED
+    Binding Chain:        T↔D=True D→P=True (integrity: 100%)
+    Coherence:            99.63% coherent, 740880 incoherent
+
+    Axiom Results:
+      [+] [ 1] The Exception Axiom                      VERIFIED
+      [+] [ 3] Point is Substrate/Infinite              VERIFIED
+      [+] [ 4] Descriptor is Finite                     VERIFIED
+      [+] [ 5] Traverser is Indeterminate               VERIFIED
+      [+] [ 6] Mediation (Binding/Interaction)          VERIFIED
+      [+] [ 7] Variance Formula (n²-1)/12               VERIFIED
+      [+] [ 8] Exception has Variance(E)=0              VERIFIED
+      [+] [ 9] Pure Relativism                          VERIFIED
+      [+] [11] S = (P°D°T)                              VERIFIED
+      [+] [18] PDT = EIM (3=3)                          VERIFIED
+      ? [--] 1/12 Manifold Resonance                  INDETERMINATE
+      [+] [--] Pure Relationalism (Δs)                  VERIFIED
+      [+] [--] L'Hôpital Navigation                     VERIFIED
+
+┌──────────────────────────────────────────────────────────────────────┐
+│  SUMMARY                                                              │
+└──────────────────────────────────────────────────────────────────────┘
+    History:              1 scans
+    Events logged:        0
+    Session duration:     541.9s
+
+========================================================================
+  "For every exception there is an exception, except the exception."
+========================================================================
+  Press Enter to continue...
