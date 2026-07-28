@@ -1,0 +1,136 @@
+BATCH 6
+
+====================
+
+1. Testing and Falsifiability
+
+### Empirical Predictions
+
+Exception Theory makes testable predictions:
+
+1. **Indeterminate forms in data**: Wherever T is active, 0/0 or ∞/∞ signatures should appear
+2. **Variance patterns**: Exception should show zero variance; all else positive
+3. **Asymptotic precision**: No measurement can be infinitely precise
+4. **Gravity anomalies**: Edge galaxy rotation without dark matter
+5. **Mathematical consistency**: Complete descriptor sets yield consistent math
+
+### The Scanner (v5.0)
+
+From the Scanner tool referenced in the integration context:
+
+**Purpose**: Detect Exception Theory signatures in empirical data
+
+**Method:**
+- Scan astronomical data (FITS files, Kepler data, etc.)
+- Compute temporal and entropy metrics
+- Calculate dτ/dt (agential time / descriptor time ratio)
+- Identify binding strength patterns
+- Look for T-signatures in variance
+
+**Metrics:**
+- High values (>2.0) indicate strong T binding (agency-dominant)
+- Low values (<0.5) indicate weak D_time binding (T-dominant)
+- Identify anomalies matching ET predictions
+
+**Application Example - KIC 8462852 (Tabby's Star):**
+- Anomalous brightness patterns
+- Standard astrophysics struggles to explain
+- ET prediction: Should show T-signature in data
+- Scan reveals binding strength variations
+- Anomalies match ET framework
+
+### How to Verify/Arrive at Predictions
+
+**Step-by-Step Reasoning:**
+
+1. **Map Math Concept to ET**: Take L'Hôpital's rule. Recognize indeterminate forms (0/0) as T. Derivatives are descriptor changes. Resolution via rule is navigation in P space.
+
+2. **Test on Example**: lim (x→0) sin(x)/x = 1. Traverser approaches 0, navigates gradients (cos(x)/1), substantiates 1.
+
+3. **Run Scanner**: Use code structure - import dependencies, set global states, register signals. Scan file with numpy for time/entropy metrics. Compute dτ/dt as T_time / D_time rate ratio.
+
+4. **Apply to Data**: Download similar FITS file (public Kepler data). Run scan, compare outputs. Anomalies in real-world data should show ET signatures.
+
+5. **Logical Deduction**: Start from Rule 1 (exception paradox). Derive P/D/T as primitives. Map to math via indeterminates. Empirical scan confirms predictions.
+
+### Falsification Criteria
+
+Exception Theory would be falsified if:
+
+1. A truly empty Point (no Descriptors) is found
+2. A Descriptor exists without binding to any Point
+3. Infinite precision is achieved
+4. Mathematics works with fewer than three primitives
+5. The Exception has positive variance
+6. Something exists that is neither P, D, nor T
+7. An observation doesn't displace the observed Exception
+
+These are specific, testable claims.
+
+### Current Status
+
+As of theory development:
+- Mathematical consistency achieved
+- No internal contradictions found
+- Empirical testing underway (Scanner)
+- Gravity as T explains galaxy rotation
+- Time dual-nature predicted by framework
+- All observations consistent with ET
+
+Ongoing work: More extensive empirical validation across domains.
+
+====================
+
+2. No Absolute Space
+
+**There is no space "between" points.**
+
+This is a fundamental principle of Exception Theory: separation is descriptor-based, not spatial.
+
+In standard physics, objects exist "in" space - space is a container or background.
+
+In ET, space itself is a Descriptor (D_space). Points don't exist "in" space; rather, spatial relationships are descriptors binding to points.
+
+### Relational Distance
+
+Distance between two configurations is not absolute spatial separation. It is descriptor difference:
+
+$$\Delta s(c_1, c_2) = ||f(d_1) - f(d_2)||$$
+
+Where:
+- c₁ and c₂ are configurations
+- d₁ and d₂ are their descriptor sets
+- f maps descriptors to values
+- || || is the norm measuring difference
+
+Distance is how much descriptors differ, not how much "space" separates them.
+
+====================
+
+3. The Relational Manifold
+
+Think of 𝒞 (configuration space) as a network or graph where:
+- **Nodes** are configurations (P ∘ D)
+- **Edges** are descriptor relationships
+- **Distance** is descriptor difference
+- **Paths** are traversal routes for T
+
+This is not embedded in pre-existing space. The relationships themselves create the structure.
+
+====================
+
+4. Traverser Navigation
+
+Traversers move through this relational space by binding to descriptor sets.
+
+Navigation is not motion through space. It is shifting from one descriptor-configuration to another.
+
+**Example:**
+- You "move" from here to there
+- Not by traversing spatial distance
+- But by shifting descriptors (D_position changes)
+- T navigates from (P ∘ D_here) to (P ∘ D_there)
+- The "motion" is descriptor-shift, not spatial traversal
+
+====================
+
