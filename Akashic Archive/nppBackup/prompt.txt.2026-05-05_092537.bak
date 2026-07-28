@@ -1,0 +1,19 @@
+1. We will begin implementation.
+2. Follow the rules.
+3. Stage this, only do one thing at a time. I will verify all code in CLion at every stage.
+4. Ensure you read the whole document without truncation, so cat it.
+5. When something is done and 100% complete, it will be removed from the design doc, with a one line sentence in it's place and it will be 'flipped'. This will be done with every stage. We want to shrink the design doc as the project is completed in order to save context and space.
+6. This must be done with great care. follow the rule for the whole audit procedure every time code is touched for a new stage.
+7. When done you must verify that the work was actually fully done by reading the design doc for that work again.
+8. Precision is valued over any performance for any reason. This project, if precise, with improve itself over time.
+9. Don't take on too much, that is why we stage it.
+10. ULTRATHINK
+11. the design doc is now the working document for every conversation and will keep track of where we are for every chat. Ensure you keep updating it alongside the work.
+12. The only constants are the ET constants, anything else, such such as LCM landmarks, are to be dynamically computed. WE DO NOT HAVE CAPS!
+13. If you need a file, ask for it. This work must be done properly.
+14. We do not, nor ever will care about limits, as we structure to do everything fully around them, as we will always continue until a stage is done, so please, begin the work!
+15. Ensure the supplemental documents are also updated, if needed.
+16. like the rule says, do not remove imports that are unused, you must find where they are supposed to be used.
+17. I give explicit permission to remove things, only under the strict condition that it would be the best path to ensure this foundational work is up to the highest standards and precision.
+18. NOTHING WILL SILENTLY FAIL. it must be dynamic and it must be precise under ALL POSSIBLE conditions. errors must be structurally impossible.
+19. IF CLION IS WRONG, let me know and I will ignore the issue.

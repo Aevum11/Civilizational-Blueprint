@@ -1,0 +1,46 @@
+EUDD Dependency Fix — Tue 05/05/2026  5:43:51.51 
+[1/5] Cleaning 
+[2/5] Patching portfile 
+[3/5] Building GMP — start  5:43:52.47 
+GMP exit code: 0 
+GMP end:  6:16:14.53 
+-EXPORT:??_7bad_cast@std@@6B@ 
+-EXPORT:??_7exception@std@@6B@ 
+-EXPORT:?__gmp_asprintf_funs_noformat@@3Udoprnt_funs_t@@B 
+-EXPORT:?__gmp_doprnt_integer_ostream@@YAAEAV?$basic_ostream@DU?$char_traits@D@std@@@std@@AEAV12@PEAUdoprnt_params_t@@PEAD@Z 
+-EXPORT:?__gmp_doprnt_params_from_ios@@YAXPEAUdoprnt_params_t@@AEAV?$basic_ios@DU?$char_traits@D@std@@@std@@@Z 
+-EXPORT:?__gmp_istream_set_base@@YAHAEAV?$basic_istream@DU?$char_traits@D@std@@@std@@AEADAEA_N2@Z 
+-EXPORT:?__gmp_istream_set_digits@@YAXAEAV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@AEAV?$basic_istream@DU?$char_traits@D@std@@@2@AEADAEA_NH@Z 
+-EXPORT:?__gmpz_operator_in_nowhite@@YAAEAV?$basic_istream@DU?$char_traits@D@std@@@std@@AEAV12@PEAU__mpz_struct@@D@Z 
+-DLL 
+-IMPLIB:.libs\gmpxx.lib 
+cxx/.libs/dummy.obj 
+cxx/.libs/isfuns.obj 
+cxx/.libs/ismpf.obj 
+cxx/.libs/ismpq.obj 
+cxx/.libs/ismpz.obj 
+cxx/.libs/ismpznw.obj 
+cxx/.libs/limits.obj 
+cxx/.libs/osdoprnti.obj 
+cxx/.libs/osfuns.obj 
+cxx/.libs/osmpf.obj 
+cxx/.libs/osmpq.obj 
+cxx/.libs/osmpz.obj 
+./.libs/gmp.lib 
+"C:\Program Files (x86)\Windows Kits\10\\lib\10.0.26100.0\\um\x64/kernel32.lib" 
+"C:\Program Files (x86)\Windows Kits\10\\lib\10.0.26100.0\\um\x64/user32.lib" 
+"C:\Program Files (x86)\Windows Kits\10\\lib\10.0.26100.0\\um\x64/gdi32.lib" 
+"C:\Program Files (x86)\Windows Kits\10\\lib\10.0.26100.0\\um\x64/winspool.lib" 
+"C:\Program Files (x86)\Windows Kits\10\\lib\10.0.26100.0\\um\x64/shell32.lib" 
+"C:\Program Files (x86)\Windows Kits\10\\lib\10.0.26100.0\\um\x64/ole32.lib" 
+"C:\Program Files (x86)\Windows Kits\10\\lib\10.0.26100.0\\um\x64/oleaut32.lib" 
+"C:\Program Files (x86)\Windows Kits\10\\lib\10.0.26100.0\\um\x64/comdlg32.lib" 
+"C:\Program Files (x86)\Windows Kits\10\\lib\10.0.26100.0\\um\x64/advapi32.lib" 
+   Creating library .libs\gmpxx.lib and object .libs\gmpxx.exp
+libtool: link:  linknames=
+libtool: link: ( cd ".libs" && rm -f "libgmpxx.la" && cp -pR "../libgmpxx.la" "libgmpxx.la" )
+Makefile:836: update target 'config.h' due to: stamp-h1
+test -f config.h || rm -f stamp-h1
+test -f config.h || /usr/bin/make  stamp-h1
+make[2]: Leaving directory '/c/vcpkg/buildtrees/gmp/x64-windows-dbg'
+make[1]: Leaving directory '/c/vcpkg/buildtrees/gmp/x64-windows-dbg'
