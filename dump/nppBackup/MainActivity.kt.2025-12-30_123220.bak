@@ -1,0 +1,130 @@
+package com.et.omnimeasure
+
+import android.Manifest
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
+import android.content.pm.PackageManager
+import android.os.Bundle
+import android.os.IBinder
+import android.widget.Button
+import android.widget.SeekBar
+import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import com.et.omnimeasure.core.OmniMeasureService
+import com.et.omnimeasure.core.PhysicsUiModel
+import com.et.omnimeasure.core.OmniTraverserEngine
+
+class MainActivity : AppCompatActivity(), OmniTraverserEngine.TraverserListener {
+
+    private var measureService: OmniMeasureService? = null
+    private var isBound = false
+    
+    // UI Refs
+    private lateinit var txtTilt: TextView
+    private lateinit var txtVib: TextView
+    private lateinit var txtSound: TextView
+    private lateinit var txtLux: TextView
+    private lateinit var txtMech: TextView
+
+    private val connection = object : ServiceConnection {
+        override fun onServiceConnected(className: ComponentName, service: IBinder) {
+            val binder = service as OmniMeasureService.LocalBinder
+            measureService = binder.getService()
+            measureService?.activeListener = this@MainActivity
+            isBound = true
+        }
+
+        override fun onServiceDisconnected(arg0: ComponentName) {
+            isBound = false
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        bindViews()
+        checkPermissions()
+    }
+
+    private fun bindViews() {
+        txtTilt = findViewById(R.id.txt_tilt)
+        txtVib = findViewById(R.id.txt_vib)
+        txtSound = findViewById(R.id.txt_sound)
+        txtLux = findViewById(R.id.txt_lux)
+        txtMech = findViewById(R.id.txt_mech_freq)
+
+        // Calibration Button (Set 0dB reference or 0° level)
+        findViewById<Button>(R.id.btn_calibrate_db).setOnClickListener {
+            // Assume user is in a "Silent" room (approx 30dB)
+            measureService?.engine?.setCalibrationDb(30.0)
+            Toast.makeText(this, "dB Offset Calibrated to 30dB baseline", Toast.LENGTH_SHORT).show()
+        }
+
+        // Window Slider (1s to 10s)
+        findViewById<SeekBar>(R.id.seek_vib_window).setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                // Map 0-100 to 1s-10s
+                val secs = 1.0 + (progress / 100.0) * 9.0
+                measureService?.engine?.setVibrationWindowDuration(secs)
+            }
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+        })
+    }
+
+    private fun startService() {
+        val intent = Intent(this, OmniMeasureService::class.java)
+        // Start Foreground Service
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            startForegroundService(intent)
+        } else {
+            startService(intent)
+        }
+        bindService(intent, connection, Context.BIND_AUTO_CREATE)
+    }
+
+    // --- PERMISSIONS ---
+    private fun checkPermissions() {
+        val perms = arrayOf(Manifest.permission.RECORD_AUDIO, Manifest.permission.FOREGROUND_SERVICE)
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, perms, 101)
+        } else {
+            startService()
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        startService() // Try starting anyway (Audio might be disabled but Engine works)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (isBound) {
+            unbindService(connection)
+            isBound = false
+        }
+        // Note: We do NOT stop the service here. It keeps running (Always-Ready).
+    }
+
+    // --- DATA UPDATE ---
+    override fun onPhysicsUpdate(model: PhysicsUiModel) {
+        runOnUiThread {
+            txtTilt.text = "Level: %.1f°".format(model.tiltDegrees)
+            txtVib.text = "Vib: %.3f RMS\n%s".format(model.vibrationRms, model.vibrationLabel)
+            txtSound.text = "Sound: %.0f dB\nFreq: %.0f Hz (%s)".format(model.dbValue, model.noiseFreq, model.noiseSource)
+            txtLux.text = "Light: %.0f lx (%s)".format(model.luxValue, model.luxLabel)
+            txtMech.text = "Mech: %.1f Hz".format(model.mechFreq)
+        }
+    }
+
+    override fun onError(message: String) {
+        runOnUiThread { Toast.makeText(this, message, Toast.LENGTH_SHORT).show() }
+    }
+}

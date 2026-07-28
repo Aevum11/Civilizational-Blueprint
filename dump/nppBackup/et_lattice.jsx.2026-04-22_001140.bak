@@ -1,0 +1,720 @@
+import { useState, useMemo } from "react";
+
+// ─── Pure Math ────────────────────────────────────────────────────────────────
+function gcd(a, b) {
+  a = Math.abs(a); b = Math.abs(b);
+  while (b) { [a, b] = [b, a % b]; }
+  return a || 1;
+}
+function lcm(a, b) { return (a / gcd(a, b)) * b; }
+
+// d(k, N) = N / gcd(|k|, N).  k=0 → gcd(0,N)=N → d=1 (unison/octave).
+function getD(k, N) {
+  return N / gcd(Math.abs(k), N);
+}
+
+// All divisors of N, sorted ascending. These ARE the sublattice families of nET.
+function getDivisors(N) {
+  const divs = [];
+  for (let i = 1; i <= N; i++) if (N % i === 0) divs.push(i);
+  return divs;
+}
+
+// ─── Canonical lattice resolutions (LCM tower landmarks) ─────────────────────
+const TOWER = [
+  { N: 12,    factored: "2²·3",          label: "12ET",    note: "Base manifold symmetry" },
+  { N: 24,    factored: "2³·3",          label: "24ET",    note: "Adds d=8 (gluon octet)" },
+  { N: 36,    factored: "2²·3²",         label: "36ET",    note: "Adds d=9 (quark 3²)" },
+  { N: 60,    factored: "2²·3·5",        label: "60ET",    note: "Adds d=5 (quintic/golden)" },
+  { N: 84,    factored: "2²·3·7",        label: "84ET",    note: "Adds d=7 (septic/G₂)" },
+  { N: 132,   factored: "2²·3·11",       label: "132ET",   note: "Adds d=11 (M-theory)" },
+  { N: 420,   factored: "2²·3·5·7",      label: "420ET",   note: "Biological floor d=35" },
+  { N: 2520,  factored: "2³·3²·5·7",     label: "2520ET",  note: "Universal for d≤9" },
+  { N: 27720, factored: "2³·3²·5·7·11",  label: "27720ET", note: "Universal lattice — all 12 simple families" },
+];
+
+// ─── The 12 named axis families (d=1..12), from §55-56 ────────────────────────
+// These are the "harmonic families" — distinct from the divisor count of any N.
+const HARMONIC_FAMILIES = [
+  { d:  1, axis:"FORCE", name:"Gravity / Octave",        physics:"Period closure, universal",   native:12   },
+  { d:  2, axis:"FORCE", name:"Tritone / Pivot",         physics:"CPT mirror, palindromic",     native:12   },
+  { d:  3, axis:"FORCE", name:"Strong / Cubic (QCD)",    physics:"Color confinement, 3D volume",native:12   },
+  { d:  4, axis:"FORCE", name:"Weak / Quartic (EW)",     physics:"Parity violation, W/Z",       native:12   },
+  { d:  5, axis:"FORCE", name:"Quintic / Golden",        physics:"Quasicrystals, φ, qualia",    native:60   },
+  { d:  6, axis:"FORCE", name:"Hexadic / Composite",     physics:"QCD×QED, hexagonal",          native:12   },
+  { d:  7, axis:"FORCE", name:"Septic / G₂",             physics:"Octonions, week cycle",       native:84   },
+  { d:  8, axis:"FORCE", name:"Octet / Gluon (SU(3))",   physics:"8 Gell-Mann matrices",        native:24   },
+  { d:  9, axis:"FORCE", name:"Nonic / Quark (3²)",      physics:"3 colors × 3 generations",   native:36   },
+  { d: 10, axis:"FORCE", name:"Decic / Superstring",     physics:"SO(10), DNA helix",           native:60   },
+  { d: 11, axis:"FORCE", name:"Undecimal / M-Theory",    physics:"11D supergravity",            native:132  },
+  { d: 12, axis:"FORCE", name:"EM / Full Resolution",    physics:"Electromagnetic ambient",     native:12   },
+];
+
+// ─── Color map for d=1..12 (and beyond) ──────────────────────────────────────
+const D_COLORS = {
+  1:  "#FFD700",  // Gold — gravity
+  2:  "#00E5FF",  // Cyan — tritone
+  3:  "#FF3D3D",  // Red — strong/QCD
+  4:  "#FF8C00",  // Orange — weak
+  5:  "#39FF14",  // Neon green — quintic/golden
+  6:  "#BF40BF",  // Violet — hexadic
+  7:  "#20B2AA",  // Sea green — G₂
+  8:  "#4488FF",  // Blue — gluon octet
+  9:  "#FF1493",  // Pink — nonic
+  10: "#CCFF00",  // Yellow-green — decic
+  11: "#CC88FF",  // Light purple — M-theory
+  12: "#AAAAAA",  // Silver — EM full resolution
+};
+
+// For large d values (combined families > 12), generate a color
+function getColor(d) {
+  if (D_COLORS[d]) return D_COLORS[d];
+  // For d > 12: use a hash-based hue
+  const hue = (d * 47 + 120) % 360;
+  const sat = 55 + (d % 4) * 10;
+  return `hsl(${hue}, ${sat}%, 55%)`;
+}
+
+// ─── PALINDROMIC SEQUENCE for N=12 (§58) ─────────────────────────────────────
+// d-values at k=1..12 (wrapping): [12,6,4,3,12,2,12,3,4,6,12,1]
+const PALINDROME_12 = [12, 6, 4, 3, 12, 2, 12, 3, 4, 6, 12, 1];
+
+// ─── Musical interval names for k=0..11 at 12ET ──────────────────────────────
+const INTERVAL_NAMES = [
+  "Unison",        // k=0  d=1
+  "m2 (16/15)",    // k=1  d=12
+  "M2 (9/8)",      // k=2  d=6
+  "m3 (6/5)",      // k=3  d=4
+  "M3 (5/4)",      // k=4  d=3
+  "P4 (4/3)",      // k=5  d=12
+  "Tritone (√2)",  // k=6  d=2
+  "P5 (3/2)",      // k=7  d=12
+  "m6 (8/5)",      // k=8  d=3
+  "M6 (5/3)",      // k=9  d=4
+  "m7 (16/9)",     // k=10 d=6
+  "M7 (15/8)",     // k=11 d=12
+];
+
+// ─── The 12×12 d_combined matrix (§60) ──────────────────────────────────────
+// d_r and d_θ each range over the 12 axis-family indices {1..12} (not 12ET divisors!)
+// d_combined = LCM(d_r, d_θ)
+function build12x12Matrix() {
+  const matrix = [];
+  const allD = [1,2,3,4,5,6,7,8,9,10,11,12];
+  for (const dr of allD) {
+    const row = [];
+    for (const dt of allD) {
+      row.push(lcm(dr, dt));
+    }
+    matrix.push(row);
+  }
+  return matrix;
+}
+
+// ─── Components ──────────────────────────────────────────────────────────────
+
+// Tab 1: Real-axis 12ET lattice – one octave as a circle
+function OctaveWheel() {
+  const [hover, setHover] = useState(null);
+  const N = 12;
+  const cx = 210, cy = 210, R = 160, rInner = 60;
+  const points = Array.from({ length: N }, (_, k) => {
+    const d = getD(k, N);
+    const angle = (k / N) * 2 * Math.PI - Math.PI / 2; // 0 at top
+    const x = cx + R * Math.cos(angle);
+    const y = cy + R * Math.sin(angle);
+    const ratio = Math.pow(2, k / N).toFixed(4);
+    const eps = 0; // exact lattice points have ε=0
+    return { k, d, x, y, angle, ratio, name: INTERVAL_NAMES[k] };
+  });
+
+  // Group by d-family
+  const families = [1,2,3,4,6,12].map(d => ({
+    d, color: D_COLORS[d], members: points.filter(p => p.d === d)
+  }));
+
+  return (
+    <div style={{ display: "flex", gap: 32, alignItems: "flex-start", flexWrap: "wrap" }}>
+      <div>
+        <svg width={420} height={420} style={{ display: "block" }}>
+          {/* Background circles */}
+          <circle cx={cx} cy={cy} r={R + 20} fill="none" stroke="#1a2a1a" strokeWidth={40} />
+          <circle cx={cx} cy={cy} r={rInner} fill="#0a120a" stroke="#1e3a1e" strokeWidth={1} />
+
+          {/* Octave label at center */}
+          <text x={cx} y={cy - 8} textAnchor="middle" fill="#FFD700" fontSize={13} fontFamily="monospace">N = 12</text>
+          <text x={cx} y={cy + 10} textAnchor="middle" fill="#888" fontSize={10} fontFamily="monospace">τ(12) = 6</text>
+          <text x={cx} y={cy + 24} textAnchor="middle" fill="#555" fontSize={9} fontFamily="monospace">families</text>
+
+          {/* Spokes: lines from center to each point, colored by d */}
+          {points.map(p => (
+            <line key={p.k}
+              x1={cx + rInner * Math.cos(p.angle)}
+              y1={cy + rInner * Math.sin(p.angle)}
+              x2={p.x} y2={p.y}
+              stroke={getColor(p.d)} strokeWidth={hover === p.k ? 2.5 : 1}
+              strokeOpacity={hover === null || hover === p.k ? 0.5 : 0.15}
+            />
+          ))}
+
+          {/* Outer ring track */}
+          <circle cx={cx} cy={cy} r={R} fill="none" stroke="#1e3a1e" strokeWidth={1} />
+
+          {/* Lattice points */}
+          {points.map(p => {
+            const isHovered = hover === p.k;
+            const r = isHovered ? 14 : 10;
+            return (
+              <g key={p.k} onMouseEnter={() => setHover(p.k)} onMouseLeave={() => setHover(null)}
+                 style={{ cursor: "pointer" }}>
+                <circle cx={p.x} cy={p.y} r={r + 4} fill="transparent" />
+                <circle cx={p.x} cy={p.y} r={r}
+                  fill={getColor(p.d)}
+                  stroke={isHovered ? "#fff" : "#000"}
+                  strokeWidth={isHovered ? 2 : 0.5}
+                  fillOpacity={isHovered ? 1 : 0.85}
+                />
+                {/* k label inside dot */}
+                <text x={p.x} y={p.y + 4} textAnchor="middle"
+                  fill={p.d === 12 ? "#000" : "#fff"}
+                  fontSize={isHovered ? 11 : 9} fontWeight="bold" fontFamily="monospace"
+                  style={{ pointerEvents: "none" }}>
+                  {p.k}
+                </text>
+              </g>
+            );
+          })}
+
+          {/* d-value labels outside the ring */}
+          {points.map(p => {
+            const labelR = R + 28;
+            const x = cx + labelR * Math.cos(p.angle);
+            const y = cy + labelR * Math.sin(p.angle);
+            return (
+              <text key={p.k} x={x} y={y + 4} textAnchor="middle"
+                fill={getColor(p.d)} fontSize={9} fontFamily="monospace"
+                fillOpacity={hover === null || hover === p.k ? 1 : 0.3}>
+                d={p.d}
+              </text>
+            );
+          })}
+
+          {/* Hover info box */}
+          {hover !== null && (() => {
+            const p = points[hover];
+            return (
+              <g>
+                <rect x={4} y={4} width={180} height={90} rx={6}
+                  fill="#0d1f0d" stroke={getColor(p.d)} strokeWidth={1} />
+                <text x={14} y={22} fill={getColor(p.d)} fontSize={12} fontWeight="bold" fontFamily="monospace">
+                  k = {p.k}
+                </text>
+                <text x={14} y={40} fill="#ccc" fontSize={11} fontFamily="monospace">
+                  d = {p.d} sublattice family
+                </text>
+                <text x={14} y={56} fill="#aaa" fontSize={10} fontFamily="monospace">
+                  r = 2^({p.k}/12) ≈ {p.ratio}
+                </text>
+                <text x={14} y={72} fill="#888" fontSize={9} fontFamily="monospace">
+                  {p.name}
+                </text>
+                <text x={14} y={86} fill="#555" fontSize={9} fontFamily="monospace">
+                  ε = 0¢  (exact lattice point)
+                </text>
+              </g>
+            );
+          })()}
+        </svg>
+      </div>
+
+      {/* Legend: 6 families of 12ET */}
+      <div>
+        <p style={{ color: "#aaa", fontSize: 11, marginBottom: 8, fontFamily: "monospace" }}>
+          SUBLATTICE FAMILIES OF 12ET
+        </p>
+        <p style={{ color: "#555", fontSize: 10, marginBottom: 12, fontFamily: "monospace" }}>
+          = divisors of N=12 = {{"{1,2,3,4,6,12}"}}
+        </p>
+        {families.map(f => (
+          <div key={f.d} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+            <div style={{ width: 28, height: 28, borderRadius: "50%", background: f.color,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: 10, color: f.d === 12 ? "#000" : "#fff", fontFamily: "monospace", fontWeight: "bold" }}>
+              {f.d}
+            </div>
+            <div>
+              <div style={{ color: f.color, fontSize: 11, fontFamily: "monospace", fontWeight: "bold" }}>
+                d = {f.d} — {f.members.map(m => `k=${m.k}`).join(", ")}
+              </div>
+              <div style={{ color: "#555", fontSize: 9, fontFamily: "monospace" }}>
+                k ≡ {f.members.map(m => m.k).join(",")} mod 12 — generator 2^(1/{f.d})
+              </div>
+            </div>
+          </div>
+        ))}
+
+        <div style={{ marginTop: 20, padding: "10px 14px", background: "#0a150a",
+          border: "1px solid #1e3a1e", borderRadius: 6 }}>
+          <p style={{ color: "#666", fontSize: 9, fontFamily: "monospace", margin: 0 }}>
+            PALINDROMIC D-SEQUENCE (k=1..12):
+          </p>
+          <div style={{ display: "flex", gap: 3, marginTop: 6, flexWrap: "wrap" }}>
+            {PALINDROME_12.map((d, i) => (
+              <div key={i} style={{
+                width: 22, height: 22, borderRadius: 4,
+                background: getColor(d), display: "flex", alignItems: "center",
+                justifyContent: "center", fontSize: 9, color: d===12?"#000":"#fff",
+                fontFamily: "monospace", fontWeight: "bold"
+              }}>{d}</div>
+            ))}
+          </div>
+          <p style={{ color: "#444", fontSize: 8, fontFamily: "monospace", margin: "6px 0 0 0" }}>
+            CPT-symmetric: reads identically forwards and backwards
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Tab 2: The 2D complex lattice — 12×12 combined-d matrix (§60)
+function ComplexLattice() {
+  const [hover, setHover] = useState(null);
+  const matrix = useMemo(() => build12x12Matrix(), []);
+  const allD = [1,2,3,4,5,6,7,8,9,10,11,12];
+
+  // 42 unique combined d values
+  const uniqueDs = useMemo(() => {
+    const s = new Set();
+    matrix.forEach(row => row.forEach(v => s.add(v)));
+    return [...s].sort((a, b) => a - b);
+  }, [matrix]);
+
+  const cellSz = 36;
+  const pad = 44;
+
+  return (
+    <div style={{ display: "flex", gap: 24, alignItems: "flex-start", flexWrap: "wrap" }}>
+      <div>
+        <p style={{ color: "#666", fontSize: 10, fontFamily: "monospace", marginBottom: 8 }}>
+          d_combined = LCM(d_r, d_θ) — 12×12 Force×Phase grid — 42 unique combined families
+        </p>
+        <svg width={allD.length * cellSz + pad * 2 + 20}
+             height={allD.length * cellSz + pad * 2 + 30}
+             style={{ display: "block" }}>
+          {/* Axis labels */}
+          <text x={pad + allD.length * cellSz / 2} y={18} textAnchor="middle"
+            fill="#666" fontSize={10} fontFamily="monospace">
+            d_r (Real-axis FORCE family)
+          </text>
+          <text x={12} y={pad + allD.length * cellSz / 2} textAnchor="middle"
+            fill="#666" fontSize={10} fontFamily="monospace"
+            transform={`rotate(-90, 12, ${pad + allD.length * cellSz / 2})`}>
+            d_θ (Imaginary-axis PHASE family)
+          </text>
+
+          {/* Column headers (d_r values) */}
+          {allD.map((dr, ci) => (
+            <text key={ci} x={pad + ci * cellSz + cellSz / 2} y={32}
+              textAnchor="middle" fill={getColor(dr)} fontSize={9} fontFamily="monospace" fontWeight="bold">
+              {dr}
+            </text>
+          ))}
+          {/* Row headers (d_θ values) */}
+          {allD.map((dt, ri) => (
+            <text key={ri} x={pad - 6} y={pad + ri * cellSz + cellSz / 2 + 4}
+              textAnchor="end" fill={getColor(dt)} fontSize={9} fontFamily="monospace" fontWeight="bold">
+              {dt}
+            </text>
+          ))}
+
+          {/* Cells */}
+          {matrix.map((row, ri) =>
+            row.map((val, ci) => {
+              const x = pad + ci * cellSz;
+              const y = pad + ri * cellSz;
+              const isH = hover && hover.r === ri && hover.c === ci;
+              const col = getColor(val);
+              return (
+                <g key={`${ri}-${ci}`}
+                  onMouseEnter={() => setHover({ r: ri, c: ci, val, dr: allD[ci], dt: allD[ri] })}
+                  onMouseLeave={() => setHover(null)}
+                  style={{ cursor: "pointer" }}>
+                  <rect x={x + 1} y={y + 1} width={cellSz - 2} height={cellSz - 2} rx={2}
+                    fill={col} fillOpacity={isH ? 1 : 0.55}
+                    stroke={isH ? "#fff" : "transparent"} strokeWidth={isH ? 1.5 : 0} />
+                  <text x={x + cellSz / 2} y={y + cellSz / 2 + 4}
+                    textAnchor="middle" fill={val <= 6 ? "#000" : "#fff"}
+                    fontSize={val >= 100 ? 7 : 9} fontFamily="monospace" fontWeight="bold"
+                    style={{ pointerEvents: "none" }}>
+                    {val}
+                  </text>
+                </g>
+              );
+            })
+          )}
+
+          {/* Hover tooltip */}
+          {hover && (
+            <g>
+              <rect x={pad} y={allD.length * cellSz + pad + 6} width={280} height={24} rx={4}
+                fill="#0a150a" stroke={getColor(hover.val)} strokeWidth={1} />
+              <text x={pad + 8} y={allD.length * cellSz + pad + 22}
+                fill={getColor(hover.val)} fontSize={11} fontFamily="monospace">
+                d_r={hover.dr} × d_θ={hover.dt}  →  LCM = {hover.val}  (combined sublattice)
+              </text>
+            </g>
+          )}
+        </svg>
+      </div>
+
+      {/* Legend of 42 unique combined d values */}
+      <div style={{ maxWidth: 260 }}>
+        <p style={{ color: "#aaa", fontSize: 11, fontFamily: "monospace", marginBottom: 4 }}>
+          42 UNIQUE COMBINED FAMILIES
+        </p>
+        <p style={{ color: "#555", fontSize: 9, fontFamily: "monospace", marginBottom: 10 }}>
+          d_max = LCM(11,12) = 132 = N(N-1)
+        </p>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+          {uniqueDs.map(d => (
+            <div key={d} style={{
+              padding: "3px 6px", borderRadius: 3, background: getColor(d),
+              fontSize: 9, color: d <= 6 ? "#000" : "#fff",
+              fontFamily: "monospace", fontWeight: "bold", minWidth: 28, textAlign: "center"
+            }}>{d}</div>
+          ))}
+        </div>
+        <p style={{ color: "#333", fontSize: 9, fontFamily: "monospace", marginTop: 12 }}>
+          NOTE: d_r and d_θ range over 1..12 here<br/>
+          (the 12 named harmonic families per §55-56).<br/>
+          At 27720ET the axis families include all<br/>
+          96 divisors of 27720 — this matrix would be<br/>
+          96×96 with far more combined states.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// Tab 3: LCM Tower — sublattice family count τ(N) at each resolution
+function TowerPanel() {
+  const [selected, setSelected] = useState(null);
+
+  const towerData = useMemo(() => TOWER.map(t => ({
+    ...t,
+    divCount: getDivisors(t.N).length,
+    divisors: getDivisors(t.N),
+  })), []);
+
+  const maxCount = Math.max(...towerData.map(t => t.divCount));
+
+  return (
+    <div style={{ display: "flex", gap: 28, alignItems: "flex-start", flexWrap: "wrap" }}>
+      {/* Bar chart */}
+      <div>
+        <p style={{ color: "#666", fontSize: 10, fontFamily: "monospace", marginBottom: 10 }}>
+          τ(N) = number of sublattice families = number of divisors of N
+        </p>
+        <svg width={480} height={280} style={{ display: "block" }}>
+          {towerData.map((t, i) => {
+            const barH = (t.divCount / maxCount) * 200;
+            const x = 20 + i * 52;
+            const y = 230 - barH;
+            const isNew = i === 0 ? true : t.divCount > towerData[i-1].divCount;
+            const isSel = selected === i;
+            return (
+              <g key={i} onMouseEnter={() => setSelected(i)} onMouseLeave={() => setSelected(null)}
+                style={{ cursor: "pointer" }}>
+                <rect x={x} y={y} width={40} height={barH} rx={3}
+                  fill={isSel ? "#39FF14" : isNew ? "#88cc88" : "#1e3a1e"}
+                  stroke={isSel ? "#fff" : "#2a4a2a"} strokeWidth={isSel ? 1.5 : 1} />
+                <text x={x + 20} y={y - 5} textAnchor="middle"
+                  fill={isSel ? "#fff" : "#aaa"} fontSize={11} fontFamily="monospace" fontWeight="bold">
+                  {t.divCount}
+                </text>
+                <text x={x + 20} y={248} textAnchor="middle"
+                  fill={isSel ? "#39FF14" : "#555"} fontSize={8} fontFamily="monospace">
+                  {t.label}
+                </text>
+              </g>
+            );
+          })}
+          {/* Baseline */}
+          <line x1={15} y1={232} x2={460} y2={232} stroke="#1e3a1e" strokeWidth={1} />
+          <text x={8} y={236} fill="#333" fontSize={8} fontFamily="monospace">0</text>
+          <text x={8} y={34} fill="#333" fontSize={8} fontFamily="monospace">{maxCount}</text>
+        </svg>
+      </div>
+
+      {/* Detail panel */}
+      <div style={{ flex: 1, minWidth: 220 }}>
+        {selected !== null ? (() => {
+          const t = towerData[selected];
+          const prev = selected > 0 ? towerData[selected - 1] : null;
+          const newFamilies = prev
+            ? t.divisors.filter(d => !getDivisors(prev.N).includes(d))
+            : t.divisors;
+          return (
+            <div style={{ background: "#0a150a", border: "1px solid #1e3a1e", borderRadius: 8, padding: 16 }}>
+              <p style={{ color: "#39FF14", fontSize: 14, fontFamily: "monospace", fontWeight: "bold", margin: "0 0 4px" }}>
+                {t.label}
+              </p>
+              <p style={{ color: "#555", fontSize: 10, fontFamily: "monospace", margin: "0 0 8px" }}>
+                N = {t.N} = {t.factored}
+              </p>
+              <p style={{ color: "#aaa", fontSize: 11, fontFamily: "monospace", margin: "0 0 4px" }}>
+                τ({t.N}) = <span style={{ color: "#fff", fontWeight: "bold" }}>{t.divCount}</span> sublattice families
+              </p>
+              <p style={{ color: "#666", fontSize: 9, fontFamily: "monospace", margin: "0 0 10px" }}>
+                {t.note}
+              </p>
+              {newFamilies.length > 0 && prev && (
+                <div style={{ marginBottom: 10 }}>
+                  <p style={{ color: "#88cc88", fontSize: 9, fontFamily: "monospace", margin: "0 0 4px" }}>
+                    New families vs {prev.label}:
+                  </p>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 3 }}>
+                    {newFamilies.map(d => (
+                      <span key={d} style={{
+                        padding: "2px 5px", borderRadius: 3, background: getColor(d),
+                        fontSize: 9, color: d <= 6 ? "#000" : "#fff",
+                        fontFamily: "monospace", fontWeight: "bold"
+                      }}>d={d}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              <div>
+                <p style={{ color: "#444", fontSize: 9, fontFamily: "monospace", margin: "0 0 4px" }}>
+                  All {t.divCount} sublattice families (divisors of {t.N}):
+                </p>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 2, maxHeight: 120, overflowY: "auto" }}>
+                  {t.divisors.map(d => (
+                    <div key={d} style={{
+                      padding: "2px 4px", borderRadius: 2, background: getColor(d),
+                      fontSize: 8, color: d <= 6 ? "#000" : "#fff",
+                      fontFamily: "monospace", fontWeight: "bold", minWidth: 24, textAlign: "center"
+                    }}>{d}</div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          );
+        })() : (
+          <div style={{ color: "#333", fontSize: 10, fontFamily: "monospace", padding: 16,
+            background: "#060e06", border: "1px dashed #1a2a1a", borderRadius: 8 }}>
+            Hover a bar to inspect<br/>the sublattice families<br/>at that resolution.
+          </div>
+        )}
+
+        <div style={{ marginTop: 16, padding: "10px 14px", background: "#060e06",
+          border: "1px solid #111", borderRadius: 6 }}>
+          <p style={{ color: "#444", fontSize: 9, fontFamily: "monospace", margin: 0 }}>
+            CRITICAL DISTINCTION:<br/>
+            Sublattice families = divisors(N) — depends on resolution.<br/>
+            Harmonic families = 12 FORCE + 12 PHASE = 24 total — axis-specific<br/>
+            classifications indexed d=1..12, a DIFFERENT concept (§55-56).
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Tab 4: Full 27720ET divisor lattice — all 96 sublattice families
+function AllFamiliesPanel() {
+  const N = 27720;
+  const divisors = useMemo(() => getDivisors(N), []);
+  const [hover, setHover] = useState(null);
+
+  // Organize by log scale buckets for visual layout
+  const buckets = [
+    { label: "1–12",     divs: divisors.filter(d => d <= 12) },
+    { label: "13–30",    divs: divisors.filter(d => d > 12 && d <= 30) },
+    { label: "31–60",    divs: divisors.filter(d => d > 30 && d <= 60) },
+    { label: "61–132",   divs: divisors.filter(d => d > 60 && d <= 132) },
+    { label: "133–420",  divs: divisors.filter(d => d > 132 && d <= 420) },
+    { label: "421–2520", divs: divisors.filter(d => d > 420 && d <= 2520) },
+    { label: "2521–27720", divs: divisors.filter(d => d > 2520) },
+  ];
+
+  // Prime factorization of d for tooltip
+  function factorize(n) {
+    const f = {};
+    let x = n;
+    for (const p of [2,3,5,7,11]) {
+      while (x % p === 0) { f[p] = (f[p]||0)+1; x /= p; }
+    }
+    if (x > 1) f[x] = (f[x]||0)+1;
+    return Object.entries(f).map(([p,e]) => e>1?`${p}^${e}`:p).join("·") || "1";
+  }
+
+  return (
+    <div>
+      <p style={{ color: "#aaa", fontSize: 11, fontFamily: "monospace", marginBottom: 4 }}>
+        ALL 96 SUBLATTICE FAMILIES OF 27720ET
+      </p>
+      <p style={{ color: "#444", fontSize: 9, fontFamily: "monospace", marginBottom: 16 }}>
+        27720 = 2³·3²·5·7·11 → τ(27720) = (3+1)(2+1)(1+1)(1+1)(1+1) = 4·3·2·2·2 = 96 divisors
+      </p>
+
+      {buckets.map(b => (
+        <div key={b.label} style={{ marginBottom: 14 }}>
+          <p style={{ color: "#333", fontSize: 9, fontFamily: "monospace", margin: "0 0 4px" }}>
+            {b.label} — {b.divs.length} families
+          </p>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 3 }}>
+            {b.divs.map(d => {
+              const isH = hover === d;
+              return (
+                <div key={d}
+                  onMouseEnter={() => setHover(d)} onMouseLeave={() => setHover(null)}
+                  style={{
+                    padding: d < 100 ? "3px 6px" : "3px 4px",
+                    borderRadius: 3,
+                    background: getColor(d),
+                    fontSize: d < 100 ? 9 : 8,
+                    color: d <= 6 ? "#000" : "#fff",
+                    fontFamily: "monospace", fontWeight: "bold",
+                    minWidth: d < 100 ? 24 : 32,
+                    textAlign: "center",
+                    cursor: "default",
+                    border: isH ? "1.5px solid #fff" : "1.5px solid transparent",
+                    transform: isH ? "scale(1.15)" : "none",
+                    transition: "transform 0.1s",
+                    boxShadow: isH ? `0 0 8px ${getColor(d)}` : "none",
+                    position: "relative",
+                  }}>
+                  {d}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+
+      {/* Hover detail */}
+      <div style={{ minHeight: 50, padding: "8px 12px", marginTop: 8,
+        background: "#060e06", border: `1px solid ${hover ? getColor(hover) : "#111"}`,
+        borderRadius: 6, transition: "border-color 0.2s" }}>
+        {hover ? (
+          <p style={{ color: getColor(hover), fontSize: 11, fontFamily: "monospace", margin: 0 }}>
+            d = {hover}  =  {factorize(hover)}
+            {hover <= 12 && (
+              <span style={{ color: "#666", fontSize: 9, marginLeft: 12 }}>
+                (also a named harmonic family)
+              </span>
+            )}
+            {hover === 35 && (
+              <span style={{ color: "#888", fontSize: 9, marginLeft: 12 }}>
+                ← biological threshold (5·7) — first native at 420ET
+              </span>
+            )}
+            {hover === 132 && (
+              <span style={{ color: "#888", fontSize: 9, marginLeft: 12 }}>
+                ← d_max = N(N-1) = 12·11
+              </span>
+            )}
+          </p>
+        ) : (
+          <p style={{ color: "#333", fontSize: 9, fontFamily: "monospace", margin: 0 }}>
+            Hover a family to inspect
+          </p>
+        )}
+      </div>
+
+      <div style={{ marginTop: 16, display: "flex", gap: 12, flexWrap: "wrap" }}>
+        <div style={{ padding: "8px 12px", background: "#0a150a", border: "1px solid #1a2a1a",
+          borderRadius: 6, fontSize: 9, color: "#555", fontFamily: "monospace" }}>
+          Families 1–12: named harmonic families<br/>(12 FORCE + 12 PHASE)
+        </div>
+        <div style={{ padding: "8px 12px", background: "#0a150a", border: "1px solid #1a2a1a",
+          borderRadius: 6, fontSize: 9, color: "#555", fontFamily: "monospace" }}>
+          Families 13–132: combined off-axis families<br/>(42 unique values from §60 LCM matrix)
+        </div>
+        <div style={{ padding: "8px 12px", background: "#0a150a", border: "1px solid #1a2a1a",
+          borderRadius: 6, fontSize: 9, color: "#555", fontFamily: "monospace" }}>
+          Families 133–27720: high-resolution families<br/>unique to 27720ET above 132ET
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Main App ─────────────────────────────────────────────────────────────────
+const TABS = [
+  { id: "wheel",   label: "12ET Octave",      sub: "τ(12) = 6 families" },
+  { id: "complex", label: "Complex Lattice",  sub: "12×12 LCM grid — 42 combined" },
+  { id: "tower",   label: "LCM Tower",        sub: "τ(N) per resolution" },
+  { id: "all",     label: "27720ET Full",     sub: "τ(27720) = 96 families" },
+];
+
+export default function ETLattice() {
+  const [tab, setTab] = useState("wheel");
+
+  return (
+    <div style={{
+      background: "#060e06", minHeight: "100vh", color: "#ccc",
+      fontFamily: "monospace", padding: 24, boxSizing: "border-box",
+    }}>
+      {/* Header */}
+      <div style={{ marginBottom: 28 }}>
+        <h1 style={{
+          fontSize: 18, fontWeight: 900, letterSpacing: 4,
+          color: "#39FF14", margin: "0 0 4px",
+          textShadow: "0 0 20px #39FF1440",
+        }}>
+          THE ET LATTICE
+        </h1>
+        <p style={{ color: "#2a4a2a", fontSize: 10, margin: 0, letterSpacing: 2 }}>
+          L_N = {{ " {" }}2^(k/N) : k ∈ ℤ{{ "} " }}⊂ (ℝ⁺, ×)
+          &nbsp;&nbsp;|&nbsp;&nbsp;
+          sublattice families = divisors(N) = τ(N) total
+          &nbsp;&nbsp;|&nbsp;&nbsp;
+          N=12 → 6 families · N=27720 → 96 families
+        </p>
+      </div>
+
+      {/* Tabs */}
+      <div style={{ display: "flex", gap: 4, marginBottom: 24 }}>
+        {TABS.map(t => (
+          <button key={t.id} onClick={() => setTab(t.id)} style={{
+            padding: "8px 16px", borderRadius: 4, cursor: "pointer",
+            background: tab === t.id ? "#39FF14" : "#0a150a",
+            color: tab === t.id ? "#000" : "#555",
+            border: `1px solid ${tab === t.id ? "#39FF14" : "#1a2a1a"}`,
+            fontSize: 10, fontFamily: "monospace", fontWeight: tab === t.id ? "bold" : "normal",
+            lineHeight: 1.6,
+          }}>
+            <div style={{ fontSize: 11 }}>{t.label}</div>
+            <div style={{ fontSize: 8, opacity: 0.7 }}>{t.sub}</div>
+          </button>
+        ))}
+      </div>
+
+      {/* Content */}
+      <div style={{
+        background: "#070f07", border: "1px solid #0e1e0e", borderRadius: 8,
+        padding: 24, overflow: "auto"
+      }}>
+        {tab === "wheel"   && <OctaveWheel />}
+        {tab === "complex" && <ComplexLattice />}
+        {tab === "tower"   && <TowerPanel />}
+        {tab === "all"     && <AllFamiliesPanel />}
+      </div>
+
+      {/* Footer */}
+      <div style={{ marginTop: 16, padding: "8px 12px",
+        background: "#060e06", border: "1px solid #0e1e0e", borderRadius: 6 }}>
+        <p style={{ margin: 0, fontSize: 8, color: "#2a3a2a", fontFamily: "monospace" }}>
+          Sublattice families ≠ Harmonic families.
+          Sublattice families = τ(N) divisors of the resolution N — grows with N.
+          Harmonic families = the 24 named axis-specific force/phase types (d=1..12 real + d=1..12 imaginary, §55-56) — fixed count, independent of resolution.
+          &nbsp;|&nbsp;
+          k = round(N·log₂ r) · d = N/gcd(|k|,N) · ε = (N·log₂ r − k)·(1200/N)¢
+        </p>
+      </div>
+    </div>
+  );
+}

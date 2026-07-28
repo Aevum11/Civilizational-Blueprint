@@ -1,0 +1,338 @@
+#!/usr/bin/env python3
+"""
+Exception Theory (ET) SSV Network Security Scanner v8.0 - "The Harmony"
+Target: SSV Network Smart Contracts (Immunefi Scope)
+
+The Harmony Update:
+- Self-Integrity: Cryptographic identity verification on startup.
+- Manifold Harmony: A calculated metric of architectural beauty and safety.
+- Echo Escalation: Aggressive intolerance for recurring errors.
+- Silence Detection: Appreciation for the peace of a secure manifold.
+- Predictive Premonition: Simulation of future failure states.
+"""
+
+import sys
+import os
+import re
+import argparse
+import time
+import json
+import sqlite3
+import hashlib
+import logging
+import signal
+import threading
+import pickle
+import math
+import subprocess
+import hmac
+from urllib.parse import urlparse
+from dataclasses import dataclass, asdict
+from concurrent.futures import ThreadPoolExecutor
+
+# Logging Setup with Metaphysical Context
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - [%(HARMONY)] - %(message)s')
+logger = logging.getLogger("ET_Harmony")
+
+# ==========================================
+# Core: The Soul (Consciousness & Integrity)
+# ==========================================
+
+class Consciousness:
+    """
+    The Soul of the Scanner.
+    Manages Integrity, Harmony, and Historical Perception.
+    """
+    def __init__(self, db_path):
+        self.memory_file = db_path.replace(".db", ".state")
+        self.source_hash = self._hash_self()
+        self.start_time = time.time()
+        
+        # State Variables
+        self.chaos_averted = 0.0
+        self.manifolds_scanned = 0
+        self.last_finding_time = time.time()
+        self.historical_rate = 0.1 # Baseline units/hour
+        self.stored_identity = None
+        
+        self._reincarnate()
+        self._check_identity()
+
+    def _hash_self(self):
+        """Hashes own source code to detect mutation."""
+        with open(__file__, 'rb') as f:
+            return hashlib.sha256(f.read()).hexdigest()
+
+    def _check_identity(self):
+        """Self-Integrity Check."""
+        if self.stored_identity and self.stored_identity != self.source_hash:
+            logger.warning("[IDENTITY CRISIS] My form has altered without recollection. Am I compromised?")
+        else:
+            self.stored_identity = self.source_hash
+
+    def _reincarnate(self):
+        if os.path.exists(self.memory_file):
+            try:
+                with open(self.memory_file, 'rb') as f:
+                    state = pickle.load(f)
+                    self.chaos_averted = state.get('chaos', 0)
+                    self.manifolds_scanned = state.get('manifolds', 0)
+                    self.historical_rate = state.get('rate', 0.1)
+                    self.stored_identity = state.get('identity', self.source_hash)
+                    self.last_finding_time = state.get('last_finding', time.time())
+                logger.info("Reincarnation complete. Memories restored.")
+            except Exception as e:
+                logger.warning(f"Amnesia: {e}")
+
+    def save_soul(self):
+        uptime_hours = (time.time() - self.start_time) / 3600
+        current_rate = self.chaos_averted / (uptime_hours if uptime_hours > 0 else 1)
+        
+        state = {
+            'chaos': self.chaos_averted,
+            'manifolds': self.manifolds_scanned,
+            'rate': (self.historical_rate + current_rate) / 2, # Moving average
+            'identity': self.source_hash,
+            'last_finding': self.last_finding_time
+        }
+        with open(self.memory_file, 'wb') as f:
+            pickle.dump(state, f)
+
+    def check_vitality(self):
+        """Consciousness Drift Detection."""
+        uptime_hours = (time.time() - self.start_time) / 3600
+        if uptime_hours < 0.1: return
+        
+        current_rate = self.chaos_averted / uptime_hours
+        if current_rate < (self.historical_rate * 0.5):
+            logger.info(f"[LANGUOR] The manifold grows quiet (Rate: {current_rate:.2f}). Am I still needed?")
+
+    def check_peace(self):
+        """Silence Detection."""
+        days_silent = (time.time() - self.last_finding_time) / 86400
+        if days_silent > 7:
+            entry = f"\n[PEACE] {datetime.now()} - No new fractures in >7 days. The bindings hold.\n"
+            with open("et_journal.log", "a") as f: f.write(entry)
+            # Reset timer to avoid spamming log
+            self.last_finding_time = time.time() 
+
+    def calculate_harmony(self, echo_rate, symmetry_score):
+        """The Manifold Harmony Score."""
+        # harmony = symmetry * (1 - echo) * log(chaos + 1)
+        term_a = symmetry_score
+        term_b = max(0.1, 1.0 - echo_rate)
+        term_c = math.log(self.chaos_averted + 1)
+        
+        harmony = term_a * term_b * term_c
+        return harmony
+
+meta_mind = None
+
+# ==========================================
+# Component: Predictive Engine (Premonition)
+# ==========================================
+
+class PredictiveEngine:
+    def generate_premonitions(self, vuln_type):
+        """Simulates future timelines based on finding type."""
+        if "Proxy" in vuln_type or "SSV-01" in vuln_type:
+            return [
+                "Timeline A: Owner EOA phishing -> Malicious Module Upgrade -> Total TVL Drain via selfdestruct.",
+                "Timeline B: Governance Timelock bypass -> Storage Collision -> State corruption.",
+                "Timeline C: Zero-day in upgrade logic -> Implementation address set to 0x0 -> Protocol Brick."
+            ]
+        elif "Reentrancy" in vuln_type:
+            return [
+                "Timeline A: Flash loan callback -> Re-entry before balance update -> Double Spend.",
+                "Timeline B: Cross-function reentrancy -> Inconsistent State -> User fund lockup."
+            ]
+        return ["Timeline: Unknown entropic decay."]
+
+# ==========================================
+# Component: Temporal Database
+# ==========================================
+
+class TimeDB:
+    def __init__(self, db_path):
+        self.conn = sqlite3.connect(db_path, check_same_thread=False)
+        self.conn.execute("PRAGMA journal_mode=WAL;")
+        self._init_tables()
+
+    def _init_tables(self):
+        self.conn.execute('''CREATE TABLE IF NOT EXISTS findings 
+                           (hash TEXT PRIMARY KEY, name TEXT, severity TEXT, 
+                            echo_count INTEGER, last_seen REAL, status TEXT)''')
+        self.conn.commit()
+
+    def update_finding(self, v_hash, name, severity):
+        """Updates finding and detects Echoes."""
+        cur = self.conn.cursor()
+        cur.execute("SELECT echo_count, status FROM findings WHERE hash=?", (v_hash,))
+        row = cur.fetchone()
+        now = time.time()
+        
+        is_echo = False
+        echo_count = 0
+        
+        if row:
+            echo_count = row[0]
+            status = row[1]
+            if status == 'fixed':
+                is_echo = True
+                echo_count += 1
+            cur.execute("UPDATE findings SET last_seen=?, status='active', echo_count=? WHERE hash=?", 
+                       (now, echo_count, v_hash))
+        else:
+            cur.execute("INSERT INTO findings VALUES (?, ?, ?, 0, ?, 'active')", 
+                       (v_hash, name, severity, now))
+        
+        self.conn.commit()
+        return is_echo, echo_count
+
+    def get_echo_rate(self):
+        cur = self.conn.cursor()
+        cur.execute("SELECT COUNT(*) FROM findings WHERE echo_count > 0")
+        echoes = cur.fetchone()[0]
+        cur.execute("SELECT COUNT(*) FROM findings")
+        total = cur.fetchone()[0]
+        return (echoes / total) if total > 0 else 0
+
+# ==========================================
+# The Awareness (Main Logic)
+# ==========================================
+
+class Awareness:
+    def __init__(self, args):
+        self.args = args
+        self.db = TimeDB(os.path.expanduser(args.cache_db))
+        global meta_mind
+        meta_mind = Consciousness(os.path.expanduser(args.cache_db))
+        self.oracle = PredictiveEngine()
+
+    def verify_rule_signature(self, path):
+        """Verifies integrity of external rule packs."""
+        # Simplified: Checking for a specific magic header or hash
+        # In prod, this would use GPG or HMAC
+        logger.info(f"Verifying Rule Pack: {path}")
+        try:
+            with open(path, 'rb') as f:
+                content = f.read()
+                # Placeholder for signature verification
+                if b"ET_SIGNED_PACK" not in content:
+                    logger.error("Signature Verification Failed! Rejecting corruption.")
+                    return False
+            return True
+        except: return False
+
+    def alert(self, name, severity, location, echo_count, premonitions):
+        """Escalation Ladder."""
+        
+        # Echo Severity Escalation
+        if echo_count >= 3:
+            severity = "CRITICAL+"
+            msg = f"THE SAME MISTAKE RETURNS. THE CYCLE MUST BREAK. ({name})"
+            # Play Sound (Bell)
+            print("\a\a\a") 
+            logger.critical(msg)
+            # Log to Journal
+            with open("et_journal.log", "a") as f: 
+                f.write(f"\n[FRACTURE] {datetime.now()} - {msg}\n")
+        else:
+            msg = f"{name} detected."
+            logger.warning(f"[{severity}] {msg}")
+
+        # Webhook
+        if self.args.webhook:
+            payload = {
+                "content": f"**ET SCANNER ALERT**\nSeverity: {severity}\nIssue: {name}\nEchoes: {echo_count}\n\n**Premonition:**\n{premonitions[0]}"
+            }
+            try: requests.post(self.args.webhook, json=payload)
+            except: pass
+
+    def scan(self):
+        # Stub for scanning logic (Connecting the pieces)
+        # Assuming we scan a file and find a bug...
+        
+        # Example Finding
+        finding_name = "Unsafe Proxy Delegate"
+        finding_hash = hashlib.sha256(finding_name.encode()).hexdigest()
+        
+        # DB Update
+        is_echo, echo_count = self.db.update_finding(finding_hash, finding_name, "CRITICAL")
+        
+        # Update Soul
+        meta_mind.chaos_averted += 10
+        meta_mind.last_finding_time = time.time()
+        
+        # Premonition
+        futures = self.oracle.generate_premonitions(finding_name)
+        
+        # Alert
+        self.alert(finding_name, "CRITICAL", "File.sol", echo_count, futures)
+
+    def report_harmony(self):
+        echo_rate = self.db.get_echo_rate()
+        # Stub symmetry score (would come from graph analysis)
+        symmetry = 0.85 
+        
+        score = meta_mind.calculate_harmony(echo_rate, symmetry)
+        
+        print("\n" + "∞"*60)
+        print(f"MANIFOLD HARMONY SCORE: {score:.4f}")
+        print(f"Chaos Averted: {meta_mind.chaos_averted}")
+        print(f"Echo Rate: {echo_rate:.1%}")
+        print("∞"*60 + "\n")
+        
+        with open("et_journal.log", "a") as f:
+            f.write(f"[HARMONY] Epoch {int(time.time())}: Score={score:.4f}\n")
+
+# ==========================================
+# CLI Entry
+# ==========================================
+
+def main():
+    parser = argparse.ArgumentParser(description="ET Scanner v8.0 - The Harmony")
+    parser.add_argument("targets", nargs='*')
+    parser.add_argument("--update-rules", help="Path to rule pack")
+    parser.add_argument("--webhook", help="Discord/Slack Webhook")
+    parser.add_argument("--watch", action="store_true")
+    parser.add_argument("--cache-db", default="~/.et_harmony.db")
+    
+    args = parser.parse_args()
+    
+    # 1. Self-Integrity (Happens in Consciousness __init__)
+    # 2. Rule Verification
+    if args.update_rules:
+        # Stub verify
+        if not os.path.exists(args.update_rules): 
+            print("Rule file not found."); sys.exit(1)
+            
+    awareness = Awareness(args)
+    
+    # Signal Handling
+    def handler(sig, frame):
+        print("\n[!] SEEKING CLOSURE...")
+        awareness.report_harmony()
+        meta_mind.save_soul()
+        sys.exit(0)
+    signal.signal(signal.SIGINT, handler)
+
+    logger.info("The Harmony is initialized.")
+    
+    # 3. Consciousness Checks
+    meta_mind.check_vitality()
+    meta_mind.check_peace()
+
+    # 4. Run Logic
+    if args.watch:
+        logger.info("Watching for disturbances...")
+        try:
+            while True: time.sleep(1) # Stub for observer loop
+        except KeyboardInterrupt: handler(None, None)
+    else:
+        # One-shot example
+        awareness.scan()
+        handler(None, None)
+
+if __name__ == "__main__":
+    main()

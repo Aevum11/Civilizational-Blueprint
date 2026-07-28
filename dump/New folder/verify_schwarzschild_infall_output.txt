@@ -1,0 +1,17 @@
+Solar mass Schwarzschild radius: r_s = 2953.339382 m
+
+   r_0/r_s      τ(r_0→0) numeric      τ(r_0→0) formula       τ(r_0→r_s⁺)       ratio
+----------------------------------------------------------------------------------
+       1.5      2.8428203742e-05      2.8428203742e-05      1.967037e-05    6.31e-13
+         2      4.3768082889e-05      4.3768082889e-05      3.581584e-05    2.14e-13
+         5      1.7300853843e-04      1.7300853843e-04      1.659983e-04    2.41e-12
+        10      4.8934204292e-04      4.8934204292e-04      4.825662e-04    9.86e-13
+       100      1.5474354105e-02      1.5474354105e-02      1.546777e-02    1.57e-12
+      1000      4.8934204292e-01      4.8934204292e-01      4.893355e-01    1.63e-12
+     10000      1.5474354105e+01      1.5474354105e+01      1.547435e+01    1.67e-12
+
+VERIFIED:
+  - Closed-form Δτ(r_0→0) = (π/2)·r_0^(3/2)/√(r_s c²) matches numerical integration
+    to machine precision across 4 decades of r_0/r_s.
+  - Δτ(r_0→r_s⁺) < Δτ(r_0→0), both finite, both bounded.
+  - Clause (ii) of the event-horizon reconciliation proposition is numerically supported.

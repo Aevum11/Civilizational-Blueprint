@@ -1,0 +1,598 @@
+# ET COMPRESSOR v3.0.0
+
+## Master Improvement Plan — From Adequate to Exceptional
+
+`PDT ∘ SOVEREIGN ∘ MANIFOLD`
+
+---
+
+## Section 0 — EXECUTIVE DIAGNOSIS: Why v2.1.0 Underperforms
+
+The ET Compressor v2.1.0 has sound ET-grounded architecture but its compression pipeline suffers from **seven critical bottlenecks** that prevent it from approaching theoretical limits. The scanner results prove that **compression = T-extraction** (Traverser removal) — the compressor must aggressively extract indeterminate forms and replace them with minimal descriptor representations. Currently it does this at only a surface level.
+
+> **Critical Issue #1 — Huffman Ceiling**
+>
+> *Entropy coding is capped at integer bit boundaries*
+>
+> Huffman coding assigns whole-bit codes to symbols. For a symbol with probability 0.3, the optimal code length is ~1.74 bits, but Huffman must assign 2 bits — a 15% waste on *every symbol*. Modern compressors (zstd, brotli, lzma) use Arithmetic Coding or ANS (Asymmetric Numeral Systems) which encode fractional bits, approaching the Shannon entropy limit. This single change alone can improve ratios by 5–15%.
+
+> **Critical Issue #2 — Zero Context Modeling**
+>
+> *No prediction, no context mixing, no probability estimation*
+>
+> The compressor has no model of what byte is likely to appear next. Modern compressors maintain multi-order context models (PPM, LZMA's Markov chains, PAQ-style context mixing). Without prediction, the compressor cannot exploit the dominant source of redundancy in real data: **sequential dependencies**. The D-field gradient and curvature analysis exists but is used only for strategy *selection*, not for actual prediction-driven compression.
+
+> **Critical Issue #3 — Weak LZ77 Implementation**
+>
+> *No lazy matching, no optimal parsing, limited window*
+>
+> The LZ77 engine uses a basic trigram hash with a 32KB window and 64-candidate chain. It lacks: lazy matching (checking if the next position yields a longer match), optimal parsing (choosing globally optimal match/literal decisions), larger window sizes (zstd uses 128KB–1MB+), and match-length encoding efficiency. The literal encoding uses 2 bytes per literal (flag + byte) — a 100% overhead on unmatchable data.
+
+> **Critical Issue #4 — Naive BWT Sort (O(n²))**
+>
+> *BWT uses Python list.sort on doubled data — catastrophically slow and memory-heavy*
+>
+> The BWT doubles the input data and sorts index arrays by comparing full rotations. This is O(n² log n) in the worst case and uses 2× memory. Modern BWT implementations use SA-IS (Suffix Array Induced Sorting) which is O(n) time and O(n) memory. For a 64KB block, the current BWT creates a 128KB doubled buffer and performs millions of string comparisons. This makes BWT blocks lose the competitive compression race even when they'd produce better results.
+
+> **Critical Issue #5 — Single-Pass Block Independence**
+>
+> *No cross-block learning, no dictionary sharing, no second-pass refinement*
+>
+> Each block is compressed independently with zero knowledge of other blocks. Patterns that repeat across blocks are re-encoded from scratch. There is no shared dictionary, no inter-block reference chain, and no multi-pass optimization. The deduplication engine exists but is never used in the competitive compression path.
+
+> **Critical Issue #6 — Python Inner Loop Speed**
+>
+> *Sovereign's power is barely utilized — only memmove is used*
+>
+> The Sovereign integration is limited to `ctypes.memmove` for memory copies. The actual compression inner loops (LZ77 matching, BWT sorting, Huffman encoding, MTF transform) all run in pure Python at ~100× slower than C. Sovereign provides **assembly JIT execution, executable memory allocation, and function hot-swapping** — none of which are used for the performance-critical paths.
+
+> **Critical Issue #7 — Descriptor Residual Underuse**
+>
+> *Only triggers for blocks ≤ 4096 bytes, residuals not entropy-coded*
+>
+> The descriptor-residual strategy (Eq 233) is limited to small blocks and its residual stream uses zigzag varint encoding without entropy coding. The residuals after function fitting are often highly compressible (clustered near zero), but without Huffman/ANS on the residual stream, this potential is wasted. Additionally, the polynomial search should try more basis functions (Fourier terms, wavelets, piecewise linear).
+
+---
+
+## Plan Contents
+
+1. New ET Math to Derive (14 equations)
+2. ANS Entropy Coder (replaces Huffman)
+3. Manifold Context Mixing Engine
+4. Enhanced LZ-Manifold Engine
+5. SA-IS BWT with Sovereign JIT
+6. Multi-Scale Descriptor Prediction
+7. Hierarchical Block Architecture
+8. Sovereign JIT Hot-Loop Compilation
+9. Wavelet Descriptor Decomposition
+10. Adaptive Manifold Routing v2
+11. EXE Compilation Investigation
+12. Implementation Roadmap & Priorities
+
+---
+
+## Section 1 — NEW ET MATH TO DERIVE
+
+The following 14 equations need to be derived from ET primitives and existing ET-derived math. Each one maps to a specific compression technique that is currently missing or weak. They must be derived from P, D, T — not imported from external theory.
+
+### Equations to Derive from ET
+
+**Eq 236 — Manifold State Entropy Coding (tANS)**
+
+Derive an Asymmetric Numeral System from ET's 12-fold manifold symmetry. The key insight: ANS encodes a symbol by transitioning between **manifold states** (integers), where each state represents a position in the descriptor field. The state transition function `C(x, s) → x'` maps current state × symbol → next state, with the state encoding fractional bits inherently. Derive from Eq 30 (phase transition / sigmoid), Eq 108 (dynamic attractor shimmer — states as attractors), and the 12-fold symmetry (table size should be power-of-2 multiple of 12). The equation should define: state table construction from probability distribution, encoding function, and decoding function, all in terms of D-field transitions.
+
+- **Maps to:** Section 2 (ANS replaces Huffman). **Derive from:** Eq 30, Eq 108, Eq 211, MANIFOLD_SYMMETRY.
+
+**Eq 237 — Descriptor Context Prediction Model**
+
+Derive a multi-order context mixing equation. In ET terms: a Traverser navigating a descriptor sequence uses **memory of past descriptors** (Eq 127: temporal decay) to predict the next descriptor with weighted evidence. Formalize: `P(d_next | d_{n-1}, d_{n-2}, ..., d_{n-k}) = Σ_i w_i · P_i(d_next | context_i)` where each `P_i` is a different-order model and weights `w_i` are updated via Eq 83 (variance gradient descent — minimize prediction variance). The mixing should use a logistic combiner (Eq 30 sigmoid) operating in log-odds space. This is the ET derivation of context mixing compression.
+
+- **Maps to:** Section 3 (Context Mixing Engine). **Derive from:** Eq 83, Eq 127, Eq 30, Eq 4 (recursive descriptor search), Eq 134 (cross-correlation).
+
+**Eq 238 — Lazy Match Optimization via T-Navigation**
+
+Derive the optimal match decision at each position in LZ compression. The Traverser at position `p` finds match `(offset, length)` but must decide: encode this match now, or advance one literal and check if position `p+1` yields a *longer* match that produces fewer total bits. Formalize as: `cost(match_now) vs cost(literal + match_next)` using Eq 77 (Kolmogorov complexity — minimal description) and Eq 211 (structural density — bits per byte after encoding). The equation should give a threshold function determining when lazy matching is profitable.
+
+- **Maps to:** Section 4 (LZ-Manifold Engine). **Derive from:** Eq 77, Eq 211, Eq 83, Eq 135 (tri-state decision).
+
+**Eq 239 — Suffix Array Manifold Ordering (SA-IS)**
+
+Derive the induced sorting principle for BWT suffix arrays from ET manifold theory. Key insight: suffixes naturally partition into S-type (smaller than successor) and L-type (larger) — this is a **binary descriptor classification** (Eq 135 tri-state reduced to bi-state). The LMS (leftmost S-type) suffixes are the manifold's **structural breakpoints** (existing DFieldAnalyzer.find_breakpoints()). The induction step — sorting LMS suffixes then inducing L-type and S-type positions — maps to Eq 217 (recursive descriptor discovery: D₁...Dₙ → D_{n+1}). Derive the O(n) suffix array construction as manifold-ordered traversal.
+
+- **Maps to:** Section 5 (SA-IS BWT). **Derive from:** Eq 135, Eq 217, Eq 218 (observation-based discovery), Eq 11 (teleological sort).
+
+**Eq 240 — Multi-Scale Entropy Estimation**
+
+Derive a hierarchical entropy measure that evaluates data at multiple descriptor fold depths (Eq 1: V(n,k) with fold index k). Current Shannon entropy is a single-scale measure. ET's manifold has 12-fold harmonic layers. The equation should compute: `H_manifold(data) = Σ_k (1/2^k) · H(data_at_fold_k)` where `data_at_fold_k` is the data viewed at resolution `k` (block averages at scale 2^k). This multi-resolution entropy tells us the *true* compressibility at each scale, enabling better strategy selection than single-pass entropy.
+
+- **Maps to:** Section 10 (Adaptive Manifold Routing v2). **Derive from:** Eq 1 (harmonic manifold variance), Eq 16 (Shannon entropy), Eq 212 (manifold variance), Eq 118 (shimmer oscillation modulation).
+
+**Eq 241 — Descriptor Field Prediction Gradient**
+
+Derive a prediction equation from the existing descriptor field gradient/curvature analysis. Currently, gradients and curvatures are computed but used only for breakpoint detection. The prediction: `d̂_{n+1} = d_n + gradient_n + ½·curvature_n` (a Taylor expansion in ET terms: linear extrapolation corrected by curvature). The **prediction residual** `r_n = d_{n+1} - d̂_{n+1}` has lower entropy than the raw data, enabling much better compression. Derive from Eq 83 (variance gradient) and existing descriptor_field_gradient/curvature methods, formalizing the prediction as Traverser navigation extrapolation.
+
+- **Maps to:** Section 6 (Multi-Scale Descriptor Prediction). **Derive from:** Eq 83, Eq 217, existing ETMath.descriptor_field_gradient, ETMath.descriptor_field_curvature.
+
+**Eq 242 — Inter-Block Manifold Dictionary**
+
+Derive an equation for shared dictionary construction across blocks. In ET terms: the **manifold memory** (Eq 127: temporal decay) means recent blocks contain descriptors that predict future blocks. The dictionary is a `D_shared` that accumulates high-frequency patterns across blocks with exponential decay weighting: `D_shared(block_n) = Σ_{i<n} decay(n-i) · patterns(block_i)`. This is the ET formalization of zstd-style dictionary compression, where cross-block references eliminate redundant re-encoding.
+
+- **Maps to:** Section 7 (Hierarchical Block Architecture). **Derive from:** Eq 127 (temporal decay), Eq 16 (content addressing), Eq 4 (recursive descriptor search), Eq 77 (Kolmogorov complexity).
+
+**Eq 243 — Sovereign Assembly Throughput Equation**
+
+Extend Eq 231 (Sovereign Transmutation Speed) to cover JIT-compiled compression kernels. The equation should model: `throughput_JIT = throughput_C × (1 - overhead_JIT/block_size)` where JIT compilation has a fixed overhead amortized over block size. Derive the break-even block size below which Python is faster (due to JIT overhead) and above which assembly dominates. This determines which inner loops to JIT-compile and at what block sizes to activate the JIT path.
+
+- **Maps to:** Section 8 (Sovereign JIT). **Derive from:** Eq 231, Eq 232 (stream density), Eq 234 (adaptive search depth).
+
+**Eq 244 — Wavelet Descriptor Decomposition**
+
+Derive a wavelet transform from ET's multi-scale manifold structure. The 12-fold manifold has harmonic layers at different scales (Eq 1: V(n,k) with fold index k). A wavelet decomposes data into **descriptor layers**: low-frequency trend (the "binding" — stable structure) and high-frequency detail (the "shimmer" — variation). Use Eq 121 (phi harmonic generation) to define φ-scaled wavelet bases rather than dyadic wavelets. The low-frequency layer compresses with descriptor fitting (Eq 4), and the high-frequency layer compresses with entropy coding.
+
+- **Maps to:** Section 9 (Wavelet Descriptor Decomposition). **Derive from:** Eq 1, Eq 109 (manifold resonance), Eq 121 (phi harmonics), Eq 118 (shimmer oscillation).
+
+**Eq 245 — Optimal Block Partitioning via Curvature**
+
+Derive optimal block boundaries from the descriptor field curvature. Currently, blocks are fixed-size (64KB). ET says boundaries should occur where the **descriptor field character changes** — at curvature maxima (existing breakpoints). The equation should define: `boundary_cost(pos) = |curvature(pos)| × entropy_change(pos)` and find boundaries that minimize total compression cost. Derive as an application of Eq 83 (variance gradient descent) on the boundary positions.
+
+- **Maps to:** Section 10 (Adaptive Routing v2). **Derive from:** Eq 83, DFieldAnalyzer.find_breakpoints, Eq 211 (structural density), Eq 135 (tri-state decision).
+
+**Eq 246 — Run-Length Manifold Encoding (Golomb-ET)**
+
+Derive an improved run-length coding from ET's geometric distribution model. After BWT+MTF, zeros follow a geometric distribution. The optimal code for geometric distributions is **Golomb coding** (split into quotient/remainder using parameter m). Derive m from the manifold: `m = round(-1/log₂(1-p))` where p = P(zero) estimated from the block's entropy and manifold density. This is a parametric ET run-length code that adapts to the actual zero distribution rather than using the fixed 3-byte escape code.
+
+- **Maps to:** Section 2 (ANS — used in the post-MTF stage). **Derive from:** Eq 16 (Shannon entropy), Eq 211 (density), Eq 212 (manifold variance), Eq 235 (Bloom scaling — same information-theoretic optimization principle).
+
+**Eq 247 — Bilateral Match Extension**
+
+Derive a bilateral (forward + backward) match extension from Eq 110 (bilateral interference). When a match is found at position p with offset d, extend it *backwards* (check if data[p-1] == data[p-d-1], etc.) and forwards simultaneously. The bilateral interference principle says structural redundancy exists in **both temporal directions**. Derive the cost-benefit: backward extension is "free" (no additional match-finding cost) and can significantly increase match lengths, especially at block boundaries.
+
+- **Maps to:** Section 4 (LZ-Manifold Engine). **Derive from:** Eq 110 (bilateral interference), Eq 134 (cross-correlation), Eq 117 (shimmer radiation — decay with distance).
+
+**Eq 248 — T-Extraction Compression Bound**
+
+Formalize the Compression Inverse Law discovered in the ET Scanner results: `CompressionRatio ≈ 1/T_density`. Derive: for data with T-density τ, the theoretical compression limit is `C_min = H₀ × (1 - τ) + τ × log₂(N)` where H₀ is the deterministic entropy and N is the manifold cardinality. This gives us a **target ratio** for each block based on its T-density, and tells the router when compression will be effective vs. when the data is inherently incompressible (high T-density = random = incompressible).
+
+- **Maps to:** Section 10 (Adaptive Routing v2). **Derive from:** Scanner results (Compression Inverse Law), Eq 16 (Shannon entropy), Eq 1 (manifold variance), Eq 108 (shimmer flux — substantiation rate relates to T-density).
+
+**Eq 249 — Piecewise Linear Descriptor Fitting**
+
+Extend Eq 4 (recursive descriptor search) with piecewise linear fitting. Instead of finding a single function for the entire block, partition it at curvature breakpoints and fit **separate linear functions per segment**. The total descriptor cost is: `C = Σ_segments (param_cost + residual_entropy)`. Derive the optimal number of segments via Eq 77 (Kolmogorov complexity — minimal descriptors) and the cost trade-off: more segments = smaller residuals but more parameters. This dramatically improves descriptor compression for data with changing structure.
+
+- **Maps to:** Section 6 (Multi-Scale Descriptor Prediction) and Section 9 (Wavelet). **Derive from:** Eq 4, Eq 77, Eq 83, Eq 245 (optimal partitioning).
+
+---
+
+## Section 2 — ANS ENTROPY CODER `CRITICAL`
+
+Replace Huffman coding entirely with **tANS (tabled Asymmetric Numeral Systems)**, derived from ET manifold state transitions (Eq 236). This is the single highest-impact change.
+
+### What Changes
+
+Replace: `_huffman_encode`, `_huffman_decode`, `_HuffNode`, `_build_huffman_tree`, `_build_code_table`
+
+- New class `ManifoldANSCoder` with `encode(data, freq_table) → bytes` and `decode(encoded, freq_table, length) → bytes`
+- State table size = `2^R` where `R = ceil(log₂(12 × max_symbol_spread))` — rooted in MANIFOLD_SYMMETRY
+- Encodes fractional bits per symbol (e.g., symbol with p=0.3 gets ~1.74 bits, not 2)
+- Replaces `_serialize_freq_table` with compact ANS table serialization (nibble-packed frequencies)
+- Remove bit-string intermediaries — ANS works directly on integer states, no string conversion
+
+### Code Architecture
+
+New Section: SECTION 6A — MANIFOLD ANS ENTROPY CODER
+
+Components to implement:
+
+- `ManifoldANSCoder.__init__(freq_table, table_log)` — builds encoding/decoding tables from probability distribution. `table_log` defaults to `ceil(log₂(MANIFOLD_SYMMETRY × 256))` = 12
+- `.spread_symbols()` — distributes symbols across state table using ET's structural density (Eq 211). Symbols with higher probability get more state slots. Uses precise distribution from the **Eq 236** derivation
+- `.encode(data) → bytes` — forward ANS encoding. State starts at `table_size`, each symbol transitions state. When state exceeds `2 × table_size`, emit low bits. Encodes in **reverse order** (standard ANS requirement)
+- `.decode(encoded, length) → bytes` — reverse decoding. Reads bits to rebuild state, uses decode table to extract symbols
+- `._serialize_table() → bytes` — compact frequency table: header (symbol count, table_log) + nibble-packed normalized frequencies. Much smaller than current 5-byte-per-entry format
+
+### Eq 236 Required — Manifold State Entropy Coding
+
+```
+C(x, s) → x'   where   x ∈ [L, 2L)  is manifold state,   s ∈ Σ  is symbol
+```
+
+State transition function derived from ET manifold attractors. L = table size = 2^R (R from MANIFOLD_SYMMETRY). Encoding cost per symbol = log₂(x'/x) ≈ -log₂(p(s)) bits — fractional, not integer.
+
+This replaces Huffman in **all** strategy paths: STRAT_BWT_MTF_RLE_HUFF becomes STRAT_BWT_MTF_RLE_ANS, STRAT_DELTA_HUFF becomes STRAT_DELTA_ANS, and a new standalone STRAT_ANS is added for entropy-only compression.
+
+| Metric | Before (Huffman) | After (tANS) | Improvement |
+|---|---|---|---|
+| Bits per symbol (p=0.3) | 2.0 bits | ~1.74 bits | 13% smaller |
+| Encoding speed | ~5 MB/s (string ops) | ~50 MB/s (integer ops) | 10× faster |
+| Table overhead | 5 bytes/symbol | ~1.5 bytes/symbol | 70% smaller headers |
+| Fractional bit encoding | No | Yes | Fundamental capability |
+
+---
+
+## Section 3 — MANIFOLD CONTEXT MIXING ENGINE `CRITICAL`
+
+Add a multi-order context mixing prediction engine. This is what separates commodity compressors (zip, gzip) from state-of-the-art (lzma, paq, zstd). The context mixer estimates `P(next_byte | recent_context)` and feeds this probability distribution to the ANS coder. Better predictions → lower entropy → better compression.
+
+### New Component: ManifoldContextMixer
+
+- **Order-0 model:** Simple byte frequency (already have this via Shannon entropy)
+- **Order-1 model:** P(byte | previous_byte) — 256×256 table, counts transitions
+- **Order-2 model:** P(byte | prev_2_bytes) — hash-indexed, 64K contexts
+- **Order-4 model:** P(byte | prev_4_bytes) — hash-indexed, for structured data
+- **Match model:** When a long match exists in the LZ hash table, strongly predict the continuation
+- **Mixer:** Combines all models via logistic regression in log-odds space (Eq 30 sigmoid). Weights updated per-byte via Eq 83 (variance gradient descent)
+
+### Eq 237 Required — Descriptor Context Prediction Model
+
+```
+P(d_next) = σ(Σᵢ wᵢ · logit(Pᵢ(d_next | contextᵢ)))
+```
+
+Logistic mixing of k context models. σ = Eq 30 sigmoid. Weights wᵢ updated by: wᵢ ← wᵢ - η · ∂V/∂wᵢ (Eq 83 gradient descent on prediction variance). Each Pᵢ uses Eq 127 temporal decay for recency weighting.
+
+### Integration Point
+
+New Strategy: STRAT_CM_ANS (0x06) — Context-Mixed ANS
+
+The context mixer produces a per-byte probability distribution. The ANS coder encodes each byte using that distribution. This is essentially an **adaptive arithmetic/ANS coder** — the most powerful general-purpose compression technique known. The context mixer's state (model weights, count tables) is serialized as a compact header. For decompression, the decoder rebuilds the same models in lockstep.
+
+This strategy should be the **default** for most data types. The competitive compressor should always try it.
+
+| Data Type | Without CM | With CM | Improvement |
+|---|---|---|---|
+| English text | ~4.5 bits/byte | ~2.0 bits/byte | 55% smaller |
+| Source code | ~4.0 bits/byte | ~1.8 bits/byte | 55% smaller |
+| Binary executables | ~6.5 bits/byte | ~5.0 bits/byte | 23% smaller |
+| Random data | ~8.0 bits/byte | ~8.0 bits/byte | 0% (theoretical limit) |
+
+---
+
+## Section 4 — ENHANCED LZ-MANIFOLD ENGINE `HIGH`
+
+Major overhaul of the LZ77 engine to bring it to modern standards while grounding improvements in ET math.
+
+### Changes to `_lz77_compress` / `_lz77_decompress`
+
+Six improvements to the match-finding and encoding pipeline:
+
+- **Lazy Matching (Eq 238):** When a match is found, check position+1. If the next position yields match_length ≥ current_length + 2 (accounting for the literal cost), emit a literal and use the longer match. This alone improves ratio by 3–8% on typical data.
+- **Bilateral Extension (Eq 247):** Extend matches backwards as well as forwards. When match found at pos with offset d: while data[pos-1] == data[pos-d-1], extend backwards. Free improvement — no additional hash lookups.
+- **Larger Window:** Increase `WINDOW_SIZE` from 32KB to 256KB. Increase `MAX_MATCH_LEN` from 258 to 65535 (2-byte length field). Increase hash chain depth from 64 to 256.
+- **4-byte Hash:** Use 4-byte hash instead of trigram for fewer collisions: `h = (data[p] << 24) | (data[p+1] << 16) | (data[p+2] << 8) | data[p+3]`
+- **Efficient Literal Encoding:** Replace the 2-byte literal format (flag + byte) with a **literal run** format: flag byte with bit 7 = literal flag, bits 0-6 = literal count (up to 127), followed by that many literal bytes. This eliminates the 1-byte-per-literal flag overhead.
+- **Match cost-aware selection:** Compute actual bit cost of each match candidate (offset bits + length bits) vs literal cost. Select the match with best bits-per-byte ratio, not just longest match.
+
+### Encoding Format Change
+
+New LZ token format (backwards compatible via version flag):
+
+Current format: `[0x00][literal_byte]` or `[0x01][offset:2][length:1]`
+
+New format:
+
+- `[0b0_LLLLLLL][L literal bytes]` — literal run (L = 1–127 literals)
+- `[0b1_0_LLLLLL][offset:2]` — short match (length 3–66, offset up to 65535)
+- `[0b1_1_LLLLLL][offset:3]` — long match (length 3–66, offset up to 16M) + optional length extension byte
+
+This reduces overhead for both literals and matches significantly.
+
+### Eq 238 Required — Lazy Match Optimization
+
+```
+emit_match(pos) iff cost(match@pos) < cost(literal@pos) + cost(match@pos+1)
+```
+
+Where cost = offset_bits + length_bits (from Eq 211 structural density). The threshold is: lazy_threshold = ceil(log₂(window_size)/8) — matches must beat next-position matches by at least this many bytes.
+
+### Eq 247 Required — Bilateral Match Extension
+
+```
+match_len_total = forward_ext(pos, offset) + backward_ext(pos, offset)
+```
+
+Bilateral interference applied to LZ matching — extend in both temporal directions from the initial match point.
+
+---
+
+## Section 5 — SA-IS BWT WITH SOVEREIGN JIT `HIGH`
+
+Replace the naive O(n²) BWT with O(n) SA-IS (Suffix Array by Induced Sorting). This is essential because the BWT strategy currently **loses the competitive race** due to speed, even when it would produce the best compression ratio. SA-IS + Sovereign JIT makes BWT competitive on all block sizes.
+
+### Changes to `_bwt_encode` / `_bwt_decode`
+
+Complete replacement of the sort algorithm:
+
+- **SA-IS implementation:** O(n) suffix array construction. Classifies each suffix as S-type or L-type, identifies LMS (leftmost S-type) suffixes as structural breakpoints (Eq 239), sorts LMS suffixes by induction, then induces the full suffix array.
+- **BWT from SA:** Given suffix array SA, BWT[i] = data[(SA[i] - 1) mod n]. O(n) extraction.
+- **Inverse BWT:** Use the standard LF-mapping algorithm (O(n) time, O(n) space) instead of the current simple table-based approach.
+- **Sovereign JIT acceleration:** The SA-IS inner loop (bucket sorting, induction steps) is the hottest path. Compile to x86-64 assembly via Sovereign's `allocate_executable` + `ctypes.CFUNCTYPE` for 10-50× speedup on large blocks.
+- **Block size increase:** With O(n) sort, increase `BWT_MAX_BLOCK` from 64KB to 1MB+ — larger BWT blocks compress significantly better.
+
+### Eq 239 Required — Suffix Array Manifold Ordering
+
+```
+SA = induced_sort(LMS_sorted(data))   where   LMS = breakpoints(D-field)
+```
+
+SA-IS derived as manifold-ordered traversal. LMS suffixes ↔ descriptor field breakpoints (Eq 135 classification), induction ↔ recursive discovery (Eq 217).
+
+---
+
+## Section 6 — MULTI-SCALE DESCRIPTOR PREDICTION `HIGH`
+
+Transform the existing D-field analysis from a passive diagnostic tool into an active compression mechanism. The gradients, curvatures, and resonance already computed by DFieldAnalyzer should **predict the next byte** and feed residuals to the entropy coder.
+
+### New Component: DescriptorPredictor
+
+- **Linear predictor:** `pred = data[n-1] + gradient[n-1]` (Eq 241: descriptor field prediction gradient)
+- **Quadratic predictor:** `pred = data[n-1] + gradient[n-1] + curvature[n-1]/2` (Taylor expansion)
+- **Piecewise predictor (Eq 249):** Fit separate linear models per segment between breakpoints
+- **φ-harmonic predictor:** For data with detected resonance (Eq 109 > 0.3), use the φ-harmonic model (Eq 121) to predict periodic components
+- **Mixing:** Combine predictors using cross-correlation weights (Eq 134) — predictors with recent accuracy get higher weight
+
+### Integration
+
+New Strategy: STRAT_PREDICTION_ANS (0x07)
+
+For each byte: compute prediction → compute residual → feed residual distribution to ANS coder. The residual distribution is typically much narrower (lower entropy) than the raw data distribution. The predictor state is deterministic from the decoded data, so no predictor state needs to be stored in the archive — the decompressor rebuilds it identically.
+
+### Eq 241 Required — Descriptor Field Prediction Gradient
+
+```
+d̂_{n+1} = d_n + ∇D_n + ½·∇²D_n    (Taylor expansion of descriptor field)
+```
+
+Prediction residual r_n = d_{n+1} - d̂_{n+1} has lower entropy than raw data. Entropy(r) ≤ Entropy(data) always, with equality only for white noise.
+
+### Eq 249 Required — Piecewise Linear Descriptor Fitting
+
+```
+C_total = Σ_segments (2·param_bits + Σ_residuals H(r_i))
+```
+
+Minimize total cost by choosing segment boundaries at curvature breakpoints. Each segment stores (slope, intercept) + entropy-coded residuals.
+
+---
+
+## Section 7 — HIERARCHICAL BLOCK ARCHITECTURE `MEDIUM`
+
+Add cross-block learning and dictionary sharing to eliminate redundant encoding of patterns that appear across blocks.
+
+### Changes to `compress_paths` / `decompress_file`
+
+Inter-block dictionary and dedup integration:
+
+- **Shared Dictionary (Eq 242):** Maintain a rolling dictionary of high-frequency patterns seen in previous blocks. Each new block can reference patterns from the dictionary at zero additional cost. Dictionary size limited to 64KB, updated after each block with exponential decay weighting (Eq 127).
+- **Dedup in competitive path:** Move `STRAT_DEDUP` into the `_competitive_compress` candidate list for ALL blocks (not just excluded). Use content-addressable hashing (existing CAS) to detect block-level duplicates before trying expensive compression.
+- **Second-pass optimization:** After first pass compression, scan for blocks where the chosen strategy produced poor ratios (> 0.95). Re-compress these blocks using the now-available global statistics and shared dictionary.
+- **Adaptive block sizing (Eq 245):** Replace fixed 64KB blocks with curvature-guided boundaries. Blocks end where the descriptor field character changes (high curvature), ensuring each block has homogeneous statistics.
+
+### Eq 242 Required — Inter-Block Manifold Dictionary
+
+```
+D_shared(n) = Σ_{i<n} exp(-(n-i)/τ_manifold) · patterns(block_i)
+```
+
+Shared dictionary with temporal decay (Eq 127). Recent blocks contribute more. Dictionary entries weighted by frequency × recency.
+
+### Eq 245 Required — Optimal Block Partitioning via Curvature
+
+```
+boundaries = argmin_B Σ_blocks(B) [H(block) × |block| + boundary_overhead]
+```
+
+Find block boundaries that minimize total encoding cost. Boundaries at high-curvature points ensure statistical homogeneity within blocks.
+
+---
+
+## Section 8 — SOVEREIGN JIT HOT-LOOP COMPILATION `HIGH`
+
+Use Sovereign's `allocate_executable` + `ctypes.CFUNCTYPE` to compile the 5 hottest inner loops to x86-64 assembly. This is proven technology — the Python Unleashed guide demonstrates exactly this pattern working today.
+
+### Hot Loops to JIT-Compile
+
+Priority order by CPU time percentage:
+
+1. **LZ77 match finder** — The trigram hash + chain scan loop. Assembly: load 4 bytes, compute hash, walk chain comparing with SIMD `cmpsb` / `rep cmpsb`. Expected: 20-50× speedup.
+2. **BWT suffix comparison** — The inner sort comparator (or SA-IS induction loop). Assembly: `rep cmpsb` for suffix comparison, bucket operations for induction. Expected: 10-30× speedup.
+3. **MTF transform** — The `alphabet.index(byte)` + shift loop. Assembly: linear scan with `repne scasb`, block move with `rep movsb`. Expected: 15× speedup.
+4. **ANS encoding loop** — The state transition + bit emission loop. Assembly: table lookup + shift + conditional output. Expected: 10× speedup.
+5. **Shannon entropy computation** — Byte counting + float accumulation. Assembly: histogram via `inc [table + byte]`, then FPU accumulation. Expected: 20× speedup.
+
+### Architecture: New Class — SovereignJIT
+
+Pattern from Python Unleashed:
+
+```python
+from et_libs.ET_Sovereign_Fixed import ETCompendiumSovereign
+import ctypes
+
+class SovereignJIT:
+    def __init__(self):
+        self.sov = ETCompendiumSovereign()
+        self.compiled = {}
+
+    def compile_mtf(self):
+        # x86-64 assembly for MTF transform
+        # rdi = data ptr, rsi = length, rdx = output ptr
+        machine_code = bytes([...])  # Actual x86-64 bytes
+        addr, buf = self.sov.allocate_executable(len(machine_code))
+        if isinstance(buf, dict):
+            ctypes.memmove(buf['addr'], machine_code, len(machine_code))
+        else:
+            buf[0:len(machine_code)] = machine_code
+        func_type = ctypes.CFUNCTYPE(None, ctypes.c_void_p, ctypes.c_size_t, ctypes.c_void_p)
+        self.compiled['mtf'] = func_type(addr)
+```
+
+### Eq 243 Required — Sovereign Assembly Throughput
+
+```
+throughput_JIT = throughput_C × (1 - T_compile / (block_size / bytes_per_cycle))
+```
+
+JIT break-even: for blocks > 4KB, assembly is always faster. Below 4KB, Python overhead from ctypes call setup may dominate.
+
+*Note: Sovereign JIT requires the ET Sovereign library to be installed. The compressor should **gracefully degrade** to pure Python if Sovereign is not available, with a log message indicating reduced performance.*
+
+---
+
+## Section 9 — WAVELET DESCRIPTOR DECOMPOSITION `MEDIUM`
+
+Add a wavelet-based preprocessing stage that decomposes data into binding (low-frequency trend) and shimmer (high-frequency detail) components. Each component compresses far better than the combined signal.
+
+### New Strategy: STRAT_WAVELET_ANS (0x08)
+
+- **Forward transform:** φ-scaled Haar wavelet (Eq 244). Instead of standard dyadic (scale 2,4,8...), use φ-scaled decomposition (scale φ, φ², φ³...) rooted in ET's harmonic structure (Eq 121).
+- **Coefficient quantization:** Low-frequency coefficients: lossless (these ARE the binding structure). High-frequency coefficients: quantize to reduce entropy (for lossy mode) or encode directly (for lossless).
+- **Entropy coding:** Low-freq layer → descriptor fitting (Eq 4) + residual ANS. High-freq layer → direct ANS with Golomb-ET coding (Eq 246) since coefficients are typically near-zero.
+- **Particularly effective for:** Audio, sensor data, time series, gradients, any data with smooth trends + noise.
+
+### Eq 244 Required — Wavelet Descriptor Decomposition
+
+```
+data = Σ_k c_k · ψ(φ^k · t)   where   ψ = Haar-φ basis, φ = golden ratio
+```
+
+φ-scaled wavelet bases from ET harmonic structure. Binding (low c_k) separated from shimmer (high c_k).
+
+---
+
+## Section 10 — ADAPTIVE MANIFOLD ROUTING v2 `HIGH`
+
+Overhaul `_select_strategy` and `_competitive_compress` to be smarter about strategy selection, using the new multi-scale entropy (Eq 240), T-extraction bounds (Eq 248), and curvature-guided block partitioning (Eq 245).
+
+### Changes to `_select_strategy`
+
+New decision tree based on comprehensive D-field analysis:
+
+- **Step 1: T-density estimation (Eq 248):** Compute T-density from indeterminate form ratio. If T_density > 0.95, skip compression (truly random/incompressible). Currently the threshold is entropy > 7.9 + density > 0.98, which misses many incompressible blocks.
+- **Step 2: Multi-scale entropy (Eq 240):** Compute entropy at fold depths k=0,1,2,3. If entropy drops sharply at higher folds, the data has hierarchical structure → use wavelet. If flat across scales → use context mixing.
+- **Step 3: Gradient analysis:** Low average gradient → delta + ANS. High gradient variance with low entropy → BWT + MTF + ANS. Periodic gradient → φ-harmonic prediction.
+- **Step 4: Bilateral interference (existing):** High bilateral → dedup or cross-block dictionary.
+- **Step 5: Always competitive:** Even after heuristic selection, try the top 2-3 candidates and keep the smallest. But **skip candidates that the analysis rules out** — saves time.
+
+### New Strategy Flags (v3)
+
+Expanded strategy palette:
+
+- `0x00` STRAT_RAW — unchanged
+- `0x01` STRAT_LZ_MANIFOLD — enhanced LZ with lazy matching + bilateral extension
+- `0x02` STRAT_BWT_MTF_ANS — BWT + MTF + Golomb-ET RLE + ANS
+- `0x03` STRAT_DELTA_ANS — delta + ANS
+- `0x04` STRAT_DEDUP — unchanged (now in competitive path)
+- `0x05` STRAT_DESCRIPTOR_RESIDUAL — enhanced with piecewise fitting + ANS on residuals
+- `0x06` STRAT_CM_ANS — context mixing + ANS (new, best general-purpose)
+- `0x07` STRAT_PREDICTION_ANS — descriptor field prediction + ANS (new)
+- `0x08` STRAT_WAVELET_ANS — wavelet decomposition + ANS (new)
+- `0x09` STRAT_LZ_CM — LZ matches + context-mixed literals (new, hybrid)
+
+### Eq 248 Required — T-Extraction Compression Bound
+
+```
+C_min = H₀ · (1 - τ) + τ · log₂(N)   where   τ = T-density
+```
+
+Tells the router the theoretical best ratio for each block. If C_min > 7.5 bits/byte, skip expensive strategies and use raw or simple delta.
+
+### Eq 240 Required — Multi-Scale Entropy Estimation
+
+```
+H_manifold = Σ_k (1/2^k) · H(data_at_fold_k)    k = 0, 1, 2, 3
+```
+
+Hierarchical entropy across ET manifold fold depths. Sharp entropy drop at higher k → structured data → wavelet or prediction strategies.
+
+---
+
+## Section 11 — EXE COMPILATION INVESTIGATION `MEDIUM`
+
+Compiling the compressor to a native executable can provide 5-20× overall throughput improvement due to eliminating Python interpreter overhead on *all* code paths, not just JIT-compiled hot loops.
+
+### Three Paths to EXE
+
+Options ranked by ET alignment and effectiveness:
+
+- **Path A — Sovereign Native Compilation (ET-pure):** Use ETPL's compiler target (from ETPL.txt) to compile the compressor's critical paths to machine code via Sovereign's `ast_to_assembly` pipeline. The ETPL compiler already outputs .exe/.bin files via Sovereign's ctypes/assembly injection. This is the most ET-aligned path. **Status: Requires ETPL compiler to be operational.**
+- **Path B — Nuitka Compilation (pragmatic):** Nuitka compiles Python to C/C++ and then to native executables. It preserves all Python semantics including ctypes, so Sovereign integration continues working. Expected speedup: 3-8× for computation-bound code. **Command: `nuitka --standalone --onefile et_compressor_v3.py`**
+- **Path C — Cython Hot Paths (hybrid):** Convert the 5 hottest functions to Cython with type annotations, compile to C extensions. The GUI and high-level logic stay in Python. Expected speedup: 10-30× on converted functions. **Compatible with Sovereign JIT.**
+
+### Recommendation
+
+Use Path B (Nuitka) for immediate gains, Path A (Sovereign) for ET-pure long-term.
+
+Nuitka is a drop-in solution — zero code changes required, just compile. It provides immediate 3-8× throughput improvement across the board. Meanwhile, the Sovereign JIT (Section 8) handles the inner loops at C speed. Combined, this approaches native C performance from pure Python source. Path A (Sovereign native compilation) is the long-term goal once the ETPL compiler reaches that maturity level.
+
+---
+
+## Section 12 — IMPLEMENTATION ROADMAP & PRIORITIES
+
+Ordered by **compression ratio impact**, since that is the primary goal.
+
+| # | Change | Math Required | Expected Ratio Improvement | Priority |
+|---|---|---|---|---|
+| 1 | ANS entropy coder (replace Huffman) | Eq 236 | 5–15% | CRITICAL |
+| 2 | Context mixing engine (STRAT_CM_ANS) | Eq 237 | 20–55% | CRITICAL |
+| 3 | Enhanced LZ77 (lazy match, bilateral, larger window) | Eq 238, 247 | 5–15% | HIGH |
+| 4 | SA-IS BWT (O(n) sort, larger blocks) | Eq 239 | 3–10% on text | HIGH |
+| 5 | Descriptor field prediction + ANS | Eq 241, 249 | 10–30% on structured data | HIGH |
+| 6 | Adaptive manifold routing v2 | Eq 240, 245, 248 | 5–10% (better strategy selection) | HIGH |
+| 7 | Sovereign JIT hot loops | Eq 243 | 0% ratio (10-50× speed) | HIGH |
+| 8 | Hierarchical blocks + shared dictionary | Eq 242 | 5–15% on multi-file archives | MEDIUM |
+| 9 | Wavelet descriptor decomposition | Eq 244 | 10–25% on smooth/periodic data | MEDIUM |
+| 10 | Golomb-ET RLE (replace naive RLE) | Eq 246 | 3–8% on BWT output | MEDIUM |
+| 11 | EXE compilation (Nuitka) | — | 0% ratio (3-8× speed) | MEDIUM |
+
+---
+
+### Phase 1 — Foundation (v3.0.0-alpha)
+
+**Derive Eq 236, 237. Implement ANS + Context Mixing.**
+
+These two changes alone will transform the compressor from "adequate" to "competitive with zstd/brotli." The ANS coder replaces Huffman everywhere (all existing strategies benefit), and context mixing adds the most powerful general-purpose strategy. **Expected combined improvement: 25-50% better compression on typical files.**
+
+### Phase 2 — Enhancement (v3.0.0-beta)
+
+**Derive Eq 238, 239, 241, 247, 249. Implement LZ overhaul, SA-IS BWT, prediction.**
+
+Modernize the LZ engine, replace the naive BWT, and add descriptor prediction. These are "do it right" improvements that close the gap with state-of-the-art on specific data types. **Expected additional improvement: 10-25% beyond Phase 1.**
+
+### Phase 3 — Optimization (v3.0.0-rc)
+
+**Derive Eq 240, 242, 243, 244, 245, 246, 248. Implement routing v2, JIT, wavelet, EXE.**
+
+Optimize strategy selection, add Sovereign JIT speed, wavelet decomposition, and EXE compilation. These provide diminishing-but-meaningful ratio improvements plus massive speed gains. **Expected additional improvement: 5-15% ratio + 10-50× speed.**
+
+---
+
+### Complete Equation Derivation List — Summary
+
+- **Eq 236:** Manifold State Entropy Coding (tANS state transitions) — *Phase 1*
+- **Eq 237:** Descriptor Context Prediction Model (context mixing) — *Phase 1*
+- **Eq 238:** Lazy Match Optimization via T-Navigation — *Phase 2*
+- **Eq 239:** Suffix Array Manifold Ordering (SA-IS) — *Phase 2*
+- **Eq 240:** Multi-Scale Entropy Estimation — *Phase 3*
+- **Eq 241:** Descriptor Field Prediction Gradient — *Phase 2*
+- **Eq 242:** Inter-Block Manifold Dictionary — *Phase 3*
+- **Eq 243:** Sovereign Assembly Throughput Equation — *Phase 3*
+- **Eq 244:** Wavelet Descriptor Decomposition — *Phase 3*
+- **Eq 245:** Optimal Block Partitioning via Curvature — *Phase 3*
+- **Eq 246:** Run-Length Manifold Encoding (Golomb-ET) — *Phase 3*
+- **Eq 247:** Bilateral Match Extension — *Phase 2*
+- **Eq 248:** T-Extraction Compression Bound — *Phase 3*
+- **Eq 249:** Piecewise Linear Descriptor Fitting — *Phase 2*
+
+---
+
+### Archive Format
+
+**.pdt v3 — Backward compatible with v2, extended header**
+
+- **PDT_VERSION = 3** — v2 decompressor will reject (safe), v3 supports v1+v2+v3
+- **New flags byte:** bit 1 = shared dictionary present, bit 2 = adaptive blocks, bit 3 = Sovereign JIT required
+- **Optional shared dictionary block:** Between archive header and first file entry. 64KB max. Referenced by blocks via dictionary offset.
+- **Extended strategy flags:** Strategies 0x06–0x09 for new compression methods
+- **Block header extension:** Add 2-byte field for predicted compressibility (Eq 248 T-extraction bound) — enables fast "skip" during random-access decompression
+
+---
+
+`P ∘ D ∘ T = E  |  3 = 3 = S  |  For every exception there is an exception, except the exception`

@@ -1,0 +1,277 @@
+package com.et.physics.toolbox
+
+import android.Manifest
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
+import android.content.SharedPreferences
+import android.content.pm.PackageManager
+import android.graphics.Color
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkCapabilities
+import android.os.Bundle
+import android.os.Handler
+import android.os.IBinder
+import android.os.Looper
+import android.view.View
+import android.widget.*
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKey
+import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import kotlin.concurrent.thread
+
+class MainActivity : AppCompatActivity() {
+
+    private var serviceBinder: OmniMeasureService? = null
+    private var isBound = false
+    private lateinit var prefs: SharedPreferences
+    private lateinit var securePrefs: SharedPreferences
+
+    private lateinit var visualizer: VisualizerView
+    private lateinit var spinnerMode: Spinner
+    private lateinit var txtModeHelp: TextView
+    private lateinit var txtValues: TextView
+    private lateinit var txtStats: TextView
+    private lateinit var txtBattery: TextView
+    private lateinit var txtOffline: TextView
+    private lateinit var btnStart: Button
+    private lateinit var btnStop: Button
+    private lateinit var btnCalibrate: Button
+    private lateinit var btnReport: Button
+    private lateinit var btnAbout: Button
+    private lateinit var progressBar: ProgressBar
+
+    private val BUILD_DATE = SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Date())
+    private val APP_VERSION = "10.2-Verified"
+
+    private val handler = Handler(Looper.getMainLooper())
+    private val updateRunnable = object : Runnable {
+        override fun run() { updateUI(); handler.postDelayed(this, 100) }
+    }
+
+    private val connection = object : ServiceConnection {
+        override fun onServiceConnected(className: ComponentName, service: IBinder) {
+            val binder = service as OmniMeasureService.LocalBinder
+            serviceBinder = binder.getService()
+            isBound = true
+            if (serviceBinder?.currentMode != null) spinnerMode.setSelection(serviceBinder!!.currentMode.ordinal)
+        }
+        override fun onServiceDisconnected(arg0: ComponentName) { isBound = false; serviceBinder = null }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        prefs = getSharedPreferences("ET_Prefs", Context.MODE_PRIVATE)
+        
+        try {
+            val masterKey = MasterKey.Builder(this).setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build()
+            securePrefs = EncryptedSharedPreferences.create(
+                this, "ET_Secure_Prefs", masterKey,
+                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+            )
+        } catch (e: Exception) { securePrefs = getSharedPreferences("ET_Secure_Prefs_Fallback", Context.MODE_PRIVATE) }
+
+        visualizer = findViewById(R.id.visualizer)
+        spinnerMode = findViewById(R.id.spinnerMode)
+        txtModeHelp = findViewById(R.id.txtModeHelp)
+        txtValues = findViewById(R.id.txtValues)
+        txtStats = findViewById(R.id.txtStats)
+        txtBattery = findViewById(R.id.txtBattery)
+        txtOffline = findViewById(R.id.txtOffline)
+        btnStart = findViewById(R.id.btnStart)
+        btnStop = findViewById(R.id.btnStop)
+        btnCalibrate = findViewById(R.id.btnCalibrate)
+        btnReport = findViewById(R.id.btnReport)
+        btnAbout = findViewById(R.id.btnAbout)
+        progressBar = findViewById(R.id.progressBar)
+
+        setupSpinner()
+        checkPermissions()
+        setupNetworkMonitor()
+
+        btnStart.setOnClickListener {
+            val mode = OmniMeasureService.ScanMode.values()[spinnerMode.selectedItemPosition]
+            val intent = Intent(this, OmniMeasureService::class.java)
+            startService(intent) 
+            bindService(intent, connection, Context.BIND_AUTO_CREATE)
+            if(isBound) serviceBinder?.startMeasurement(mode)
+        }
+        btnStop.setOnClickListener { 
+            serviceBinder?.stopMeasurement()
+            if (isBound) { unbindService(connection); isBound = false; serviceBinder = null }
+            handler.removeCallbacks(updateRunnable) 
+        }
+        btnCalibrate.setOnClickListener { showCalibrationDialog() }
+        btnCalibrate.setOnLongClickListener { 
+            serviceBinder?.tareAltitude()
+            Toast.makeText(this, "Altitude Tared", Toast.LENGTH_SHORT).show()
+            true 
+        }
+        btnReport.setOnClickListener { checkPrivacyAndShowReport() }
+        btnAbout.setOnClickListener { showAboutDialog() }
+        
+        handler.post(updateRunnable)
+    }
+    
+    override fun onStart() {
+        super.onStart()
+        val intent = Intent(this, OmniMeasureService::class.java)
+        bindService(intent, connection, Context.BIND_AUTO_CREATE)
+    }
+    
+    override fun onStop() {
+        super.onStop()
+        if (isBound) { unbindService(connection); isBound = false }
+    }
+
+    private fun setupSpinner() {
+        val modes = OmniMeasureService.ScanMode.values().map { it.name.replace("_", " ") }
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, modes)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinnerMode.adapter = adapter
+        spinnerMode.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                txtModeHelp.text = when(position) {
+                    0 -> "5Hz. Low power monitoring."; 1 -> "16Hz. Precise leveling. Mic off."
+                    2 -> "50Hz. Motor check. Gyro+Mic+Mag."; 3 -> "16Hz. Environmental noise."; 4 -> "Light metering."
+                    5 -> "1Hz. Pressure/Alt/Light. Low power."
+                    else -> ""
+                }
+            }
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
+    }
+
+    private val sbValues = StringBuilder()
+    private val sbStats = StringBuilder()
+    
+    private fun updateUI() {
+        if (isBound && serviceBinder != null) {
+             val result = serviceBinder?.lastResult
+             if (result != null) {
+                sbValues.setLength(0)
+                sbValues.append("Rate: ").append(String.format("%.1f", result.realHz)).append(" Hz | Hdg: ").append(String.format("%.0f°", result.azimuth)).append("\n")
+                sbValues.append("Press: ").append(String.format("%.1f", result.pressureHpa)).append(" hPa | Alt: ").append(String.format("%.1f", result.relativeAltitude)).append("m\n")
+                sbValues.append("Vel: ").append(String.format("%.2f", result.velocityRms)).append(" mm/s | SPL: ").append(String.format("%.1f", result.correctedSPL))
+                txtValues.text = sbValues.toString()
+
+                sbStats.setLength(0)
+                sbStats.append("Trend: ").append(result.pressureTrend).append("\n")
+                val tempStr = if (result.ambientTempC != null) String.format("%.1f°C", result.ambientTempC) else "N/A"
+                sbStats.append("Amb: ").append(tempStr).append(" (").append(result.thermalState).append(")\n")
+                sbStats.append("Pk: ").append(String.format("%.0f", result.dominantFreq)).append("Hz ").append(result.freqLabel).append("\n")
+                sbStats.append("Lux: ").append(String.format("%.0f", result.illuminanceLux)).append(" (").append(result.lightSource).append(")")
+                txtStats.text = sbStats.toString()
+
+                visualizer.update(result.preciseTilt[0], result.preciseTilt[1], result.rmsVibration, result.correctedSPL, result.illuminanceLux, result.azimuth, result.pressureHpa, result.ambientTempC)
+                
+                val drain = serviceBinder?.batteryDrainRate ?: 0.0
+                val dur = serviceBinder?.getDurationString() ?: "00:00"
+                val temp = serviceBinder?.batteryTemp ?: 0.0f
+                txtBattery.text = "Session: $dur | Bat: %.1f°C | -%.2f%%/hr".format(temp, drain)
+                if (temp > 45.0f) txtBattery.setTextColor(Color.RED) else txtBattery.setTextColor(if(drain>5.0) Color.YELLOW else Color.GREEN)
+             }
+        }
+    }
+
+    private fun checkPrivacyAndShowReport() {
+        if (!prefs.getBoolean("privacy_opt_in", false)) showPrivacyConsentDialog() else showReportDialog()
+    }
+
+    private fun showPrivacyConsentDialog() {
+        AlertDialog.Builder(this).setTitle("Privacy & Reporting").setMessage("Upload diagnostics? (Opt-In).\nNO Personal Data.")
+            .setPositiveButton("Enable") { _, _ -> prefs.edit().putBoolean("privacy_opt_in", true).apply(); showReportDialog() }
+            .setNegativeButton("Cancel", null).show()
+    }
+
+    private fun showReportDialog() {
+        if (!isBound) return
+        val layout = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(50, 40, 50, 10) }
+        val inputIp = EditText(this).apply { hint = "Server URL (https://...)"; setText(prefs.getString("server_ip", "")) }
+        val inputKey = EditText(this).apply { hint = "API Token"; setText(securePrefs.getString("api_key", "")) }
+        val inputDesc = EditText(this).apply { hint = "Description..."; minLines = 3 }
+        layout.addView(inputIp); layout.addView(inputKey); layout.addView(inputDesc)
+
+        AlertDialog.Builder(this).setTitle("Export Data")
+            .setView(layout)
+            .setPositiveButton("Upload (ZIP)") { _, _ ->
+                prefs.edit().putString("server_ip", inputIp.text.toString()).apply()
+                securePrefs.edit().putString("api_key", inputKey.text.toString()).apply()
+                val zipFile = serviceBinder?.getLogZip(this)
+                if (zipFile != null) queueZipReport(zipFile, inputDesc.text.toString())
+            }
+            .setNeutralButton("Share (CSV)") { _, _ ->
+                val csvFile = serviceBinder?.getLogCsv(this)
+                if (csvFile != null) {
+                    val uri = FileProvider.getUriForFile(this, "${packageName}.provider", csvFile)
+                    val intent = Intent(Intent.ACTION_SEND).apply {
+                        type = "text/csv"; putExtra(Intent.EXTRA_STREAM, uri); addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    }
+                    startActivity(intent)
+                }
+            }
+            .setNegativeButton("Cancel", null).show()
+    }
+    
+    private fun queueZipReport(zipFile: File, description: String) {
+        val pendingDir = File(filesDir, "pending_reports")
+        if (!pendingDir.exists()) pendingDir.mkdirs()
+        val dest = File(pendingDir, zipFile.name)
+        zipFile.copyTo(dest, overwrite = true)
+        if (description.isNotEmpty()) File(pendingDir, zipFile.name.replace(".zip", ".txt")).writeText(description)
+        Toast.makeText(this, "Queued Securely", Toast.LENGTH_SHORT).show()
+        serviceBinder?.flushPendingReports(this)
+    }
+
+    private fun setupNetworkMonitor() {
+        val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        
+        // Initial Check
+        val activeNetwork = cm.activeNetwork
+        val caps = cm.getNetworkCapabilities(activeNetwork)
+        val isConnected = caps != null && caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+        txtOffline.visibility = if (isConnected) View.GONE else View.VISIBLE
+
+        cm.registerDefaultNetworkCallback(object : ConnectivityManager.NetworkCallback() {
+            override fun onAvailable(network: Network) { 
+                runOnUiThread { txtOffline.visibility = View.GONE }
+                // Trigger flush via service or local helper
+                serviceBinder?.flushPendingReports(this@MainActivity)
+            }
+            override fun onLost(network: Network) {
+                runOnUiThread { txtOffline.visibility = View.VISIBLE }
+            }
+        })
+    }
+
+    private fun showAboutDialog() {
+        AlertDialog.Builder(this).setTitle("ET Physics Toolbox").setMessage("v$APP_VERSION ($BUILD_DATE)\nEngine: OmniTraverser v10.2\nDevice: ${android.os.Build.MODEL}").setPositiveButton("OK", null).show()
+    }
+    
+    private fun showCalibrationDialog() {
+        val status = serviceBinder?.calibrationStatus ?: "Ready"
+        AlertDialog.Builder(this).setTitle("Calibrate Sensors")
+            .setMessage("Status: $status\n\nPlace device on a FLAT, STATIONARY surface.\nPress OK to measure zero-offsets.")
+            .setPositiveButton("OK") { _, _ -> 
+                serviceBinder?.runCalibration()
+                Toast.makeText(this, "Calibrating...", Toast.LENGTH_SHORT).show()
+            }
+            .setNegativeButton("Cancel", null).show()
+    }
+
+    private fun checkPermissions() {
+        ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.RECORD_AUDIO, Manifest.permission.FOREGROUND_SERVICE, Manifest.permission.INTERNET, Manifest.permission.ACCESS_NETWORK_STATE), 1)
+    }
+}

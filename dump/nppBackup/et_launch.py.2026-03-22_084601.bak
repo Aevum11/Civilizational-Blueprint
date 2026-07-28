@@ -1,0 +1,51 @@
+#!/usr/bin/env python3
+"""
+ET Fractal Generator — Crash-Safe Launcher
+Runs ET_FRACTAL_GENERATOR50.py in a subprocess.
+If the generator crashes (segfault, OOM, GPU driver fault),
+this window stays open and shows you what happened.
+"""
+import subprocess, sys, os
+from pathlib import Path
+
+script_dir = Path(__file__).resolve().parent
+generator  = script_dir / 'ET_FRACTAL_GENERATOR50-4.py'
+
+if not generator.exists():
+    print(f'ERROR: Cannot find {generator}')
+    print(f'Place this launcher in the same folder as ET_FRACTAL_GENERATOR50-4.py')
+    input('\nPress Enter to exit…')
+    sys.exit(1)
+
+print('═'*66)
+print('  ET FRACTAL GENERATOR — CRASH-SAFE LAUNCHER')
+print('  Running generator in subprocess…')
+print('  If the generator crashes, this window will show the error.')
+print('═'*66)
+print()
+
+try:
+    result = subprocess.run(
+        [sys.executable, str(generator)],
+        cwd=str(script_dir),
+    )
+    print()
+    if result.returncode == 0:
+        print('  Generator completed successfully.')
+    elif result.returncode < 0:
+        sig = -result.returncode
+        print('!'*66)
+        print(f'  GENERATOR KILLED BY SIGNAL {sig}')
+        if sig == 9:  print('  → SIGKILL: Out of memory (OS killed the process)')
+        elif sig == 11: print('  → SIGSEGV: Segmentation fault (GPU driver crash?)')
+        elif sig == 6:  print('  → SIGABRT: Abort (assertion failure)')
+        else:           print(f'  → Signal {sig}')
+        print('!'*66)
+    else:
+        print('!'*66)
+        print(f'  GENERATOR EXITED WITH ERROR CODE {result.returncode}')
+        print('!'*66)
+except Exception as e:
+    print(f'\n  Launcher error: {e}')
+
+input('\nPress Enter to exit…')

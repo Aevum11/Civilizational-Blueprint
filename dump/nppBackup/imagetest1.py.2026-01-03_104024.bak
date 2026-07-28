@@ -1,0 +1,300 @@
+import tkinter as tk
+from tkinter import filedialog, messagebox, colorchooser
+import threading
+import sys
+import math
+
+try:
+    from PIL import Image, ImageTk, ImageDraw, ImageFilter
+except ImportError:
+    messagebox.showerror("Error", "Pillow is missing. Run: pip install pillow")
+    sys.exit(1)
+
+# ==============================================================================
+# ET KERNEL: ADAPTIVE OPTICAL PHYSICS (V19 CORE)
+# ==============================================================================
+
+class ET_Adaptive_Optical:
+    def lift_adaptive_layer(self, img_pil, mask_pil, base_veil, density, adaptation, gamma, status_cb):
+        """
+        Solves J(x) = (I(x) - A(x)) / t(x) + A(x)
+        Where A(x) adapts to local lighting conditions.
+        """
+        width, height = img_pil.size
+        pixels = img_pil.load()
+        mask = mask_pil.load()
+        
+        # 1. TRANSMISSION MAPPING
+        status_cb("Mapping Optical Thickness...")
+        
+        # Estimate haze thickness (Dark Channel) + Sharpen to keep edges
+        dark_ref = img_pil.filter(ImageFilter.MinFilter(15))
+        tx_map = dark_ref.filter(ImageFilter.GaussianBlur(2))
+        tx_map = tx_map.filter(ImageFilter.UnsharpMask(radius=2, percent=150, threshold=3))
+        tx_pix = tx_map.load()
+        
+        bbox = mask_pil.getbbox()
+        if not bbox: return img_pil
+        min_x, min_y, max_x, max_y = bbox
+        
+        updates = []
+        
+        # Factors
+        omega = density / 100.0
+        t0 = 0.1
+        adapt_fac = adaptation / 100.0
+        
+        ar_base, ag_base, ab_base = base_veil
+        
+        # Gamma LUT
+        gamma_lut = []
+        if gamma != 1.0:
+            inv_gamma = 1.0 / gamma
+            for i in range(256):
+                val = 255.0 * math.pow(i/255.0, inv_gamma)
+                gamma_lut.append(val)
+        else:
+            gamma_lut = list(range(256))
+
+        # 2. OPTICAL LOOP
+        for y in range(min_y, max_y):
+            for x in range(min_x, max_x):
+                if mask[x, y] == 0: continue
+                
+                pr, pg, pb = pixels[x, y]
+                
+                # ADAPTIVE VEIL COLOR
+                p_lum = (pr + pg + pb) / 3.0
+                lum_ratio = p_lum / 255.0
+                mod_factor = (1.0 - adapt_fac) + (adapt_fac * lum_ratio)
+                
+                ar = max(1, ar_base * mod_factor)
+                ag = max(1, ag_base * mod_factor)
+                ab = max(1, ab_base * mod_factor)
+                
+                # TRANSMISSION
+                local_min = tx_pix[x, y]
+                dr = local_min[0] / ar
+                dg = local_min[1] / ag
+                db = local_min[2] / ab
+                dark_c = min(dr, dg, db)
+                
+                t = 1.0 - (omega * dark_c)
+                t = max(t0, t)
+                
+                # RECOVERY
+                jr = ((pr - ar) / t) + ar
+                jg = ((pg - ag) / t) + ag
+                jb = ((pb - ab) / t) + ab
+                
+                # GAMMA
+                jr_idx = int(max(0, min(255, jr)))
+                jg_idx = int(max(0, min(255, jg)))
+                jb_idx = int(max(0, min(255, jb)))
+                
+                final_r = gamma_lut[jr_idx]
+                final_g = gamma_lut[jg_idx]
+                final_b = gamma_lut[jb_idx]
+                
+                updates.append((x, y, (int(final_r), int(final_g), int(final_b))))
+                
+        for ux, uy, uval in updates:
+            pixels[ux, uy] = uval
+            
+        return img_pil
+
+# ==============================================================================
+# GUI
+# ==============================================================================
+
+class ET_V20_GUI:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("ET-V20: PRECISION OPTICAL ENGINE (EYEDROPPER)")
+        self.root.geometry("1200x950")
+        self.root.configure(bg="#050505")
+        
+        self.engine = ET_Adaptive_Optical()
+        self.pil_img = None
+        self.mask_img = None
+        self.backup_img = None
+        
+        self.veil_color = (200, 200, 200)
+        self.picking_color = False
+        
+        self._layout()
+
+    def _layout(self):
+        t = tk.Frame(self.root, bg="#101010", pady=10)
+        t.pack(fill=tk.X)
+        
+        # ROW 1: CORE ACTIONS
+        r1 = tk.Frame(t, bg="#101010"); r1.pack(side=tk.TOP, fill=tk.X, pady=2)
+        self.btn(r1, "LOAD IMAGE", self.load, "#004488")
+        self.btn(r1, "RESET ALL", self.reset_all, "#880000")
+        self.btn(r1, "CLEAR MASK", self.clear_mask, "#550000")
+        self.btn(r1, "EXECUTE DE-OCCLUSION", self.run, "#006600")
+        
+        # ROW 2: TOOLS
+        r2 = tk.Frame(t, bg="#101010"); r2.pack(side=tk.TOP, fill=tk.X, pady=5)
+        
+        # EYEDROPPER
+        self.pick_btn = tk.Button(r2, text="[✚] PICK VEIL COLOR", command=self.toggle_picker, bg="#444", fg="white", font=("Arial", 10, "bold"), relief="raised")
+        self.pick_btn.pack(side=tk.LEFT, padx=10)
+        
+        self.c_lbl = tk.Label(r2, text="      ", bg="#cccccc", relief="sunken", width=6)
+        self.c_lbl.pack(side=tk.LEFT)
+        self.val_lbl = tk.Label(r2, text="RGB: (200,200,200)", fg="#888", bg="#101010", font=("Consolas", 9))
+        self.val_lbl.pack(side=tk.LEFT, padx=5)
+
+        self.stat = tk.Label(r2, text="Ready.", fg="#00ff00", bg="#101010")
+        self.stat.pack(side=tk.RIGHT, padx=20)
+        
+        # ROW 3: SLIDERS
+        r3 = tk.Frame(t, bg="#101010"); r3.pack(side=tk.TOP, fill=tk.X, pady=5)
+        
+        # Density
+        f1 = tk.Frame(r3, bg="#101010"); f1.pack(side=tk.LEFT, padx=10)
+        tk.Label(f1, text="THICKNESS (Density)", fg="#aaa", bg="#101010", font=("Arial", 8)).pack()
+        self.den_scale = tk.Scale(f1, from_=0, to=100, orient=tk.HORIZONTAL, bg="#101010", fg="#0f0", length=120)
+        self.den_scale.set(85)
+        self.den_scale.pack()
+        
+        # Adaptation
+        f2 = tk.Frame(r3, bg="#101010"); f2.pack(side=tk.LEFT, padx=10)
+        tk.Label(f2, text="SHADOW ADAPT", fg="#aaa", bg="#101010", font=("Arial", 8)).pack()
+        self.adp_scale = tk.Scale(f2, from_=0, to=100, orient=tk.HORIZONTAL, bg="#101010", fg="#0f0", length=120)
+        self.adp_scale.set(60)
+        self.adp_scale.pack()
+        
+        # Gamma
+        f3 = tk.Frame(r3, bg="#101010"); f3.pack(side=tk.LEFT, padx=10)
+        tk.Label(f3, text="DEPTH RECOVERY", fg="#aaa", bg="#101010", font=("Arial", 8)).pack()
+        self.gam_scale = tk.Scale(f3, from_=10, to=30, orient=tk.HORIZONTAL, bg="#101010", fg="#0f0", length=120)
+        self.gam_scale.set(18)
+        self.gam_scale.pack()
+        
+        # CANVAS
+        container = tk.Frame(self.root)
+        container.pack(fill=tk.BOTH, expand=True)
+        self.cv = tk.Canvas(container, bg="#080808", cursor="crosshair")
+        vs = tk.Scrollbar(container, orient="vertical", command=self.cv.yview)
+        hs = tk.Scrollbar(container, orient="horizontal", command=self.cv.xview)
+        self.cv.config(yscrollcommand=vs.set, xscrollcommand=hs.set)
+        
+        vs.pack(side=tk.RIGHT, fill=tk.Y)
+        hs.pack(side=tk.BOTTOM, fill=tk.X)
+        self.cv.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        
+        self.cv.bind("<Button-1>", self.down)
+        self.cv.bind("<B1-Motion>", self.drag)
+        self.cv.bind("<ButtonRelease-1>", self.up)
+        
+        self.drawing=False; self.brush=30
+
+    def btn(self, p, t, c, b):
+        tk.Button(p, text=t, command=c, bg=b, fg="white", relief="flat", padx=10, pady=5).pack(side=tk.LEFT, padx=5)
+
+    def load(self):
+        path = filedialog.askopenfilename()
+        if not path: return
+        try:
+            self.pil_img = Image.open(path).convert("RGB")
+            self.backup_img = self.pil_img.copy()
+            self.mask_img = Image.new("L", self.pil_img.size, 0)
+            self.cv.config(scrollregion=(0,0,self.pil_img.width,self.pil_img.height))
+            self.update_view()
+            self.stat.config(text=f"Loaded: {self.pil_img.size}")
+        except: pass
+
+    def update_view(self):
+        if not self.pil_img: return
+        d = self.pil_img.copy()
+        if self.mask_img.getbbox():
+            r = Image.new("RGB", self.pil_img.size, (255,0,0)) 
+            d = Image.composite(r, d, self.mask_img)
+        self.tk = ImageTk.PhotoImage(d)
+        self.cv.create_image(0,0, image=self.tk, anchor=tk.NW)
+
+    # --- EYEDROPPER LOGIC ---
+    def toggle_picker(self):
+        if not self.pil_img: return
+        self.picking_color = not self.picking_color
+        if self.picking_color:
+            self.pick_btn.config(bg="#ffaa00", fg="black", text="CLICK IMAGE TO PICK COLOR")
+            self.cv.config(cursor="target")
+        else:
+            self.pick_btn.config(bg="#444", fg="white", text="[✚] PICK VEIL COLOR")
+            self.cv.config(cursor="crosshair")
+
+    def down(self,e):
+        x=int(self.cv.canvasx(e.x)); y=int(self.cv.canvasy(e.y))
+        
+        # PICKER MODE
+        if self.picking_color and self.pil_img:
+            if 0 <= x < self.pil_img.width and 0 <= y < self.pil_img.height:
+                r,g,b = self.pil_img.getpixel((x,y))
+                self.veil_color = (r,g,b)
+                
+                # Update UI
+                hex_c = '#%02x%02x%02x' % (r,g,b)
+                self.c_lbl.config(bg=hex_c)
+                self.val_lbl.config(text=f"RGB: {self.veil_color}")
+                
+                # Turn off picker
+                self.toggle_picker()
+            return
+
+        # DRAW MODE
+        self.drawing=True; self.lp=(x,y)
+        
+    def drag(self,e):
+        if self.drawing and self.mask_img:
+            x=int(self.cv.canvasx(e.x)); y=int(self.cv.canvasy(e.y))
+            d = ImageDraw.Draw(self.mask_img)
+            d.line([self.lp, (x,y)], fill=255, width=self.brush)
+            d.ellipse([x-15,y-15,x+15,y+15], fill=255)
+            self.lp=(x,y); 
+            self.cv.create_line(self.lp[0],self.lp[1],x,y,fill="red",width=self.brush,tags="t")
+
+    def up(self,e): 
+        if self.drawing:
+            self.drawing=False; self.cv.delete("t"); self.update_view()
+    
+    # --- RESET LOGIC ---
+    def reset_all(self):
+        """Restores the original image and clears mask."""
+        if self.backup_img:
+            self.pil_img = self.backup_img.copy()
+            self.clear_mask()
+            self.stat.config(text="Image Reset to Default.")
+
+    def clear_mask(self):
+        if self.mask_img: 
+            self.mask_img.paste(0,[0,0,self.mask_img.width,self.mask_img.height])
+            self.update_view()
+
+    def run(self):
+        if not self.pil_img: return
+        self.stat.config(text="Processing...")
+        
+        den = self.den_scale.get()
+        adp = self.adp_scale.get()
+        gam = self.gam_scale.get() / 10.0
+        vc = self.veil_color
+        
+        threading.Thread(target=self._w, args=(vc, den, adp, gam)).start()
+
+    def _w(self, v, d, a, g):
+        res = self.engine.lift_adaptive_layer(self.pil_img, self.mask_img, v, d, a, g, self.log)
+        self.pil_img = res
+        self.clear_mask()
+        self.root.after(0, self.update_view)
+        self.root.after(0, lambda: self.stat.config(text="De-Occlusion Complete."))
+
+    def log(self, m): self.stat.config(text=m)
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = ET_V20_GUI(root)
+    root.mainloop()

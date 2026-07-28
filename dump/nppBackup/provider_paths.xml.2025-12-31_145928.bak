@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 
+      Maps to getCacheDir() 
+      Used for: Temporary report generation (CSV/ZIP) before sharing/uploading.
+    -->
+    <cache-path name="cache_reports" path="." />
+    
+    <!-- 
+      Maps to getFilesDir() 
+      Used for: Persistent pending reports queue. 
+      Generally not shared externally, but defined here if needed for debugging exports.
+    -->
+    <files-path name="pending_reports" path="pending_reports" />
+</paths>

@@ -1,0 +1,163 @@
+package com.et.physics.toolbox
+
+import android.content.Context
+import android.graphics.*
+import android.util.AttributeSet
+import android.view.View
+import kotlin.math.min
+import kotlin.math.cos
+import kotlin.math.sin
+
+/**
+ * VisualizerView v16.0 - THE SPECTRUM
+ * Integrates:
+ * - Live Dashboard
+ * - Trend Graph
+ * - SPECTROGRAM (Waterfall)
+ */
+class VisualizerView(context: Context, attrs: AttributeSet) : View(context, attrs) {
+
+    private val paint = Paint().apply { isAntiAlias = true; style = Paint.Style.FILL }
+    private val textPaint = Paint().apply { color = Color.WHITE; textSize = 30f; textAlign = Paint.Align.CENTER }
+    private val graphPaint = Paint().apply { style = Paint.Style.STROKE; strokeWidth = 3f; isAntiAlias = true }
+    private val baselinePaint = Paint().apply { style = Paint.Style.STROKE; strokeWidth = 2f; color = Color.YELLOW; pathEffect = DashPathEffect(floatArrayOf(10f, 10f), 0f) }
+
+    // State
+    var pitch: Double = 0.0; var roll: Double = 0.0; var vibration: Double = 0.0; var spl: Double = 0.0; var lux: Double = 0.0; var azimuth: Double = 0.0; var pressure: Double = 0.0; var tempC: Double? = null
+    var baselineVib: Double? = null; var baselineSpl: Double? = null
+    
+    // Live History
+    private val historySize = 600
+    private val splHistory = FloatArray(historySize)
+    private val vibHistory = FloatArray(historySize)
+    private val pressHistory = FloatArray(historySize)
+    private val tempHistory = FloatArray(historySize)
+    private var historyIdx = 0
+    private var updateCounter = 0
+    
+    // Trend Data
+    private var trendData: List<OmniMeasureService.TrendPoint>? = null
+    
+    // Spectrogram State
+    private var spectrogramBitmap: Bitmap? = null
+    private var spectrumCanvas: Canvas? = null
+    private val spectrumPaint = Paint()
+    private val colorMap = IntArray(256)
+
+    // Modes
+    enum class ViewMode { LIVE, TREND, SPECTRUM }
+    var currentMode = ViewMode.LIVE
+
+    init {
+        // Init Color Map (Blue -> Red)
+        for (i in 0..255) {
+            val hue = (1.0f - i / 255.0f) * 240.0f
+            colorMap[i] = Color.HSVToColor(floatArrayOf(hue, 1.0f, 1.0f))
+        }
+    }
+
+    fun update(p: Double, r: Double, v: Double, s: Double, l: Double, a: Double, press: Double, t: Double?, fft: DoubleArray?) {
+        pitch = p; roll = r; vibration = v; spl = s; lux = l; azimuth = a; pressure = press; tempC = t
+        updateCounter++
+        if (updateCounter % 10 == 0) { 
+            splHistory[historyIdx] = s.toFloat()
+            vibHistory[historyIdx] = v.toFloat()
+            pressHistory[historyIdx] = press.toFloat()
+            tempHistory[historyIdx] = t?.toFloat() ?: 0f
+            historyIdx = (historyIdx + 1) % historySize
+        }
+        
+        if (currentMode == ViewMode.SPECTRUM && fft != null) {
+            updateSpectrogram(fft)
+        }
+        
+        if (currentMode != ViewMode.TREND) invalidate()
+    }
+    
+    fun setTrendData(data: List<OmniMeasureService.TrendPoint>?) { trendData = data; currentMode = ViewMode.TREND; invalidate() }
+    fun setLiveMode() { currentMode = ViewMode.LIVE; invalidate() }
+    fun setSpectrumMode() { currentMode = ViewMode.SPECTRUM; invalidate() }
+    fun setBaselines(v: Double?, s: Double?) { baselineVib = v; baselineSpl = s }
+
+    private fun updateSpectrogram(fft: DoubleArray) {
+        if (width == 0 || height == 0) return
+        if (spectrogramBitmap == null || spectrogramBitmap!!.width != width || spectrogramBitmap!!.height != height) {
+            spectrogramBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565)
+            spectrumCanvas = Canvas(spectrogramBitmap!!)
+            spectrumCanvas!!.drawColor(Color.BLACK)
+        }
+
+        // Shift Up
+        val shiftRect = Rect(0, 1, width, height)
+        val destRect = Rect(0, 0, width, height - 1)
+        spectrumCanvas!!.drawBitmap(spectrogramBitmap!!, shiftRect, destRect, null)
+        
+        // Draw New Line at Bottom
+        val lineY = height - 1f
+        val binWidth = width.toFloat() / fft.size
+        
+        // Normalize FFT (Log scale usually better for display)
+        for (i in fft.indices) {
+            val mag = fft[i]
+            // Scale mag (0-200 range approx for display)
+            val index = (min(255.0, mag * 5.0)).toInt()
+            spectrumPaint.color = colorMap[index]
+            spectrumCanvas!!.drawRect(i * binWidth, lineY, (i + 1) * binWidth, height.toFloat(), spectrumPaint)
+        }
+    }
+
+    override fun onDraw(canvas: Canvas) {
+        super.onDraw(canvas)
+        canvas.drawColor(Color.parseColor("#111111"))
+        val w = width.toFloat(); val h = height.toFloat()
+        
+        when (currentMode) {
+            ViewMode.LIVE -> drawLiveDashboard(canvas, w, h)
+            ViewMode.TREND -> drawTrendGraph(canvas, w, h)
+            ViewMode.SPECTRUM -> {
+                if (spectrogramBitmap != null) canvas.drawBitmap(spectrogramBitmap!!, 0f, 0f, null)
+                canvas.drawText("SPECTROGRAM (Waterfall)", w/2, 40f, textPaint)
+            }
+        }
+    }
+    
+    private fun drawLiveDashboard(canvas: Canvas, w: Float, h: Float) {
+        val cx = w * 0.25f; val cy = h / 2
+        val bubbleR = h / 3.5f
+        
+        paint.color = Color.DKGRAY; paint.style = Paint.Style.STROKE; canvas.drawCircle(cx, cy, bubbleR + 20f, paint)
+        paint.color = Color.RED; paint.style = Paint.Style.FILL; val rad = Math.toRadians(azimuth - 90); canvas.drawCircle(cx + (bubbleR + 20f) * cos(rad).toFloat(), cy + (bubbleR + 20f) * sin(rad).toFloat(), 8f, paint)
+        paint.color = Color.DKGRAY; paint.style = Paint.Style.STROKE; canvas.drawCircle(cx, cy, bubbleR, paint); paint.color = Color.WHITE; canvas.drawCircle(cx, cy, bubbleR, paint)
+        
+        val maxTilt = 45.0; val bbx = cx + (roll.coerceIn(-maxTilt, maxTilt) / maxTilt * (bubbleR-20)).toFloat(); val bby = cy + (pitch.coerceIn(-maxTilt, maxTilt) / maxTilt * (bubbleR-20)).toFloat()
+        paint.style = Paint.Style.FILL; paint.color = if (Math.abs(roll) < 1 && Math.abs(pitch) < 1) Color.GREEN else Color.YELLOW; canvas.drawCircle(bbx, bby, 15f, paint)
+
+        val gx = w * 0.45f; val gy = 50f; val gw = w * 0.50f; val gh = h - 100f
+        paint.color = Color.parseColor("#222222"); paint.style = Paint.Style.FILL; canvas.drawRect(gx, gy, gx + gw, gy + gh, paint)
+        paint.color = Color.DKGRAY; paint.style = Paint.Style.STROKE; canvas.drawRect(gx, gy, gx + gw, gy + gh, paint)
+        
+        drawHistory(canvas, splHistory, gx, gy, gw, gh, 30f, 100f, Color.CYAN)
+        if (baselineSpl != null) { val y = gy + gh - ((baselineSpl!!.toFloat().coerceIn(30f, 100f) - 30) / 70) * gh; canvas.drawLine(gx, y, gx + gw, y, baselinePaint) }
+        
+        drawHistory(canvas, vibHistory, gx, gy, gw, gh, 0f, 10f, Color.MAGENTA)
+        if (baselineVib != null) { val y = gy + gh - ((baselineVib!!.toFloat().coerceIn(0f, 10f)) / 10) * gh; canvas.drawLine(gx, y, gx + gw, y, baselinePaint) }
+        
+        var minP = 2000f; var maxP = 0f; for(p in pressHistory) if(p>0){ if(p<minP) minP=p; if(p>maxP) maxP=p }; if(maxP > 0) drawHistory(canvas, pressHistory, gx, gy, gw, gh, minP-1f, maxP+1f, Color.YELLOW)
+        drawHistory(canvas, tempHistory, gx, gy, gw, gh, 0f, 50f, Color.RED)
+        
+        canvas.drawText("Live (10m) - Cyan=dB Mag=Vib Yel=hPa Red=°C", gx + gw/2, gy + gh + 40f, textPaint)
+    }
+    
+    private fun drawTrendGraph(canvas: Canvas, w: Float, h: Float) {
+        val gx = 50f; val gy = 50f; val gw = w - 100f; val gh = h - 100f
+        paint.color = Color.parseColor("#222222"); paint.style = Paint.Style.FILL; canvas.drawRect(gx, gy, gx + gw, gy + gh, paint)
+        paint.color = Color.DKGRAY; paint.style = Paint.Style.STROKE; canvas.drawRect(gx, gy, gx + gw, gy + gh, paint)
+        val data = trendData!!; if(data.isEmpty()) return
+        val vibs = FloatArray(data.size) { data[it].maxVibration.toFloat() }; val spls = FloatArray(data.size) { data[it].avgSpl.toFloat() }
+        drawLinearPath(canvas, spls, gx, gy, gw, gh, 30f, 100f, Color.CYAN); drawLinearPath(canvas, vibs, gx, gy, gw, gh, 0f, 10f, Color.MAGENTA)
+        canvas.drawText("Trend (${data.size} mins)", w/2, gy + gh + 40f, textPaint)
+    }
+    
+    private fun drawHistory(canvas: Canvas, data: FloatArray, x: Float, y: Float, w: Float, h: Float, min: Float, max: Float, color: Int) { graphPaint.color = color; val path = Path(); var first = true; val range = if((max-min)<0.1) 1f else max-min; for (i in 0 until historySize) { val idx = (historyIdx + i) % historySize; val `val` = data[idx]; if (`val` != 0f) { val px = x + (i.toFloat() / historySize) * w; val py = y + h - ((`val`.coerceIn(min, max) - min) / range) * h; if (first) { path.moveTo(px, py); first = false } else path.lineTo(px, py) } }; if(!first) canvas.drawPath(path, graphPaint) }
+    private fun drawLinearPath(canvas: Canvas, data: FloatArray, x: Float, y: Float, w: Float, h: Float, min: Float, max: Float, color: Int) { graphPaint.color = color; val path = Path(); var first = true; val range = if((max-min)<0.1) 1f else max-min; for (i in data.indices) { val px = x + (i.toFloat() / data.size) * w; val py = y + h - ((data[i].coerceIn(min, max) - min) / range) * h; if (first) { path.moveTo(px, py); first = false } else path.lineTo(px, py) }; if(!first) canvas.drawPath(path, graphPaint) }
+}

@@ -1,0 +1,99 @@
+package com.et.omnimeasure.core
+
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.app.Service
+import android.content.Intent
+import android.os.Build
+import android.os.Binder
+import android.os.IBinder
+import androidx.core.app.NotificationCompat
+import com.et.omnimeasure.MainActivity
+import com.et.omnimeasure.R
+
+/**
+ * FOREGROUND SERVICE
+ * Purpose: Anchors the Traverser (Engine) to the Process Lifecycle, preventing
+ * the OS (Entropy) from reclaiming the memory (P) when the UI is closed.
+ */
+class OmniMeasureService : Service(), OmniTraverserEngine.TraverserListener {
+
+    private val binder = LocalBinder()
+    var engine: OmniTraverserEngine? = null
+    var activeListener: OmniTraverserEngine.TraverserListener? = null
+    
+    // Notification Channel ID (Descriptor)
+    private val CHANNEL_ID = "OmniMeasureChannel"
+
+    inner class LocalBinder : Binder() {
+        fun getService(): OmniMeasureService = this@OmniMeasureService
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        createNotificationChannel()
+        
+        // Initialize Engine
+        engine = OmniTraverserEngine(this, this)
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        // Bind T to Foreground to prevent killing
+        val notification = buildNotification("Traverser Active", "Monitoring Substrate...")
+        startForeground(1, notification)
+        
+        engine?.engage()
+        
+        return START_STICKY // If killed, recreate (Observer Persistence)
+    }
+
+    override fun onDestroy() {
+        engine?.disengage()
+        super.onDestroy()
+    }
+
+    override fun onBind(intent: Intent): IBinder {
+        return binder
+    }
+
+    // --- PROXY CALLBACKS ---
+    // The Service receives data from Engine, then forwards to Activity if bound.
+    override fun onPhysicsUpdate(model: PhysicsUiModel) {
+        activeListener?.onPhysicsUpdate(model)
+        
+        // Optional: Update Notification with live data (Low freq only to avoid spam)
+        // val notification = buildNotification("Level: ${"%.1f".format(model.tiltDegrees)}°", "Vib: ${model.vibrationLabel}")
+        // getSystemService(NotificationManager::class.java).notify(1, notification)
+    }
+
+    override fun onError(message: String) {
+        activeListener?.onError(message)
+    }
+
+    // --- UTILS ---
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                CHANNEL_ID,
+                "Omni-Measure Service",
+                NotificationManager.IMPORTANCE_LOW
+            )
+            getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
+        }
+    }
+
+    private fun buildNotification(title: String, text: String): Notification {
+        val intent = Intent(this, MainActivity::class.java)
+        val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+
+        return NotificationCompat.Builder(this, CHANNEL_ID)
+            .setContentTitle(title)
+            .setContentText(text)
+            .setSmallIcon(R.mipmap.ic_launcher) // Ensure this resource exists
+            .setContentIntent(pendingIntent)
+            .setOngoing(true)
+            .build()
+    }
+}

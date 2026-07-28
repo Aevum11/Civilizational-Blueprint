@@ -1,0 +1,109 @@
+/home/claude/work/verify_variance.py:2: SyntaxWarning: invalid escape sequence '\I'
+  """
+==============================================================================
+ET VARIANCE FORMULA VERIFICATION — EVERY FORMULA, NO ASSUMPTIONS
+==============================================================================
+
+--- (A) Canonical V(c) = |{c' : ∃t∈T, T(c,t)=c'}| ---
+V is integer-valued; computed by building a minimal explicit configuration graph.
+    V(E) = 0   = 0 (Exception)
+    V(E') = 0   = 0 (Exception)
+    V(PD) = 2   > 0 (potential)
+    V(DT) = 2   > 0 (potential)
+    CHECK  V(E)=0 and V(c)>0 for c≠E: PASS
+    Note: V(E')=0 is only consistent if E' is at a DIFFERENT T-time τ'≠τ;
+          at a fixed T-time τ, Batch-1 uniqueness gives ∃! E_τ with V(E_τ)=0.
+
+--- (B) σ²(discrete uniform on {0..n-1}) = (n²−1)/12 ---
+Classical statistical identity. Verify by direct computation.
+    n=   1:  direct σ² = 0.0000000000   (n²−1)/12 = 0.0000000000   match: True
+    n=   2:  direct σ² = 0.2500000000   (n²−1)/12 = 0.2500000000   match: True
+    n=   3:  direct σ² = 0.6666666667   (n²−1)/12 = 0.6666666667   match: True
+    n=   4:  direct σ² = 1.2500000000   (n²−1)/12 = 1.2500000000   match: True
+    n=   5:  direct σ² = 2.0000000000   (n²−1)/12 = 2.0000000000   match: True
+    n=   6:  direct σ² = 2.9166666667   (n²−1)/12 = 2.9166666667   match: True
+    n=  12:  direct σ² = 11.9166666667   (n²−1)/12 = 11.9166666667   match: True
+    n= 100:  direct σ² = 833.2500000000   (n²−1)/12 = 833.2500000000   match: True
+
+--- (C) V_base = 1/N = 1/12 ---
+    N = 12
+    V_base = 1/N = 1/12 = 0.0833333333 ≈ 0.0833...
+
+--- (D) σ²(continuous uniform on [0,1]) = 1/12 ---
+Classical continuous result.  ∫₀¹ (x − 1/2)² dx = 1/12.
+    Monte Carlo (N=10⁶):  σ²(sample) = 0.083342   vs   1/12 = 0.083333
+    Analytic  ∫₀¹ (x−½)² dx = 1/12 = 0.0833333333
+
+--- (E) Normalized discrete → continuous  σ²( X/(n−1) ) = (n²−1)/(12(n−1)²) → 1/12 ---
+Rescaling {0..n−1} to [0,1] by dividing by (n−1).  Shows how (B) limits to (D).
+    n=     2:  normalized σ² = 0.2500000000   Δ from 1/12 = +0.1666666667
+    n=     3:  normalized σ² = 0.1666666667   Δ from 1/12 = +0.0833333333
+    n=     4:  normalized σ² = 0.1388888889   Δ from 1/12 = +0.0555555556
+    n=     5:  normalized σ² = 0.1250000000   Δ from 1/12 = +0.0416666667
+    n=    10:  normalized σ² = 0.1018518519   Δ from 1/12 = +0.0185185185
+    n=   100:  normalized σ² = 0.0850168350   Δ from 1/12 = +0.0016835017
+    n=  1000:  normalized σ² = 0.0835001668   Δ from 1/12 = +0.0001668335
+    n= 10000:  normalized σ² = 0.0833500017   Δ from 1/12 = +0.0000166683
+
+--- (F) Batch 5:  Variance(D_n → P) = 1/n → 0 (never reaches 0) ---
+Batch 5 framing; a descriptor-count-indexed variance that approaches 0.
+    n=       1:  1/n = 1.000000000000
+    n=       2:  1/n = 0.500000000000
+    n=       3:  1/n = 0.333333333333
+    n=      12:  1/n = 0.083333333333
+    n=     100:  1/n = 0.010000000000
+    n=    1000:  1/n = 0.001000000000
+    n=   10000:  1/n = 0.000100000000
+    n= 1000000:  1/n = 0.000001000000
+    At n = 12:  1/n = 1/12 = V_base.  <-- exact coincidence with (C) at N=n=12.
+
+==============================================================================
+RELATIONS BETWEEN THE FORMULAS — verified and unresolved
+==============================================================================
+
+Relation  (B) → (D) via (E):
+    The discrete-uniform variance (n²−1)/12, when normalized by (n−1)² so the
+    support becomes [0,1], converges to 1/12.  VERIFIED above to 10 digits.
+    This is the standard statistical fact that the discrete uniform on n
+    values limits to the continuous uniform on [0,1] in distribution.
+
+Relation  (C) = (D)  at N = 12:
+    V_base = 1/N = 1/12 numerically coincides with the continuous-uniform
+    variance on [0,1].  This is the "continuous analogue" claim: V_base is
+    the quantum of variance matching the N-fold symmetry expressed as a
+    continuous uniform fraction.  VERIFIED numerically.  The *ontological*
+    status of this coincidence (whether it is a derivation or a convention)
+    is not resolved by the corpus and requires Mike's decision.
+
+Relation  (F) → (C)  at n = N = 12:
+    Batch 5's 1/n at n=12 equals V_base.  This is a numerical coincidence
+    at one point (n=12).  The function 1/n → 0 as n → ∞, while V_base is a
+    fixed constant of the N=12 manifold.  They are not the same function;
+    they intersect at n=N.
+
+Relation  (A) ↔ (C)  — the tricky one:
+    V(c) from (A) is INTEGER-valued: V(E)=0, and V(c) ≥ 1 for c≠E in a
+    discrete configuration space.  V_base = 1/12 from (C) is a FRACTION.
+    These are NOT on the same number line.  The statement "V_base = 1/N is
+    the minimal non-zero value of V(c)" is FALSE as stated for the integer-
+    valued V.  Possible reconciliations (each requiring Mike's decision):
+
+        (R1) V_base = 1 / (total coherent configurations) = 1/N is the
+             minimum non-zero V(c), *normalized* by the manifold size.
+             Then V(c)=1 (one reachable config) in normalized form = 1/N
+             when the manifold has N states.  VERIFIED: at N=12 and V(c)=1,
+             normalized V(c)/N = 1/12.
+
+        (R2) V has a finer-grained definition at each integrative level
+             (§subsec:levels) in which fractional values emerge.  Then
+             V_base = 1/N is the minimum non-zero value at base resolution
+             without normalization.  NOT VERIFIED; requires corpus citation
+             beyond what I've found.
+
+        (R3) (A) and (C) are two DIFFERENT quantities both called "variance"
+             in the corpus, only numerically linkable at specific points.
+             VERIFIED consistent with corpus; NOT a unification.
+
+PYTHON VERIFICATION COMPLETE.  Every formula above is either numerically
+confirmed or flagged as unresolved.  Decisions on relations (R1/R2/R3)
+are Mike's.

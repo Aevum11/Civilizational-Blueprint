@@ -1,0 +1,16 @@
+Vibration window size still critically small
+→ Reset happens only every ~32 ms → effective averaging window = 1–2 samples
+→ RMS ≈ single sample magnitude → defeats the purpose of RMS as energy measure
+→ Fix: Implement proper time-based rolling window (1–3 seconds recommended)
+Audio frequency estimation is very crude
+→ Zero-crossing count (ZCC) works reasonably only for clean, single-tone signals
+→ Extremely inaccurate for real-world sounds (speech, music, machinery, noise) due to harmonics, noise, multiple sources
+→ Real "noise source identification" requires proper FFT or at least autocorrelation/pitch detection → ZCC gives only rough dominant frequency estimate
+dB is relative, not calibrated SPL
+→ Current calculation is signal level dBFS (relative to full scale) + arbitrary +90 offset
+→ Android microphones have very different sensitivities; no standard SPL calibration
+→ Without device-specific calibration (impossible in general app), values are only useful as relative loudness meter
+No gravity vector remapping in vibration calculation
+→ linX/Y/Z computed from raw gravity → incorrect when phone is rotated (landscape/portrait)
+Missing light in UI update throttling
+→ processLight updates smoothedLux, but UI only throttled by gyro → possible stale values if light changes without IMU events

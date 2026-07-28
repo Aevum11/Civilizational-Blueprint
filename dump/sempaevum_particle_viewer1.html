@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Sempaevum Particle Viewer — P ∘ D ∘ T = E</title>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap');
+
+:root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --border: #1e1e2e;
+    --text: #e0e0e8;
+    --accent: #e94560;
+    --accent2: #00bfff;
+    --gold: #ffd700;
+    --d1: #7cfc00;
+    --d2: #00ced1;
+    --d3: #e94560;
+    --d4: #4169e1;
+    --d6: #9370db;
+    --d12: #ff8c00;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+.header {
+    text-align: center;
+    padding: 40px 20px 20px;
+    background: linear-gradient(180deg, #0f0f1a 0%, var(--bg) 100%);
+    border-bottom: 1px solid var(--border);
+}
+
+.header h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.8em;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--gold) 50%, var(--accent2) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 8px;
+}
+
+.header .subtitle {
+    font-size: 0.85em;
+    color: #888;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+}
+
+.header .equation {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5em;
+    font-style: italic;
+    color: var(--gold);
+    margin: 15px 0 5px;
+    letter-spacing: 0.1em;
+}
+
+.constants-bar {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    padding: 12px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+}
+
+.constant {
+    text-align: center;
+    padding: 5px 15px;
+}
+
+.constant .label { font-size: 0.75em; color: #666; text-transform: uppercase; letter-spacing: 0.1em; }
+.constant .value { font-size: 1.1em; color: var(--gold); font-weight: 700; }
+
+#plot3d {
+    width: 100%;
+    height: 700px;
+    background: var(--bg);
+}
+
+.section {
+    max-width: 1400px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+.section h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.8em;
+    color: var(--accent);
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+}
+
+.section h3 {
+    font-size: 1em;
+    color: var(--accent2);
+    margin: 15px 0 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82em;
+    margin: 10px 0;
+}
+
+th {
+    background: var(--surface);
+    color: var(--gold);
+    padding: 8px 6px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 0.85em;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 2px solid var(--border);
+    position: sticky;
+    top: 0;
+}
+
+td {
+    padding: 6px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+}
+
+tr:hover td { background: rgba(233, 69, 96, 0.05); }
+
+.particle-name { font-weight: 500; color: var(--accent2); }
+
+.d-1 { color: var(--d1); font-weight: 700; }
+.d-2 { color: var(--d2); font-weight: 700; }
+.d-3 { color: var(--d3); font-weight: 700; }
+.d-4 { color: var(--d4); font-weight: 700; }
+.d-6 { color: var(--d6); font-weight: 700; }
+.d-12 { color: var(--d12); font-weight: 700; }
+
+.legend {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    padding: 12px;
+    background: var(--surface);
+    border-radius: 6px;
+    margin: 10px 0;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85em;
+}
+
+.legend-dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.info-box {
+    background: var(--surface);
+    border-left: 3px solid var(--accent);
+    padding: 15px;
+    margin: 15px 0;
+    font-size: 0.9em;
+    line-height: 1.8;
+}
+
+.footer {
+    text-align: center;
+    padding: 30px;
+    color: #555;
+    font-size: 0.8em;
+    border-top: 1px solid var(--border);
+    margin-top: 40px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 15px;
+    margin: 15px 0;
+}
+
+.stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 15px;
+    border-radius: 6px;
+}
+
+.stat-card .stat-label { color: #888; font-size: 0.75em; text-transform: uppercase; letter-spacing: 0.1em; }
+.stat-card .stat-value { color: var(--gold); font-size: 1.4em; font-weight: 700; margin: 4px 0; }
+.stat-card .stat-detail { color: #aaa; font-size: 0.85em; }
+
+.table-scroll { overflow-x: auto; }
+
+.detail-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent2);
+    padding: 12px 15px;
+    margin: 8px 0;
+    border-radius: 4px;
+}
+
+.detail-header {
+    font-weight: 700;
+    color: var(--accent);
+    font-size: 1em;
+    margin-bottom: 6px;
+}
+
+.detail-label {
+    font-size: 0.75em;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 6px;
+}
+
+.digit-120 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7em;
+    color: var(--gold);
+    word-break: break-all;
+    line-height: 1.4;
+    padding: 4px 8px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 3px;
+    margin: 3px 0;
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+    <h1>SEMPAEVUM</h1>
+    <div class="subtitle">Particle Lattice Viewer — The Bijection Applied to the Standard Model</div>
+    <div class="equation">P ∘ D ∘ T = E &nbsp;&nbsp;|&nbsp;&nbsp; 3 = 3 = 3 = Σ</div>
+    <div class="subtitle" style="margin-top:8px;">PDG 2024 Data → Sempaevum Bijection → 3D Lattice Visualization</div>
+</div>
+
+<div class="constants-bar">
+    <div class="constant"><div class="label">Manifold Symmetry</div><div class="value">N = 12</div></div>
+    <div class="constant"><div class="label">Base Variance</div><div class="value">V = 1/12</div></div>
+    <div class="constant"><div class="label">Koide Ratio</div><div class="value">K = 2/3</div></div>
+    <div class="constant"><div class="label">Impedance</div><div class="value">A₀ = 137</div></div>
+    <div class="constant"><div class="label">Reference</div><div class="value">R₀ = mₑ = 0.51099895 MeV</div></div>
+    <div class="constant"><div class="label">Universal Lattice</div><div class="value">N_FULL = 27720</div></div>
+</div>
+
+<div id="plot3d"></div>
+
+<div class="section">
+    <h2>The Three Tools Applied</h2>
+    <div class="info-box">
+        <b>Identification Principle:</b> P = particle substrate (physical existence), D = measurable properties (mass, charge, spin, quantum numbers), T = measurement/observation that substantiates.<br>
+        <b>Descriptor Gap Principle:</b> The gap between raw particle data and structural understanding IS a Descriptor — the Sempaevum bijection Π_N(r) = (k, d, ε) fills it.<br>
+        <b>Subsumption Law:</b> Every particle property finds a lattice address. The projection subsumes all massive particles without remainder. Massless particles (γ, g) sit at the ∂I annihilation boundary.
+    </div>
+</div>
+
+<div class="section">
+    <h2>Structural Summary</h2>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-label">Koide Ratio (PDG 2024 Leptons)</div>
+            <div class="stat-value">0.6666605115</div>
+            <div class="stat-detail">ET prediction: 0.6666666667 | Deviation: 9.2 ppm</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Proton/Electron Mass Ratio μ</div>
+            <div class="stat-value">1836.152673</div>
+            <div class="stat-detail">Projection: k=130, d=6, ε=+10.964¢</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">M_Z / M_W (Weinberg)</div>
+            <div class="stat-value">1.134499</div>
+            <div class="stat-detail">Projection: k=2, d=6, ε=+18.466¢ — HEXADIC (d=6)</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">M_H / M_W (Higgs-Strong)</div>
+            <div class="stat-value">1.558282</div>
+            <div class="stat-detail">Projection: k=8, d=3, ε=-32.053¢ — CUBIC (d=3)</div>
+        </div>
+    </div>
+</div>
+
+<div class="section">
+    <h2>Complete Particle Projections — Sempaevum Bijection at N=12</h2>
+    <div class="info-box">
+        Reference period R₀ = mₑ (electron mass) — the smallest closed T-traversal loop in the mass sector (Anti-Numerology condition N2). All ratios r = m/mₑ are genuinely dimensionless (N1). Sublattice families match physical force sectors (N3).
+    </div>
+    <div class="legend">
+        <div class="legend-item"><span class="legend-dot" style="background:var(--d1)"></span> d=1 Gravity/Identity</div>
+        <div class="legend-item"><span class="legend-dot" style="background:var(--d2)"></span> d=2 Tritone/Pivot</div>
+        <div class="legend-item"><span class="legend-dot" style="background:var(--d3)"></span> d=3 Strong/Cubic</div>
+        <div class="legend-item"><span class="legend-dot" style="background:var(--d4)"></span> d=4 Weak/Quartic</div>
+        <div class="legend-item"><span class="legend-dot" style="background:var(--d6)"></span> d=6 Hexadic/EW-Composite</div>
+        <div class="legend-item"><span class="legend-dot" style="background:var(--d12)"></span> d=12 EM/Full-Resolution</div>
+    </div>
+    <div class="table-scroll">
+    <table>
+        <thead>
+        <tr>
+            <th>Particle</th>
+            <th>Mass (MeV)</th>
+            <th>r = m/mₑ</th>
+            <th>k_r</th>
+            <th>d_r</th>
+            <th>ε_r (¢)</th>
+            <th>Sublattice Family</th>
+            <th>ξ(d_r)</th>
+            <th>k_θ</th>
+            <th>d_θ</th>
+            <th>d_comb</th>
+            <th>Lossless</th>
+        </tr>
+        </thead>
+        <tbody>
+<tr><td class='particle-name'>Electron (e⁻)</td><td>0.510999</td><td>1</td><td>0</td><td class='d-1'>1</td><td>+0.000</td><td>Gravity/Identity</td><td>8.5625</td><td>2</td><td>6</td><td>6</td><td>✓</td></tr>
+<tr><td class='particle-name'>Muon (μ⁻)</td><td>105.658</td><td>206.768</td><td>92</td><td class='d-3'>3</td><td>+30.245</td><td>Strong/Cubic</td><td>6.8500</td><td>2</td><td>6</td><td>6</td><td>✓</td></tr>
+<tr><td class='particle-name'>Tau (τ⁻)</td><td>1776.86</td><td>3477.23</td><td>141</td><td class='d-4'>4</td><td>+16.466</td><td>Weak/Quartic</td><td>5.4800</td><td>2</td><td>6</td><td>12</td><td>✓</td></tr>
+<tr><td class='particle-name'>Electron Neutrino (νₑ)</td><td>1e-06</td><td>1.95695e-06</td><td>-228</td><td class='d-1'>1</td><td>+44.447</td><td>Gravity/Identity</td><td>8.5625</td><td>10</td><td>6</td><td>6</td><td>✓</td></tr>
+<tr><td class='particle-name'>Muon Neutrino (νμ)</td><td>8.6e-06</td><td>1.68298e-05</td><td>-190</td><td class='d-6'>6</td><td>-30.349</td><td>Hexadic/EW</td><td>3.3415</td><td>10</td><td>6</td><td>6</td><td>✓</td></tr>
+<tr><td class='particle-name'>Tau Neutrino (ντ)</td><td>5e-05</td><td>9.78476e-05</td><td>-160</td><td class='d-3'>3</td><td>+17.074</td><td>Strong/Cubic</td><td>6.8500</td><td>10</td><td>6</td><td>6</td><td>✓</td></tr>
+<tr><td class='particle-name'>Up Quark (u)</td><td>2.16</td><td>4.22701</td><td>25</td><td class='d-12'>12</td><td>-4.433</td><td>EM/Full-Res</td><td>1.0000</td><td>2</td><td>6</td><td>12</td><td>✓</td></tr>
+<tr><td class='particle-name'>Down Quark (d)</td><td>4.67</td><td>9.13896</td><td>38</td><td class='d-6'>6</td><td>+30.436</td><td>Hexadic/EW</td><td>3.3415</td><td>10</td><td>6</td><td>6</td><td>✓</td></tr>
+<tr><td class='particle-name'>Strange Quark (s)</td><td>93.4</td><td>182.779</td><td>90</td><td class='d-2'>2</td><td>+16.750</td><td>Tritone/Pivot</td><td>8.0588</td><td>10</td><td>6</td><td>6</td><td>✓</td></tr>
+<tr><td class='particle-name'>Charm Quark (c)</td><td>1270</td><td>2485.33</td><td>135</td><td class='d-4'>4</td><td>+35.065</td><td>Weak/Quartic</td><td>5.4800</td><td>2</td><td>6</td><td>12</td><td>✓</td></tr>
+<tr><td class='particle-name'>Bottom Quark (b)</td><td>4180</td><td>8180.06</td><td>156</td><td class='d-1'>1</td><td>-2.526</td><td>Gravity/Identity</td><td>8.5625</td><td>10</td><td>6</td><td>6</td><td>✓</td></tr>
+<tr><td class='particle-name'>Top Quark (t)</td><td>172760</td><td>338083</td><td>220</td><td class='d-3'>3</td><td>+40.421</td><td>Strong/Cubic</td><td>6.8500</td><td>2</td><td>6</td><td>6</td><td>✓</td></tr>
+<tr><td class='particle-name'>W⁺ Boson</td><td>80377</td><td>157294</td><td>207</td><td class='d-4'>4</td><td>+15.723</td><td>Weak/Quartic</td><td>5.4800</td><td>3</td><td>4</td><td>4</td><td>✓</td></tr>
+<tr><td class='particle-name'>Z⁰ Boson</td><td>91187.6</td><td>178450</td><td>209</td><td class='d-12'>12</td><td>+34.189</td><td>EM/Full-Res</td><td>1.0000</td><td>3</td><td>4</td><td>12</td><td>✓</td></tr>
+<tr><td class='particle-name'>Higgs Boson (H⁰)</td><td>125250</td><td>245108</td><td>215</td><td class='d-12'>12</td><td>-16.329</td><td>EM/Full-Res</td><td>1.0000</td><td>0</td><td>1</td><td>12</td><td>✓</td></tr>
+<tr><td class='particle-name'>Proton (p)</td><td>938.272</td><td>1836.15</td><td>130</td><td class='d-6'>6</td><td>+10.964</td><td>Hexadic/EW</td><td>3.3415</td><td>2</td><td>6</td><td>6</td><td>✓</td></tr>
+<tr><td class='particle-name'>Neutron (n)</td><td>939.565</td><td>1838.68</td><td>130</td><td class='d-6'>6</td><td>+13.349</td><td>Hexadic/EW</td><td>3.3415</td><td>2</td><td>6</td><td>6</td><td>✓</td></tr>
+<tr><td class='particle-name'>Pion (π±)</td><td>139.57</td><td>273.132</td><td>97</td><td class='d-12'>12</td><td>+12.148</td><td>EM/Full-Res</td><td>1.0000</td><td>0</td><td>1</td><td>12</td><td>✓</td></tr>
+
+        </tbody>
+    </table>
+    </div>
+</div>
+
+<div class="section">
+    <h2>120-Digit Precision — Full ε Values (mpmath @ 135 working digits)</h2>
+    <div class="info-box">
+        All ε values computed using mpmath arbitrary-precision arithmetic at 135 working decimal places (120 target + 15 guard).
+        Losslessness Theorem (15.1) verified: Π_N⁻¹(Π_N(r)) = r to 120+ digits for every particle.
+    </div>
+<div class='detail-card'><div class='detail-header'>Electron (e⁻)</div><div class='detail-label'>r = m/mₑ (120 digits):</div><div class='digit-120'>1.00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</div><div class='detail-label'>ε₁₂ (N=12, 120 digits, cents):</div><div class='digit-120'>0.0</div><div class='detail-label'>ε₂₇₇₂₀ (N=27720, 120 digits, cents):</div><div class='digit-120'>0.0</div><div class='detail-label'>Losslessness (Thm 15.1): N=12 err=0.0 | N=27720 err=0.0 ✓ PASS</div></div>
+<div class='detail-card'><div class='detail-header'>Muon (μ⁻)</div><div class='detail-label'>r = m/mₑ (120 digits):</div><div class='digit-120'>206.768282987665630232704000663797841463275022385075350937609558688917071160322345085053501577645120405824708641769224770</div><div class='detail-label'>ε₁₂ (N=12, 120 digits, cents):</div><div class='digit-120'>30.2453099769561186500923332067160150653079610016326143658035378284948543237593389948629200813979967650861136290324317948</div><div class='detail-label'>ε₂₇₇₂₀ (N=27720, 120 digits, cents):</div><div class='digit-120'>-0.0144302827841410901674070530242446749517792581076453744562024312454054165004012648773396588617434946541461112273084649118</div><div class='detail-label'>Losslessness (Thm 15.1): N=12 err=3.384392e-128 | N=27720 err=3.384392e-128 ✓ PASS</div></div>
+<div class='detail-card'><div class='detail-header'>Tau (τ⁻)</div><div class='detail-label'>r = m/mₑ (120 digits):</div><div class='digit-120'>3477.22828001897068477342272425413007208723227317786073728722925947303805614473376119461693610133641174800848416616120248</div><div class='detail-label'>ε₁₂ (N=12, 120 digits, cents):</div><div class='digit-120'>16.4664813106108801806269611656659361497486706912149488943288176956741875792952135394054620910116993260395414893031854277</div><div class='detail-label'>ε₂₇₇₂₀ (N=27720, 120 digits, cents):</div><div class='digit-120'>0.0162648603944299641767447154494859332984542409984986778786012454577373628449970891890118745614828758230912728529689774709</div><div class='detail-label'>Losslessness (Thm 15.1): N=12 err=3.2916789e-127 | N=27720 err=3.2917106e-127 ✓ PASS</div></div>
+<div class='detail-card'><div class='detail-header'>Electron Neutrino (νₑ)</div><div class='detail-label'>r = m/mₑ (120 digits):</div><div class='digit-120'>0.00000195695118355918343863524572800002818009704325224151634753848320040579339742283227783540455415808584342492288878480082983</div><div class='detail-label'>ε₁₂ (N=12, 120 digits, cents):</div><div class='digit-120'>44.4470386142425476493738366605240439331461899167697835951425566717214178159658076802805251432771458775959218615262428853</div><div class='detail-label'>ε₂₇₇₂₀ (N=27720, 120 digits, cents):</div><div class='digit-120'>-0.0118358446319112250850377983504149413126845421046752793163177871530410584930667785939337311817285812785370129326315735761</div><div class='detail-label'>Losslessness (Thm 15.1): N=12 err=1.4532032e-136 | N=27720 err=1.4532032e-136 ✓ PASS</div></div>
+<div class='detail-card'><div class='detail-header'>Muon Neutrino (νμ)</div><div class='detail-label'>r = m/mₑ (120 digits):</div><div class='digit-120'>0.0000168297801786089775722631132608002423488345719692770405888309555234898232178363575893844791657595382534543368435492871365</div><div class='detail-label'>ε₁₂ (N=12, 120 digits, cents):</div><div class='digit-120'>-30.3489696080747431340395101650632487426972577116684705200494655811927093660144058464298715297879505073328687026929806527</div><div class='detail-label'>ε₂₇₇₂₀ (N=27720, 120 digits, cents):</div><div class='digit-120'>-0.00264926175439681369318981874290242235093736534812419970314523487236304566808550010952520944163016101252238234666030638766</div><div class='detail-label'>Losslessness (Thm 15.1): N=12 err=8.497431e-136 | N=27720 err=8.497431e-136 ✓ PASS</div></div>
+<div class='detail-card'><div class='detail-header'>Tau Neutrino (ντ)</div><div class='detail-label'>r = m/mₑ (120 digits):</div><div class='digit-120'>0.0000978475591779591719317622864000014090048521626120758173769241600202896698711416138917702277079042921712461444392400414913</div><div class='detail-label'>ε₁₂ (N=12, 120 digits, cents):</div><div class='digit-120'>17.0744663439121825381404674350604660087415331757632525265579066299648816766663257206159092057655181167736139661268472697</div><div class='detail-label'>ε₂₇₇₂₀ (N=27720, 120 digits, cents):</div><div class='digit-120'>0.0181892876351262610841903787834097316852561194861962495016295736878253996100486643388529287092410604965576890705702133991</div><div class='detail-label'>Losslessness (Thm 15.1): N=12 err=2.7340811e-135 | N=27720 err=2.7340811e-135 ✓ PASS</div></div>
+<div class='detail-card'><div class='detail-header'>Up Quark (u)</div><div class='detail-label'>r = m/mₑ (120 digits):</div><div class='digit-120'>4.22701455648783622745213077248006086900961342484167531068312371287651373843331772012447383698146542179783343977516979242</div><div class='detail-label'>ε₁₂ (N=12, 120 digits, cents):</div><div class='digit-120'>-4.43310333025592933963270357826368038033125587231146090131718706383803440294233115883899702662843811651830901905954590856</div><div class='detail-label'>ε₂₇₇₂₀ (N=27720, 120 digits, cents):</div><div class='digit-120'>-0.0175189146715137552171191626792647959156714567270453169016026482536188185267467432545814422128537009338934346439614929784</div><div class='detail-label'>Losslessness (Thm 15.1): N=12 err=7.3889156e-131 | N=27720 err=7.3889156e-131 ✓ PASS</div></div>
+<div class='detail-card'><div class='detail-header'>Down Quark (d)</div><div class='detail-label'>r = m/mₑ (120 digits):</div><div class='digit-120'>9.13896202722138665842659754976013160105319198796788134300471654589505516596462673749133926791826088879438989062501987529</div><div class='detail-label'>ε₁₂ (N=12, 120 digits, cents):</div><div class='digit-120'>30.4363817251761133465019380150904416734330085083467570239889561595992538797613140138403290832379121896279296859531832871</div><div class='detail-label'>ε₂₇₇₂₀ (N=27720, 120 digits, cents):</div><div class='digit-120'>0.00348129227568044606903758219000877300010807544632412355605572669882097932841358093989618280501175672749678552028285422433</div><div class='detail-label'>Losslessness (Thm 15.1): N=12 err=2.0135966e-130 | N=27720 err=2.0136104e-130 ✓ PASS</div></div>
+<div class='detail-card'><div class='detail-header'>Strange Quark (s)</div><div class='detail-label'>r = m/mₑ (120 digits):</div><div class='digit-120'>182.779240544427733168531950995202632021063839759357626860094330917901103319292534749826785358365217775887797812500397506</div><div class='detail-label'>ε₁₂ (N=12, 120 digits, cents):</div><div class='digit-120'>16.7500955900109307908852534023586527112306801378434914896966311387209858101115730340080211144820983092167757382534854793</div><div class='detail-label'>ε₂₇₇₂₀ (N=27720, 120 digits, cents):</div><div class='digit-120'>-0.00315116323582245586799335088810053552256661540326175705661561452576743664167371923873213227114844402997750849976127393307</div><div class='detail-label'>Losslessness (Thm 15.1): N=12 err=3.5972723e-128 | N=27720 err=3.5972723e-128 ✓ PASS</div></div>
+<div class='detail-card'><div class='detail-header'>Charm Quark (c)</div><div class='detail-label'>r = m/mₑ (120 digits):</div><div class='digit-120'>2485.32800312016296706676207456003578872324493034672576137387366451535761472699699285096378378076902114965206875669705388</div><div class='detail-label'>ε₁₂ (N=12, 120 digits, cents):</div><div class='digit-120'>35.0646597946852936960617151334448448156074676646707643880187380765651071868373163111093356483985919642609340109230967423</div><div class='detail-label'>ε₂₇₇₂₀ (N=27720, 120 digits, cents):</div><div class='digit-120'>-0.000275270249771239003219931490220119457467400264300547046196988369957748227618753825729286666343100674130924141838322652188</div><div class='detail-label'>Losslessness (Thm 15.1): N=12 err=9.5444381e-128 | N=27720 err=9.5444381e-128 ✓ PASS</div></div>
+<div class='detail-card'><div class='detail-header'>Bottom Quark (b)</div><div class='detail-label'>r = m/mₑ (120 digits):</div><div class='digit-120'>8180.05594727738677349532714304011779280564079436953833271085977769621640122743892135199103638079882551617767512046746867</div><div class='detail-label'>ε₁₂ (N=12, 120 digits, cents):</div><div class='digit-120'>-2.52600583485443024848399206944562112618319426479057207171206656535146516100249176390640648712114100280301429732395804669</div><div class='detail-label'>ε₂₇₇₂₀ (N=27720, 120 digits, cents):</div><div class='digit-120'>-0.0151833240319194259731695586231103036723717539680612492012440545289543384916692530838956646103184919805034748131355358637</div><div class='detail-label'>Losslessness (Thm 15.1): N=12 err=8.7431247e-128 | N=27720 err=8.7431247e-128 ✓ PASS</div></div>
+<div class='detail-card'><div class='detail-header'>Top Quark (t)</div><div class='detail-label'>r = m/mₑ (120 digits):</div><div class='digit-120'>338082.886471684530858625051969284868393565192257244364200748357702104867338768504318844490776350910310089678266462191361</div><div class='detail-label'>ε₁₂ (N=12, 120 digits, cents):</div><div class='digit-120'>40.4209571165126641259076212148522799935721177890369468502779495912418925233408620027564730359549922211701200823223337725</div><div class='detail-label'>ε₂₇₇₂₀ (N=27720, 120 digits, cents):</div><div class='digit-120'>-0.0119433163877687745252792180481529068607826438634860501549508416585403770920384301439598644779082117303128181105666604278</div><div class='detail-label'>Losslessness (Thm 15.1): N=12 err=8.4655324e-126 | N=27720 err=8.4655324e-126 ✓ PASS</div></div>
+<div class='detail-card'><div class='detail-header'>W⁺ Boson</div><div class='detail-label'>r = m/mₑ (120 digits):</div><div class='digit-120'>157293.865280936487247185145879458265031660045485416359466100664199016455904654989995576311849564465836965027031855936299</div><div class='detail-label'>ε₁₂ (N=12, 120 digits, cents):</div><div class='digit-120'>15.7234545741222891332367931333535762038625807605172841174399340675824548088120687222640165387273670984861887761995692428</div><div class='detail-label'>ε₂₇₇₂₀ (N=27720, 120 digits, cents):</div><div class='digit-120'>0.00916885983657484752250741906786191814829504623156983172564835329674052309778300797830225301308138420047449048528352851714</div><div class='detail-label'>Losslessness (Thm 15.1): N=12 err=8.0522574e-126 | N=27720 err=8.0522574e-126 ✓ PASS</div></div>
+<div class='detail-card'><div class='detail-header'>Z⁰ Boson</div><div class='detail-label'>r = m/mₑ (120 digits):</div><div class='digit-120'>178449.681745921395728895333346575369675417141268098496092800190685323326006834260618343736322745868655894498413352904150</div><div class='detail-label'>ε₁₂ (N=12, 120 digits, cents):</div><div class='digit-120'>34.1893634413495087765074071246483218667236334791710461032410197726707533687930648746611328658810771482742636659689227019</div><div class='detail-label'>ε₂₇₇₂₀ (N=27720, 120 digits, cents):</div><div class='digit-120'>-0.00977075778469035769172707448587726747550071996315303095811442646344576540606932447306626831805705085993546823021149718545</div><div class='detail-label'>Losslessness (Thm 15.1): N=12 err=8.6447369e-126 | N=27720 err=8.6447369e-126 ✓ PASS</div></div>
+<div class='detail-card'><div class='detail-header'>Higgs Boson (H⁰)</div><div class='detail-label'>r = m/mₑ (120 digits):</div><div class='digit-120'>245108.135740787725689064527432003529557154667343249922529195020850825623027209742798884420408300251888971591820296303936</div><div class='detail-label'>ε₁₂ (N=12, 120 digits, cents):</div><div class='digit-120'>-16.3293847679940082411052902160293781267201127292233694108852791475560058468732792146902102551066055316889421971161233010</div><div class='detail-label'>ε₂₇₇₂₀ (N=27720, 120 digits, cents):</div><div class='digit-120'>-0.00903844764768789478494389568305778039976640887704906456493282720968550055293289434388990878625921134262185079577698067447</div><div class='detail-label'>Losslessness (Thm 15.1): N=12 err=2.7201108e-125 | N=27720 err=2.7201108e-125 ✓ PASS</div></div>
+<div class='detail-card'><div class='detail-header'>Proton (p)</div><div class='detail-label'>r = m/mₑ (120 digits):</div><div class='digit-120'>1836.15267311214631654331187960366650459849281490695822369106629279766621829653466019842115135461628639354347009910685726</div><div class='detail-label'>ε₁₂ (N=12, 120 digits, cents):</div><div class='digit-120'>10.9643673804619085715001982096073687148140421585853671044124032452358123109310972250591689808996228589632760237414560375</div><div class='detail-label'>ε₂₇₇₂₀ (N=27720, 120 digits, cents):</div><div class='digit-120'>0.0119864280809561905478172572264163338616612062044147234600222928548599299787162726782165999472419065823236427890750850893</div><div class='detail-label'>Losslessness (Thm 15.1): N=12 err=4.7593317e-127 | N=27720 err=4.7593158e-127 ✓ PASS</div></div>
+<div class='detail-card'><div class='detail-header'>Neutron (n)</div><div class='detail-label'>r = m/mₑ (120 digits):</div><div class='digit-120'>1838.68366265723246593755231786679796504474226414750950075337728189069664428860372413681084863285922603167775589362757008</div><div class='detail-label'>ε₁₂ (N=12, 120 digits, cents):</div><div class='digit-120'>13.3490917985100715116627184215351102307101700284048555518289862326972028270671112185035440043521881032364778077224879708</div><div class='detail-label'>ε₂₇₇₂₀ (N=27720, 120 digits, cents):</div><div class='digit-120'>0.0157584651767381783293850882017768973768366950715222184956528993638694937337778851702106710188547699031444743891546375016</div><div class='detail-label'>Losslessness (Thm 15.1): N=12 err=1.4514335e-127 | N=27720 err=1.4514335e-127 ✓ PASS</div></div>
+<div class='detail-card'><div class='detail-header'>Pion (π±)</div><div class='detail-label'>r = m/mₑ (120 digits):</div><div class='digit-120'>273.132439900316820611862314002797853107134564562216810817321640289084742737729695922075769431620162820295423307621277891</div><div class='detail-label'>ε₁₂ (N=12, 120 digits, cents):</div><div class='digit-120'>12.1482352823051383770977002481307579216048386830743157987095109480240386774402109818271138530214463703842029583774972903</div><div class='detail-label'>ε₂₇₇₂₀ (N=27720, 120 digits, cents):</div><div class='digit-120'>-0.0162668821970261250668019163714065805596634814278487034549912164781258247242911826750506491430557941179615437870048742488</div><div class='detail-label'>Losslessness (Thm 15.1): N=12 err=4.4612351e-128 | N=27720 err=4.4612351e-128 ✓ PASS</div></div>
+
+</div>
+
+<div class="section">
+    <h2>Structural Ratios — Inter-Particle Sempaevum Projections</h2>
+    <div class="table-scroll">
+    <table>
+        <thead>
+        <tr>
+            <th>Ratio</th>
+            <th>Value</th>
+            <th>k</th>
+            <th>d</th>
+            <th>ε (¢)</th>
+            <th>ET Prediction</th>
+            <th>Deviation</th>
+        </tr>
+        </thead>
+        <tbody>
+<tr><td>Koide Ratio Q (lepton)</td><td>0.66666051</td><td>-7</td><td>12</td><td>-1.971</td><td>0.666667</td><td>9.2 ppm</td></tr>
+<tr><td>Proton/Electron mass ratio μ</td><td>1836.1527</td><td>130</td><td>6</td><td>+10.964</td><td>—</td><td>—</td></tr>
+<tr><td>M_Z / M_W (Weinberg)</td><td>1.1344987</td><td>2</td><td>6</td><td>+18.466</td><td>—</td><td>—</td></tr>
+<tr><td>M_H / M_W (Higgs-Strong)</td><td>1.5582816</td><td>8</td><td>3</td><td>-32.053</td><td>—</td><td>—</td></tr>
+<tr><td>M_H / M_Z</td><td>1.373542</td><td>5</td><td>12</td><td>+49.481</td><td>—</td><td>—</td></tr>
+<tr><td>m_μ / m_e</td><td>206.76828</td><td>92</td><td>3</td><td>+30.245</td><td>—</td><td>—</td></tr>
+<tr><td>m_τ / m_e</td><td>3477.2283</td><td>141</td><td>4</td><td>+16.466</td><td>—</td><td>—</td></tr>
+<tr><td>m_t / m_b</td><td>41.330144</td><td>64</td><td>3</td><td>+42.947</td><td>—</td><td>—</td></tr>
+<tr><td>m_c / m_u (gen 2/gen 1 up-type)</td><td>587.96296</td><td>110</td><td>6</td><td>+39.498</td><td>—</td><td>—</td></tr>
+<tr><td>m_s / m_d (gen 2/gen 1 down-type)</td><td>20</td><td>52</td><td>3</td><td>-13.686</td><td>—</td><td>—</td></tr>
+
+        </tbody>
+    </table>
+    </div>
+</div>
+
+<div class="section">
+    <h2>Massless Particles — The ∂I Annihilation Boundary</h2>
+    <div class="info-box">
+        The photon (γ) and gluon (g) have mass = 0. Since log₂(0) = −∞, the projection formula Π_N diverges and these particles are excluded from the lattice domain (Proposition 5.3). They sit AT the ∂I annihilation boundary — structurally inside Σ but unattainable on L_N at any finite resolution. This is the lattice expression of masslessness: photons and gluons are Mediation-state {D,T} configurations, never fully substantiated as mass-bearing Exceptions.
+    </div>
+</div>
+
+<div class="footer">
+    <div style="font-family:'Cormorant Garamond',serif; font-size:1.2em; font-style:italic; color:var(--gold); margin-bottom:10px;">
+        For every exception there is an exception, except the Exception.
+    </div>
+    Exception Theory — Michael James Muller (Aevum Defluo)<br>
+    Particle Data: PDG 2024 (S. Navas et al., Phys. Rev. D 110, 030001)<br>
+    Sempaevum bijection, lattice projection, and visualization
+</div>
+
+<script>
+const traces = [{"type": "scatter3d", "mode": "markers+text", "name": "Lepton", "x": [0, 92, 141, -228, -190, -160], "y": [2, 2, 2, 10, 10, 10], "z": [0.0, 30.24530997695612, 16.46648131061088, 44.44703861424255, -30.348969608074743, 17.07446634391218], "text": ["e", "\u03bc", "\u03c4", "\u03bd\u2091", "\u03bd\u03bc", "\u03bd\u03c4"], "textposition": "top center", "textfont": {"size": 10, "color": "#00BFFF"}, "hovertext": ["<b>Electron (e\u207b)</b><br>Mass: 0.510999 MeV/c\u00b2<br>Charge: -1e | Spin: 0.5<br>\u2501\u2501\u2501 Sempaevum @ N=12 (120-digit) \u2501\u2501\u2501<br>r = m/m\u2091 (120d in table below)<br>k_r = 0 | d_r = 1 | \u03b5_r = 0.0\u2026\u00a2<br>k_\u03b8 = 2 | d_\u03b8 = 6<br>d_combined = lcm(1,6) = 6<br>\u03be(d_r) = 8.5625 | A\u2080 = 16<br>Tightness: 1.0000 (TIGHT (t > K))<br>V-significant: \u2713 (threshold 4.17\u00a2)<br>\u2501\u2501\u2501 Sempaevum @ N=27720 \u2501\u2501\u2501<br>k_r = 0 | d_r = 1 | \u03b5_r = 0.0\u2026\u00a2<br>\u2501\u2501\u2501 Losslessness (Thm 15.1) \u2501\u2501\u2501<br>N=12 round-trip: \u2713 err=0.0", "<b>Muon (\u03bc\u207b)</b><br>Mass: 105.658 MeV/c\u00b2<br>Charge: -1e | Spin: 0.5<br>\u2501\u2501\u2501 Sempaevum @ N=12 (120-digit) \u2501\u2501\u2501<br>r = m/m\u2091 (120d in table below)<br>k_r = 92 | d_r = 3 | \u03b5_r = 30.24530997695611865009233320671601\u2026\u00a2<br>k_\u03b8 = 2 | d_\u03b8 = 6<br>d_combined = lcm(3,6) = 6<br>\u03be(d_r) = 6.8500 | A\u2080 = 20<br>Tightness: 0.7678 (TIGHT (t > K))<br>V-significant: \u2717 (threshold 4.17\u00a2)<br>\u2501\u2501\u2501 Sempaevum @ N=27720 \u2501\u2501\u2501<br>k_r = 213219 | d_r = 3080 | \u03b5_r = -0.01443028278414109016740705302424\u2026\u00a2<br>\u2501\u2501\u2501 Losslessness (Thm 15.1) \u2501\u2501\u2501<br>N=12 round-trip: \u2713 err=3.384392e-128", "<b>Tau (\u03c4\u207b)</b><br>Mass: 1776.86 MeV/c\u00b2<br>Charge: -1e | Spin: 0.5<br>\u2501\u2501\u2501 Sempaevum @ N=12 (120-digit) \u2501\u2501\u2501<br>r = m/m\u2091 (120d in table below)<br>k_r = 141 | d_r = 4 | \u03b5_r = 16.46648131061088018062696116566593\u2026\u00a2<br>k_\u03b8 = 2 | d_\u03b8 = 6<br>d_combined = lcm(4,6) = 12<br>\u03be(d_r) = 5.4800 | A\u2080 = 25<br>Tightness: 0.8586 (TIGHT (t > K))<br>V-significant: \u2717 (threshold 4.17\u00a2)<br>\u2501\u2501\u2501 Sempaevum @ N=27720 \u2501\u2501\u2501<br>k_r = 326090 | d_r = 2772 | \u03b5_r = 0.016264860394429964176744715449485\u2026\u00a2<br>\u2501\u2501\u2501 Losslessness (Thm 15.1) \u2501\u2501\u2501<br>N=12 round-trip: \u2713 err=3.2916789e-127", "<b>Electron Neutrino (\u03bd\u2091)</b><br>Mass: 1e-06 MeV/c\u00b2<br>Charge: +0e | Spin: 0.5<br>\u2501\u2501\u2501 Sempaevum @ N=12 (120-digit) \u2501\u2501\u2501<br>r = m/m\u2091 (120d in table below)<br>k_r = -228 | d_r = 1 | \u03b5_r = 44.44703861424254764937383666052404\u2026\u00a2<br>k_\u03b8 = 10 | d_\u03b8 = 6<br>d_combined = lcm(1,6) = 6<br>\u03be(d_r) = 8.5625 | A\u2080 = 16<br>Tightness: 0.6923 (TIGHT (t > K))<br>V-significant: \u2717 (threshold 4.17\u00a2)<br>\u2501\u2501\u2501 Sempaevum @ N=27720 \u2501\u2501\u2501<br>k_r = -525653 | d_r = 27720 | \u03b5_r = -0.01183584463191122508503779835041\u2026\u00a2<br>\u2501\u2501\u2501 Losslessness (Thm 15.1) \u2501\u2501\u2501<br>N=12 round-trip: \u2713 err=1.4532032e-136", "<b>Muon Neutrino (\u03bd\u03bc)</b><br>Mass: 8.6e-06 MeV/c\u00b2<br>Charge: +0e | Spin: 0.5<br>\u2501\u2501\u2501 Sempaevum @ N=12 (120-digit) \u2501\u2501\u2501<br>r = m/m\u2091 (120d in table below)<br>k_r = -190 | d_r = 6 | \u03b5_r = -30.3489696080747431340395101650632\u2026\u00a2<br>k_\u03b8 = 10 | d_\u03b8 = 6<br>d_combined = lcm(6,6) = 6<br>\u03be(d_r) = 3.3415 | A\u2080 = 41<br>Tightness: 0.7672 (TIGHT (t > K))<br>V-significant: \u2717 (threshold 4.17\u00a2)<br>\u2501\u2501\u2501 Sempaevum @ N=27720 \u2501\u2501\u2501<br>k_r = -439601 | d_r = 27720 | \u03b5_r = -0.00264926175439681369318981874290\u2026\u00a2<br>\u2501\u2501\u2501 Losslessness (Thm 15.1) \u2501\u2501\u2501<br>N=12 round-trip: \u2713 err=8.497431e-136", "<b>Tau Neutrino (\u03bd\u03c4)</b><br>Mass: 5e-05 MeV/c\u00b2<br>Charge: +0e | Spin: 0.5<br>\u2501\u2501\u2501 Sempaevum @ N=12 (120-digit) \u2501\u2501\u2501<br>r = m/m\u2091 (120d in table below)<br>k_r = -160 | d_r = 3 | \u03b5_r = 17.07446634391218253814046743506046\u2026\u00a2<br>k_\u03b8 = 10 | d_\u03b8 = 6<br>d_combined = lcm(3,6) = 6<br>\u03be(d_r) = 6.8500 | A\u2080 = 20<br>Tightness: 0.8542 (TIGHT (t > K))<br>V-significant: \u2717 (threshold 4.17\u00a2)<br>\u2501\u2501\u2501 Sempaevum @ N=27720 \u2501\u2501\u2501<br>k_r = -369206 | d_r = 13860 | \u03b5_r = 0.018189287635126261084190378783409\u2026\u00a2<br>\u2501\u2501\u2501 Losslessness (Thm 15.1) \u2501\u2501\u2501<br>N=12 round-trip: \u2713 err=2.7340811e-135"], "hoverinfo": "text", "marker": {"size": [6, 11.083984894141494, 14.749692676615732, 6, 6, 6], "color": "#00BFFF", "opacity": 0.9, "line": {"width": 1, "color": "rgba(255,255,255,0.5)"}}}, {"type": "scatter3d", "mode": "markers+text", "name": "Quark", "x": [25, 38, 90, 135, 156, 220], "y": [2, 10, 10, 2, 10, 2], "z": [-4.433103330255929, 30.436381725176112, 16.750095590010933, 35.06465979468529, -2.52600583485443, 40.42095711651267], "text": ["u", "d", "s", "c", "b", "t"], "textposition": "top center", "textfont": {"size": 10, "color": "#FF6347"}, "hovertext": ["<b>Up Quark (u)</b><br>Mass: 2.16 MeV/c\u00b2<br>Charge: +0.667e | Spin: 0.5<br>\u2501\u2501\u2501 Sempaevum @ N=12 (120-digit) \u2501\u2501\u2501<br>r = m/m\u2091 (120d in table below)<br>k_r = 25 | d_r = 12 | \u03b5_r = -4.43310333025592933963270357826368\u2026\u00a2<br>k_\u03b8 = 2 | d_\u03b8 = 6<br>d_combined = lcm(12,6) = 12<br>\u03be(d_r) = 1.0000 | A\u2080 = 137<br>Tightness: 0.9576 (TIGHT (t > K))<br>V-significant: \u2717 (threshold 4.17\u00a2)<br>\u2501\u2501\u2501 Sempaevum @ N=27720 \u2501\u2501\u2501<br>k_r = 57648 | d_r = 1155 | \u03b5_r = -0.01751891467151375521711916267926\u2026\u00a2<br>\u2501\u2501\u2501 Losslessness (Thm 15.1) \u2501\u2501\u2501<br>N=12 round-trip: \u2713 err=7.3889156e-131", "<b>Down Quark (d)</b><br>Mass: 4.67 MeV/c\u00b2<br>Charge: -0.333e | Spin: 0.5<br>\u2501\u2501\u2501 Sempaevum @ N=12 (120-digit) \u2501\u2501\u2501<br>r = m/m\u2091 (120d in table below)<br>k_r = 38 | d_r = 6 | \u03b5_r = 30.43638172517611334650193801509044\u2026\u00a2<br>k_\u03b8 = 10 | d_\u03b8 = 6<br>d_combined = lcm(6,6) = 6<br>\u03be(d_r) = 3.3415 | A\u2080 = 41<br>Tightness: 0.7667 (TIGHT (t > K))<br>V-significant: \u2717 (threshold 4.17\u00a2)<br>\u2501\u2501\u2501 Sempaevum @ N=27720 \u2501\u2501\u2501<br>k_r = 88483 | d_r = 27720 | \u03b5_r = 0.003481292275680446069037582190008\u2026\u00a2<br>\u2501\u2501\u2501 Losslessness (Thm 15.1) \u2501\u2501\u2501<br>N=12 round-trip: \u2713 err=2.0135966e-130", "<b>Strange Quark (s)</b><br>Mass: 93.4 MeV/c\u00b2<br>Charge: -0.333e | Spin: 0.5<br>\u2501\u2501\u2501 Sempaevum @ N=12 (120-digit) \u2501\u2501\u2501<br>r = m/m\u2091 (120d in table below)<br>k_r = 90 | d_r = 2 | \u03b5_r = 16.75009559001093079088525340235865\u2026\u00a2<br>k_\u03b8 = 10 | d_\u03b8 = 6<br>d_combined = lcm(2,6) = 6<br>\u03be(d_r) = 8.0588 | A\u2080 = 17<br>Tightness: 0.8565 (TIGHT (t > K))<br>V-significant: \u2717 (threshold 4.17\u00a2)<br>\u2501\u2501\u2501 Sempaevum @ N=27720 \u2501\u2501\u2501<br>k_r = 208287 | d_r = 3080 | \u03b5_r = -0.00315116323582245586799335088810\u2026\u00a2<br>\u2501\u2501\u2501 Losslessness (Thm 15.1) \u2501\u2501\u2501<br>N=12 round-trip: \u2713 err=3.5972723e-128", "<b>Charm Quark (c)</b><br>Mass: 1270 MeV/c\u00b2<br>Charge: +0.667e | Spin: 0.5<br>\u2501\u2501\u2501 Sempaevum @ N=12 (120-digit) \u2501\u2501\u2501<br>r = m/m\u2091 (120d in table below)<br>k_r = 135 | d_r = 4 | \u03b5_r = 35.06465979468529369606171513344484\u2026\u00a2<br>k_\u03b8 = 2 | d_\u03b8 = 6<br>d_combined = lcm(4,6) = 12<br>\u03be(d_r) = 5.4800 | A\u2080 = 25<br>Tightness: 0.7404 (TIGHT (t > K))<br>V-significant: \u2717 (threshold 4.17\u00a2)<br>\u2501\u2501\u2501 Sempaevum @ N=27720 \u2501\u2501\u2501<br>k_r = 312660 | d_r = 154 | \u03b5_r = -0.00027527024977123900321993149022\u2026\u00a2<br>\u2501\u2501\u2501 Losslessness (Thm 15.1) \u2501\u2501\u2501<br>N=12 round-trip: \u2713 err=9.5444381e-128", "<b>Bottom Quark (b)</b><br>Mass: 4180 MeV/c\u00b2<br>Charge: -0.333e | Spin: 0.5<br>\u2501\u2501\u2501 Sempaevum @ N=12 (120-digit) \u2501\u2501\u2501<br>r = m/m\u2091 (120d in table below)<br>k_r = 156 | d_r = 1 | \u03b5_r = -2.52600583485443024848399206944562\u2026\u00a2<br>k_\u03b8 = 10 | d_\u03b8 = 6<br>d_combined = lcm(1,6) = 6<br>\u03be(d_r) = 8.5625 | A\u2080 = 16<br>Tightness: 0.9754 (TIGHT (t > K))<br>V-significant: \u2713 (threshold 4.17\u00a2)<br>\u2501\u2501\u2501 Sempaevum @ N=27720 \u2501\u2501\u2501<br>k_r = 360302 | d_r = 13860 | \u03b5_r = -0.01518332403191942597316955862311\u2026\u00a2<br>\u2501\u2501\u2501 Losslessness (Thm 15.1) \u2501\u2501\u2501<br>N=12 round-trip: \u2713 err=8.7431247e-128", "<b>Top Quark (t)</b><br>Mass: 172760 MeV/c\u00b2<br>Charge: +0.667e | Spin: 0.5<br>\u2501\u2501\u2501 Sempaevum @ N=12 (120-digit) \u2501\u2501\u2501<br>r = m/m\u2091 (120d in table below)<br>k_r = 220 | d_r = 3 | \u03b5_r = 40.42095711651266412590762121485227\u2026\u00a2<br>k_\u03b8 = 2 | d_\u03b8 = 6<br>d_combined = lcm(3,6) = 6<br>\u03be(d_r) = 6.8500 | A\u2080 = 20<br>Tightness: 0.7121 (TIGHT (t > K))<br>V-significant: \u2717 (threshold 4.17\u00a2)<br>\u2501\u2501\u2501 Sempaevum @ N=27720 \u2501\u2501\u2501<br>k_r = 509134 | d_r = 13860 | \u03b5_r = -0.01194331638776877452527921804815\u2026\u00a2<br>\u2501\u2501\u2501 Losslessness (Thm 15.1) \u2501\u2501\u2501<br>N=12 round-trip: \u2713 err=8.4655324e-126"], "hoverinfo": "text", "marker": {"size": [6.499061247855211, 7.26074917667872, 10.924915982894207, 14.312436651662024, 15.863840502651245, 20.712337127685046], "color": "#FF6347", "opacity": 0.9, "line": {"width": 1, "color": "rgba(255,255,255,0.5)"}}}, {"type": "scatter3d", "mode": "markers+text", "name": "Gauge Boson", "x": [207, 209], "y": [3, 3], "z": [15.72345457412229, 34.189363441349506], "text": ["W\u207a", "Z\u2070"], "textposition": "top center", "textfont": {"size": 10, "color": "#FFD700"}, "hovertext": ["<b>W\u207a Boson</b><br>Mass: 80377 MeV/c\u00b2<br>Charge: +1e | Spin: 1.0<br>\u2501\u2501\u2501 Sempaevum @ N=12 (120-digit) \u2501\u2501\u2501<br>r = m/m\u2091 (120d in table below)<br>k_r = 207 | d_r = 4 | \u03b5_r = 15.72345457412228913323679313335357\u2026\u00a2<br>k_\u03b8 = 3 | d_\u03b8 = 4<br>d_combined = lcm(4,4) = 4<br>\u03be(d_r) = 5.4800 | A\u2080 = 25<br>Tightness: 0.8641 (TIGHT (t > K))<br>V-significant: \u2717 (threshold 4.17\u00a2)<br>\u2501\u2501\u2501 Sempaevum @ N=27720 \u2501\u2501\u2501<br>k_r = 478533 | d_r = 840 | \u03b5_r = 0.009168859836574847522507419067861\u2026\u00a2<br>\u2501\u2501\u2501 Losslessness (Thm 15.1) \u2501\u2501\u2501<br>N=12 round-trip: \u2713 err=8.0522574e-126", "<b>Z\u2070 Boson</b><br>Mass: 91187.6 MeV/c\u00b2<br>Charge: +0e | Spin: 1.0<br>\u2501\u2501\u2501 Sempaevum @ N=12 (120-digit) \u2501\u2501\u2501<br>r = m/m\u2091 (120d in table below)<br>k_r = 209 | d_r = 12 | \u03b5_r = 34.18936344134950877650740712464832\u2026\u00a2<br>k_\u03b8 = 3 | d_\u03b8 = 4<br>d_combined = lcm(12,4) = 12<br>\u03be(d_r) = 1.0000 | A\u2080 = 137<br>Tightness: 0.7452 (TIGHT (t > K))<br>V-significant: \u2717 (threshold 4.17\u00a2)<br>\u2501\u2501\u2501 Sempaevum @ N=27720 \u2501\u2501\u2501<br>k_r = 483580 | d_r = 1386 | \u03b5_r = -0.00977075778469035769172707448587\u2026\u00a2<br>\u2501\u2501\u2501 Losslessness (Thm 15.1) \u2501\u2501\u2501<br>N=12 round-trip: \u2713 err=8.6447369e-126"], "hoverinfo": "text", "marker": {"size": [19.715411587064565, 19.87982164437491], "color": "#FFD700", "opacity": 0.9, "line": {"width": 1, "color": "rgba(255,255,255,0.5)"}}}, {"type": "scatter3d", "mode": "markers+text", "name": "Scalar Boson", "x": [215], "y": [0], "z": [-16.329384767994007], "text": ["H\u2070"], "textposition": "top center", "textfont": {"size": 10, "color": "#7CFC00"}, "hovertext": ["<b>Higgs Boson (H\u2070)</b><br>Mass: 125250 MeV/c\u00b2<br>Charge: +0e | Spin: 0.0<br>\u2501\u2501\u2501 Sempaevum @ N=12 (120-digit) \u2501\u2501\u2501<br>r = m/m\u2091 (120d in table below)<br>k_r = 215 | d_r = 12 | \u03b5_r = -16.3293847679940082411052902160293\u2026\u00a2<br>k_\u03b8 = 0 | d_\u03b8 = 1<br>d_combined = lcm(12,1) = 12<br>\u03be(d_r) = 1.0000 | A\u2080 = 137<br>Tightness: 0.8596 (TIGHT (t > K))<br>V-significant: \u2717 (threshold 4.17\u00a2)<br>\u2501\u2501\u2501 Sempaevum @ N=27720 \u2501\u2501\u2501<br>k_r = 496273 | d_r = 27720 | \u03b5_r = -0.00903844764768789478494389568305\u2026\u00a2<br>\u2501\u2501\u2501 Losslessness (Thm 15.1) \u2501\u2501\u2501<br>N=12 round-trip: \u2713 err=2.7201108e-125"], "hoverinfo": "text", "marker": {"size": [20.293343605839365], "color": "#7CFC00", "opacity": 0.9, "line": {"width": 1, "color": "rgba(255,255,255,0.5)"}}}, {"type": "scatter3d", "mode": "markers+text", "name": "Composite", "x": [130, 130, 97], "y": [2, 2, 0], "z": [10.964367380461908, 13.349091798510072, 12.148235282305139], "text": ["p", "n", "\u03c0\u00b1"], "textposition": "top center", "textfont": {"size": 10, "color": "#DDA0DD"}, "hovertext": ["<b>Proton (p)</b><br>Mass: 938.272 MeV/c\u00b2<br>Charge: +1e | Spin: 0.5<br>\u2501\u2501\u2501 Sempaevum @ N=12 (120-digit) \u2501\u2501\u2501<br>r = m/m\u2091 (120d in table below)<br>k_r = 130 | d_r = 6 | \u03b5_r = 10.96436738046190857150019820960736\u2026\u00a2<br>k_\u03b8 = 2 | d_\u03b8 = 6<br>d_combined = lcm(6,6) = 6<br>\u03be(d_r) = 3.3415 | A\u2080 = 41<br>Tightness: 0.9012 (TIGHT (t > K))<br>V-significant: \u2717 (threshold 4.17\u00a2)<br>\u2501\u2501\u2501 Sempaevum @ N=27720 \u2501\u2501\u2501<br>k_r = 300553 | d_r = 2520 | \u03b5_r = 0.011986428080956190547817257226416\u2026\u00a2<br>\u2501\u2501\u2501 Losslessness (Thm 15.1) \u2501\u2501\u2501<br>N=12 round-trip: \u2713 err=4.7593317e-127", "<b>Neutron (n)</b><br>Mass: 939.565 MeV/c\u00b2<br>Charge: +0e | Spin: 0.5<br>\u2501\u2501\u2501 Sempaevum @ N=12 (120-digit) \u2501\u2501\u2501<br>r = m/m\u2091 (120d in table below)<br>k_r = 130 | d_r = 6 | \u03b5_r = 13.34909179851007151166271842153511\u2026\u00a2<br>k_\u03b8 = 2 | d_\u03b8 = 6<br>d_combined = lcm(6,6) = 6<br>\u03be(d_r) = 3.3415 | A\u2080 = 41<br>Tightness: 0.8822 (TIGHT (t > K))<br>V-significant: \u2717 (threshold 4.17\u00a2)<br>\u2501\u2501\u2501 Sempaevum @ N=27720 \u2501\u2501\u2501<br>k_r = 300608 | d_r = 45 | \u03b5_r = 0.015758465176738178329385088201776\u2026\u00a2<br>\u2501\u2501\u2501 Losslessness (Thm 15.1) \u2501\u2501\u2501<br>N=12 round-trip: \u2713 err=1.4514335e-127", "<b>Pion (\u03c0\u00b1)</b><br>Mass: 139.57 MeV/c\u00b2<br>Charge: +1e | Spin: 0.0<br>\u2501\u2501\u2501 Sempaevum @ N=12 (120-digit) \u2501\u2501\u2501<br>r = m/m\u2091 (120d in table below)<br>k_r = 97 | d_r = 12 | \u03b5_r = 12.14823528230513837709770024813075\u2026\u00a2<br>k_\u03b8 = 0 | d_\u03b8 = 1<br>d_combined = lcm(12,1) = 12<br>\u03be(d_r) = 1.0000 | A\u2080 = 137<br>Tightness: 0.8917 (TIGHT (t > K))<br>V-significant: \u2717 (threshold 4.17\u00a2)<br>\u2501\u2501\u2501 Sempaevum @ N=27720 \u2501\u2501\u2501<br>k_r = 224351 | d_r = 27720 | \u03b5_r = -0.01626688219702612506680191637140\u2026\u00a2<br>\u2501\u2501\u2501 Losslessness (Thm 15.1) \u2501\u2501\u2501<br>N=12 round-trip: \u2713 err=4.4612351e-128"], "hoverinfo": "text", "marker": {"size": [13.918374250281243, 13.920167024830423, 11.443681549237391], "color": "#DDA0DD", "opacity": 0.9, "line": {"width": 1, "color": "rgba(255,255,255,0.5)"}}}];
+
+// Add ε=0 reference plane
+traces.push({
+    type: 'mesh3d',
+    x: [-233, 225, 225, -233],
+    y: [0, 0, 12, 12],
+    z: [0, 0, 0, 0],
+    i: [0, 0],
+    j: [1, 2],
+    k: [2, 3],
+    opacity: 0.08,
+    color: '#ffd700',
+    name: 'ε=0 (perfect lattice)',
+    showlegend: true,
+    hoverinfo: 'name',
+});
+
+// Add Koide attractor markers at ε = ±1.955
+traces.push({
+    type: 'scatter3d',
+    mode: 'lines',
+    x: [-233, 225],
+    y: [0, 0],
+    z: [1.955, 1.955],
+    line: { color: '#ff4444', width: 2, dash: 'dash' },
+    name: 'Koide ε = +1.955¢',
+    hoverinfo: 'name',
+});
+
+traces.push({
+    type: 'scatter3d',
+    mode: 'lines',
+    x: [-233, 225],
+    y: [0, 0],
+    z: [-1.955, -1.955],
+    line: { color: '#ff4444', width: 2, dash: 'dash' },
+    name: 'Koide ε = −1.955¢',
+    hoverinfo: 'name',
+});
+
+const layout = {
+    scene: {
+        xaxis: {
+            title: { text: 'k_r (Real Lattice Coordinate — Mass)', font: { size: 11, color: '#aaa' } },
+            gridcolor: '#1a1a2e',
+            zerolinecolor: '#333',
+            color: '#888',
+        },
+        yaxis: {
+            title: { text: 'k_θ (Imaginary Lattice — Phase)', font: { size: 11, color: '#aaa' } },
+            gridcolor: '#1a1a2e',
+            zerolinecolor: '#333',
+            color: '#888',
+            dtick: 1,
+        },
+        zaxis: {
+            title: { text: 'ε_r (Descriptor Gap, cents)', font: { size: 11, color: '#aaa' } },
+            gridcolor: '#1a1a2e',
+            zerolinecolor: '#ffd700',
+            color: '#888',
+        },
+        bgcolor: '#0a0a0f',
+        camera: {
+            eye: { x: 1.8, y: -1.5, z: 0.8 },
+            center: { x: 0, y: 0, z: -0.1 },
+        },
+    },
+    paper_bgcolor: '#0a0a0f',
+    plot_bgcolor: '#0a0a0f',
+    font: { family: 'JetBrains Mono, monospace', color: '#ccc', size: 11 },
+    legend: {
+        bgcolor: 'rgba(18,18,26,0.9)',
+        bordercolor: '#333',
+        borderwidth: 1,
+        font: { size: 11 },
+        x: 0.01, y: 0.99,
+    },
+    margin: { l: 0, r: 0, t: 30, b: 0 },
+    title: {
+        text: 'Sempaevum Complex Lattice — Standard Model Particles at N=12',
+        font: { family: 'Cormorant Garamond, serif', size: 18, color: '#e94560' },
+        x: 0.5,
+    },
+};
+
+Plotly.newPlot('plot3d', traces, layout, {
+    responsive: true,
+    displayModeBar: true,
+    modeBarButtonsToRemove: ['toImage'],
+});
+</script>
+</body>
+</html>

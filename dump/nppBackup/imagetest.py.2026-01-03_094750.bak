@@ -1,0 +1,273 @@
+import tkinter as tk
+from tkinter import filedialog, messagebox
+import math
+import threading
+import sys
+import random
+
+try:
+    from PIL import Image, ImageTk, ImageDraw
+except ImportError:
+    messagebox.showerror("Error", "Pillow is missing. Run: pip install pillow")
+    sys.exit(1)
+
+# ==============================================================================
+# ET KERNEL: MANIFOLD CRYSTALLIZATION
+# ==============================================================================
+
+class ET_Crystal_Math:
+    """
+    Implements Rule 215: Structural Integrity.
+    Instead of projecting single pixels (vectors), we substantiate entire
+    geometric blocks (patches) to preserve the Manifold Lattice.
+    """
+    
+    @staticmethod
+    def get_patch_variance(pixels, x1, y1, x2, y2, size):
+        """
+        Calculates the Descriptor Distance (Difference) between two patches.
+        Lower distance = Better match.
+        """
+        diff = 0
+        limit = 1000000 # Break early optimization
+        
+        # We scan the boundary of the patch (The interface)
+        # We don't need to check every pixel, just the edges that connect.
+        # This is "Boundary Condition" logic from ET.
+        
+        for i in range(size):
+            # Check Top Edge vs Bottom Edge connection
+            # (Simplification for pure python speed: Random sampling of the block)
+            
+            # Sample 10 points for speed
+            sx = random.randint(0, size-1)
+            sy = random.randint(0, size-1)
+            
+            try:
+                p1 = pixels[x1 + sx, y1 + sy]
+                p2 = pixels[x2 + sx, y2 + sy]
+                
+                # Euclidean distance in color space
+                d = (p1[0]-p2[0])**2 + (p1[1]-p2[1])**2 + (p1[2]-p2[2])**2
+                diff += d
+            except IndexError:
+                return float('inf') # Out of bounds
+            
+            if diff > limit: return float('inf')
+            
+        return diff
+
+class ET_Crystal_Engine:
+    def crystallize_void(self, img_pil, mask_pil, patch_size, status_cb):
+        """
+        Fills the void by cloning valid patches from the surrounding manifold.
+        """
+        width, height = img_pil.size
+        pixels = img_pil.load()
+        mask = mask_pil.load()
+        
+        # 1. Identify Valid Source Area (Substantiated Reality)
+        # We create a list of potential source points (top-left corners of valid patches)
+        # Sampling step ensures we don't store millions of points
+        source_points = []
+        step = max(5, patch_size // 2)
+        
+        status_cb("Scanning Manifold for Source Crystals...")
+        
+        for y in range(0, height - patch_size, step):
+            for x in range(0, width - patch_size, step):
+                # Check if this patch is pure (contains no mask)
+                is_pure = True
+                # Quick check corners
+                if mask[x, y] > 0 or mask[x+patch_size-1, y+patch_size-1] > 0:
+                    is_pure = False
+                
+                if is_pure:
+                    source_points.append((x, y))
+        
+        if not source_points:
+            status_cb("Error: No valid source material found.")
+            return img_pil
+
+        # 2. THE CRYSTALLIZATION LOOP
+        # We iteratively fill the boundary of the void
+        
+        max_iterations = 2000
+        current_iter = 0
+        
+        while current_iter < max_iterations:
+            if current_iter % 10 == 0:
+                status_cb(f"Substantiating Crystals: Cycle {current_iter}")
+            
+            # Find the "Frontier" (Pixels on the edge of the void)
+            # We scan for a mask pixel that has a non-mask neighbor
+            target_x, target_y = -1, -1
+            found_target = False
+            
+            # Random scan to prevent directional bias
+            for _ in range(100):
+                rx = random.randint(0, width-patch_size)
+                ry = random.randint(0, height-patch_size)
+                
+                if mask[rx, ry] > 0:
+                    # Check if it has a neighbor that is KNOWN (0)
+                    # This means it's on the edge, ready to be crystallized
+                    # Simple check: is top-left known?
+                    # We actually want to fill a block centered on the edge
+                    
+                    found_target = True
+                    target_x, target_y = rx, ry
+                    break
+            
+            if not found_target:
+                # If random scan fails, do a linear scan to check if done
+                # (Optimization: We assume done if random fails often)
+                break
+                
+            # 3. FIND BEST MATCH
+            # We look for a source patch that looks like the valid neighbors of the target
+            # In Pure Python, full template matching is too slow.
+            # ET Logic: "Local Variance Minimization"
+            # We pick a random source that is "close" in color to the valid neighbor.
+            
+            best_source = None
+            min_dist = float('inf')
+            
+            # We scan a subset of sources to keep speed up
+            # Monte Carlo optimization again
+            candidate_sources = random.sample(source_points, min(50, len(source_points)))
+            
+            # Find a valid pixel adjacent to target to compare against
+            # (The anchor point)
+            ref_x, ref_y = max(0, target_x - 1), target_y
+            if mask[ref_x, ref_y] > 0: ref_x, ref_y = target_x, max(0, target_y - 1)
+            
+            ref_color = pixels[ref_x, ref_y]
+            
+            for sx, sy in candidate_sources:
+                # Compare the source's corresponding pixel
+                # If we paste source at target, what pixel lands at ref?
+                # ref is relative to target.
+                rel_x = ref_x - target_x
+                rel_y = ref_y - target_y
+                
+                try:
+                    sp = pixels[sx + rel_x, sy + rel_y]
+                    # Color distance
+                    dist = abs(sp[0]-ref_color[0]) + abs(sp[1]-ref_color[1]) + abs(sp[2]-ref_color[2])
+                    
+                    if dist < min_dist:
+                        min_dist = dist
+                        best_source = (sx, sy)
+                except: continue
+
+            # 4. SUBSTANTIATE (COPY PASTE)
+            if best_source:
+                bx, by = best_source
+                
+                # Copy the patch
+                for py in range(patch_size):
+                    for px in range(patch_size):
+                        if 0 <= target_x + px < width and 0 <= target_y + py < height:
+                            # Only overwrite mask
+                            if mask[target_x + px, target_y + py] > 0:
+                                pixels[target_x + px, target_y + py] = pixels[bx + px, by + py]
+                                mask[target_x + px, target_y + py] = 0 # Substantiated
+            
+            current_iter += 1
+            
+        return img_pil
+
+# ==============================================================================
+# GUI
+# ==============================================================================
+
+class ET_V9_GUI:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("ET-V9: CRYSTALLIZATION ENGINE (PATCH SYNTHESIS)")
+        self.root.geometry("1100x800")
+        self.root.configure(bg="#050505")
+        
+        self.engine = ET_Crystal_Engine()
+        self.pil_img = None
+        self.mask_img = None
+        
+        self._layout()
+
+    def _layout(self):
+        t = tk.Frame(self.root, bg="#111", pady=5)
+        t.pack(fill=tk.X)
+        self.btn(t, "LOAD IMAGE", self.load, "#004488")
+        self.btn(t, "RESET", self.reset, "#882200")
+        self.btn(t, "CRYSTALLIZE (NO BLUR)", self.run, "#228822")
+        
+        # Patch Size Control
+        tk.Label(t, text="LATTICE SIZE:", fg="white", bg="#111").pack(side=tk.LEFT)
+        self.sz_var = tk.Scale(t, from_=5, to=50, orient=tk.HORIZONTAL, bg="#111", fg="#0f0")
+        self.sz_var.set(20)
+        self.sz_var.pack(side=tk.LEFT)
+        
+        self.stat = tk.Label(t, text="Ready.", fg="#888", bg="#111")
+        self.stat.pack(side=tk.RIGHT, padx=20)
+        
+        self.cv = tk.Canvas(self.root, bg="black", cursor="crosshair")
+        self.cv.pack(fill=tk.BOTH, expand=True)
+        self.cv.bind("<Button-1>", self.down); self.cv.bind("<B1-Motion>", self.drag); self.cv.bind("<ButtonRelease-1>", self.up)
+        
+        self.drawing=False; self.brush=25
+
+    def btn(self, p, txt, cmd, c):
+        tk.Button(p, text=txt, command=cmd, bg=c, fg="white", relief="flat", padx=10).pack(side=tk.LEFT, padx=5)
+
+    def load(self):
+        path = filedialog.askopenfilename()
+        if not path: return
+        try:
+            self.pil_img = Image.open(path).convert("RGB")
+            # Resize for speed in Pure Python (Patch match is heavy)
+            if self.pil_img.width > 800: self.pil_img.thumbnail((800,800))
+            self.mask_img = Image.new("L", self.pil_img.size, 0)
+            self.update_view()
+            self.stat.config(text=f"Loaded: {self.pil_img.size}")
+        except: pass
+
+    def update_view(self):
+        if not self.pil_img: return
+        d = self.pil_img.copy()
+        if self.mask_img.getbbox():
+            r = Image.new("RGB", self.pil_img.size, (0,255,0)) # Green mask for visibility
+            d = Image.composite(r, d, self.mask_img)
+        self.tk = ImageTk.PhotoImage(d)
+        self.cv.create_image(0,0, image=self.tk, anchor=tk.NW)
+
+    def down(self,e): self.drawing=True; self.lp=(e.x,e.y)
+    def drag(self,e):
+        if self.drawing and self.mask_img:
+            d = ImageDraw.Draw(self.mask_img)
+            d.line([self.lp, (e.x,e.y)], fill=255, width=self.brush)
+            self.lp=(e.x,e.y); self.update_view()
+    def up(self,e): self.drawing=False
+    
+    def reset(self):
+        if self.mask_img: self.mask_img.paste(0,[0,0,self.mask_img.width,self.mask_img.height]); self.update_view()
+
+    def run(self):
+        if not self.pil_img: return
+        self.stat.config(text="Crystallizing Manifold...")
+        sz = self.sz_var.get()
+        threading.Thread(target=self._w, args=(sz,)).start()
+
+    def _w(self, sz):
+        res = self.engine.crystallize_void(self.pil_img, self.mask_img, sz, self.log)
+        self.pil_img = res
+        self.mask_img.paste(0,[0,0,self.mask_img.width,self.mask_img.height])
+        self.root.after(0, self.update_view)
+        self.root.after(0, lambda: self.stat.config(text="Structure Restored."))
+
+    def log(self, m): self.stat.config(text=m)
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = ET_V9_GUI(root)
+    root.mainloop()

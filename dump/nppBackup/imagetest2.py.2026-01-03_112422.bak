@@ -1,0 +1,337 @@
+import tkinter as tk
+from tkinter import filedialog, messagebox
+import threading
+import sys
+import math
+import random
+
+try:
+    from PIL import Image, ImageTk, ImageFilter, ImageEnhance, ImageChops, ImageOps
+except ImportError:
+    messagebox.showerror("Error", "Pillow is missing. Run: pip install pillow")
+    sys.exit(1)
+
+# ==============================================================================
+# ET KERNEL: OMNISCIENT ENTANGLEMENT SOLVER
+# ==============================================================================
+
+class ET_Omni_Solver:
+    def solve_entanglement(self, img_pil, mask_pil, 
+                         strain_sens,    # Shape detection
+                         radio_amp,      # Color derivation
+                         texture_dna,    # Texture reconstruction
+                         chaos,          # Entropy
+                         status_cb):
+        
+        width, height = img_pil.size
+        pixels = img_pil.load()
+        mask = mask_pil.load()
+        
+        # 1. DERIVE SKELETON (SHAPE FROM STRAIN)
+        # Using V31 Logic (Gradient Vector Flow)
+        status_cb("Deriving Geometry from Topological Strain...")
+        
+        gray = img_pil.convert("L")
+        g_pix = gray.load()
+        
+        # Relief Map (The Skeleton)
+        skeleton = Image.new("L", (width, height), 0)
+        s_pix = skeleton.load()
+        
+        bbox = mask_pil.getbbox()
+        if not bbox: return img_pil
+        
+        # Factors
+        sens = strain_sens * 2.0
+        
+        # Calculate Strain
+        for y in range(bbox[1]+1, bbox[3]-1):
+            for x in range(bbox[0]+1, bbox[2]-1):
+                if mask[x, y] == 0: continue
+                
+                # Sobel Gradient
+                p0=g_pix[x-1,y-1]; p1=g_pix[x,y-1]; p2=g_pix[x+1,y-1]
+                p3=g_pix[x-1,y];   p5=g_pix[x+1,y]
+                p6=g_pix[x-1,y+1]; p7=g_pix[x,y+1]; p8=g_pix[x+1,y+1]
+                
+                gx = (p2 + 2*p5 + p8) - (p0 + 2*p3 + p6)
+                gy = (p6 + 2*p7 + p8) - (p0 + 2*p1 + p2)
+                mag = math.sqrt(gx*gx + gy*gy)
+                
+                if mag > sens:
+                    # Map strain to intensity (0-255)
+                    val = min(255, (mag - sens) * 2)
+                    s_pix[x, y] = int(val)
+
+        # Blur the skeleton slightly to connect ridges
+        skeleton = skeleton.filter(ImageFilter.GaussianBlur(1))
+        s_pix = skeleton.load()
+
+        # 2. DERIVE CHROMA (COLOR FROM RADIOSITY)
+        # Using V30 Logic (Environmental Sampling)
+        status_cb("Deriving Identity from Environmental Radiosity...")
+        
+        influence_colors = []
+        margin = 20
+        bx0 = max(0, bbox[0]-margin); by0 = max(0, bbox[1]-margin)
+        bx1 = min(width, bbox[2]+margin); by1 = min(height, bbox[3]+margin)
+        
+        for y in range(by0, by1, 4):
+            for x in range(bx0, bx1, 4):
+                if mask[x, y] == 0: # Reality
+                    influence_colors.append(pixels[x,y])
+                    
+        if not influence_colors:
+            avg_r, avg_g, avg_b = 128, 128, 128
+        else:
+            avg_r = sum(c[0] for c in influence_colors) // len(influence_colors)
+            avg_g = sum(c[1] for c in influence_colors) // len(influence_colors)
+            avg_b = sum(c[2] for c in influence_colors) // len(influence_colors)
+            
+        # 3. RECONSTRUCT MATTER (INFERENCE)
+        # Using V29 Logic (Propagation) guided by Skeleton and Chroma
+        status_cb("Collapsing Wavefunction (Reconstruction)...")
+        
+        patch_size = int(texture_dna)
+        step = max(3, patch_size // 2)
+        work_mask = mask_pil.copy()
+        w_mask = work_mask.load()
+        
+        max_iter = 5000
+        curr_iter = 0
+        
+        rad_boost = radio_amp / 50.0
+        
+        while curr_iter < max_iter:
+            curr_iter += 1
+            frontier = []
+            
+            # Find frontier
+            for y in range(bbox[1], bbox[3], step):
+                for x in range(bbox[0], bbox[2], step):
+                    if w_mask[x, y] > 0: # Void
+                        # Check neighbors
+                        has_real = False
+                        chk = [(x-step,y), (x+step,y), (x,y-step), (x,y+step)]
+                        for cx, cy in chk:
+                            if 0<=cx<width and 0<=cy<height and w_mask[cx, cy]==0:
+                                has_real = True; break
+                        if has_real: frontier.append((x,y))
+            
+            if not frontier: break
+            random.shuffle(frontier)
+            
+            for tx, ty in frontier:
+                if w_mask[tx, ty] == 0: continue
+                
+                # SKELETON CHECK
+                # Is this pixel on a "Bone" (High Strain)?
+                # If so, we need a darker/shadow texture.
+                is_bone = s_pix[tx, ty] > 50
+                
+                # FIND SOURCE
+                best_src = None
+                min_diff = float('inf')
+                
+                for _ in range(15):
+                    sx = random.randint(0, width-patch_size)
+                    sy = random.randint(0, height-patch_size)
+                    if w_mask[sx, sy] == 0:
+                        # Simple diff
+                        # We optimize by just checking center pixel for speed in this omni-loop
+                        tr, tg, tb = pixels[tx-step, ty] if tx-step>0 else (0,0,0)
+                        sr, sg, sb = pixels[sx, sy]
+                        diff = abs(tr-sr) + abs(tg-sg) + abs(tb-sb)
+                        
+                        # Skeleton Weight: If target is bone, prefer darker source
+                        src_lum = (sr+sg+sb)/3
+                        if is_bone and src_lum > 100: diff += 100 # Penalize bright
+                        if not is_bone and src_lum < 50: diff += 50 # Penalize dark
+                        
+                        if diff < min_diff:
+                            min_diff = diff
+                            best_src = (sx, sy)
+                            
+                # PASTE
+                if best_src:
+                    bsx, bsy = best_src
+                    for py in range(patch_size):
+                        for px in range(patch_size):
+                            tar_x, tar_y = tx+px, ty+py
+                            src_x, src_y = bsx+px, bsy+py
+                            
+                            if (0<=tar_x<width and 0<=tar_y<height and w_mask[tar_x, tar_y]>0):
+                                sr, sg, sb = pixels[src_x, src_y]
+                                
+                                # 1. Apply Radiosity (Tint)
+                                dev_r = sr - avg_r; dev_g = sg - avg_g; dev_b = sb - avg_b
+                                nr = sr + (dev_r * rad_boost)
+                                ng = sg + (dev_g * rad_boost)
+                                nb = sb + (dev_b * rad_boost)
+                                
+                                # 2. Apply Skeleton (Shadow)
+                                # If this pixel is on the relief map, burn it
+                                skel_val = s_pix[tar_x, tar_y]
+                                if skel_val > 0:
+                                    # Darken based on strain intensity
+                                    burn = 1.0 - (skel_val / 400.0)
+                                    nr *= burn; ng *= burn; nb *= burn
+                                
+                                pixels[tar_x, tar_y] = (int(max(0,min(255,nr))), 
+                                                      int(max(0,min(255,ng))), 
+                                                      int(max(0,min(255,nb))))
+                                w_mask[tar_x, tar_y] = 0
+
+        return img_pil
+
+# ==============================================================================
+# GUI
+# ==============================================================================
+
+class ET_V32_GUI:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("ET-V32: OMNISCIENT ENGINE (ENTANGLEMENT SOLVER)")
+        self.root.geometry("1200x950")
+        self.root.configure(bg="#050505")
+        
+        self.engine = ET_Omni_Solver()
+        self.pil_img = None
+        self.mask_img = None
+        self.backup_img = None
+        
+        self._layout()
+
+    def _layout(self):
+        t = tk.Frame(self.root, bg="#101010", pady=10)
+        t.pack(fill=tk.X)
+        
+        r1 = tk.Frame(t, bg="#101010"); r1.pack(side=tk.TOP, fill=tk.X)
+        self.btn(r1, "LOAD", self.load, "#004488")
+        self.btn(r1, "RESET", self.reset_all, "#880000")
+        self.btn(r1, "CLEAR MASK", self.clear_mask, "#550000")
+        self.btn(r1, "SOLVE ENTANGLEMENT", self.run, "#006600")
+        
+        self.stat = tk.Label(r1, text="Ready.", fg="#00ff00", bg="#101010")
+        self.stat.pack(side=tk.RIGHT, padx=20)
+        
+        r2 = tk.Frame(t, bg="#101010"); r2.pack(side=tk.TOP, fill=tk.X, pady=5)
+        
+        # 1. STRAIN (Form)
+        f1 = tk.Frame(r2, bg="#101010"); f1.pack(side=tk.LEFT, padx=5)
+        tk.Label(f1, text="STRAIN (Form)", fg="#0ff", bg="#101010", font=("Arial", 7)).pack()
+        self.str_scale = tk.Scale(f1, from_=0, to=100, orient=tk.HORIZONTAL, bg="#101010", fg="#0ff", length=130)
+        self.str_scale.set(30)
+        self.str_scale.pack()
+        
+        # 2. RADIOSITY (Color)
+        f2 = tk.Frame(r2, bg="#101010"); f2.pack(side=tk.LEFT, padx=5)
+        tk.Label(f2, text="RADIOSITY (Color)", fg="#f0f", bg="#101010", font=("Arial", 7)).pack()
+        self.rad_scale = tk.Scale(f2, from_=0, to=100, orient=tk.HORIZONTAL, bg="#101010", fg="#f0f", length=130)
+        self.rad_scale.set(40)
+        self.rad_scale.pack()
+        
+        # 3. DNA (Texture)
+        f3 = tk.Frame(r2, bg="#101010"); f3.pack(side=tk.LEFT, padx=5)
+        tk.Label(f3, text="DNA (Texture)", fg="#0f0", bg="#101010", font=("Arial", 7)).pack()
+        self.dna_scale = tk.Scale(f3, from_=5, to=30, orient=tk.HORIZONTAL, bg="#101010", fg="#0f0", length=130)
+        self.dna_scale.set(15)
+        self.dna_scale.pack()
+        
+        # 4. CHAOS
+        f4 = tk.Frame(r2, bg="#101010"); f4.pack(side=tk.LEFT, padx=5)
+        tk.Label(f4, text="CHAOS", fg="#888", bg="#101010", font=("Arial", 7)).pack()
+        self.cha_scale = tk.Scale(f4, from_=0, to=100, orient=tk.HORIZONTAL, bg="#101010", fg="#888", length=130)
+        self.cha_scale.set(20)
+        self.cha_scale.pack()
+
+        container = tk.Frame(self.root)
+        container.pack(fill=tk.BOTH, expand=True)
+        self.cv = tk.Canvas(container, bg="#080808", cursor="crosshair")
+        vs = tk.Scrollbar(container, orient="vertical", command=self.cv.yview)
+        hs = tk.Scrollbar(container, orient="horizontal", command=self.cv.xview)
+        self.cv.config(yscrollcommand=vs.set, xscrollcommand=hs.set)
+        
+        vs.pack(side=tk.RIGHT, fill=tk.Y)
+        hs.pack(side=tk.BOTTOM, fill=tk.X)
+        self.cv.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        
+        self.cv.bind("<Button-1>", self.down)
+        self.cv.bind("<B1-Motion>", self.drag)
+        self.cv.bind("<ButtonRelease-1>", self.up)
+        
+        self.drawing=False; self.brush=30
+
+    def btn(self, p, t, c, b):
+        tk.Button(p, text=t, command=c, bg=b, fg="white", relief="flat", padx=10, pady=5).pack(side=tk.LEFT, padx=5)
+
+    def load(self):
+        path = filedialog.askopenfilename()
+        if not path: return
+        try:
+            self.pil_img = Image.open(path).convert("RGB")
+            self.backup_img = self.pil_img.copy()
+            self.mask_img = Image.new("L", self.pil_img.size, 0)
+            self.cv.config(scrollregion=(0,0,self.pil_img.width,self.pil_img.height))
+            self.update_view()
+            self.stat.config(text=f"Loaded: {self.pil_img.size}")
+        except: pass
+
+    def update_view(self):
+        if not self.pil_img: return
+        d = self.pil_img.copy()
+        if self.mask_img.getbbox():
+            r = Image.new("RGB", self.pil_img.size, (255,0,0)) 
+            d = Image.composite(r, d, self.mask_img)
+        self.tk = ImageTk.PhotoImage(d)
+        self.cv.create_image(0,0, image=self.tk, anchor=tk.NW)
+
+    def down(self,e): 
+        x=int(self.cv.canvasx(e.x)); y=int(self.cv.canvasy(e.y))
+        self.drawing=True; self.lp=(x,y)
+        
+    def drag(self,e):
+        if self.drawing and self.mask_img:
+            x=int(self.cv.canvasx(e.x)); y=int(self.cv.canvasy(e.y))
+            d = ImageDraw.Draw(self.mask_img)
+            d.line([self.lp, (x,y)], fill=255, width=self.brush)
+            d.ellipse([x-15,y-15,x+15,y+15], fill=255)
+            self.lp=(x,y); 
+            self.cv.create_line(self.lp[0],self.lp[1],x,y,fill="red",width=self.brush,tags="t")
+
+    def up(self,e): 
+        if self.drawing: self.drawing=False; self.cv.delete("t"); self.update_view()
+    
+    def reset_all(self):
+        if self.backup_img:
+            self.pil_img = self.backup_img.copy()
+            self.clear_mask()
+            self.stat.config(text="Reset to Original.")
+
+    def clear_mask(self):
+        if self.mask_img: self.mask_img.paste(0,[0,0,self.mask_img.width,self.mask_img.height]); self.update_view()
+
+    def run(self):
+        if not self.pil_img: return
+        self.stat.config(text="Solving Entanglement...")
+        
+        strn = self.str_scale.get()
+        rad = self.rad_scale.get()
+        dna = self.dna_scale.get()
+        cha = self.cha_scale.get()
+        
+        threading.Thread(target=self._w, args=(strn, rad, dna, cha)).start()
+
+    def _w(self, s, r, d, c):
+        res = self.engine.solve_entanglement(self.pil_img, self.mask_img, s, r, d, c, self.log)
+        self.pil_img = res
+        self.clear_mask()
+        self.root.after(0, self.update_view)
+        self.root.after(0, lambda: self.stat.config(text="Entanglement Solved."))
+
+    def log(self, m): self.stat.config(text=m)
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = ET_V32_GUI(root)
+    root.mainloop()

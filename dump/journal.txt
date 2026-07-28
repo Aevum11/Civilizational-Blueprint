@@ -1,0 +1,88 @@
+Session 1 — 2026-04-21 — ET Lattice Engine planning
+====================================================
+
+Goal: Produce the complete implementation plan for a production Python + C
+library implementing the full ET Universal Projection Guide v2.2 per Mike's
+instructions. First action before any code is written.
+
+Sources read in full (via `cat`, not truncated view — Rule 37):
+  - /mnt/project/ET_Three_Tools_Complete_Reference.md (738 lines, Rule 10)
+  - /mnt/user-data/uploads/ET_Universal_Projection_Guide8.md (4585 lines)
+  - /mnt/user-data/uploads/universal_verification.py (286 lines, provided in
+    context as document block; confirmed complete)
+
+Existing corpus files inventoried (not read in full — not the subject of this
+plan, but consulted for integration planning per Rules 25, 26, 40):
+  - /mnt/project/constants.py (1008 lines)
+  - /mnt/project/primitives.py (289 lines)
+  - /mnt/project/et_clr_v5__4_.py (5037 lines)
+  - /mnt/project/et_rmsae.py (801 lines)
+
+Questions asked of Mike (Rule 27, via ask_user_input_v0):
+  Q1 — Package structure (unified vs split vs let Claude decide)
+  Q2 — C library scope (kernels-only vs everything-heavy vs let Claude decide)
+  Q3 — Arbitrary-precision backend (mpmath vs mpmath+MPFR vs let Claude decide)
+
+Mike's answers (binding constraints for the whole library):
+  A1 — Python modules + C modules; heavy work in C; not too many, not monolithic.
+  A2 — C handles everything heavy for optimal performance.
+  A3 — NO IMPORTS besides ctypes. No math module. The lattice IS its own math
+       engine per guide §107–110. This replaces every math library.
+
+Architectural consequences derived from A3:
+  - No `import math`, `import cmath`, `import numpy`, `import mpmath`, `import
+    fractions`, `import sympy`, `import scipy` anywhere in the Python layer.
+  - No linking `libm` anywhere in the C layer.
+  - All transcendentals implemented from scratch: exp via Taylor, ln via atanh
+    series, sin/cos via reduced-argument Taylor, sqrt via Newton, pow via
+    exp(e*ln(b)), atan via Machin-style, pi via Machin, etc.
+  - Per Rule 33 ("no lists, everything dynamic"): the six base sublattice
+    families, 12 FORCE families, 12 PHASE families, 42 combined states, 144
+    FQG cells, LCM tower landmarks, and palindromic cascade are all computed
+    dynamically from N and the prime sieve, never hardcoded. Only the true ET
+    constants (N, S, K) and small literals (0, 1, 2, 3, 4) are hard-coded.
+  - The Odrzywołek (2026) EML operator + Webb (1935) stroke + palindromic
+    cascade together are the library's three foundational backbones per guide
+    §109; everything mathematical in the library derives from these.
+
+Plan produced: /mnt/user-data/outputs/ET_LATTICE_ENGINE_PLAN.md (1391 lines).
+Contents:
+  0. Library identity (IS / IS NOT)
+  1. Hard constraints (Mike's rules 1–48 translated to architecture)
+  2. Architecture overview — two-layer Python/C split; 12 C modules + 10
+     Python modules; rationale for module count.
+  3. Three minimal backbones — EML, Webb, palindromic cascade; why no libm.
+  4. Constants — derived from primitives, nothing hardcoded beyond {0,1,2,3,4}
+     and the three primitive values N=12, S=4, K=2/3.
+  5. C module plan — twelve modules with full public C signatures for each.
+  6. Python module plan — ten modules with class/function enumeration.
+  7. Guide-section-to-implementation cross-reference — every one of the 132
+     sections mapped to a module + function/class, with equation numbers.
+  8. Verification strategy — startup self-verify, per-equation, per-domain,
+     convention-independence sweeps, standard-approach contrast reports,
+     universal verification runner.
+  9. Build system — CMake for C, pyproject.toml for Python, CI that greps
+     for forbidden imports and `nm`-checks for libm symbols.
+ 10. Development discipline — journal, working files, no scope creep, surgical
+     str_replace only, pre-edit view, Three-Tools check on every commit.
+ 11. Phase-by-phase execution plan — 15 phases (0 through 14), each producing
+     a specific testable deliverable; no "future work" or "deferred features"
+     per Rule 42.
+ 12. What the plan does NOT say (and why) — explicit accounting of Rules 4,
+     33, 38, 42 constraints.
+ 13. One-sentence summary.
+
+Files created this session:
+  /home/claude/etengine_plan/ET_LATTICE_ENGINE_PLAN.md (working copy)
+  /mnt/user-data/outputs/ET_LATTICE_ENGINE_PLAN.md     (delivered to Mike)
+
+Files NOT modified (Rule 13, Rule 24):
+  /mnt/user-data/outputs/ET_Lattice_Engine_Plan_v1.md  (pre-existing, left alone)
+  All /mnt/project/ files (read-only references)
+  All /mnt/user-data/uploads/ files (source documents)
+
+Next session goal: Mike's review of the plan. If approved, begin Phase 0
+(project skeleton + CI scaffolding). If redirected, revise plan per
+Mike's feedback — but plan stays complete, not partial.
+
+No open items (Rule 42). Plan is fully specified through Phase 14 completion.

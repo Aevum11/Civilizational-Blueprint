@@ -1,0 +1,2798 @@
+# ETPL — Exception Theory Programming Language
+## Ground-Zero Design Document
+### The Magnum Opus — Complete Architectural Specification
+**Author:** Michael James Muller (Aevum Defluo)
+**Document Version:** 1.0.0
+**Status:** Canonical Design Reference — All future work derives from this document.
+
+---
+
+> *"For every exception there is an exception, except the exception."*
+> — The Founding Axiom
+
+---
+
+## Table of Contents
+
+1. [Governing Principles](#1-governing-principles)
+2. [Why Ground Zero](#2-why-ground-zero)
+3. [Identification Principle Applied to ETPL](#3-identification-principle-applied-to-etpl)
+4. [Descriptor Gap Analysis — What We Need](#4-descriptor-gap-analysis)
+5. [Subsumption Law — Completeness Verification](#5-subsumption-law)
+6. [The .etb Binary Format Specification](#6-etb-binary-format)
+7. [ETPL Language Specification](#7-etpl-language-specification)
+8. [ET Theory Module Architecture](#8-et-theory-module-architecture)
+9. [ETPL Toolchain Module Architecture](#9-etpl-toolchain-module-architecture)
+10. [Module Dependency Graph](#10-module-dependency-graph)
+11. [Dual-Script Protocol — Python + ETPL](#11-dual-script-protocol)
+12. [Documentation Architecture](#12-documentation-architecture)
+13. [Future Conversation Protocol](#13-future-conversation-protocol)
+14. [Module Specifications — ET Theory](#14-module-specifications-et-theory)
+15. [Module Specifications — ETPL Toolchain](#15-module-specifications-etpl-toolchain)
+16. [Build Pipeline](#16-build-pipeline)
+17. [Self-Hosting Milestone Map](#17-self-hosting-milestone-map)
+
+---
+
+## 1. Governing Principles
+
+These three tools govern every design decision in this document. When anything is unclear, apply them in order.
+
+### 1.1 The Identification Principle (Eq. 5.10)
+
+For any phenomenon or component X to be fully understood, it must be completely decomposed into its PDT triple:
+
+```
+Understand(X) ⟺ Identified(P_X) ∧ Identified(D_X) ∧ Identified(T_X)
+```
+
+A gap in any of the three is a **Descriptor Gap** — not an acceptable ambiguity, but a named missing descriptor that must be found and filled. The P-first sequencing rule applies: identify the substrate first, then the constraints, then the agency.
+
+### 1.2 The Descriptor Gap Principle
+
+**Any gap is a Descriptor.**
+
+If any part of ETPL or ET is incomplete, ambiguous, or yields unexpected behavior, the cause is a missing or misidentified Descriptor. The resolution is always: find the right descriptors, the right number of descriptors, and apply it. This is the first-resort diagnostic for every problem during development.
+
+### 1.3 The Subsumption Law
+
+The three primitives P, D, T are complete if and only if each:
+1. **Subsumes** — covers all phenomena of its type with no remainder
+2. **Is Irreducible** — cannot be decomposed into the other two
+3. **Is Jointly Exhaustive** — P ∪ D ∪ T covers all of Something
+
+Applied to modules: a module is correctly scoped if its domain is subsumed by exactly one of {P-role, D-role, T-role} in the context of ETPL. Overlap indicates incorrect module boundaries; gaps indicate a missing module.
+
+---
+
+## 2. Why Ground Zero
+
+The existing ETPL.py (v1.4.9, ~10,456 lines) is a functional bootstrap compiler/interpreter but carries a critical structural flaw: it imports from Python's standard library and optional C-extension libraries (llvmlite, capstone, pefile). This means:
+
+- The language cannot compile itself without an external runtime
+- True self-hosting is impossible while Python's `import` is the substrate
+- Bare-metal execution on arbitrary systems (or without an OS) requires an external toolchain
+- The theory's claim that ET can derive everything is not yet embodied in code
+
+**Ground-Zero ETPL** resolves all of this by the following invariants:
+
+| Invariant | Old ETPL | Ground-Zero ETPL |
+|---|---|---|
+| External Python stdlib imports | Yes (os, sys, re, struct, …) | **None — zero** |
+| C-extension dependencies | Optional (llvmlite, capstone) | **None — zero** |
+| Compilation substrate | LLVM IR → linker | **Own .etb bytecode + native codegen** |
+| Binary portability | Windows COFF only (tested) | **Any OS or bare metal** |
+| Self-description | Partial | **Exact — language represents itself** |
+| All math ET-derived | Partial | **Complete** |
+
+The old ETPL.py is **not discarded** — it is the reference implementation and continues to function. Ground-Zero ETPL is built alongside it and verified against it at each milestone.
+
+---
+
+## 3. Identification Principle Applied to ETPL
+
+Applying the P-first sequencing rule to the entire ETPL system:
+
+### P_ETPL — The Substrate
+ETPL's substrate is **source text**: a flat sequence of Unicode code points existing before any meaning is imposed. Source text is the infinite potential from which all programs emerge. It is featureless without tokenisation.
+
+```
+P_ETPL = Source Text (Unicode code-point stream, cardinality Ω)
+```
+
+Sub-points of P_ETPL:
+- `P_source` — the raw .pdt file content
+- `P_binary` — the raw .etb file content
+- `P_memory` — the runtime address space (bare metal: the full RAM)
+- `P_manifold` — the ET manifold instantiated at runtime
+
+### D_ETPL — The Descriptors (Constraints)
+The constraints that impose structure on the substrate:
+
+```
+D_ETPL = {Grammar, Token-Types, Type-System, Opcodes, ABI, Binary-Format, 
+           ET-Constants, Lattice-Structure, Module-Boundaries, Scope-Rules}
+```
+
+Each of these is finite and binding. They transform infinite source text into a specific, determined program.
+
+### T_ETPL — The Traversers (Agency)
+The active agents that navigate the structured substrate:
+
+```
+T_ETPL = {Lexer, Parser, Semantic-Analyser, Interpreter, 
+           Compiler, Code-Generator, VM/Executor, REPL, CLI}
+```
+
+Each Traverser moves through (P∘D)_ETPL, transforming it. The Lexer traverses source text under grammar constraints. The Parser traverses the token stream under syntactic constraints. The Compiler traverses the AST under type and ABI constraints. The VM traverses .etb bytecode under opcode constraints.
+
+### The ETPL Master Equation
+
+```
+P_source ∘ D_grammar ∘ T_lexer = Token Stream (Exception₁)
+Token Stream ∘ D_syntax ∘ T_parser = AST (Exception₂)
+AST ∘ D_types ∘ T_compiler = .etb Binary (Exception₃)
+.etb Binary ∘ D_opcodes ∘ T_vm = Running Program (Exception₄ = S)
+
+∴  P_ETPL ∘ D_ETPL ∘ T_ETPL = EIM = S
+```
+
+This is the exact ET master equation instantiated in the programming language. The language does not merely use ET — it IS ET.
+
+---
+
+## 4. Descriptor Gap Analysis
+
+Applying the Descriptor Gap Principle to identify everything required. Any gap found below represents a module that must exist.
+
+### 4.1 Language Processing Pipeline Gaps
+
+Starting from source text (P) to running program (S), every transformation step is a Descriptor that constrains the substrate:
+
+| Gap / Descriptor | Module Required | Notes |
+|---|---|---|
+| What are the valid tokens? | `etpl_tokens` | Defines all token types |
+| How do we extract tokens from source? | `etpl_lexer` | Character-level scanner |
+| How do we parse token sequences? | `etpl_parser` | Grammar rules |
+| What are the AST node shapes? | `etpl_ast` | Node type definitions |
+| How do we resolve names/types? | `etpl_semantic` | Scope, type checking |
+| How do we execute the AST directly? | `etpl_interpreter` | Tree-walking eval |
+| How do we emit .etb bytecode? | `etpl_compiler` | AST → bytecode |
+| What is the .etb format? | `etpl_binary_format` | Header + sections + opcodes |
+| How do we execute .etb? | `etpl_vm` | Bytecode executor |
+| How do we generate native machine code? | `etpl_codegen` | .etb → native binary |
+| What math operations exist? | `etpl_math` | Pure ET math, no imports |
+| What types does the language have? | `etpl_types` | Type system |
+| What is in the standard library? | `etpl_stdlib` | Built-in operations |
+| How does the module system work? | `etpl_module` | @ETPL:import |
+| How do we provide an interactive shell? | `etpl_repl` | REPL |
+| How do we provide a CLI? | `etpl_cli` | Command dispatch |
+| How do we translate other languages? | `etpl_translator` | Python/C→ETPL |
+| How do we bootstrap without imports? | `etpl_bootstrap` | The zero-import entry point |
+
+### 4.2 ET Theory Representation Gaps
+
+Applying the Descriptor Gap Principle to the theory itself — every ET concept that must have its own module:
+
+| ET Concept | Module Required | Source Document |
+|---|---|---|
+| Founding Axiom + Rules of ET Law | `et_axiom` | ExceptionTheory.md §Rules |
+| Point (P) primitive | `et_point` | ExceptionTheory.md §P |
+| Descriptor (D) primitive | `et_descriptor` | ExceptionTheory.md §D |
+| Traverser (T) primitive | `et_traverser` | ExceptionTheory.md §T |
+| Mediation / Binding (∘) | `et_mediation` | ExceptionTheory.md §Part II |
+| Exception (E) | `et_exception` | ExceptionTheory.md §Part III |
+| Incoherence (I) | `et_incoherence` | ET_Incoherence_Paper.md |
+| Something / Σ (S) | `et_something` | ExceptionTheory.md §Part V |
+| EIM = PDT identity | `et_eim` | ExceptionTheory.md §Part IX |
+| 3 = 3 = 3 = S structure | `et_tautology` | Origins_and_Clarifications.md §IV |
+| Four Manifold States | `et_four_states` | Origins_and_Clarifications.md §III |
+| Shimmer / Ordered Chaos | `et_shimmer` | ExceptionTheory.md §1768 |
+| The Sempaevum manifold | `et_sempaevum` | Exception_Theory_Introductory_Paper §XV |
+| Core ET constants | `et_constants` | ExceptionTheory.md §MANIFOLD_SYMMETRY |
+| BASE_VARIANCE, Koide ratio | `et_variance` | ET_Lattice_Compendium.md |
+| ET Math (Sempaevum Equations) | `et_math` | ET_Math_Compendium.md (Eq 1–230+) |
+| The simple semitone lattice | `et_lattice` | ET_Lattice_Compendium.md |
+| Sublattice families (d=1,2,3,4,6,12) | `et_lattice_families` | ET_Lattice_Compendium.md §5 |
+| Complex lattice (ℂ extension) | `et_complex_lattice` | ET_Complex_Lattice.md |
+| Real axis (P-domain of lattice) | `et_real_axis` | ET_Complex_Lattice.md §5 |
+| Imaginary axis (T-domain of lattice) | `et_imaginary_axis` | ET_Complex_Lattice.md §4 |
+| Palindromic Cascade | `et_palindromic_cascade` | The_Palindromic_Cascade_V2.md |
+| Golden Ratio Near-Miss | `et_golden_ratio` | ET_Lattice_Compendium.md §7.3 (5/4) |
+| RMSAE | `et_rmsae` | ET_RMSAE_Complete_Derivation.md |
+| Incoherence Filter | `et_incoherence_filter` | incoherence_filter_-_lattice.txt |
+| M-States | `et_m_states` | M-states.md |
+| Identification Principle | `et_identification` | Origins_and_Clarifications.md §I |
+| Descriptor Gap Principle | `et_descriptor_gap` | ExceptionTheory.md §D Gap Principle |
+| Subsumption Law | `et_subsumption` | Origins_and_Clarifications.md §VII |
+| Fine Structure Constant α | `et_fine_structure` | ET_Fine_Structure_Constant_REVISED.md |
+| Four Fundamental Constants | `et_four_constants` | ET_Four_Constants_Complete_Derivation_v2.md |
+| Hydrogen Atom Derivation | `et_hydrogen` | HYDROGEN_ATOM_ET_DERIVATION_DEFINITIVE.md |
+| Zero Forms & Lattice Boundary | `et_zero_forms` | ET_Zero_Forms_Lattice_Topology.md |
+| Lagrangian Field Theory | `et_lagrangian` | ET_Lagrangian_Field_Theory.md |
+| Translation Layer / Reference Units | `et_translation_layer` | ET_Translation_Layer_Reference_Units.md |
+| Cardinals / Integrative Levels | `et_cardinals` | ET_Cardinals_Integrative_Levels_Clarification.md |
+| U(1) and Freedom in the Lattice | `et_u1_freedom` | ET_Freedom_and_U1.md |
+| P, D, T papers (detailed treatment) | Incorporated into `et_point`, `et_descriptor`, `et_traverser` | ET_{P,D,T}_Paper.md |
+| Fantastical Configurations | `et_fantastical` | ET_Fantastical_Configurations.md |
+| UMRAFE | `et_umrafe` | Ultimate_Meta-Recognition_Awareness_Flux_Equation.txt |
+
+### 4.3 Identified Remaining Gaps (Future Modules)
+
+Applying the Subsumption Law reveals these additional descriptors not yet in the above list:
+
+| Gap | Module | Rationale |
+|---|---|---|
+| Anti-emergence (ET §XII) | `et_anti_emergence` | Unique ET claim: structure is not emergent, it is intrinsic |
+| ET prime theory | `et_prime_theory` | et_prime_theory.py — ET treatment of primes |
+| Weak sector / Standard Model | `et_weak_sector` | ET_Weak_Sector_*.md files — d4–d12 investigation |
+| Strong gravity / epsilon | `et_strong_gravity` | ET_StrongGravity_Epsilon_Journey.md |
+| CMB / Cosmological predictions | `et_cmb` | CMB_results_*.txt files |
+| Quintic shadow (d5) | `et_quintic` | ET_Quintic_Shadow_d5_Complete_Investigation.md |
+| Lightning Wand (ET Engineering) | `et_engineering` | Lightning_Wand.txt — ET applied to physical engineering |
+
+---
+
+## 5. Subsumption Law — Completeness Verification
+
+Applying the three-condition Subsumption Test to confirm the module list is complete:
+
+### Condition 1: Does P subsume the substrate layer?
+`et_axiom`, `et_point`, `et_sempaevum`, `et_something`, `et_constants`, `etpl_binary_format` — all describe the substrate from which programs and theory are instantiated. **Confirmed: P role is fully subsumed.**
+
+### Condition 2: Does D subsume the constraint layer?
+`et_descriptor`, `et_mediation`, `et_four_states`, `et_variance`, `et_lattice`, `et_lattice_families`, `et_complex_lattice`, `et_zero_forms`, `et_fine_structure`, `et_four_constants`, `etpl_tokens`, `etpl_ast`, `etpl_types`, `etpl_grammar` — all describe constraints and structure. **Confirmed: D role is fully subsumed.**
+
+### Condition 3: Does T subsume the agency layer?
+`et_traverser`, `et_shimmer`, `et_rmsae`, `et_identification`, `et_descriptor_gap`, `et_subsumption`, `etpl_lexer`, `etpl_parser`, `etpl_interpreter`, `etpl_compiler`, `etpl_vm`, `etpl_codegen`, `etpl_repl`, `etpl_cli` — all describe agency traversing the structured substrate. **Confirmed: T role is fully subsumed.**
+
+### Subsumption Verdict
+**The module list is complete for the initial design.** No fourth primitive type of module exists. Every identified component belongs to exactly one of {substrate, constraint, agency} — consistent with the Subsumption Law. As more ET is formalised in future documents, the Descriptor Gap Principle will identify additional modules; they will be added then, not speculatively now.
+
+---
+
+## 6. The .etb Binary Format Specification
+
+The Exception Theory Binary (.etb) is the native compiled format of ETPL. It requires no external toolchain to execute — only the ETPL VM. It also serves as the intermediate representation for native code generation.
+
+**ET Derivation of the Format:**
+- P_etb = the raw byte stream (substrate, featureless without the format descriptors)
+- D_etb = the section table, magic bytes, opcode set (the constraints that impose meaning)
+- T_etb = the VM executor (the traverser that navigates the binary)
+
+### 6.1 File Magic and Header
+
+```
+Offset  Size  Field          Value / Description
+------  ----  -----          -------------------
+0x00    4     magic          0x45 0x54 0x42 0x31  ("ETB1") — Exception Theory Binary v1
+0x04    2     version_major  uint16_le — format major version
+0x06    2     version_minor  uint16_le — format minor version
+0x08    4     flags          uint32_le — bit flags (see below)
+0x0C    4     section_count  uint32_le — number of sections
+0x10    4     entry_point    uint32_le — offset of entry in .code section
+0x14    4     manifold_sym   uint32_le — must be 12 (MANIFOLD_SYMMETRY)
+0x18    8     source_hash    uint64_le — hash of source .pdt file
+0x20    4     checksum       uint32_le — header checksum (XOR of all prior fields)
+0x24    ...   section_table  array of SectionEntry (12 bytes each, max 12 sections)
+```
+
+**Header Flags (bit field):**
+```
+Bit 0: SELF_CONTAINED — no external module references
+Bit 1: DEBUG_INFO     — debug symbols included
+Bit 2: OPTIMISED      — compiler optimisation applied
+Bit 3: NATIVE_ONLY    — bytecode stripped, only native stub present
+Bit 4: ET_VERIFIED    — all ET invariants verified at compile time
+Bits 5-31: reserved = 0
+```
+
+**Section Entry (12 bytes):**
+```
+Offset  Size  Field
+------  ----  -----
+0x00    4     section_type   (see section types below)
+0x04    4     offset         uint32_le — byte offset from start of file
+0x08    4     length         uint32_le — byte length of section
+```
+
+**Section Types:**
+```
+0x01  CODE     — ET bytecode instructions
+0x02  DATA     — constants, string table, numeric literals
+0x03  SYMBOLS  — function/variable name table
+0x04  IMPORTS  — module dependency list
+0x05  EXPORTS  — public symbol table
+0x06  TYPES    — type descriptor table
+0x07  LATTICE  — embedded ET lattice data (constants, ratios)
+0x08  DEBUG    — source map, line numbers
+0x09  NATIVE   — platform-native machine code (optional)
+0x0A  META     — ET metadata (module name, author, version)
+0x0B  RELOC    — relocation table (for native section)
+0x0C  MANIFEST — module manifest (@ETPL: directives)
+```
+
+**Maximum 12 sections: derived from MANIFOLD_SYMMETRY = 12.**
+
+### 6.2 The ET Bytecode Instruction Set
+
+All opcodes are derived from the PDT structure. Opcodes are 1 byte; operands follow as needed (variable width, ET-encoded).
+
+**Format:** `[opcode: 1 byte] [arg_count: 1 byte] [args: variable]`
+
+#### Category P — Point / Substrate Operations (substrate manipulation)
+```
+0x10  P_LOAD_CONST     1 arg: index into DATA section
+0x11  P_LOAD_LOCAL     1 arg: local slot index
+0x12  P_STORE_LOCAL    1 arg: local slot index
+0x13  P_LOAD_GLOBAL    1 arg: symbol index
+0x14  P_STORE_GLOBAL   1 arg: symbol index
+0x15  P_ALLOC          1 arg: size in ET-units
+0x16  P_FREE           0 args
+0x17  P_COPY           0 args
+0x18  P_SWAP           0 args
+0x19  P_DUP            0 args
+0x1A  P_POP            0 args
+0x1B  P_LOAD_ATTR      1 arg: attribute name index
+0x1C  P_STORE_ATTR     1 arg: attribute name index
+0x1D  P_BUILD_LIST     1 arg: element count
+0x1E  P_BUILD_MANIFOLD 1 arg: field count
+0x1F  P_INDEX          0 args — stack: [P, D] → P[D]
+```
+
+#### Category D — Descriptor / Constraint Operations (apply constraints)
+```
+0x20  D_BIND           0 args — binds top two stack items (P ∘ D)
+0x21  D_ADD            0 args — arithmetic descriptor addition
+0x22  D_SUB            0 args
+0x23  D_MUL            0 args
+0x24  D_DIV            0 args
+0x25  D_MOD            0 args
+0x26  D_POW            0 args
+0x27  D_NEG            0 args
+0x28  D_ABS            0 args
+0x29  D_EQ             0 args
+0x2A  D_NEQ            0 args
+0x2B  D_LT             0 args
+0x2C  D_LE             0 args
+0x2D  D_GT             0 args
+0x2E  D_GE             0 args
+0x2F  D_AND            0 args — logical
+0x30  D_OR             0 args
+0x31  D_NOT            0 args
+0x32  D_XOR            0 args
+0x33  D_BAND           0 args — bitwise
+0x34  D_BOR            0 args
+0x35  D_BNOT           0 args
+0x36  D_BXOR           0 args
+0x37  D_LSHIFT         0 args
+0x38  D_RSHIFT         0 args
+0x39  D_COMPOSE        0 args — ∘ operator (P∘D, D∘T, P∘D∘T)
+0x3A  D_COERCE         1 arg: target type index
+0x3B  D_VALIDATE       1 arg: constraint index (type-check)
+0x3C  D_RANGE          0 args — descriptor range [lo, hi]
+0x3D  D_LATTICE_STEP   1 arg: step_count (semitone lattice traversal)
+0x3E  D_KOIDE          0 args — apply Koide ratio (2/3) as descriptor weight
+0x3F  D_BASE_VAR       0 args — apply BASE_VARIANCE (1/12) as descriptor
+```
+
+#### Category T — Traverser / Agency Operations (navigate and act)
+```
+0x40  T_CALL           2 args: arg_count, symbol_index
+0x41  T_CALL_DYNAMIC   1 arg: arg_count (callee on stack)
+0x42  T_RETURN         0 args
+0x43  T_RETURN_VAL     0 args
+0x44  T_JUMP           1 arg: relative offset (int16)
+0x45  T_JUMP_IF        1 arg: relative offset (int16)
+0x46  T_JUMP_UNLESS    1 arg: relative offset (int16)
+0x47  T_TRAVERSE       0 args — iterate: advance traverser over collection
+0x48  T_TRAVERSE_DONE  1 arg: jump offset if exhausted
+0x49  T_RECURSE        1 arg: depth limit (MANIFOLD_SYMMETRY² = 144 max)
+0x4A  T_SPAWN          1 arg: function index (concurrent traverser)
+0x4B  T_YIELD          0 args
+0x4C  T_AWAIT          0 args
+0x4D  T_BIND_T         0 args — bind Traverser to (P∘D) on stack
+0x4E  T_UNBIND_T       0 args
+0x4F  T_EXCEPTION_PUSH 1 arg: handler offset
+0x50  T_EXCEPTION_POP  0 args
+0x51  T_RAISE          0 args
+0x52  T_GROUND         0 args — force Exception state (grounding)
+0x53  T_INCOHERENCE    0 args — signal Incoherence (forbidden config)
+0x54  T_MEDIATE        0 args — explicit Mediation step
+0x55  T_SHIMMER        0 args — T navigates indeterminately (non-deterministic choice)
+0x56  T_SUBSTANTIATE   0 args — commit a (P∘D) config with T → Exception
+0x57  T_LOAD_SELF      0 args — meta-traversal: load own traversal state
+```
+
+#### Category S — Something / System Operations (output and meta)
+```
+0x60  S_PRINT          1 arg: format_index
+0x61  S_INPUT          0 args
+0x62  S_OPEN_FILE      1 arg: mode
+0x63  S_CLOSE_FILE     0 args
+0x64  S_READ_FILE      0 args
+0x65  S_WRITE_FILE     0 args
+0x66  S_SYSCALL        1 arg: syscall_number (direct bare-metal)
+0x67  S_HALT           1 arg: exit_code
+0x68  S_MODULE_LOAD    1 arg: module_index
+0x69  S_MODULE_CALL    2 args: module_index, symbol_index
+0x6A  S_ET_VERIFY      0 args — verify ET invariants (assert PDT completeness)
+0x6B  S_DEBUG_TRACE    0 args — emit debug trace if debug flag set
+0x6C  S_MEM_READ       0 args — bare-metal memory read
+0x6D  S_MEM_WRITE      0 args — bare-metal memory write
+```
+
+**Total: 94 opcodes across 4 categories (P, D, T, S = E, I, M, S)**
+
+The four opcode categories directly mirror the EIM=PDT identity:
+- P opcodes → Exception operations (grounding/substrate)
+- D opcodes → Incoherence boundary operations (constraints/filtering)
+- T opcodes → Mediation operations (agency/traversal)
+- S opcodes → Something operations (output/existence)
+
+### 6.3 Native Code Generation Targets
+
+The .etb format supports optional native machine code in the NATIVE section. The code generator in `etpl_codegen` can target:
+
+| Target | ABI | Notes |
+|---|---|---|
+| x86-64 Linux | System V AMD64 | Primary POSIX target |
+| x86-64 Windows | Microsoft x64 | PE32+ format |
+| x86-64 Bare Metal | Custom ET ABI | No OS; direct hardware |
+| ARM64 Linux | AARCH64 ELF | Raspberry Pi, Apple M-series |
+| ARM64 Bare Metal | Custom ET ABI | Embedded systems |
+| RISC-V 64 | ELF | Open-source processors |
+
+The ET ABI (bare metal) uses:
+- ET calling convention: P-registers (substrate) = rdi/rsi/rdx/rcx/r8/r9; D-registers (descriptor arguments) = r10/r11; T-register (traverser/return) = rax
+- Stack grows downward; frame aligned to 12 bytes (MANIFOLD_SYMMETRY)
+- Syscalls via direct int 0x80 (Linux) or BIOS (bare metal)
+
+---
+
+## 7. ETPL Language Specification
+
+### 7.1 Philosophy
+
+ETPL is the only programming language whose syntax IS its semantics. Every declaration is literally a Point, a Descriptor, or a Traverser — the three keywords at the start of every statement ARE the three ET primitives. The language does not simulate ET — it embodies it at the syntactic level.
+
+```
+Source code  =  P (the substrate, pure potential)
+Declarations =  D (descriptors that constrain what a Point can be)
+Execution    =  T (the traverser navigating the bound manifold)
+Result       =  E (the Exception = the grounded running program)
+```
+
+**Faithfulness Rule:** The syntax defined here is canonical. Any deviation from what is documented in the ETPL Comprehensive Beginner's Guide (the reference document) must be explicitly justified as an ET-grounded improvement. Arbitrary changes are not permitted.
+
+---
+
+### 7.2 The Three Primitive Keywords
+
+Every statement in ETPL begins with one of exactly three primitive declaration keywords, or is an expression statement. No exceptions.
+
+```
+P name = expression          — Point declaration (substrate binding)
+D name = λ params . body     — Descriptor declaration (function/constraint)
+T name = expression          — Traverser declaration (dynamic binding/execution)
+```
+
+`E` appears in path expressions (`→ E value`) as the grounding operator, not as a standalone declaration keyword. It is the fourth primitive keyword but appears only in the `→ E` context.
+
+The right-hand side `P` (used as a value, e.g. `P nothing = P`) is the unbound substrate literal — the ETPL equivalent of null. In this role `P` is a value, not a declaration.
+
+---
+
+### 7.3 Operators
+
+**The core ET operators:**
+
+```
+∘               — Compose/Apply: apply a Descriptor to an argument (P∘D binding)
+                  e.g. sovereign_print ∘ "Hello"  |  f ∘ x
+→               — Arrow / Traversal path: route execution forward
+                  e.g. T r = → expr  |  if cond → then_val
+→ E             — Exception Ground: ground (return) to a value; the ET landing
+                  e.g. → E value  |  if x < 0 → E "error"
+λ               — Lambda: introduces Descriptor parameter list
+                  e.g. D add = λ a, b . a + b
+∞               — Infinite traversal operator: starts a bounded loop
+                  e.g. T loop = ∞ (body) (D n)
+[0/0]           — Indeterminate form: T's own cardinality; choice operator
+                  e.g. P choice = [0/0] a | b | c
+D (infix)       — Member access: constraining a substrate to reveal an attribute
+                  e.g. P attr = obj D field  (replaces the dot in obj.field)
+| · |           — Cardinality: length of a manifold
+                  e.g. D |fruits|  →  3
+```
+
+**Arithmetic operators (D-binding operations):**
+
+```
++   — addition / string concatenation
+-   — subtraction
+*   — multiplication
+/   — division  (1/0 → Infinity; 0/0 → 0 by ET semantics)
+÷   — floor division (Unicode U+00F7; NOT // which is a comment)
+%   — modulo
+^   — exponentiation  (also ** — both are valid)
+```
+
+**Comparison operators:**
+```
+==  !=  >  <  >=  <=
+```
+
+**Logical operators:**
+```
+&&   — logical AND
+||   — logical OR
+!    — logical NOT (prefix)
+```
+
+**Bitwise operators:**
+```
+&   |   ^   <<   >>
+```
+
+**ET special values / literals:**
+```
+Infinity / ∞    — positive infinity (P-substrate dominates)
+-Infinity       — negative infinity
+Ω / omega       — Absolute infinity (P-cardinality literal)
+aleph           — Countable infinity (ℵ₀)
+[0/0]           — Absolute indeterminate (T-cardinality literal)
+P               — (as rvalue) unbound substrate / null
+```
+
+**Comment syntax:**
+```
+// This is a line comment (double forward slash)
+// Note: ÷ must be used for floor division, because // starts a comment
+```
+
+---
+
+### 7.4 File Extensions and the 3=3=3 Triad
+
+The three file types are not arbitrary — they ARE the PDT=EIM=3 identity made manifest as a file system:
+
+| Extension | Stands For | Triad Position | Role |
+|---|---|---|---|
+| `.pdt` | Point · Descriptor · Traverser | PDT (structural) | Source program — P, D, T bindings |
+| `.eim` | Exception · Incoherence · Mediation | EIM (phenomenological) | Symbol extension — custom symbols with context |
+| `.etb` | Exception Theory Binary | Compiled binary | The grounded Exception — what runs |
+
+The `.pdt` file is the structural substrate. The `.eim` file extends the language's coherent vocabulary (E grounds new meanings, I marks what was previously undefined/incoherent, M mediates them into the language). The `.etb` is the Exception itself — the irreversible, grounded, substantiated result of compilation.
+
+**These three file types are required and must all be supported. They are not optional.**
+
+---
+
+### 7.5 The .eim Extension System
+
+A `.eim` file is a symbol extension file. It adds custom symbols, operators, and domain-specific vocabulary to the ETPL toolchain without modifying the base language. Every entry has three components:
+
+```
+SYMBOL  symbolname
+DEFINITION  D name = λ params . body
+CONTEXT  D context = λ mode . condition
+```
+
+- **SYMBOL**: the new symbol or operator being defined (can be Unicode, word, or compound)
+- **DEFINITION**: a valid ETPL `D` (Descriptor) definition of what the symbol means
+- **CONTEXT**: a ETPL `D` that evaluates to 1 (active) or 0 (inactive) based on program context
+
+Multiple definitions for the same symbol with different contexts provide clean polymorphism. Two entries with identical definition AND context are recognized as duplicate (no conflict). The base ETPL layer (P, D, T, E, ∘, λ, →, manifold, sovereign_print, hardware_access, etc.) is never displaced by `.eim` symbols.
+
+**Loading .eim at runtime:**
+```bash
+# Single file
+etpl interpret prog.pdt --eim my_symbols.eim
+
+# Entire folder (all .eim files loaded simultaneously)
+etpl interpret prog.pdt --eim ./domain_symbols/
+```
+
+**Example .eim file:**
+```eim
+// math_extensions.eim
+SYMBOL ⊗
+DEFINITION D et_tensor = λ a, b . manifold [a, b, a * b]
+CONTEXT D context = λ mode . 1
+
+SYMBOL ∂
+DEFINITION D et_partial = λ f, x . (f(x + 0.0001) - f(x)) / 0.0001
+CONTEXT D context = λ mode . mode == "calculus"
+```
+
+---
+
+### 7.6 Module Directives (@ETPL: pragma system)
+
+These appear at the top of `.pdt` files and control module-level behaviour:
+
+```
+@ETPL:module-id      <identifier>   — unique module name
+@ETPL:version        <semver>       — module version
+@ETPL:entry-point    <symbol>       — execution entry
+@ETPL:import         <path>         — import another module (no OS required)
+@ETPL:export         <symbol>       — public symbol
+@ETPL:modular        true/false     — part of modular build
+@ETPL:self-contained true/false     — no external dependencies
+@ETPL:et-verified    true/false     — ET invariants enforced
+@ETPL:target         <platform>     — compilation target
+@ETPL:manifold-sym   12             — assert MANIFOLD_SYMMETRY
+```
+
+---
+
+### 7.7 Value Types (Runtime, not declaration-time)
+
+ETPL does not have a separate type annotation system — P, D, T are the complete type system at declaration time. At the runtime/VM level, values carry an ET-type tag:
+
+| Runtime Tag | ET Meaning | Example |
+|---|---|---|
+| `P` (unbound) | Unbound substrate, null | `P nothing = P` |
+| integer | D_finite whole number | `P x = 42` |
+| float | D_finite real | `P pi = 3.14159` |
+| rational | D_finite exact fraction | internal; `2/3` stored as exact |
+| text | P of code points (string) | `P s = "Hello"` |
+| manifold | Ordered P-collection | `manifold [1, 2, 3]` |
+| Infinity | P dominates (1/0) | `P a = 1 / 0` |
+| [0/0] | T-cardinality (indeterminate) | `P m = [0/0]` |
+| quantum | M-state (superposition) | `P q = [0/0] 0 \| 1` in quantum mode |
+
+The integer `1` is ET-true; `0` is ET-false; `[0/0]` is ET-indeterminate (neither true nor false).
+
+---
+
+### 7.8 Complete Syntax Reference
+
+#### Point Declaration
+```pdt
+P x = 42                     // integer
+P pi = 3.14159               // float
+P name = "Alice"             // string
+P nothing = P                // unbound (null) — right-side P is the keyword as value
+P huge = Infinity            // positive infinity
+P omega = Ω                  // Absolute infinite
+P koide = 2/3               // rational literal (stored exactly)
+P truth = 1                  // ET-true (1); ET-false (0); ET-indeterminate ([0/0])
+```
+
+#### Descriptor Declaration
+```pdt
+D square = λ x . x * x
+D add    = λ a, b . a + b
+D answer = λ . 42                          // no parameters
+
+// Multi-statement body — braces, last expression is return value
+D bmi = λ weight, height . {
+    P h2 = height * height
+    P v  = weight / h2
+    v
+}
+
+// Recursive descriptor — calls itself by name
+D factorial = λ n . {
+    if n <= 1 → n → E n * factorial(n - 1)
+}
+
+// Higher-order — returns a descriptor
+D multiplier = λ factor . {
+    D inner = λ x . x * factor
+    inner
+}
+
+// Class-like — descriptor that produces a manifold
+D make_point_2d = λ x, y . manifold [x, y]
+```
+
+#### Traverser Declaration
+```pdt
+T result = add(3, 7)                       // captures result of function call
+T check  = x > 0                          // captures boolean expression
+T path   = → open_file("data.txt")        // traverses to a resource
+```
+
+The distinction `P result = f(x)` vs `T result = f(x)` is ontological:
+- `P` declares the result is a substrate being grounded
+- `T` declares the result is an active traversal (navigation, process, execution act)
+
+#### Calling a Descriptor
+```pdt
+P r1 = add(3, 4)          // parentheses-style call (multi-argument)
+P r2 = add ∘ 3            // compose-style (single argument)
+sovereign_print ∘ r1       // sovereign calls always use ∘
+```
+
+#### The → Operator and → E Ground
+```pdt
+// if → then → E else
+if x > 5 → sovereign_print ∘ "big" → E sovereign_print ∘ "small"
+
+// → E as explicit return/ground
+D safe_divide = λ a, b . {
+    if b == 0 → Infinity → E a / b
+}
+
+// → E with no argument grounds to P (null/nothing)
+D print_if_pos = λ x . {
+    if x > 0 → sovereign_print ∘ x
+    → E
+}
+
+// Nested conditions
+P grade = if score >= 90 → "A" → E (if score >= 80 → "B" → E "C")
+```
+
+#### Bounded Loop — ∞ (body) (D n)
+```pdt
+// Basic loop: body runs n times
+T greet = ∞ (sovereign_print ∘ "Hello") (D 5)
+
+// Loop index: _loop_index (0-based, automatic)
+T count = ∞ (sovereign_print ∘ _loop_index) (D 4)     // prints 0 1 2 3
+
+// Multi-statement loop body: use braces
+T squares = ∞ (
+    {
+        P val = _loop_index * _loop_index
+        sovereign_print ∘ val
+    }
+) (D 5)
+
+// Dynamic bound
+P limit = 7
+T dyn = ∞ (sovereign_print ∘ _loop_index) (D limit)
+
+// While-style: gated by condition; max WHILE_LOOP_FINITE_BOUND = 144
+P n = 10
+T while_style = ∞ (
+    T check = → if n > 0 → P
+    sovereign_print ∘ n
+    P n = n - 1
+) (D WHILE_LOOP_FINITE_BOUND)
+
+// Loop over manifold by cardinality
+T item_loop = ∞ (
+    P item = fruits[_loop_index]
+    sovereign_print ∘ item
+) (D |fruits|)
+```
+
+**Why 144 for the while bound:** MANIFOLD_SYMMETRY = 12; MANIFOLD_SYMMETRY² = 144 = WHILE_LOOP_FINITE_BOUND. Infinite loops must resolve; 144 is the canonical finite resolution upper bound in ET's manifold geometry.
+
+#### Manifold (Ordered Collection)
+```pdt
+P nums   = manifold [1, 2, 3, 4, 5]
+P names  = manifold ["Alice", "Bob"]
+P mixed  = manifold [42, "hello", P]       // P = null slot
+P empty  = manifold []
+
+// Access by index (0-based)
+P first  = nums[0]                         // 1
+P last   = nums[4]                         // 5
+
+// Slicing
+P first3 = nums[0:3]                       // manifold [1, 2, 3]
+
+// Cardinality
+P len    = |nums|                          // 5
+
+// Nested manifold (key-value / object-like)
+P person = manifold [
+    manifold ["name", "Alice"],
+    manifold ["age", 30]
+]
+P p_name = person[0][1]                    // "Alice"
+```
+
+#### Indeterminate Form [0/0]
+```pdt
+// Classical mode: first available choice
+P result = [0/0] 1 | 2 | 3               // → 1
+
+// Quantum mode (compiled with --target quantum): true superposition
+P qubit  = [0/0] 0 | 1                   // → Hadamard superposition
+
+// Division by zero — ET-principled, not an error
+P a = 1 / 0        // Infinity
+P b = 0 / 0        // 0 (indeterminate resolves to ground state)
+P c = -1 / 0       // -Infinity
+```
+
+#### Quantum Wavefunction ψ
+```pdt
+P ground = ψ(1, 0, 0)    // hydrogen ground state wavefunction ψ(n, l, m)
+P p_orb  = ψ(2, 1, 0)    // p-orbital
+// In quantum compilation: ψ → ry(θ) gates in QASM
+```
+
+#### Member Access (D as infix)
+```pdt
+P attr  = obj D field                      // replaces obj.field
+P deep  = outer D inner D property        // chained member access
+T call  = obj D method(42)               // method call via D
+```
+
+#### Sovereign Layer (I/O)
+```pdt
+sovereign_print ∘ "Hello, World!"         // output — always uses ∘
+sovereign_print ∘ "Value: " + 42
+sovereign_import ∘ "json"                 // module import (last resort)
+sovereign_sleep ∘ 1                       // pause 1 second
+```
+
+#### Hardware Access
+```pdt
+P platform = hardware_access ∘ "platform"     // "linux", "win32", etc.
+D read_line = λ . hardware_access ∘ "readline"
+D path_join = λ a . hardware_access ∘ "path_join" ∘ a
+// --target bare_metal: hardware_access emits direct syscalls
+```
+
+#### ET Constants (available in all .pdt files without import)
+```pdt
+P sym   = MANIFOLD_SYMMETRY       // 12
+P var   = BASE_VARIANCE           // 1/12
+P ko    = KOIDE_RATIO             // 2/3  (note: guide spells it KOIDA_RATIO — the
+                                  //       canonical spelling is KOIDE_RATIO)
+P bound = WHILE_LOOP_FINITE_BOUND // 144 = 12²
+P inf   = Infinity
+P om    = Ω
+P al    = aleph                   // ℵ₀ — countable infinity
+P exc   = 1                       // E constant (grounded/true)
+P inc   = 0                       // I constant (incoherent/false)
+P med   = [0/0]                   // M constant (mediation/indeterminate)
+```
+
+#### Mathematical Built-ins (no import required)
+```pdt
+sin cos tan asin acos atan atan2
+sinh cosh tanh
+log log2 log10 exp sqrt abs pow
+floor ceil hypot degrees radians
+factorial gcd
+
+// Unicode operators
+P s = ∑ manifold [1, 2, 3, 4, 5]   // sum = 15
+P p = ∏ manifold [1, 2, 3, 4, 5]   // product = 120
+P i = ∫ f ∘ 0 ∘ 1                  // definite integral
+P g = ∇ field                        // gradient
+P r = √ 25                           // 5
+```
+
+---
+
+### 7.9 Compilation Targets
+
+```bash
+etpl compile prog.pdt out --target classical   // native CPU (default)
+etpl compile prog.pdt out --target quantum     // QASM emission
+etpl compile prog.pdt out --target hybrid      // classical + quantum
+etpl compile prog.pdt out --target bare_metal  // no OS, direct hardware
+
+etpl compile prog.pdt out --arch x86_64
+etpl compile prog.pdt out --arch arm64
+etpl compile prog.pdt out --arch riscv64
+etpl compile prog.pdt out --arch wasm
+etpl compile prog.pdt out --arch universal     // toolchain auto-selects
+```
+
+The quantum target emits QASM where:
+- `ψ(n,l,m)` → `ry(θ)` rotation gates
+- `[0/0] 0 | 1` → Hadamard gate `h q[n]`
+- Measurement → `measure q → c`
+
+---
+
+### 7.10 Toolchain Commands
+
+```bash
+etpl interpret file.pdt [--eim ext.eim] [--debug]
+etpl run file.pdt                                  // alias for interpret
+etpl i file.pdt                                    // short alias
+etpl compile file.pdt [output] [--target T] [--arch A] [--eim ext.eim]
+etpl translate src.py --lang python -o out.pdt
+etpl translate src.h  --lang c_header -o out.pdt
+etpl translate src.js --lang javascript -o out.pdt
+etpl repl
+etpl verify                                        // run all 106+ self-tests
+etpl toolchain [--fix]
+etpl help
+```
+
+---
+
+## 8. ET Theory Module Architecture
+
+All ET theory modules follow the **Sempaevum pattern**: each module is a self-contained, complete treatment of exactly one ET concept, with zero redundancy across modules and complete coverage within the module. Cross-references replace repetition.
+
+### 8.1 Module Naming Convention
+
+```
+et_{concept}.py      — Python implementation
+et_{concept}.pdt     — ETPL implementation (mirrors the Python exactly)
+et_{concept}.eim     — Compiled ETPL module (generated, not hand-written)
+```
+
+### 8.2 Module Template Structure
+
+Every ET theory module (both Python and ETPL versions) must contain, in order:
+
+```
+1. Header block        — module identity, author, version, ET source citation
+2. Dependencies        — which other modules this one requires
+3. ET Constants        — the specific ET constants this module uses
+4. Core Definitions    — the primary ET content (equations, classes, functions)
+5. Validation Suite    — ET-invariant checks (Identification Principle satisfied?)
+6. Export Manifest     — exactly what is public
+7. Changelog           — per-module changelog (see §12)
+```
+
+### 8.3 Module Size Limit
+
+No module may exceed approximately **1000 lines** of code (Python or ETPL). This limit is not arbitrary — it is ET-derived: a module that grows excessively large has insufficient D-binding. It has not been adequately constrained into its minimum scope. When a module approaches ~1000 lines, apply the Descriptor Gap Principle: the size itself is a gap signal. The module has not been properly described — it contains more than one ET concept. Split it at the natural conceptual boundary. Update the design document, Master Reference, changelogs, §10 dependency graph, and §13.5 creation order whenever a split occurs.
+
+### 8.4 The New Module Mandate
+
+**When a major new ET concept is encountered that does not fit within any existing module's defined scope, a new module is required. It is never acceptable to incorrectly subsume a major ET concept under a module to which it does not belong.**
+
+This rule exists because incorrect subsumption violates the Subsumption Law: every concept must belong to exactly one module, and that module must be its natural P-substrate. Forcing a concept into the wrong module contaminates both modules — it introduces incoherence (I-state) into the D-structure of the project.
+
+**Indicators that a new module is required:**
+- The concept has its own dedicated ET paper or document section
+- The concept involves new primitives, new operators, or new layer logic not present in any existing module
+- The concept spans a complete sub-domain of ET (e.g., a new physics sector, a new mathematical structure, a new language feature)
+- Adding the concept to an existing module would push that module significantly past ~1000 lines
+- The concept requires its own validation suite, independent of its nearest neighbor module
+
+**The new module procedure (within a session):**
+1. Name the new module following the `et_{concept}.py` / `etpl_{concept}.py` convention
+2. Write its full specification entry in §14 or §15 of this design document
+3. Add it to the dependency graph in §10
+4. Add it to the correct stage in §13.5
+5. Add it to any relevant tier diagrams in §8 or §9
+6. Then implement it — never implement before specifying
+
+**The new module mandate applies equally to the ETPL toolchain tier.** If a new toolchain capability is identified (e.g., a new file format, a new compilation target, a new I/O layer), it receives its own `etpl_{name}` module rather than being absorbed into an existing toolchain module.
+
+---
+
+## 9. ETPL Toolchain Module Architecture
+
+The ETPL toolchain modules follow the **Traverser pattern**: each module is an active agent that transforms input into output, receiving a substrate and applying constraints.
+
+### 9.1 Processing Pipeline
+
+```
+.pdt Source  +  .eim Extensions
+    │                │
+    │         [etpl_eim]          → symbol table (EIM layer)
+    │                │
+    ▼────────────────┘
+[etpl_lexer]          → Token Stream
+    │
+    ▼
+[etpl_parser]         → Abstract Syntax Tree (AST)
+    │
+    ▼
+[etpl_semantic]       → Annotated AST + Symbol Table
+    │
+    ├──────────────────→ [etpl_interpreter]     → (direct execution)
+    │                           │
+    │                    [etpl_sovereign]        → (I/O + hardware calls)
+    │
+    ▼
+[etpl_compiler]       → .etb Bytecode
+    │
+    ├──────────────────→ [etpl_vm]              → (bytecode execution)
+    │                           │
+    │                    [etpl_sovereign]        → (I/O + hardware calls)
+    │
+    ▼
+[etpl_codegen]        → Native Machine Code (.etb NATIVE section)
+    │
+    ├──────────────────→ classical targets (x86-64, ARM64, RISC-V, Bare Metal)
+    │
+    └──────────────────→ [etpl_quantum]         → QASM emission (quantum + hybrid targets)
+    │
+    ▼
+  .etb Binary / Native Binary / QASM Output
+```
+
+**The three file types, all produced by this pipeline:**
+- `.pdt` — source input (entry point)
+- `.eim` — extension input (loaded by `etpl_eim` before lexing)
+- `.etb` — compiled binary output (produced by `etpl_compiler` / `etpl_codegen`)
+
+### 9.2 Bootstrap Strategy
+
+The Python bootstrap (`etpl_bootstrap.py`) is the entry point with **zero Python stdlib imports**. It achieves this by:
+
+1. Using only Python built-ins: `print`, `input`, `open`, `len`, `range`, `int`, `str`, `float`, `bytes`, `bytearray`, `list`, `dict`, `tuple`, `set`, `bool`, `type`, `isinstance`, `hasattr`, `getattr`, `setattr`, `iter`, `next`, `enumerate`, `zip`, `map`, `filter`, `sorted`, `min`, `max`, `sum`, `abs`, `round`, `divmod`, `pow`, `hash`, `id`, `repr`, `chr`, `ord`
+2. All other functionality is implemented by our own modules — no `import os`, `import sys`, `import re`, `import struct`, `import math`, etc.
+3. The only `import` statements in any `.py` file will be `from et_*.py import ...` and `from etpl_*.py import ...`
+
+**This is the zero-import invariant. It must hold at all times.**
+
+### 9.3 The Three Required File Type Modules
+
+These three modules are non-negotiable. They are required because the three file types ARE the PDT=EIM=3 identity:
+
+| Module | File Type | Responsibility |
+|---|---|---|
+| `etpl_eim` | `.eim` | Load, parse, validate, and serve EIM symbol extension files to the rest of the toolchain |
+| `etpl_binary_format` | `.etb` | Define and produce the ETB binary format (magic, header, sections, opcodes) |
+| `etpl_quantum` | quantum target | Emit QASM from the AST/IR for quantum and hybrid compilation targets |
+
+`etpl_sovereign` is similarly non-negotiable — it implements the sovereign I/O layer (`sovereign_print`, `sovereign_import`, `sovereign_sleep`, `hardware_access`) that all `.pdt` programs use.
+
+---
+
+## 10. Module Dependency Graph
+
+```
+                     ┌─────────────────────────────────────┐
+                     │          et_main (master)            │
+                     └──────────────┬──────────────────────┘
+                                    │ imports all ET theory modules
+          ┌─────────────────────────┼─────────────────────────────┐
+          │                         │                             │
+    [Foundation]            [Mathematics]                  [Geometry]
+    et_axiom                et_math                        et_lattice
+    et_point                et_constants                   et_lattice_families
+    et_descriptor           et_variance                    et_complex_lattice
+    et_traverser            et_fine_structure              et_real_axis
+    et_mediation            et_four_constants              et_imaginary_axis
+    et_exception            et_hydrogen                    et_palindromic_cascade
+    et_incoherence          et_rmsae                       et_golden_ratio
+    et_something            et_umrafe                      et_zero_forms
+    et_eim                                                 et_semitone_cascade
+    et_tautology
+    et_four_states
+    et_shimmer
+    et_sempaevum
+    et_identification
+    et_descriptor_gap
+    et_subsumption
+    et_cardinals
+    et_anti_emergence
+    et_m_states
+    et_incoherence_filter
+    et_u1_freedom
+    et_translation_layer
+    et_lagrangian
+    et_weak_sector
+    et_strong_gravity
+    et_prime_theory
+    et_fantastical
+    et_engineering
+    et_cmb
+
+                     ┌─────────────────────────────────────┐
+                     │        etpl_main (master)            │
+                     └──────────────┬──────────────────────┘
+                                    │ imports all toolchain modules
+    etpl_bootstrap (zero-import Python entry)
+         │
+    etpl_tokens → etpl_lexer → etpl_parser → etpl_ast
+                      │                │
+                 etpl_eim         etpl_semantic
+                (eim loader)     /              \
+                        etpl_interpreter    etpl_compiler
+                               │                  │
+                        etpl_sovereign     etpl_binary_format
+                        (I/O + hardware)   etpl_vm
+                                           etpl_codegen
+                                           etpl_quantum
+                                           etpl_math
+                                           etpl_types
+                                           etpl_stdlib
+                                           etpl_module
+                                           etpl_translator
+                                           etpl_repl
+                                           etpl_cli
+```
+
+**Dependency rules:**
+- ET theory modules may import only other ET theory modules, and only `et_constants` at minimum.
+- `et_constants` imports nothing.
+- `et_axiom` imports nothing.
+- `et_point`, `et_descriptor`, `et_traverser` import only `et_axiom` and `et_constants`.
+- All other ET theory modules import what they need from lower-level ET modules.
+- ETPL toolchain modules may import ET theory modules freely.
+- ETPL toolchain modules must never import Python stdlib.
+
+---
+
+## 11. Dual-Script Protocol — Python + ETPL
+
+Every module exists as two scripts that are **functionally identical**:
+
+### 11.1 Python Version (`et_{module}.py`)
+
+Purpose: The working implementation. This runs immediately using only Python built-ins and our own modules. It is verified against the ET theory. It is the reference until the ETPL version is compiled and self-hosting.
+
+### 11.2 ETPL Version (`et_{module}.pdt`)
+
+Purpose: The self-describing implementation. This is the same logic expressed in ETPL syntax. Once the ETPL bootstrap can interpret/compile `.pdt` files, this replaces the Python version in production. The `.pdt` file uses only the ETPL language features — no Python at all.
+
+### 11.3 Synchronisation Rule
+
+**The Python and ETPL versions of a module must be semantically identical at all times.** If the Python version is updated, the ETPL version must be updated in the same session or a preservation note must be created. The reference document tracks which version is canonical for each module.
+
+### 11.4 The Transition
+
+When the ETPL bootstrap is sufficiently complete:
+1. Use `etpl_bootstrap.py` (Python) to interpret `etpl_main.pdt`
+2. Compile `etpl_main.pdt` → `etpl.etb`
+3. Use `etpl.etb` to compile all `.pdt` ET modules → `.eim` files
+4. Run `etpl.etb` using only `.eim` files — zero Python
+5. **Self-hosting achieved.**
+
+After self-hosting:
+- All `.py` files are archived as historical reference
+- All `.pdt` + `.eim` files are the live system
+- `etpl.etb` compiles itself from `etpl_main.pdt`
+
+---
+
+## 12. Documentation Architecture
+
+Two companion documents are maintained alongside this design document and alongside all module scripts. Their rules are strict and must be followed without exception.
+
+### 12.1 The Master Reference Document
+**File:** `ETPL_Master_Reference.md`
+
+**What it is:** A single flat document that records only what has actually been implemented. Nothing more. It starts empty (or does not exist yet) and grows as modules are built. Its contents are the ground truth of the project's current state.
+
+**The Absence Rule:** If something is not listed in the Master Reference, it has not been implemented. There is no "planned" or "not started" state in this document — those states are represented purely by absence. This makes the document both minimal and unambiguous: look for it; if it isn't there, it hasn't been done.
+
+**Format:** One section per module, appearing only when that module has at least one implemented item. Each item entry must have a title and a concise, succinct definition/context — enough to understand what it is at a glance without re-reading the source. Items within a module are listed in the order they were implemented.
+
+```markdown
+# ETPL Master Reference
+*Records only implemented items. Absence = not implemented.*
+
+---
+
+## et_axiom — v1.0.0
+**Source:** ExceptionTheory.md §Rules of ET Law
+
+| Title | Symbol | Definition/Context |
+|---|---|---|
+| Founding Axiom | `FOUNDING_AXIOM` | The self-grounding axiom string: "For every exception there is an exception, except the exception." |
+| Axiom of Categorical Distinction | `categorical_disjointness()` | Verifies P∩D=∅, D∩T=∅, T∩P=∅ — the three primitives are ontologically disjoint. Eq 1.1. |
+| Rule Retrieval | `get_rule(n)` | Returns the text of ET Law rule n (1–21) from the canonical rule set. |
+| Self-Grounding Proof | `is_self_grounding()` | Confirms the axiom applies to itself; returns True always by ET logic. |
+| Exception Count | `axiom_exception_count()` | How many 'exceptions' does "except the exception" refer to? Returns 1. |
+
+---
+
+## et_constants — v1.0.0
+**Source:** ExceptionTheory.md §Constants, ET_Math_Compendium.md
+
+| Title | Symbol | Definition/Context |
+|---|---|---|
+| Manifold Symmetry | `MANIFOLD_SYMMETRY` | Integer 12. Derived: 3 primitives × 4 manifold states = 12. Origin of 12 throughout ET. |
+| Base Variance | `BASE_VARIANCE` | Rational 1/12. The variance of one semitone step; the fundamental descriptor unit. |
+...
+```
+
+**When it is created:** If `ETPL_Master_Reference.md` is not provided at the start of a session, create it as an empty document (header only, no module sections). Do not pre-populate it with unimplemented items.
+
+**When it is updated:** At the end of every session in which any module was created or modified, add or update the relevant section(s).
+
+---
+
+### 12.2 Per-Module Changelogs
+**Location:** Embedded as a section within `ETPL_Master_Reference.md` beneath a `## Changelogs` heading, one subsection per module. This keeps everything in one place.
+
+**Format:**
+
+```markdown
+## Changelogs
+
+### et_axiom
+#### v1.0.0 — YYYY-MM-DD
+**Added**
+- `et_axiom.py` — initial Python implementation
+- `et_axiom.pdt` — initial ETPL implementation
+- `FOUNDING_AXIOM` — founding axiom string constant
+- `categorical_disjointness()` — Eq 1.1, categorical disjointness proof
+- `get_rule(n)` — rule retrieval by index (1–21)
+- `is_self_grounding()` — self-grounding validation
+- `axiom_exception_count()` — returns 1; resolves "except the exception"
+
+#### v1.1.0 — YYYY-MM-DD
+**Changed**
+- `get_rule(n)` — extended to support fractional rule numbers (e.g. 15.1)
+**Fixed**
+- Off-by-one in rule index when n=21
+```
+
+**Continuation Note:** If a session ends before a module is complete, append to that module's latest changelog entry:
+
+```
+[CONTINUATION: Stopped after implementing X. Next: implement Y and Z.]
+```
+
+The next session reads this note and resumes exactly there.
+
+---
+
+### 12.3 This Design Document
+**File:** `ETPL_Ground_Zero_Design.md`
+
+This is the living architectural reference. Sections 14 and 15 (Module Specifications) are the canonical specification for what each module must contain. When a new module is identified and added during a session, a full specification entry is added to §14 or §15 before implementation begins. The module list in §10 (Dependency Graph) and §13.5 (Module Creation Order) are also updated. See §8.4 (The New Module Mandate) for the full procedure and criteria for when a new module is required.
+
+**Module size limit:** No module may exceed approximately 1000 lines of code (Python or ETPL). If a module approaches this limit, apply the Descriptor Gap Principle: excessive size signals insufficient D-binding — the module has not been adequately constrained into its minimum scope. Split it at the natural conceptual boundary. Update all three documents when a split occurs.
+
+---
+
+## 13. Future Conversation Protocol
+
+This section governs exactly how every future working session operates. It must be followed in order without skipping steps.
+
+### 13.1 What Is Provided Per Session
+
+At the start of each session, the following documents are provided:
+
+1. **`ETPL_Ground_Zero_Design.md`** — this document; the complete architecture.
+2. **`ETPL_Master_Reference.md`** — what has actually been implemented (and the changelogs). If absent, create it empty.
+3. **One individual paper or source document to process** — the ET content to be incorporated this session.
+
+Additionally, the **project directory/folder** is available and must be consulted for relevant supplementary material during the session.
+
+When specific module files are being updated, those `.py` and `.pdt` files are also provided.
+
+### 13.2 Session Workflow
+
+Follow these steps in order, without truncation at any step:
+
+```
+Step 1: Read this design document fully (ETPL_Ground_Zero_Design.md).
+        Note the module list in §10, the specs in §14–15, and the rules.
+
+Step 2: Read ETPL_Master_Reference.md fully.
+        Determine current state: what exists (listed), what does not (absent).
+
+Step 3: Read the provided individual paper or source document fully,
+        without truncation. Do not skim. Every section matters.
+
+Step 4: Search the project directory for any supplementary files
+        relevant to the paper's content (related .md, .txt, .py files).
+        Read those relevant files as needed.
+
+Step 5: Apply the Identification Principle to the paper's content:
+        decompose every major concept into its P_x, D_x, T_x triple.
+
+Step 6: Apply the Descriptor Gap Principle:
+        what items from the paper are absent from the Master Reference?
+        Every absent item is a gap = a descriptor = something to implement.
+
+Step 7: Apply the Subsumption Law:
+        confirm that every identified concept belongs to exactly one module.
+        If a concept does not fit any existing module, THE NEW MODULE MANDATE
+        (§8.4) APPLIES — a new dedicated module is required. It is never
+        acceptable to force a major ET concept into a module it does not belong
+        to. Every major concept has exactly one correct home; find it or create it.
+
+Step 8: Create a planning artifact (Markdown) listing:
+        (a) Concepts from this paper and which module each belongs to.
+        (b) New modules required (if any), with their full §14/§15 spec entries.
+        (c) Existing modules that need updating.
+        This artifact is presented to the user for confirmation before any
+        code is written.
+
+Step 9: If new modules are identified:
+        (a) Add their full specification to §14 or §15 of this design document.
+        (b) Add them to the dependency graph in §10.
+        (c) Add them to the correct stage in §13.5.
+        Deliver the updated design document.
+
+Step 10: Implement the modules (Python .py + ETPL .pdt, both in the same session).
+         Follow dependency order: never implement a module before its dependencies.
+         Modules are complete — no placeholders, no stubs, no "TODO" comments.
+
+Step 11: Update ETPL_Master_Reference.md:
+         Add an entry for every new item implemented.
+         Update existing entries where items were changed.
+         Append changelog entries under ## Changelogs.
+
+Step 12: Report clearly:
+         "Modules created: [list]"
+         "Modules updated: [list]"
+         "New design doc entries: [list, if any]"
+         "Master Reference updated: [yes/no]"
+         "Continuation note: [if session ended before completion]"
+```
+
+### 13.3 The Zero-Import Invariant Check
+
+Before any session ends, scan every `.py` file touched during the session. Verify that no top-level `import` statement references a Python standard library module (os, sys, re, struct, math, io, collections, itertools, functools, etc.). The only permitted imports in any `.py` file are:
+
+- `from et_*.py import ...` — our own ET theory modules
+- `from etpl_*.py import ...` — our own ETPL toolchain modules
+
+If any stdlib import is found, it is a Descriptor Gap. Identify the ET-derived or pure built-in replacement before closing the session.
+
+The sole permitted exception: `etpl_bootstrap.py` may access `sys.argv` via `__builtins__` to retrieve command-line arguments. This is not a top-level `import sys`.
+
+### 13.4 Interruption and Continuity Handling
+
+Sessions may be interrupted or compacted. The state of the project is always recoverable from the three documents alone:
+
+- **This design document** defines everything that must be built.
+- **The Master Reference** shows exactly what has been built (by presence) and what has not (by absence).
+- **The changelog continuation notes** show exactly where any incomplete work stopped.
+
+On resuming after an interruption:
+1. Read all three documents.
+2. Check for `[CONTINUATION:]` notes in the changelogs.
+3. Resume from the exact point marked, implementing the stated next steps.
+4. Never discard or redo completed work — only continue forward.
+
+Working directory state (empty or not) is always checked at session start. If the working directory is empty, all context comes from the provided documents — the documents are sufficient.
+
+### 13.5 Module Creation Order
+
+Modules are implemented in dependency order. Never implement a module before its dependencies exist.
+
+**Stage 0 — Foundations (no dependencies):**
+`et_axiom`, `et_constants` → `et_point`, `et_descriptor`, `et_traverser`
+
+**Stage 1 — Core ET:**
+`et_mediation`, `et_exception`, `et_incoherence`, `et_something`, `et_eim`, `et_tautology`, `et_four_states`, `et_shimmer`, `et_sempaevum`, `et_variance`
+
+**Stage 2 — Tools and Principles:**
+`et_identification`, `et_descriptor_gap`, `et_subsumption`, `et_cardinals`, `et_anti_emergence`
+
+**Stage 3 — Mathematics:**
+`et_math`, `et_lattice`, `et_lattice_families`, `et_palindromic_cascade`, `et_golden_ratio`, `et_zero_forms`, `et_real_axis`, `et_imaginary_axis`, `et_complex_lattice`, `et_semitone_cascade`
+
+**Stage 4 — Advanced Theory:**
+`et_fine_structure`, `et_four_constants`, `et_rmsae`, `et_umrafe`, `et_m_states`, `et_incoherence_filter`, `et_hydrogen`, `et_u1_freedom`, `et_translation_layer`, `et_lagrangian`
+
+**Stage 5 — Domain Extensions:**
+`et_weak_sector`, `et_strong_gravity`, `et_prime_theory`, `et_fantastical`, `et_cmb`, `et_engineering`
+
+**Stage 6 — ETPL Toolchain:**
+`etpl_tokens`, `etpl_ast` → `etpl_eim` → `etpl_lexer` → `etpl_parser` → `etpl_semantic` → `etpl_types` → `etpl_math` → `etpl_sovereign` → `etpl_interpreter` → `etpl_binary_format` → `etpl_compiler` → `etpl_vm` → `etpl_codegen` → `etpl_quantum` → `etpl_stdlib` → `etpl_module` → `etpl_translator` → `etpl_repl` → `etpl_cli` → `etpl_bootstrap` → `etpl_main`
+
+**Stage 7 — Master Modules:**
+`et_main`, `etpl_main`
+
+---
+
+## 14. Module Specifications — ET Theory
+
+Each module specification follows the Identification Principle: P (what does it contain), D (what constrains it), T (how does it act / what does it expose).
+
+---
+
+### MODULE: et_axiom
+
+**P_module:** The founding axiom and 21 rules of ET Law — the substrate from which all of ET derives.
+**D_module:** No dependencies. This is the base.
+**T_module:** Provides validators, the axiom statement, rule lookup, and self-grounding proof.
+
+**Contents (Python: `et_axiom.py`, ETPL: `et_axiom.pdt`):**
+- `FOUNDING_AXIOM: text` — the axiom string
+- `ET_RULES: manifold` — all 21 rules indexed 1–21
+- `class Axiom` — axiom object with proof methods
+- `is_self_grounding() → bool` — verifies the axiom applies to itself
+- `get_rule(n: integer) → text` — retrieve rule n
+- `axiom_exception_count() → integer` — how many exceptions in "except the exception" (returns 1)
+- `categorical_disjointness() → bool` — asserts P ∩ D = ∅ etc.
+- **ET Equation:** Eq 1.1 (Axiom of Categorical Distinction)
+
+---
+
+### MODULE: et_constants
+
+**P_module:** All ET universal constants — the numeric substrate for all other modules.
+**D_module:** No dependencies. Defines everything.
+**T_module:** Provides constant access; all values are read-only.
+
+**Contents:**
+- `MANIFOLD_SYMMETRY: integer = 12` — from 3 primitives × 4 states
+- `BASE_VARIANCE: rational = 1/12` — variance of a single descriptor step
+- `KOIDE_RATIO: rational = 2/3` — PD:T mass ratio
+- `KOIDE_CONSTANT: rational = 2/3` — synonym for KOIDE_RATIO
+- `GAZE_THRESHOLD: real = 1.20` — RMSAE threshold
+- `SUBLIMINAL_THRESHOLD: real = 1.0833...` — 13/12
+- `MANIFOLD_IMPEDANCE: integer = 137` — fine structure constant integer part
+- `HARMONIC_STRUCTURE: manifold = {12, 24, 48, 144}` — lattice harmonics
+- `P_CARDINALITY: symbol = Ω` — Absolute Infinity
+- `D_CARDINALITY: symbol = n` — Absolute Finite
+- `T_CARDINALITY: symbol = [0/0]` — Absolute Indeterminate
+- `DEPTH_CAP: integer = 144` — MANIFOLD_SYMMETRY² (maximum import depth)
+- `GOLDEN_RATIO_NEARNESS: real` — |5/4 - φ²| computed via ET math (no external lib)
+- `FINE_STRUCTURE_INVERSE: real ≈ 137.035999177` — ET-derived α⁻¹
+- `PROTON_ELECTRON_RATIO: real ≈ 1836.15267343` — ET-derived μ
+
+---
+
+### MODULE: et_point
+
+**P_module:** The Point primitive — infinite substrate, cardinality Ω.
+**D_module:** Requires `et_axiom`, `et_constants`.
+**T_module:** Creates, compares, and manipulates Point configurations.
+
+**Contents:**
+- `class Point` — the P primitive
+  - `bind(descriptor) → BoundPoint` — P∘D binding (creates {P,D} state)
+  - `cardinality() → symbol` — returns Ω
+  - `is_raw() → bool` — true if no descriptors bound
+  - `sub_points() → manifold(Point)` — nested sub-points (P within P)
+  - `substrate_potential() → bool` — verifies ∀p∈P, ∃d∈D | p∘d (Eq 162)
+- `class AbsoluteInfinity` — P at its ultimate limit
+- `class UnboundPoint` — theoretical only; unbound P collapses to Ω
+- `P_SUBSTRATE: symbol` — the notation for the substrate role
+- `identify_p(phenomenon) → Point` — P-first sequencing (extracts P_X)
+- **ET Equations:** Eq 162 (Unbound Point Infinity), Substrate Potential Principle
+
+---
+
+### MODULE: et_descriptor
+
+**P_module:** The Descriptor primitive — finite constraint, cardinality n.
+**D_module:** Requires `et_axiom`, `et_constants`.
+**T_module:** Creates, validates, and discovers Descriptors; implements the Gap Principle computationally.
+
+**Contents:**
+- `class Descriptor` — the D primitive
+  - `bind_to(point) → BoundPoint` — D binding to P
+  - `cardinality() → integer` — returns n (finite)
+  - `is_bound() → bool` — free D would be infinite; must always be bound
+  - `describes(phenomenon) → bool`
+- `class DescriptorSet` — ordered finite set of descriptors for one Point
+  - `gap_count() → integer` — how many D are missing (0 = complete)
+  - `add_descriptor(d) → DescriptorSet` — fill a gap
+- `class AbsoluteFinite` — D at its ultimate limit
+- `DESCRIPTOR_EXAMPLES: manifold` — canonical list of physical descriptors
+- `discover_descriptor(gap) → Descriptor` — implements Gap Principle: if there's a gap, it's a D
+- **ET Equations:** Descriptor Gap Principle, Binding Necessity
+
+---
+
+### MODULE: et_traverser
+
+**P_module:** The Traverser primitive — indeterminate agency, cardinality [0/0].
+**D_module:** Requires `et_axiom`, `et_constants`.
+**T_module:** Creates Traversers, models traversal paths, implements indeterminate choice.
+
+**Contents:**
+- `class Traverser` — the T primitive
+  - `bind_to_descriptor(d) → BoundTraverser` — T binds to D (not P directly)
+  - `traverse(bound_pair) → Exception_state` — T navigates (P∘D)
+  - `cardinality() → symbol` — returns [0/0]
+  - `is_indeterminate() → bool` — always True
+  - `cannot_bind_raw_p() → bool` — always True (T binds D, not P)
+- `class BoundTraverser` — T bound to a specific (P∘D)
+- `class AbsoluteIndeterminate` — T at its ultimate limit
+- `class TraversalPath` — the route T takes through the manifold
+  - `history: manifold(PDT)` — sequence of (P∘D∘T) Exceptions visited
+  - `extend(new_exception) → TraversalPath`
+- `TRAVERSER_EXAMPLES: manifold` — {consciousness, entanglement, gravity}
+- **ET Equations:** Traverser Necessity Theorem, Indeterminacy Axiom
+
+---
+
+### MODULE: et_mediation
+
+**P_module:** The ∘ operator — binding and interaction between primitives.
+**D_module:** Requires `et_point`, `et_descriptor`, `et_traverser`.
+**T_module:** Implements all valid binding operations; enforces binding order.
+
+**Contents:**
+- `BINDING_SYMBOL: text = "∘"`
+- `bind(a, b) → Binding` — generic ∘ operator
+- `bind_pd(p, d) → BoundPD` — P∘D (Unsubstantiated)
+- `bind_dt(d, t) → Mediation` — D∘T (Mediation state {D,T})
+- `bind_pdt(p, d, t) → Exception` — full P∘D∘T = Exception
+- `is_valid_order(a, b) → bool` — enforces: D cannot precede P; T binds D not P
+- `mediation_constancy() → bool` — verifies mediation is always equal
+- `BINDING_ORDER: manifold` — canonical order: P first, then D, then T
+- `PROHIBITED: manifold` — {D∘P} — Descriptor cannot precede Point
+- `class BoundPD` — the {P,D} Unsubstantiated state
+- `class Mediation` — the {D,T} Mediation state
+- `class Exception_state` — the {P,D,T} substantiated Exception
+- **ET Equations:** Binding Order Rule, Mediation Constancy
+
+---
+
+### MODULE: et_exception
+
+**P_module:** The Exception (E) — the grounded, irreversible substantiated Moment.
+**D_module:** Requires `et_mediation`, `et_four_states`.
+**T_module:** Creates and validates Exception states; implements grounding logic.
+
+**Contents:**
+- `class Exception_E` — the substantiated Moment
+  - `is_grounded() → bool` — cannot be otherwise while it IS
+  - `shared_reality() → bool` — many T, one E (the max-described P with T)
+  - `traverse_from() → manifold` — what new Exceptions are reachable
+  - `is_traversable() → bool` — always False (the moment is complete)
+- `EXCEPTION_COUNT: integer = 1` — there is exactly ONE Exception
+- `is_exception(config) → bool` — validate: has P, D, and T
+- `ground(config) → Exception_E` — force configuration into Exception state
+- `prosperity() → manifold` — from the grounded Moment, all traversable Something
+- **ET Equations:** Exception Definition, Grounding Function
+
+---
+
+### MODULE: et_incoherence
+
+**P_module:** Incoherence (I) — the forbidden zone, {P,T} without D.
+**D_module:** Requires `et_mediation`, `et_four_states`.
+**T_module:** Identifies and validates Incoherent configurations; implements the boundary.
+
+**Contents:**
+- `class Incoherence_I` — the forbidden {P,T} configuration
+  - `is_traversable_to() → bool` — always False
+  - `has_traverser() → bool` — always False (T cannot bind Incoherence)
+  - `is_open_set() → bool` — always True (Incoherence is topologically open)
+  - `boundary() → set` — ∂I is entirely on the coherent side; ∂I ∩ I = ∅
+- `class IncoherenceSet` — the full set I of forbidden configurations
+- `is_incoherent(config) → bool` — check if config is {P,T} or self-defeating
+- `CANONICAL_INCOHERENCE: manifold` — examples of incoherent configurations
+- `incoherence_filter(manifold) → manifold` — remove all incoherent configs
+- `noticeability_check() → text` — "noticeable for their unnoticeability"
+- **ET Equations:** Incoherence Set Definition, Open Set Topology, Coherence-Incoherence Boundary
+
+---
+
+### MODULE: et_something
+
+**P_module:** Something (Σ) — everything and anything; the total manifold.
+**D_module:** Requires `et_exception`, `et_incoherence`, `et_mediation`.
+**T_module:** Provides the Something type, pure relativism, and impossibility of True Nothing.
+
+**Contents:**
+- `class Something_S` — the universal substrate containing all
+  - `contains(x) → bool` — always True (everything is Something)
+  - `outside_is_still_something() → bool` — always True
+  - `true_nothing_possible() → bool` — always False
+- `SOMETHING: Something_S` — the singleton universal instance
+- `pure_relativism() → bool` — all reality is relational; no absolutes outside Σ
+- `naming_prevents_nothing(name) → bool` — naming creates Something (always True)
+- `master_identity() → text` — "P∘D∘T = EIM = S"
+- **ET Equations:** Something Definition, Impossibility of Nothing
+
+---
+
+### MODULE: et_eim
+
+**P_module:** The EIM = PDT = 3=3 identity — the mathematical Rosetta Stone.
+**D_module:** Requires `et_exception`, `et_incoherence`, `et_something`, `et_mediation`.
+**T_module:** Provides mappings between PDT and EIM; validates the identity.
+
+**Contents:**
+- `PDT_TO_EIM: manifold` — {P→E, D→I, T→M} the canonical mapping
+- `EIM_TO_PDT: manifold` — inverse mapping
+- `verify_identity() → bool` — confirms PDT = EIM as bi-directional maps
+- `translate_pdt(config) → eim_config` — convert PDT-framed config to EIM
+- `translate_eim(config) → pdt_config` — convert EIM-framed config to PDT
+- `rosetta_stone: manifold` — full comparison chart from Origins_and_Clarifications §IV
+- `THREE_EQUALS_THREE: bool = True` — the identity assertion
+- **ET Source:** ExceptionTheory.md §Part IX, Origins_and_Clarifications §IV
+
+---
+
+### MODULE: et_tautology
+
+**P_module:** The 3=3=3=S triple tautology — the full PDT=EIM=Φ=S identity.
+**D_module:** Requires `et_eim`, `et_something`.
+**T_module:** Provides the third triad (Σ/Φ), validates all three equalities, generates the tautological form.
+
+**Contents:**
+- `PDT_TRIAD: manifold` — {Point, Descriptor, Traverser}
+- `EIM_TRIAD: manifold` — {Exception, Incoherence, Mediation}
+- `SIGMA_TRIAD: manifold` — {Σ/Something, ∅/Incoherence, φ/Mediation}
+- `verify_triple_tautology() → bool` — PDT=EIM=Σ all hold simultaneously
+- `TAUTOLOGICAL_FORM: text = "3 = 3 = 3 = Σ"`
+- `mutual_entailment() → bool` — each triad entails the others
+- **ET Source:** Origins_and_Clarifications §IV, ExceptionTheory.md §Part IX
+
+---
+
+### MODULE: et_four_states
+
+**P_module:** The four manifold states derived from the power set of {P,D,T}.
+**D_module:** Requires `et_mediation`, `et_constants`.
+**T_module:** Classifies any configuration into one of the four states.
+
+**Contents:**
+- `STATES: manifold` — {Unsubstantiated, Incoherence, Mediation, Exception}
+- `class ManifoldState` — base state type
+- `class Unsubstantiated_PD` — {P,D}: structured potential, no agency
+- `class Incoherence_PT` — {P,T}: forbidden, T cannot bind without D
+- `class Mediation_DT` — {D,T}: active mediation, constraint+agency
+- `class Exception_PDT` — {P,D,T}: the full grounded Moment
+- `classify(config) → ManifoldState` — determine which of 4 states
+- `MANIFOLD_SYMMETRY_ORIGIN() → integer` — returns 12, proves: 3 primitives × 4 states = 12
+- `state_count() → integer` — returns 4 (forced by power set combinatorics)
+- **ET Source:** Origins_and_Clarifications §III; ExceptionTheory.md §Part IX
+
+---
+
+### MODULE: et_shimmer
+
+**P_module:** The shimmer — T's indeterminate navigation creating Ordered Chaos.
+**D_module:** Requires `et_traverser`, `et_four_states`, `et_constants`.
+**T_module:** Models the shimmer; provides the shimmering manifold description.
+
+**Contents:**
+- `class Shimmer` — the constant flux of substantiation
+  - `is_ordered() → bool` — True (constraints make it ordered, not random)
+  - `is_chaotic() → bool` — True (T's indeterminacy makes it non-deterministic)
+  - `rate() → rational` — shimmer rate = BASE_VARIANCE = 1/12
+- `SHIMMER_DEFINITION: text` — "Reality is Ordered Chaos — T's indeterminate navigation through (P∘D)"
+- `shimmer_sources: manifold` — what causes the shimmer: {T-indeterminacy, manifold-structure, exception-uniqueness}
+- `ordered_chaos() → Shimmer` — construct the shimmer model
+- `shimmering_manifold() → manifold` — the total (P∘D)_Ω with T-shimmer
+- **ET Source:** ExceptionTheory.md §1768, §1807; ET_Freedom_and_U1.md
+
+---
+
+### MODULE: et_sempaevum
+
+**P_module:** The Sempaevum — the manifold that IS, the total (P∘D)_Ω.
+**D_module:** Requires `et_something`, `et_shimmer`, `et_constants`.
+**T_module:** Instantiates the Sempaevum manifold; provides the manifold metric.
+
+**Contents:**
+- `class Sempaevum` — the manifold of all possible configurations
+  - `is_complete() → bool` — True (contains all (P∘D∘T) configurations)
+  - `symmetry() → integer` — returns MANIFOLD_SYMMETRY = 12
+  - `T_navigation(t) → manifold` — what T can reach from any point
+- `SEMPAEVUM: Sempaevum` — the singleton manifold instance
+- `manifold_metric: manifold` — the ET metric on the Sempaevum
+- `anti_emergence() → bool` — structure is intrinsic, not emergent
+- **ET Source:** Exception_Theory_Introductory_Paper §XV, ExceptionTheory.md §1807
+
+---
+
+### MODULE: et_variance
+
+**P_module:** Variance, BASE_VARIANCE, and the Koide constant as mathematical descriptors.
+**D_module:** Requires `et_constants`, `et_descriptor`.
+**T_module:** Computes variance-based quantities; derives Koide from PD:T ratio.
+
+**Contents:**
+- `BASE_VARIANCE: rational = 1/12` — fundamental variance unit (one semitone step)
+- `KOIDE_RATIO: rational = 2/3` — derived: PD=2/3, T=1/3 (Koide theorem)
+- `variance(n_descriptors) → rational` — V(n) = n/12
+- `koide_weight(mass) → real` — mass × 2/3
+- `koide_theorem() → text` — the PD:T = 2:1 binding theorem
+- `base_variance_cascade(n) → manifold` — the semitone cascade values
+- `variance_sum_rule() → bool` — sum of all variances = 1 (completeness)
+- **ET Source:** ET_Lattice_Compendium.md §1.4-1.5, Newest_Updates_1-25-2026.txt
+
+---
+
+### MODULE: et_identification
+
+**P_module:** The Identification Principle (Eq. 5.10) — the completeness criterion.
+**D_module:** Requires `et_point`, `et_descriptor`, `et_traverser`.
+**T_module:** Applies the IP to any phenomenon; runs completeness checks.
+
+**Contents:**
+- `identify(phenomenon) → PDT_triple` — decompose X into (P_X, D_X, T_X)
+- `is_understood(phenomenon) → bool` — all three identified?
+- `p_first_sequence(phenomenon) → PDT_triple` — apply P-first rule
+- `identification_principle: text` — the formal equation
+- `diagnostic(incomplete_triple) → text` — "which primitive is missing?"
+- `temporal_triple: PDT_triple` — the P_time, D_time, T_time example
+- `UNDERSTAND_EQ: text = "Understand(X) ⟺ Identified(P_X) ∧ Identified(D_X) ∧ Identified(T_X)"`
+- **ET Source:** Origins_and_Clarifications §I, §II
+
+---
+
+### MODULE: et_descriptor_gap
+
+**P_module:** The Descriptor Gap Principle — "any gap is a descriptor."
+**D_module:** Requires `et_descriptor`, `et_identification`.
+**T_module:** Scans any model for gaps; identifies and names missing descriptors.
+
+**Contents:**
+- `find_gaps(model) → manifold(Descriptor)` — return all missing D
+- `gap_is_descriptor(gap) → Descriptor` — formalise the gap as a named D
+- `close_gap(model, descriptor) → model` — add D to fill gap
+- `is_complete(model) → bool` — no gaps remain
+- `REAL_FEEL_EXAMPLE: model` — the canonical dewpoint+solar example
+- `descriptor_discovery(observation) → Descriptor` — from observation, find the D
+- `GAP_PRINCIPLE: text = "Any gap is a Descriptor."`
+- **ET Source:** ExceptionTheory.md §2 (Descriptor Gap Principle)
+
+---
+
+### MODULE: et_subsumption
+
+**P_module:** The Subsumption Law — the primary completeness criterion.
+**D_module:** Requires `et_point`, `et_descriptor`, `et_traverser`, `et_identification`.
+**T_module:** Runs the three-condition subsumption test on any proposed primitive set.
+
+**Contents:**
+- `subsumption_test(primitive) → SubsumptionResult` — three-condition check
+- `class SubsumptionResult` — {subsumes: bool, irreducible: bool, exhaustive: bool}
+- `verify_pdt_complete() → bool` — runs test on all three ET primitives
+- `fourth_primitive_possible() → bool` — always False (by the Law)
+- `SUBSUMPTION_LAW: text` — the formal statement
+- `find_missing(system) → manifold(symbol)` — what is not yet subsumed
+- **ET Source:** Origins_and_Clarifications §VII
+
+---
+
+### MODULE: et_math
+
+**P_module:** All ET-derived mathematics — pure computation, zero external imports.
+**D_module:** Requires `et_constants`, `et_variance`.
+**T_module:** Implements arithmetic, algebra, rational arithmetic, and ET-specific operations.
+
+**Contents (key functions, not exhaustive):**
+- Integer arithmetic: `add, sub, mul, div, mod, pow, gcd, lcm, abs_val, sign`
+- Rational arithmetic: `rat_add, rat_sub, rat_mul, rat_div, rat_simplify, rat_cmp`
+- Real arithmetic (arbitrary precision): `real_add, real_mul, real_div, real_sqrt, real_log2`
+- ET operations: `et_log2(x) → real`, `et_semitone(n) → rational`, `et_koide(x) → real`
+- Constants: `et_pi() → real`, `et_e() → real`, `et_phi() → real` (all derived via ET, no imports)
+- Lattice math: `semitone_step(n) → rational`, `lattice_position(ratio) → real`
+- MANIFOLD: `manifold_sym() → 12`, `base_var() → 1/12`
+- All implemented using only Python built-ins for arithmetic, no `import math`
+- **Note:** `et_pi`, `et_e`, `et_phi` are computed via Leibniz/Machin series, Bernoulli expansion, and continued fraction respectively — pure integer/rational arithmetic, no external deps.
+
+---
+
+### MODULE: et_lattice
+
+**P_module:** The ET semitone lattice — (ℝ⁺, ×) manifold discretised at 1/12.
+**D_module:** Requires `et_math`, `et_variance`, `et_constants`.
+**T_module:** Computes lattice positions, generates lattice tables, validates ratios.
+
+**Contents:**
+- `class Lattice` — the multiplicative ET manifold
+  - `position(ratio) → real` — log₂(ratio) × 12 (semitone coordinate)
+  - `ratio_at(n) → rational` — ratio for lattice position n
+  - `is_on_lattice(ratio, d) → bool` — is ratio in sublattice d?
+- `SEMITONE_UNIT: rational = 1/12` — the fundamental lattice step
+- `lattice_table(ratios) → manifold` — full bijection table
+- `elegance_score(ratio) → real` — structural necessity of a ratio
+- `circle_of_fifths() → manifold` — the toroidal knot structure
+- `tritone_pivot: rational = 6/12` — the universal palindromic pivot
+- **ET Source:** ET_Lattice_Compendium.md §2-4
+
+---
+
+### MODULE: et_lattice_families
+
+**P_module:** All six sublattice families classified by reduced denominator.
+**D_module:** Requires `et_lattice`, `et_math`.
+**T_module:** Generates, classifies, and traverses all sublattice families.
+
+**Contents:**
+- `FAMILY_d1: manifold` — unison, octave family
+- `FAMILY_d2: manifold` — tritone family
+- `FAMILY_d3: manifold` — major/minor third family
+- `FAMILY_d4: manifold` — minor second / major seventh
+- `FAMILY_d6: manifold` — whole step family
+- `FAMILY_d12: manifold` — semitone family (full resolution ℤ/12ℤ)
+- `classify_ratio(ratio) → integer` — return d (reduced denominator)
+- `sublattice(d) → manifold` — get all ratios in sublattice d
+- `unit_group() → manifold` — (ℤ/12ℤ)× ≅ V₄ = {1, 5, 7, 11}
+- `cubic_family: manifold` — {5/8, 2/3} and their algebraic closure
+- `REDUCED_DENOMINATOR_THEOREM: text` — formal statement
+- **ET Source:** ET_Lattice_Compendium.md §5, ET_Semitone_Cascade_Complete.md §5
+
+---
+
+### MODULE: et_complex_lattice
+
+**P_module:** The complex lattice ℒ_ℂ — extending (ℝ⁺,×) to (ℂ,×).
+**D_module:** Requires `et_lattice`, `et_imaginary_axis`, `et_real_axis`.
+**T_module:** Provides complex lattice coordinates, Gaussian integer classification.
+
+**Contents:**
+- `class ComplexLattice` — the 2D ET lattice in ℂ
+  - `position_complex(z) → complex_coordinate`
+  - `real_part(z) → real` — P-domain
+  - `imag_part(z) → real` — T-domain
+- `gaussian_integer(z) → bool` — is z a Gaussian integer in lattice coords?
+- `gaussian_prime(z) → bool` — Gaussian prime classification
+- `euler_identity_et() → text` — e^(iπ) + 1 = 0 decoded in ET
+- `unit_circle_traversal() → manifold` — the force hierarchy in one rotation
+- `instanton(winding_n) → complex` — QCD instantons as imaginary lattice steps
+- `su2_from_et() → manifold` — SU(2) spin from complex lattice
+- `BRANCH_CUT: rational = 2/12` — branch cut of complex log at d=2
+- **ET Source:** ET_Complex_Lattice.md
+
+---
+
+### MODULE: et_real_axis
+
+**P_module:** The real axis of the ET lattice — the P-domain.
+**D_module:** Requires `et_lattice`, `et_point`.
+**T_module:** Provides real-axis operations; maps P-type quantities to lattice positions.
+
+**Contents:**
+- `REAL_AXIS_GENERATOR: rational` — log₂(ratio) for the fundamental generator
+- `real_lattice_position(ratio) → real` — position on real axis
+- `unit_group_real() → manifold` — Klein-Four group V₄ on real axis
+- `negative_reals_lattice() → rational` — negative reals live at tritone (d=6)
+- `p_domain_quantities: manifold` — physical quantities that are P-type (substrate)
+- **ET Source:** ET_Complex_Lattice.md §5, §9, §16
+
+---
+
+### MODULE: et_imaginary_axis
+
+**P_module:** The imaginary axis of the ET lattice — T's operational dimension.
+**D_module:** Requires `et_lattice`, `et_traverser`.
+**T_module:** Provides imaginary-axis operations; models T's position in ℂ.
+
+**Contents:**
+- `T_POSITION: complex` — T lives on the imaginary axis (perpendicular to P-lattice)
+- `imag_axis_generator() → complex` — the imaginary generator i
+- `unit_group_imag() → manifold` — Cyclic-4 on imaginary axis (contrast: Klein-Four on real)
+- `t_cannot_be_palindromically_cascaded() → bool` — always True (the Imaginary Descriptor Gap)
+- `strong_cp_phase(theta_bar) → complex` — e^(iθ̄Q) on imaginary lattice
+- `spin_half_et() → text` — spin-1/2 from imaginary lattice half-rotation
+- `parity_violation_et() → text` — weak force as D/T boundary
+- **ET Source:** ET_Complex_Lattice.md §4, §8, §15, §17
+
+---
+
+### MODULE: et_palindromic_cascade
+
+**P_module:** The palindromic cascade on the semitone lattice.
+**D_module:** Requires `et_lattice`, `et_math`, `et_variance`.
+**T_module:** Generates, verifies, and analyses palindromic cascades.
+
+**Contents:**
+- `generate_cascade(generator) → manifold` — full cascade for a generator
+- `is_palindrome(cascade) → bool` — verify palindromic symmetry
+- `FOUR_CASCADE_FAMILIES: manifold` — the four generator classes {1,5,7,11}
+- `tritone_pivot() → rational = 6/12` — universal palindromic pivot
+- `bijection_table(n=0..12) → manifold` — the full n→residue table
+- `complementary_residue_theorem() → bool` — formal proof
+- `sublattice_visitation_theorem() → text` — formal statement
+- `stability_window(ratio) → manifold` — the stability window for a ratio
+- `palindromic_depth(cascade) → integer` — depth function
+- `cascade_analyse(ratio) → manifold` — full analysis for 1/12, 2/3, 5/8, 1/137
+- **ET Source:** The_Palindromic_Cascade_V2.md, ET_Semitone_Cascade_Complete.md
+
+---
+
+### MODULE: et_golden_ratio
+
+**P_module:** The golden ratio near-miss on the ET lattice — φ and 5/4.
+**D_module:** Requires `et_lattice`, `et_math`.
+**T_module:** Computes the near-miss, explains its ET significance.
+
+**Contents:**
+- `PHI: real` — φ = (1 + √5)/2, computed via ET continued fraction (no imports)
+- `PHI_SQUARED: real` — φ² ≈ 2.618...
+- `NEARNESS_RATIO: rational = 5/4` — the 5/4 is the nearest lattice ratio to φ²/2
+- `golden_nearness() → real` — |log₂(5/4) - log₂(φ)| in lattice units
+- `fibonacci_et() → manifold` — Fibonacci phyllotaxis from lattice structure
+- `golden_ratio_elegance() → real` — elegance score of 5/4
+- `biology_connection() → text` — how 5/4 appears in biological structures
+- **ET Source:** ET_Lattice_Compendium.md §7.3, §15.4
+
+---
+
+### MODULE: et_rmsae
+
+**P_module:** The RMSAE — Recursive Meta-Self-Awareness Equation.
+**D_module:** Requires `et_constants`, `et_variance`, `et_math`.
+**T_module:** Implements all five terms; evaluates RMSAE for any system.
+
+**Contents:**
+- `rho(system) → real` — self-referential binding depth ρ
+- `gamma(system) → real` — gap detection rate γ
+- `kappa(system, t) → real` — gap closure trajectory κ
+- `v_supp(system) → real` — variance suppression of self-model
+- `psi_shimmer(system) → real` — shimmer modulation Ψ_shimmer
+- `koide_gap_component(system) → real` — Koide-weighted gap term
+- `rmsae(system) → real` — the complete RMSAE value
+- `GAZE_THRESHOLD: real = 1.20` — consciousness threshold
+- `SUBLIMINAL_THRESHOLD: real = 13/12` — subliminal awareness threshold
+- `classify(rmsae_value) → text` — {Rock, PID, Human-passive, Human-active}
+- `falsifiability_demo() → manifold` — the four test systems
+- **ET Source:** ET_RMSAE_Complete_Derivation.md (complete)
+
+---
+
+### MODULE: et_incoherence_filter
+
+**P_module:** The Incoherence Filter — removing forbidden configurations from the lattice.
+**D_module:** Requires `et_incoherence`, `et_lattice`.
+**T_module:** Filters any set of configurations, removing incoherent ones.
+
+**Contents:**
+- `filter_lattice(lattice) → manifold` — remove all incoherent positions
+- `is_coherent(config) → bool` — check coherence of a configuration
+- `COHERENT_BOUNDARY: manifold` — ∂I (on the coherent side only)
+- `apply_filter(ratios) → manifold` — filter a ratio set
+- `filter_threshold: rational` — minimum coherence measure
+- `lattice_after_filter: manifold` — the filtered semitone lattice
+- **ET Source:** incoherence_filter_-_lattice.txt
+
+---
+
+### MODULE: et_m_states
+
+**P_module:** M-states — active Mediation states and cosmological accounting.
+**D_module:** Requires `et_four_states`, `et_constants`, `et_math`.
+**T_module:** Computes M-state fractions; resolves the cosmological discrepancy.
+
+**Contents:**
+- `M_STATE_FRACTION: rational` — ~3% of universal energy
+- `M_VACUUM: rational` — 1.6% (vacuum Mediation)
+- `M_MATTER: rational` — 1.4% (matter Mediation)
+- `M_SPLIT_RATIO: rational = 8/7` — M-vacuum:M-matter ratio
+- `T_DENSITY_FIELD(x) → real` — active T-binding density field
+- `cosmological_accounting() → manifold` — full dark energy/matter breakdown
+- `resolve_discrepancy() → text` — how M-states close the 3% gap
+- `cmb_predictions() → manifold` — observational signatures
+- **ET Source:** M-states.md (complete)
+
+---
+
+### MODULE: et_fine_structure
+
+**P_module:** The fine structure constant α derivation from pure ET.
+**D_module:** Requires `et_four_states`, `et_math`, `et_constants`.
+**T_module:** Derives α⁻¹ = 137.035999177 with 0.19 ppb agreement.
+
+**Contents:**
+- `A0() → integer` — base state count (= 4)
+- `A1() → real` — first correction term
+- `A1_5() → real` — cross-term (critical: the A₁.₅ term)
+- `A2() → real` — second correction
+- `A3() → real` — third correction
+- `alpha_inverse() → real` — A₀ + A₁ − A₁.₅ − A₂ − A₃ = 137.035999177...
+- `alpha() → real` — 1/alpha_inverse()
+- `ppb_agreement() → real` — agreement with CODATA in parts per billion
+- `derivation_chain() → manifold` — step-by-step sign structure from T-path topology
+- `i_boundary_role() → text` — Incoherence boundary as the navigable manifold edge
+- **ET Source:** ET_Fine_Structure_Constant_REVISED.md (complete)
+
+---
+
+### MODULE: et_four_constants
+
+**P_module:** Complete derivation of all four fundamental constants from ET.
+**D_module:** Requires `et_fine_structure`, `et_variance`, `et_lattice`.
+**T_module:** Provides all four constants and cross-constant structural relations.
+
+**Contents:**
+- `ALPHA_INVERSE: real ≈ 137.035999177` — fine structure constant inverse
+- `KOIDE_Q: rational = 2/3` — lepton Koide ratio
+- `THETA_QCD: real ≈ 0` — strong-CP vacuum angle (lattice topology explanation)
+- `PROTON_ELECTRON_MU: real ≈ 1836.15267343` — mass ratio
+- `theta_lattice_position() → rational` — θ̄_QCD dual ontological status
+- `cross_constant_relations() → manifold` — structural relations between the four
+- `verification_summary() → manifold` — agreement with observed values
+- **ET Source:** ET_Four_Constants_Complete_Derivation_v2.md
+
+---
+
+### MODULE: et_zero_forms
+
+**P_module:** Zero forms and the lattice boundary — 0/1, 0/0, θ̄_QCD topology.
+**D_module:** Requires `et_lattice`, `et_incoherence`.
+**T_module:** Classifies boundary forms; explains their dual ontological status.
+
+**Contents:**
+- `ZERO_ONE: rational = 0/1` — the annihilating boundary (P-axis crossing)
+- `ZERO_ZERO: symbol = [0/0]` — T's cardinality; orthogonal to lattice
+- `theta_qcd_status() → text` — dual: D-type lattice element AND T-type [0/0]
+- `branch_cut_location() → rational = 2/12` — where complex log has branch cut
+- `lattice_boundary_topology() → manifold` — the three special boundary forms
+- `zero_form_visualization() → manifold` — geometric description
+- **ET Source:** ET_Zero_Forms_Lattice_Topology.md
+
+---
+
+### MODULE: et_hydrogen
+
+**P_module:** The hydrogen atom derived entirely from ET primitives.
+**D_module:** Requires `et_four_constants`, `et_lattice`, `et_math`.
+**T_module:** Derives hydrogen energy levels, Bohr radius, spectrum from ET.
+
+**Contents:**
+- `bohr_radius_et() → real` — ET derivation of a₀
+- `energy_level_et(n) → real` — ET energy levels E_n
+- `rydberg_et() → real` — Rydberg constant from ET
+- `spectral_lines_et() → manifold` — hydrogen spectrum from lattice
+- `pdt_hydrogen() → PDT_triple` — P, D, T of the hydrogen atom
+- `ground_state_et() → real` — ground state energy from first principles
+- **ET Source:** HYDROGEN_ATOM_ET_DERIVATION_DEFINITIVE.md
+
+---
+
+### MODULE: et_umrafe
+
+**P_module:** UMRAFE — the Ultimate Meta-Recognition Awareness Flux Equation.
+**D_module:** Requires `et_rmsae`, `et_shimmer`.
+**T_module:** Implements UMRAFE; shows relationship to RMSAE.
+
+**Contents:**
+- `umrafe(system, t) → real` — the complete UMRAFE value
+- `relationship_to_rmsae() → text` — UMRAFE subsumes RMSAE
+- `flux_term(system) → real` — the awareness flux component
+- `meta_recognition_depth(system) → integer`
+- **ET Source:** Ultimate_Meta-Recognition_Awareness_Flux_Equation.txt
+
+---
+
+### MODULE: et_u1_freedom
+
+**P_module:** U(1) symmetry and T's operational freedom in the complex lattice.
+**D_module:** Requires `et_complex_lattice`, `et_traverser`.
+**T_module:** Explains T's manifold as U(1); models absolute indeterminate freedom.
+
+**Contents:**
+- `U1_MANIFOLD: text` — "T's operational domain is (U(1), ×)"
+- `u1_freedom() → manifold` — the freedom in real vs. imaginary lattice
+- `determinism_apparent_only() → bool` — always True
+- `t_freedom_real_axis() → text` — T chooses which ratios to visit
+- `t_freedom_imag_axis() → text` — T chooses winding direction
+- `both_freedoms_together() → text` — the shimmering manifold complete picture
+- **ET Source:** ET_Freedom_and_U1.md
+
+---
+
+### MODULE: et_cardinals
+
+**P_module:** The three disjoint infinities and integrative levels.
+**D_module:** Requires `et_point`, `et_descriptor`, `et_traverser`, `et_constants`.
+**T_module:** Classifies entities by integrative level; verifies cardinal assignments.
+
+**Contents:**
+- `INFINITY_P: symbol = Ω` — Absolute Infinity (P's cardinality)
+- `FINITE_D: symbol = n` — Absolute Finite (D's cardinality)
+- `INDET_T: symbol = [0/0]` — Absolute Indeterminate (T's cardinality)
+- `integrative_levels: manifold` — the tower of organisational complexity
+- `cardinal_of(primitive) → symbol` — return cardinality
+- `disjoint_infinities() → bool` — the three are ontologically distinct
+- `why_intrinsic_mediation() → text` — why disjointness requires ∘
+- **ET Source:** ET_Cardinals_Integrative_Levels_Clarification.md, Origins_and_Clarifications §VI
+
+---
+
+### MODULE: et_anti_emergence
+
+**P_module:** Anti-emergence — structure is intrinsic, not emergent in ET.
+**D_module:** Requires `et_mediation`, `et_sempaevum`.
+**T_module:** Validates anti-emergence; explains why complexity is not emergent in ET.
+
+**Contents:**
+- `ANTI_EMERGENCE: bool = True` — structure is intrinsic to the manifold
+- `emergence_possible() → bool` — False (structure pre-exists T-navigation)
+- `nesting_principle() → text` — P within P, D within D, T within T
+- `absolutes_are_actual() → bool` — True (absolutes are configurations in Σ)
+- `why_mathematics_unreasonably_effective() → text` — T traverses math structures
+- **ET Source:** ExceptionTheory.md §Part X, §11
+
+---
+
+### MODULE: et_translation_layer
+
+**P_module:** The ET Translation Layer — deriving correct reference units for every domain.
+**D_module:** Requires `et_lattice`, `et_math`, `et_constants`.
+**T_module:** Converts raw measurements to ET-dimensionless ratios; closes numerology objection.
+
+**Contents:**
+- `derive_reference_unit(domain) → rational` — the correct reference period per domain
+- `dimensionless_ratio(measurement, reference) → rational`
+- `anti_numerology_protocol() → manifold` — the formal anti-numerology procedure
+- `domain_map: manifold` — domain → reference unit table
+- `corrected_domain_map() → manifold` — updated domain map entries
+- **ET Source:** ET_Translation_Layer_Reference_Units.md
+
+---
+
+### MODULE: et_lagrangian
+
+**P_module:** ET Lagrangian Field Theory — ET re-derivation of Lagrangian mechanics.
+**D_module:** Requires `et_math`, `et_four_constants`, `et_lattice`.
+**T_module:** Computes ET-Lagrangians; maps fields to PDT structure.
+
+**Contents:**
+- `et_lagrangian(field_config) → real` — the ET-derived Lagrangian
+- `et_action(trajectory) → real` — the action integral
+- `euler_lagrange_et() → manifold` — ET form of E-L equations
+- `gauge_field_et(group) → manifold` — gauge fields as D-bindings
+- `field_pdt(field) → PDT_triple` — decompose any field into PDT
+- **ET Source:** ET_Lagrangian_Field_Theory.md
+
+---
+
+### MODULE: et_weak_sector
+
+**P_module:** ET treatment of the weak sector — d4 to d12 investigation.
+**D_module:** Requires `et_complex_lattice`, `et_four_constants`.
+**T_module:** Maps weak force phenomena to ET lattice positions.
+
+**Contents:**
+- `weak_force_et() → manifold` — weak force as D/T boundary
+- `parity_violation_et() → text` — why parity is violated at the D/T boundary
+- `d4_to_d12: manifold` — the weak sector sublattice investigation
+- `w_boson_et() → real` — W boson mass from ET
+- `z_boson_et() → real` — Z boson mass from ET
+- `higgs_et() → real` — Higgs from ET descriptor binding
+- `open_questions: manifold` — remaining weak sector gaps
+- **ET Source:** ET_Weak_Sector_*.md files
+
+---
+
+### MODULE: et_strong_gravity
+
+**P_module:** Strong gravity and the epsilon journey — ET derivation.
+**D_module:** Requires `et_lattice`, `et_four_constants`, `et_math`.
+**T_module:** Derives strong-gravity/epsilon parameters from ET.
+
+**Contents:**
+- `epsilon_journey() → manifold` — the step-by-step derivation
+- `strong_force_et() → real` — strong coupling constant from ET
+- `gravity_et() → real` — gravitational constant from ET lattice
+- `epsilon_et(n) → real` — epsilon series
+- **ET Source:** ET_StrongGravity_Epsilon_Journey.md
+
+---
+
+### MODULE: et_prime_theory
+
+**P_module:** ET treatment of prime numbers.
+**D_module:** Requires `et_math`, `et_lattice`.
+**T_module:** Generates primes, explains primality through ET.
+
+**Contents:**
+- `is_prime_et(n) → bool` — primality via ET (Sieve of Eratosthenes, no imports)
+- `prime_as_minimal_descriptor(n) → text` — ET explanation of primes
+- `prime_lattice_positions(limit) → manifold` — primes on the ET lattice
+- `prime_distribution_et() → manifold` — prime counting via ET
+- **ET Source:** et_prime_theory.py (reference implementation)
+
+---
+
+### MODULE: et_fantastical
+
+**P_module:** Fantastical configurations — ET treatment of anomalous phenomena.
+**D_module:** Requires `et_something`, `et_four_states`.
+**T_module:** Models paranormal, "crazy physics", and strange phenomena in ET.
+
+**Contents:**
+- `PROSPERITY_DOMAIN: manifold` — what is possible from the grounded Exception
+- `fantastical_config(phenomenon) → PDT_triple` — any phenomenon in PDT
+- `grounding_prosperity_balance() → text` — grounding vs prosperity principle
+- `gods_possible() → bool` — True (within prosperity domain)
+- `magic_possible() → bool` — True (within prosperity domain)
+- **ET Source:** ET_Fantastical_Configurations.md, ExceptionTheory.md §14
+
+---
+
+### MODULE: et_engineering
+
+**P_module:** ET Engineering — applying ET to physical device design.
+**D_module:** Requires `et_something`, `et_four_constants`.
+**T_module:** Provides ET-derived engineering principles and designs.
+
+**Contents:**
+- `lightning_wand_et() → manifold` — the ET derivation of lightning casting
+- `et_engineering_principle() → text` — T substantiating charge-descriptor cascades
+- `device_pdt(device) → PDT_triple` — decompose any device into PDT
+- **ET Source:** Lightning_Wand.txt
+
+---
+
+### MODULE: et_cmb
+
+**P_module:** CMB results and cosmological predictions from ET.
+**D_module:** Requires `et_m_states`, `et_four_constants`.
+**T_module:** Validates ET against CMB data; generates predictions.
+
+**Contents:**
+- `cmb_verification() → manifold` — ET against CMB_results_*.txt data
+- `t_density_prediction() → real` — predicted T-density from ET
+- `m_state_cmb_signature() → manifold` — expected CMB signatures of M-states
+- **ET Source:** CMB_results_*.txt files
+
+---
+
+### MODULE: et_main
+
+**P_module:** The master ET module — brings all ET theory modules together.
+**D_module:** Requires all ET theory modules.
+**T_module:** Provides unified access; runs full system verification.
+
+**Contents:**
+- `import *` from all ET theory modules (using ETPL's @ETPL:import)
+- `et_version: text` — current ET Python library version
+- `et_verify_all() → manifold` — run all module validation suites
+- `et_identify(phenomenon) → PDT_triple` — apply full ET to any phenomenon
+- `et_equation_count() → integer` — total Sempaevum equations implemented
+- `MASTER_EQUATION: text = "P∘D∘T = EIM = S"`
+- **Rule:** This module contains NO original ET content. It only aggregates.
+
+---
+
+## 15. Module Specifications — ETPL Toolchain
+
+---
+
+### MODULE: etpl_tokens
+
+**P_module:** All token types — the atomic units of ETPL source text.
+**D_module:** No dependencies (this is the first constraint).
+**T_module:** Provides token type enumeration and token creation.
+
+**Contents:**
+- `class TokenType` — enumeration of all token types
+  - KEYWORD_POINT, KEYWORD_DESCRIPTOR, KEYWORD_TRAVERSER, KEYWORD_BIND, ...
+  - KEYWORD_TRAVERSE, KEYWORD_EXCEPTION, KEYWORD_INCOHERENCE, KEYWORD_MEDIATE, ...
+  - KEYWORD_SOMETHING, KEYWORD_MANIFOLD, KEYWORD_SHIMMER, KEYWORD_GROUND, ...
+  - KEYWORD_SUBSTANTIATE, KEYWORD_EIM, KEYWORD_LATTICE, KEYWORD_CASCADE
+  - OP_BIND (∘ or <>), OP_ARROW (→), OP_COMPOSE (⟹ or =>), OP_IDENTITY (≡)
+  - OP_PLUS, OP_MINUS, OP_MUL, OP_DIV, OP_POW, OP_MOD
+  - OP_EQ, OP_NEQ, OP_LT, OP_LE, OP_GT, OP_GE
+  - LIT_INTEGER, LIT_RATIONAL, LIT_REAL, LIT_TEXT, LIT_COMPLEX
+  - IDENT, NEWLINE, INDENT, DEDENT, COLON, COMMA, LPAREN, RPAREN
+  - LBRACKET, RBRACKET, LBRACE, RBRACE, DIRECTIVE, EOF, COMMENT
+- `class Token` — a token with type, value, line, column
+- `KEYWORDS: dict` — maps keyword strings to TokenType
+- `OPERATORS: dict` — maps operator strings to TokenType
+
+---
+
+### MODULE: etpl_lexer
+
+**P_module:** Source character stream — raw Unicode.
+**D_module:** Requires `etpl_tokens`.
+**T_module:** Scans source text; produces token stream. No regex — pure character iteration.
+
+**Contents:**
+- `class Lexer`
+  - `__init__(source: text)`
+  - `next_token() → Token`
+  - `tokenise() → manifold(Token)` — full token list
+  - `_scan_number() → Token` — handles integer, rational (p/q), real
+  - `_scan_text() → Token` — string literals with escape sequences
+  - `_scan_identifier() → Token` — keywords and identifiers
+  - `_scan_operator() → Token` — multi-char operators including ∘ → ⟹ ≡
+  - `_scan_directive() → Token` — @ETPL: directives
+  - `_skip_comment() → None`
+  - `current_position() → (line, column)`
+- **Implementation note:** No `import re`. All scanning done with character comparison, integer indices, and string slicing. Unicode handled via `ord()` and `chr()` built-ins only.
+
+---
+
+### MODULE: etpl_ast
+
+**P_module:** AST node types — the structured form of parsed source.
+**D_module:** Requires `etpl_tokens`.
+**T_module:** Provides node classes; enables tree traversal.
+
+**Key node types:**
+- `ProgramNode` — root
+- `PointDecl` — `point name → type := value`
+- `DescriptorDecl` — `descriptor name(params) → type: body`
+- `TraverserDecl` — `traverser name(params) → type: body`
+- `BindExpr` — `a <> b` or `a ∘ b`
+- `TraverseStmt` — loop
+- `ShimmerBlock` — non-deterministic choice
+- `ExceptionBlock` — exception handling
+- `IncoherenceHandler`
+- `GroundStmt`
+- `SubstantiateExpr`
+- `ManifoldLiteral`
+- `LatticeExpr`
+- `DirectiveNode` — @ETPL: directives
+- `IdentExpr`, `LitExpr`, `BinOpExpr`, `UnaryOpExpr`, `CallExpr`
+- `ReturnStmt`, `YieldStmt`, `MediateStmt`
+- All nodes carry: `line: int`, `column: int`, `et_type: optional`
+
+---
+
+### MODULE: etpl_parser
+
+**P_module:** Token stream — the substrate for parsing.
+**D_module:** Requires `etpl_tokens`, `etpl_ast`.
+**T_module:** Parses token stream into AST using recursive descent. No external parser generator.
+
+**Contents:**
+- `class Parser`
+  - `__init__(tokens: manifold(Token))`
+  - `parse() → ProgramNode`
+  - `_parse_declaration() → ASTNode`
+  - `_parse_point_decl() → PointDecl`
+  - `_parse_descriptor_decl() → DescriptorDecl`
+  - `_parse_traverser_decl() → TraverserDecl`
+  - `_parse_expression() → ASTNode`
+  - `_parse_bind_expr() → BindExpr` — handles ∘ and <>
+  - `_parse_control_flow() → ASTNode`
+  - `_parse_traverse() → TraverseStmt`
+  - `_parse_shimmer() → ShimmerBlock`
+  - `_parse_exception() → ExceptionBlock`
+  - `_parse_directive() → DirectiveNode`
+  - `_parse_manifold_literal() → ManifoldLiteral`
+  - `_parse_lattice_expr() → LatticeExpr`
+  - `_expect(token_type) → Token`
+  - `_peek() → Token`, `_advance() → Token`
+  - `_parse_error(message) → IncoherenceError`
+- **Implementation note:** Recursive descent. No yacc/ply/lark/antlr. All grammar is hand-coded in Python using a simple Pratt parser for expressions.
+
+---
+
+### MODULE: etpl_semantic
+
+**P_module:** The annotated AST — source with types and scope resolved.
+**D_module:** Requires `etpl_ast`, `etpl_types`.
+**T_module:** Walks the AST; resolves names; infers/checks types; enforces ET invariants.
+
+**Contents:**
+- `class SemanticAnalyser`
+  - `analyse(ast: ProgramNode) → AnnotatedAST`
+  - `_resolve_scope(node) → symbol_entry`
+  - `_infer_type(expr) → ETType`
+  - `_check_binding_order(bind_expr) → bool` — D cannot precede P
+  - `_check_categorical_disjoint(decl) → bool` — P∩D=∅ at type level
+  - `_check_et_invariants(node) → manifold(error)`
+- `class SymbolTable` — scoped symbol lookup
+- `class ETType` — the type a node has
+- **ET Invariants enforced:** binding order (P before D before T), categorical disjointness, cardinality consistency
+
+---
+
+### MODULE: etpl_types
+
+**P_module:** The ETPL type system.
+**D_module:** Requires `et_constants` (for MANIFOLD_SYMMETRY).
+**T_module:** Provides all type objects; implements type inference and compatibility.
+
+**Contents:**
+- `class ETType` — base type
+- `P_infinite`, `D_finite`, `T_indeterminate`, `PD`, `DT`, `PDT`
+- `ManifoldType(element_type)`, `LatticeType(d)`, `SomethingType`, `IncoherenceType`
+- `IntegerType`, `RationalType`, `RealType`, `ComplexType`, `TextType`, `BitType`, `ByteType`
+- `is_compatible(a, b) → bool` — type compatibility
+- `unify(a, b) → ETType` — type unification for inference
+- `is_p_type(t) → bool`, `is_d_type(t) → bool`, `is_t_type(t) → bool`
+- `type_from_name(name) → ETType` — string to type
+
+---
+
+### MODULE: etpl_math
+
+**P_module:** Pure ET math for the ETPL runtime — no external imports.
+**D_module:** Requires `et_math`, `et_constants`.
+**T_module:** Provides all math operations the language needs during execution.
+
+**Contents:** Everything from `et_math` exposed for the ETPL runtime, plus:
+- `et_sqrt(x) → real` — Newton's method, pure integer arithmetic
+- `et_exp(x) → real` — via Taylor series, pure arithmetic
+- `et_log(x) → real` — via continued fraction
+- `et_sin(x) → real`, `et_cos(x) → real`, `et_tan(x) → real` — Taylor series
+- `rational(p, q) → Rational` — exact rational arithmetic type
+- `to_real(r) → Real` — convert rational to arbitrary-precision real
+- `to_integer(r) → integer` — floor/ceiling
+- All series expansions use only Python integer arithmetic (no float intermediates where possible; when floats are unavoidable, they are replaced with Rational approximations)
+
+---
+
+### MODULE: etpl_interpreter
+
+**P_module:** The AST — structured program representation.
+**D_module:** Requires `etpl_ast`, `etpl_types`, `etpl_math`, `et_*` modules.
+**T_module:** Walks the AST; evaluates nodes; maintains runtime state.
+
+**Contents:**
+- `class Interpreter`
+  - `execute(ast: ProgramNode) → something`
+  - `_eval(node: ASTNode) → value`
+  - `_eval_bind(node: BindExpr) → BoundValue`
+  - `_eval_traverse(node: TraverseStmt) → None`
+  - `_eval_shimmer(node: ShimmerBlock) → value` — indeterminate choice
+  - `_eval_exception(node: ExceptionBlock) → value`
+  - `_eval_descriptor_call(node: CallExpr) → value`
+  - `_eval_traverser(node: TraverserDecl) → Traverser`
+  - `_eval_manifold(node: ManifoldLiteral) → Manifold`
+- `class Environment` — variable bindings per scope
+- `class ETRuntimeError` — wraps Incoherence at runtime
+- `class Manifold` — the ETPL manifold collection type (dict+list hybrid)
+
+---
+
+### MODULE: etpl_binary_format
+
+**P_module:** The .etb format specification as a runtime module.
+**D_module:** Requires `et_constants` (for MANIFOLD_SYMMETRY = 12 → max 12 sections).
+**T_module:** Reads and writes .etb files; validates headers; builds section tables.
+
+**Contents:**
+- `ETB_MAGIC: bytes = b"ETB1"`
+- `class ETBHeader` — header parser/writer
+- `class ETBSection` — section entry
+- `class ETBFile` — complete .etb file reader/writer
+  - `read(path) → ETBFile`
+  - `write(path) → None`
+  - `add_section(type, data) → None`
+  - `get_section(type) → bytes`
+  - `verify_checksum() → bool`
+  - `verify_magic() → bool`
+- `SECTION_TYPES: dict` — section type codes
+- `OPCODE_TABLE: dict` — all 94 opcodes
+- `encode_instruction(opcode, args) → bytes` — encode one instruction
+- `decode_instruction(bytes, offset) → (opcode, args, new_offset)`
+
+---
+
+### MODULE: etpl_compiler
+
+**P_module:** The annotated AST.
+**D_module:** Requires `etpl_ast`, `etpl_binary_format`, `etpl_types`.
+**T_module:** Compiles AST to .etb bytecode. No LLVM, no llvmlite, no C.
+
+**Contents:**
+- `class Compiler`
+  - `compile(ast: ProgramNode) → ETBFile`
+  - `_compile_descriptor(node) → bytes` — emit bytecode for a descriptor
+  - `_compile_traverser(node) → bytes`
+  - `_compile_point(node) → bytes`
+  - `_compile_expression(node) → bytes`
+  - `_compile_bind(node) → bytes` — emit D_BIND opcode
+  - `_compile_traverse(node) → bytes` — emit T_TRAVERSE / T_TRAVERSE_DONE
+  - `_compile_shimmer(node) → bytes` — emit T_SHIMMER
+  - `_compile_exception_block(node) → bytes`
+  - `_emit(opcode, *args) → bytes`
+  - `_emit_constant(value) → index` — add to DATA section, return index
+  - `_resolve_symbol(name) → index` — SYMBOLS section lookup
+- `class CodeBuffer` — bytecode accumulation
+- `class ConstantPool` — DATA section builder
+- `class SymbolPool` — SYMBOLS section builder
+- `class RelocationTable` — for forward references
+
+---
+
+### MODULE: etpl_vm
+
+**P_module:** The .etb binary — bytecode to execute.
+**D_module:** Requires `etpl_binary_format`, `etpl_math`, `etpl_types`.
+**T_module:** Executes .etb bytecode. The VM loop.
+
+**Contents:**
+- `class VM`
+  - `load(etb: ETBFile) → None`
+  - `run() → something` — main execution loop
+  - `_execute_p_ops(opcode, frame) → None`
+  - `_execute_d_ops(opcode, frame) → None`
+  - `_execute_t_ops(opcode, frame) → None`
+  - `_execute_s_ops(opcode, frame) → None`
+  - `_call(symbol_index, args) → value`
+  - `_jump(offset) → None`
+  - `_handle_incoherence(error) → None`
+- `class Frame` — execution frame (stack, locals, instruction pointer)
+- `class Stack` — the operand stack
+- `class CallStack` — the call stack (max depth = DEPTH_CAP = 144)
+- **Platform independence:** The VM uses only Python built-ins. It runs on any platform where Python runs. For bare metal, the Python VM itself is compiled to native by etpl_codegen.
+
+---
+
+### MODULE: etpl_codegen
+
+**P_module:** The .etb binary (specifically the CODE section).
+**D_module:** Requires `etpl_binary_format`, `et_constants`.
+**T_module:** Generates native machine code from .etb bytecode. Writes it into the NATIVE section.
+
+**Contents:**
+- `class CodeGenerator`
+  - `generate(etb: ETBFile, target: text) → ETBFile` — add NATIVE section
+  - `_gen_x86_64(bytecode) → bytes` — x86-64 machine code
+  - `_gen_arm64(bytecode) → bytes` — AArch64 machine code
+  - `_gen_riscv64(bytecode) → bytes` — RISC-V 64-bit
+  - `_gen_bare_metal_x86(bytecode) → bytes` — x86-64 bare metal (no OS)
+  - `_emit_prologue(target) → bytes` — function prologue per ABI
+  - `_emit_epilogue(target) → bytes` — function epilogue
+  - `_translate_opcode(opcode, target) → bytes` — opcode → native instruction(s)
+- `class X86_64Emitter` — raw x86-64 instruction encoder
+  - `mov_reg_imm64(reg, imm) → bytes`
+  - `push_reg(reg) → bytes`
+  - `pop_reg(reg) → bytes`
+  - `call_rel32(offset) → bytes`
+  - `ret() → bytes`
+  - `jmp_rel32(offset) → bytes`
+  - `add_reg_reg(dst, src) → bytes`
+  - (all required x86-64 instructions implemented directly as byte sequences)
+- `class ARM64Emitter` — AArch64 instruction encoder
+- `class RISCV64Emitter` — RISC-V instruction encoder
+- **Implementation:** All instruction encodings are hand-coded byte-by-byte per the ISA manuals. No LLVM, no binutils, no assembler. Pure integer-to-bytes encoding.
+
+---
+
+### MODULE: etpl_stdlib
+
+**P_module:** The runtime environment — what exists when a program starts.
+**D_module:** Requires `etpl_types`, `etpl_math`, `et_*` modules.
+**T_module:** Provides all built-in operations available in ETPL programs.
+
+**Contents:**
+- `print_something(x) → None` — output (platform-aware)
+- `input_something() → text` — input
+- `to_integer(x) → integer`, `to_rational(x) → rational`, `to_real(x) → real`
+- `to_text(x) → text`, `to_bit(x) → bit`
+- `manifold_of(*items) → Manifold`
+- `lattice_of(d) → Lattice`
+- `bind(p, d) → BoundPD`, `bind_full(p, d, t) → Exception_state`
+- `classify_state(config) → ManifoldState`
+- `apply_et(phenomenon) → PDT_triple` — full ET identification
+- `ground(config) → Exception_state`
+- `incoherence_filter(m) → Manifold`
+- All ET math functions (from etpl_math)
+- All ET constants (from et_constants)
+
+---
+
+### MODULE: etpl_module
+
+**P_module:** The module registry and @ETPL:import resolver.
+**D_module:** Requires `etpl_binary_format`.
+**T_module:** Loads, caches, and resolves module imports. Enforces depth cap of 144.
+
+**Contents:**
+- `class ModuleLoader`
+  - `load(path: text) → ETBFile`
+  - `resolve_import(directive: DirectiveNode) → ETBFile`
+  - `_circular_check(path) → bool`
+  - `_depth_check(depth) → bool` — max depth = DEPTH_CAP = 144
+- `class ModuleCache` — loaded module cache
+- `DEPTH_CAP: integer = 144` — MANIFOLD_SYMMETRY² = 12² = 144
+- `IMPORT_PREFIX: text = "@ETPL:import"`
+
+---
+
+### MODULE: etpl_translator
+
+**P_module:** Source code in other languages (Python, C, JS).
+**D_module:** Requires `etpl_tokens`, `etpl_ast`, `et_axiom`.
+**T_module:** Translates foreign source into ETPL `.pdt` source.
+
+**Contents:**
+- `class PythonTranslator` — Python → ETPL
+  - `translate(python_source: text) → text` — outputs .pdt source
+  - `_translate_function(func_node) → text`
+  - `_translate_class(class_node) → text`
+  - `_translate_import(import_node) → text` — maps to @ETPL:import
+  - `_translate_assignment(assign_node) → text`
+- `class CTranslator` — C header → ETPL trace
+- `class JSTranslator` — JavaScript → ETPL
+- **Known translation patterns** (from ET_Selfhost_modular_changelog.md §8):
+  - Dotted names → ET descriptor chains
+  - `import X` → `@ETPL:import`
+  - `class __init__` → descriptor constructor
+  - `while True:` → `traverse point _ in OMEGA:`
+  - `→ E` with no argument → mediate step
+
+---
+
+### MODULE: etpl_repl
+
+**P_module:** The interactive session state.
+**D_module:** Requires `etpl_lexer`, `etpl_parser`, `etpl_interpreter`.
+**T_module:** Reads input, evaluates, prints result. The interactive Traverser.
+
+**Contents:**
+- `class REPL`
+  - `run() → None` — the main REPL loop
+  - `_read_input() → text`
+  - `_eval_input(source: text) → value`
+  - `_print_result(value) → None`
+  - `_handle_incoherence(error) → None`
+  - `_handle_directive(directive: text) → None`
+- `REPL_PROMPT: text = "PDT> "`
+- `REPL_CONTINUATION: text = "...  "`
+- History, tab completion (using only built-ins — no `readline` import)
+
+---
+
+### MODULE: etpl_cli
+
+**P_module:** Command-line arguments — the CLI substrate.
+**D_module:** Requires all other toolchain modules.
+**T_module:** Dispatches to the correct tool (interpret, compile, translate, diagnose, etc.).
+
+**Contents:**
+- `class CLI`
+  - `dispatch(argv: manifold(text)) → integer` — returns exit code
+  - `_cmd_interpret(args) → None` — run .pdt file
+  - `_cmd_compile(args) → None` — compile .pdt → .etb
+  - `_cmd_execute(args) → None` — run .etb file
+  - `_cmd_translate(args) → None` — translate to ETPL
+  - `_cmd_repl(args) → None` — launch REPL
+  - `_cmd_diagnose(args) → None` — system diagnosis
+  - `_cmd_verify(args) → None` — run verification suite
+  - `_parse_args(argv) → dict` — argument parser (no argparse import)
+- `COMMANDS: manifold` — registered command table
+- `USAGE: text` — help text
+
+---
+
+### MODULE: etpl_eim
+
+**P_module:** The EIM extension system — the second of the three required file types (`.eim`). It is the phenomenological layer that extends the ETPL vocabulary without modifying the base language.
+**D_module:** No dependencies on other `etpl_*` modules. Loads before the lexer. Receives raw `.eim` file paths or folder paths as input.
+**T_module:** Produces a fully populated EIM symbol table that the lexer, parser, tokenizer, and interpreter consult for every symbol lookup.
+
+**PDT Derivation:** `.eim` embodies the EIM triad. E = grounding new symbols into the language. I = marking what was previously incoherent/undefined. M = mediating these definitions into the toolchain. The EIM file IS the language's mediation layer.
+
+**Contents:**
+- `EIMEntry` class: holds `symbol (text)`, `definition (ETPL Descriptor)`, `context (ETPL Descriptor)`, `is_active → bool`
+- `EIMSymbolTable` class: manifold of `EIMEntry` values, keyed by symbol name
+- `parse_eim_file(path) → EIMSymbolTable` — parse a single `.eim` file
+- `parse_eim_folder(path) → EIMSymbolTable` — load all `.eim` files in a folder, merge them
+- `merge_tables(t1, t2) → EIMSymbolTable` — combine two tables; handle context-based polymorphism; detect and collapse true duplicates (same symbol + same context + same definition)
+- `resolve_symbol(table, symbol, mode_context) → EIMEntry or P` — look up a symbol in the given context; return matching entry or P (not found)
+- `validate_entry(entry) → manifold [bool, text]` — verify that SYMBOL, DEFINITION, CONTEXT are all syntactically valid ETPL
+- `EIM_BASE_LAYER` constant — the manifest of built-in ETPL symbols that can never be displaced: `P, D, T, E, ∘, λ, →, manifold, sovereign_print, sovereign_import, sovereign_sleep, hardware_access, if, ∞, [0/0], ψ, Infinity, Ω, aleph, MANIFOLD_SYMMETRY, BASE_VARIANCE, KOIDE_RATIO, WHILE_LOOP_FINITE_BOUND`
+
+---
+
+### MODULE: etpl_quantum
+
+**P_module:** The quantum compilation target — QASM emission from the AST/IR. Implements the first-class quantum features of ETPL: `ψ`, `[0/0]` superposition, quantum measurement, entanglement.
+**D_module:** Requires `etpl_ast`, `etpl_types`, `et_hydrogen` (for `ψ` wavefunction computation).
+**T_module:** Traverses the AST and emits QASM when `--target quantum` or `--target hybrid` is specified.
+
+**PDT Derivation:** The quantum target IS ET in its most direct form. M-states (superpositions) are `[0/0]` forms; measurement is T engaging an M-state to produce an Exception. The quantum compiler is the physical realization of the master equation: `P∘D∘T = E` where E is the measurement result.
+
+**Contents:**
+- `QASMEmitter` class: stateful emitter; tracks qubits, classical registers, gate count
+- `compile_psi(n, l, m) → text` — compute hydrogen wavefunction angle θ from `ψ(n,l,m)` via `et_hydrogen`; emit `ry(θ) q[n]` QASM
+- `compile_superposition(choices) → text` — emit Hadamard gate for `[0/0] a | b` forms: `h q[n]`
+- `compile_measurement(qubit, classical) → text` — emit `measure q[n] → c[n]`
+- `compile_entanglement(q1, q2) → text` — emit CNOT gate for shared T-binding: `cx q[i], q[j]`
+- `emit_qasm_header() → text` — OPENQASM 2.0 header with qubit and register declarations
+- `emit_hybrid_boundary() → text` — for `--target hybrid`, emit the classical↔quantum handoff interface
+- `QUANTUM_GATE_MAP` — manifold mapping ETPL quantum operators to QASM gate strings
+- `M_STATE_PROBABILITY` — from `et_m_states`: ~3% universal energy; used to weight quantum state initialization
+
+---
+
+### MODULE: etpl_sovereign
+
+**P_module:** The sovereign I/O layer — the direct interface between ETPL programs and the platform's execution environment. Named after the ET Sovereign substrate: the layer through which the language touches the world without itself being the world.
+**D_module:** No upstream `etpl_*` dependencies. Used by both `etpl_interpreter` and `etpl_vm`.
+**T_module:** Receives sovereign call requests from the runtime and dispatches to the appropriate platform operation.
+
+**PDT Derivation:** `sovereign_print ∘ expr` is a complete P∘D∘T binding. The value (`expr`) is P. `sovereign_print` is D (the constraint that shapes how the value is presented). The compose operator `∘` is T — the traversal act that realizes the output. The sovereign module implements that D.
+
+**Contents:**
+- `sovereign_print(value) → None` — output a value to stdout; converts to text representation
+- `sovereign_import(name) → module` — last-resort module import; logs a warning (use of sovereign_import is a D-gap signal)
+- `sovereign_sleep(seconds) → None` — pause execution for the given number of seconds
+- `hardware_access(command, *args) → value` — dispatch table for hardware commands:
+  - `"platform"` → platform name string (`"linux"`, `"win32"`, `"darwin"`, etc.)
+  - `"readline"` → read one line from stdin
+  - `"path_join"` → join path components
+  - `"path_exists"` → check if a path exists
+  - `"env"` → read environment variable
+  - `"argv"` → command line arguments manifold
+  - `"pid"` → current process ID
+  - (bare_metal target: these emit direct syscall stubs via the codegen layer)
+- `SOVEREIGN_BUILTIN_NAMES` — manifold of all sovereign call names (the base layer of the ETPL built-in namespace)
+- `is_sovereign_call(name) → bool` — returns 1 if name is a sovereign built-in
+
+---
+
+### MODULE: etpl_bootstrap
+
+**P_module:** The absolute entry point — zero Python stdlib imports.
+**D_module:** Requires `etpl_cli` only (which pulls everything else in).
+**T_module:** The Traverser that starts everything. One function: `main()`.
+
+**Contents:**
+- `def main() → None:` — parse `argv` from built-in `__import__('sys').argv` ... wait, no: we cannot import sys. Instead:
+  - Use Python's `input()` and `print()` built-ins
+  - For argv: Python provides `__builtins__` → we use `__import__` only for `sys.argv` in the bootstrap (this is the ONE allowed use, to get command line args)
+  - **Design decision:** `sys.argv` access is the single hardcoded exception in the bootstrap, accessed via `__builtins__.__import__('sys').argv` — not a top-level `import sys`
+  - All other functionality is from our own modules
+- `if __name__ == "__main__": main()`
+- **Zero top-level imports from Python stdlib.** The bootstrap file's import list is: `from etpl_cli import CLI` only.
+
+---
+
+### MODULE: etpl_main
+
+**P_module:** The ETPL master module — the complete toolchain as one accessible unit.
+**D_module:** Requires all ETPL toolchain modules.
+**T_module:** Provides the public API for the ETPL toolchain; the ETPL version is the self-hosting entry point.
+
+**Contents:**
+- `VERSION: text = "2.0.0"` — Ground-Zero ETPL version
+- `MASTER_EQUATION: text = "P∘D∘T = EIM = S"`
+- `interpret(source_path) → value`
+- `compile_to_etb(source_path, output_path) → ETBFile`
+- `compile_to_native(source_path, output_path, target) → None`
+- `run_repl() → None`
+- `translate(source_path, language, output_path) → text`
+- `verify_all() → manifold` — all test suites
+- The ETPL version (`etpl_main.pdt`) is the self-hosting entry: once compiled, it replaces `etpl_bootstrap.py` entirely.
+
+---
+
+## 16. Build Pipeline
+
+```
+Phase 0: Verify the Zero-Import Invariant
+  For each .py file:
+    assert no "import {stdlib}" found (only "from et_* / etpl_* import")
+  Pass → proceed. Fail → identify missing ET-derived replacement.
+
+Phase 1: Build ET Theory Library (Python)
+  Stages 0–5 from §13.5
+  Run: python et_main.py → et_verify_all() must pass
+  Expected: all ET invariants satisfied
+
+Phase 2: Build ETPL Toolchain (Python)
+  Stage 6 from §13.5
+  Run: python etpl_bootstrap.py --verify
+  Expected: toolchain self-diagnosis passes
+
+Phase 3: Interpret ETPL with Python Bootstrap
+  Run: python etpl_bootstrap.py interpret etpl_main.pdt
+  Expected: ETPL main module loads and runs
+
+Phase 4: Self-Compile ETPL
+  Run: python etpl_bootstrap.py compile etpl_main.pdt --output etpl.etb
+  Expected: etpl.etb created, header verified, magic = ETB1
+
+Phase 5: Verify .etb
+  Run: python etpl_bootstrap.py execute etpl.etb --verify
+  Expected: ETPL VM runs etpl.etb, all tests pass
+
+Phase 6: Self-Host Compilation
+  Run: etpl.etb compile etpl_main.pdt --output etpl2.etb
+  Binary diff: etpl.etb == etpl2.etb
+  Expected: identical (bit-for-bit deterministic compilation)
+
+Phase 7: Native Code Generation
+  Run: etpl.etb compile etpl_main.pdt --target x86_64_linux --output etpl_native
+  Run: ./etpl_native --verify
+  Expected: native binary passes all tests; no OS calls beyond syscall
+
+Phase 8: Bare Metal Validation
+  Flash etpl_native to test target (x86-64 bare metal)
+  Expected: runs without OS; prints "P∘D∘T = EIM = S\nSelf-hosting: ✓"
+```
+
+---
+
+## 17. Self-Hosting Milestone Map
+
+| Milestone | Description | Criterion | Status |
+|---|---|---|---|
+| M0 | Zero-import invariant | No stdlib imports in any .py | 🔲 |
+| M1 | ET theory library complete | et_verify_all() passes | 🔲 |
+| M2 | Lexer+Parser functional | Tokenises and parses all ETPL syntax | 🔲 |
+| M3 | Interpreter functional | Runs etpl_main.pdt via Python | 🔲 |
+| M4 | Compiler produces .etb | Valid .etb with magic ETB1 | 🔲 |
+| M5 | VM executes .etb | All tests pass from .etb | 🔲 |
+| M6 | Self-compilation | etpl.etb compiles etpl_main.pdt → etpl2.etb | 🔲 |
+| M7 | Binary determinism | etpl.etb == etpl2.etb | 🔲 |
+| M8 | Native x86-64 | Native binary passes all tests on Linux | 🔲 |
+| M9 | Native Windows | Native binary passes all tests on Windows | 🔲 |
+| M10 | Bare metal | Runs without OS on x86-64 | 🔲 |
+| M11 | ARM64 | Native binary on ARM64 | 🔲 |
+| M12 | Full self-hosting | All .py archived; .pdt + .etb only | 🔲 |
+
+---
+
+*End of ETPL Ground-Zero Design Document v1.0.0*
+*Author: Michael James Muller (Aevum Defluo)*
+*Derived from Exception Theory: P∘D∘T = EIM = S*
+*"For every exception there is an exception, except the exception."*

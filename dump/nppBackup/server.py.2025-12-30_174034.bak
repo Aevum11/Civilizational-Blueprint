@@ -1,0 +1,88 @@
+import os
+import datetime
+from flask import Flask, request, jsonify
+from werkzeug.utils import secure_filename
+
+# --- CONFIGURATION ---
+HOST = '0.0.0.0' # Listen on all network interfaces
+PORT = 5000
+UPLOAD_FOLDER = 'received_reports'
+ALLOWED_EXTENSIONS = {'csv', 'txt', 'log'}
+# SECURITY: Change this key! The app must match this key to upload.
+API_KEY = "ET-SECURE-TOKEN-2025-V5" 
+
+app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB Limit
+
+# Ensure upload directory exists
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def check_auth(request):
+    token = request.headers.get('X-ET-AUTH-TOKEN')
+    return token == API_KEY
+
+@app.route('/api/v1/status', methods=['GET'])
+def status():
+    return jsonify({"status": "online", "server": "ET-Diagnostic-Node"}), 200
+
+@app.route('/api/v1/upload', methods=['POST'])
+def upload_file():
+    # 1. Security Check
+    if not check_auth(request):
+        return jsonify({"error": "Unauthorized"}), 401
+
+    # 2. File Check
+    if 'file' not in request.files:
+        return jsonify({"error": "No file part"}), 400
+    
+    file = request.files['file']
+    description = request.form.get('description', '')
+
+    if file.filename == '':
+        return jsonify({"error": "No selected file"}), 400
+    
+    if file and allowed_file(file.filename):
+        # 3. Organize by Date
+        date_str = datetime.datetime.now().strftime("%Y-%m-%d")
+        daily_folder = os.path.join(app.config['UPLOAD_FOLDER'], date_str)
+        
+        if not os.path.exists(daily_folder):
+            os.makedirs(daily_folder)
+
+        # 4. Save File Securely
+        filename = secure_filename(file.filename)
+        # Add timestamp to prevent overwrites
+        timestamp = datetime.datetime.now().strftime("%H%M%S")
+        
+        # Save the Report (CSV)
+        save_path = os.path.join(daily_folder, f"{timestamp}_{filename}")
+        file.save(save_path)
+        
+        # Save the Description (TXT) if provided
+        if description:
+            desc_filename = f"{timestamp}_{filename}_desc.txt"
+            desc_path = os.path.join(daily_folder, desc_filename)
+            with open(desc_path, "w", encoding="utf-8") as f:
+                f.write(description)
+        
+        print(f"[SUCCESS] Report saved: {save_path}")
+        if description:
+            print(f"[INFO] Description saved.")
+            
+        return jsonify({"message": "File uploaded successfully", "path": save_path}), 201
+
+    return jsonify({"error": "Invalid file type"}), 400
+
+if __name__ == '__main__':
+    print(f"[*] ET Diagnostic Server Running on port {PORT}")
+    print(f"[*] API Key: {API_KEY}")
+    print(f"[*] Storage: {os.path.abspath(UPLOAD_FOLDER)}")
+    # Run simple HTTP server. For "Extreme" security over internet, run behind Nginx with SSL.
+    # For local secure LAN, this is sufficient with the API Key.
+    app.run(host=HOST, port=PORT)

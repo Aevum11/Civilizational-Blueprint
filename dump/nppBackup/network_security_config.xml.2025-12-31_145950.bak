@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- 
+      PRODUCTION POLICY: STRICT HTTPS
+      Cleartext (HTTP) traffic is disabled by default for all domains.
+      This protects user data from Man-in-the-Middle attacks.
+    -->
+    <base-config cleartextTrafficPermitted="false" />
+
+    <!-- 
+      DEBUG OVERRIDE (Optional):
+      Uncomment the domain-config below ONLY for local testing with an HTTP server.
+      Do not include in release builds.
+    -->
+    <!--
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">192.168.1.15</domain> 
+        <domain includeSubdomains="true">10.0.2.2</domain>
+        <domain includeSubdomains="true">localhost</domain>
+    </domain-config>
+    -->
+</network-security-config>

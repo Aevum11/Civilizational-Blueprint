@@ -1,0 +1,326 @@
+package com.et.physics.toolbox
+
+import android.Manifest
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
+import android.content.SharedPreferences
+import android.content.pm.PackageManager
+import android.graphics.Color
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.Uri
+import android.os.Bundle
+import android.os.Handler
+import android.os.IBinder
+import android.os.Looper
+import android.view.LayoutInflater
+import android.widget.*
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
+import java.io.DataOutputStream
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.net.HttpURLConnection
+import java.net.URL
+import kotlin.concurrent.thread
+
+class MainActivity : AppCompatActivity() {
+
+    private var serviceBinder: OmniMeasureService? = null
+    private var isBound = false
+    private lateinit var prefs: SharedPreferences
+
+    // UI Elements
+    private lateinit var visualizer: VisualizerView
+    private lateinit var spinnerMode: Spinner
+    private lateinit var txtValues: TextView
+    private lateinit var txtBattery: TextView
+    private lateinit var btnStart: Button
+    private lateinit var btnStop: Button
+    private lateinit var btnCalibrate: Button
+    private lateinit var btnReport: Button
+
+    private val handler = Handler(Looper.getMainLooper())
+    private val updateRunnable = object : Runnable {
+        override fun run() {
+            updateUI()
+            handler.postDelayed(this, 100) // 10Hz UI
+        }
+    }
+
+    private val connection = object : ServiceConnection {
+        override fun onServiceConnected(className: ComponentName, service: IBinder) {
+            val binder = service as OmniMeasureService.LocalBinder
+            serviceBinder = binder.getService()
+            isBound = true
+            if (serviceBinder?.currentMode != null) {
+                spinnerMode.setSelection(serviceBinder!!.currentMode.ordinal)
+            }
+        }
+        override fun onServiceDisconnected(arg0: ComponentName) { isBound = false }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        prefs = getSharedPreferences("ET_Prefs", Context.MODE_PRIVATE)
+
+        visualizer = findViewById(R.id.visualizer)
+        spinnerMode = findViewById(R.id.spinnerMode)
+        txtValues = findViewById(R.id.txtValues)
+        txtBattery = findViewById(R.id.txtBattery)
+        btnStart = findViewById(R.id.btnStart)
+        btnStop = findViewById(R.id.btnStop)
+        btnCalibrate = findViewById(R.id.btnCalibrate)
+        btnReport = findViewById(R.id.btnReport)
+
+        // Setup Mode Spinner
+        val modes = OmniMeasureService.ScanMode.values().map { it.name }
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, modes)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinnerMode.adapter = adapter
+
+        checkPermissions()
+        setupNetworkMonitor() // Start reliable delivery service
+
+        btnStart.setOnClickListener {
+            val mode = OmniMeasureService.ScanMode.values()[spinnerMode.selectedItemPosition]
+            val intent = Intent(this, OmniMeasureService::class.java)
+            startService(intent)
+            bindService(intent, connection, Context.BIND_AUTO_CREATE)
+            serviceBinder?.startMeasurement(mode)
+            handler.post(updateRunnable)
+        }
+
+        btnStop.setOnClickListener {
+            serviceBinder?.stopMeasurement()
+            handler.removeCallbacks(updateRunnable)
+        }
+
+        btnCalibrate.setOnClickListener { showCalibrationDialog() }
+        btnReport.setOnClickListener { showReportDialog() }
+    }
+
+    // --- RELIABLE DELIVERY SYSTEM ---
+    
+    private fun setupNetworkMonitor() {
+        val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        cm.registerDefaultNetworkCallback(object : ConnectivityManager.NetworkCallback() {
+            override fun onAvailable(network: Network) {
+                super.onAvailable(network)
+                // When internet returns, try to flush the queue
+                flushPendingReports()
+            }
+        })
+    }
+
+    private fun queueReport(csvData: String, description: String) {
+        // Save to a persistent "Pending" folder
+        val pendingDir = File(filesDir, "pending_reports")
+        if (!pendingDir.exists()) pendingDir.mkdirs()
+
+        val timestamp = System.currentTimeMillis()
+        
+        // Save CSV
+        val csvFile = File(pendingDir, "report_$timestamp.csv")
+        FileOutputStream(csvFile).use { it.write(csvData.toByteArray()) }
+
+        // Save Description (if any)
+        if (description.isNotEmpty()) {
+            val descFile = File(pendingDir, "report_$timestamp.txt")
+            FileOutputStream(descFile).use { it.write(description.toByteArray()) }
+        }
+
+        Toast.makeText(this, "Report Queued. Sending...", Toast.LENGTH_SHORT).show()
+        flushPendingReports()
+    }
+
+    private fun flushPendingReports() {
+        val ip = prefs.getString("server_ip", "") ?: return
+        if (ip.isEmpty()) return
+        val apiKey = prefs.getString("api_key", "ET-SECURE-TOKEN-2025-V5") ?: ""
+
+        val pendingDir = File(filesDir, "pending_reports")
+        val files = pendingDir.listFiles { _, name -> name.endsWith(".csv") } ?: return
+
+        if (files.isEmpty()) return
+
+        thread {
+            var successCount = 0
+            for (csvFile in files) {
+                // Find matching description
+                val descFile = File(pendingDir, csvFile.name.replace(".csv", ".txt"))
+                var description = ""
+                if (descFile.exists()) {
+                    description = descFile.readText()
+                }
+
+                if (uploadSingleReport(csvFile, description, ip, apiKey)) {
+                    csvFile.delete()
+                    if (descFile.exists()) descFile.delete()
+                    successCount++
+                }
+            }
+            if (successCount > 0) {
+                runOnUiThread { Toast.makeText(this, "Sent $successCount pending reports!", Toast.LENGTH_SHORT).show() }
+            }
+        }
+    }
+
+    private fun uploadSingleReport(file: File, description: String, ip: String, apiKey: String): Boolean {
+        try {
+            val url = URL("http://$ip:5000/api/v1/upload")
+            val boundary = "Boundary-${System.currentTimeMillis()}"
+            val conn = url.openConnection() as HttpURLConnection
+            conn.requestMethod = "POST"
+            conn.doOutput = true
+            conn.connectTimeout = 5000 // 5s timeout
+            conn.readTimeout = 5000
+            conn.setRequestProperty("Content-Type", "multipart/form-data; boundary=$boundary")
+            conn.setRequestProperty("X-ET-AUTH-TOKEN", apiKey)
+
+            val os = DataOutputStream(conn.outputStream)
+            
+            // 1. Send Description Field
+            if (description.isNotEmpty()) {
+                os.writeBytes("--$boundary\r\n")
+                os.writeBytes("Content-Disposition: form-data; name=\"description\"\r\n\r\n")
+                os.writeBytes("$description\r\n")
+            }
+
+            // 2. Send File Field
+            os.writeBytes("--$boundary\r\n")
+            os.writeBytes("Content-Disposition: form-data; name=\"file\"; filename=\"${file.name}\"\r\n")
+            os.writeBytes("Content-Type: text/csv\r\n\r\n")
+            
+            val fis = FileInputStream(file)
+            val buffer = ByteArray(4096)
+            var bytesRead: Int
+            while (fis.read(buffer).also { bytesRead = it } != -1) {
+                os.write(buffer, 0, bytesRead)
+            }
+            fis.close()
+            
+            os.writeBytes("\r\n--$boundary--\r\n")
+            os.flush()
+            os.close()
+
+            return conn.responseCode in 200..299
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return false
+        }
+    }
+
+    // --- UI DIALOGS ---
+
+    private fun showReportDialog() {
+        if (!isBound) return
+        
+        // Custom Layout for Description
+        val layout = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(50, 40, 50, 10)
+        }
+        
+        val inputIp = EditText(this).apply {
+            hint = "Server IP (e.g. 192.168.1.15)"
+            setText(prefs.getString("server_ip", ""))
+        }
+        
+        val inputKey = EditText(this).apply {
+            hint = "API Key"
+            setText(prefs.getString("api_key", "ET-SECURE-TOKEN-2025-V5"))
+        }
+
+        val inputDesc = EditText(this).apply {
+            hint = "Describe the issue (Optional)..."
+            minLines = 3
+            gravity = android.view.Gravity.TOP
+        }
+
+        layout.addView(inputIp)
+        layout.addView(inputKey)
+        layout.addView(inputDesc)
+
+        AlertDialog.Builder(this)
+            .setTitle("Report Issue")
+            .setMessage("Reports are queued and sent securely when connection is available.")
+            .setView(layout)
+            .setPositiveButton("Send Report") { _, _ ->
+                val ip = inputIp.text.toString()
+                val key = inputKey.text.toString()
+                val desc = inputDesc.text.toString()
+                
+                // Save Config
+                prefs.edit().putString("server_ip", ip).putString("api_key", key).apply()
+                
+                // Queue for upload
+                val csvData = serviceBinder?.getLogCsv() ?: "No Data"
+                queueReport(csvData, desc)
+            }
+            .setNeutralButton("Share via Email") { _, _ ->
+                shareViaEmail()
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun shareViaEmail() {
+        val csvData = serviceBinder?.getLogCsv() ?: return
+        val file = File(cacheDir, "et_report.csv")
+        FileOutputStream(file).use { it.write(csvData.toByteArray()) }
+
+        val uri = FileProvider.getUriForFile(this, "${packageName}.provider", file)
+        val intent = Intent(Intent.ACTION_SEND).apply {
+            type = "message/rfc822"
+            putExtra(Intent.EXTRA_SUBJECT, "ET Toolbox Report")
+            putExtra(Intent.EXTRA_STREAM, uri)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+        try { startActivity(intent) } catch(e:Exception){ 
+            Toast.makeText(this, "No Email App Found", Toast.LENGTH_SHORT).show() 
+        }
+    }
+
+    private fun updateUI() {
+        if (!isBound || serviceBinder == null) return
+        val result = serviceBinder?.lastResult ?: return
+
+        txtValues.text = "Shimmer: %.4f | Vib: %.3f m/s²\nSPL: %.1f dB(A) | TTF: %.1f h".format(
+            result.shimmerIndex, result.rmsVibration, result.correctedSPL, result.ttfPrediction
+        )
+
+        visualizer.update(result.preciseTilt[0], result.preciseTilt[1], result.rmsVibration, result.correctedSPL)
+
+        val drain = serviceBinder?.batteryDrainRate ?: 0.0
+        val dur = serviceBinder?.getDurationString() ?: "00:00"
+        txtBattery.text = "Session: $dur | Drain: %.2f%%/hr".format(drain)
+        if (drain > 5.0) txtBattery.setTextColor(Color.RED) else txtBattery.setTextColor(Color.LTGRAY)
+    }
+
+    private fun showCalibrationDialog() {
+        AlertDialog.Builder(this)
+            .setTitle("Calibrate Sensors")
+            .setMessage("Place device on a FLAT, STATIONARY surface.\n\nPress OK to measure zero-offsets (5 seconds).")
+            .setPositiveButton("OK") { _, _ ->
+                serviceBinder?.runCalibration()
+                Toast.makeText(this, "Calibrating...", Toast.LENGTH_SHORT).show()
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun checkPermissions() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.RECORD_AUDIO, Manifest.permission.FOREGROUND_SERVICE, Manifest.permission.INTERNET, Manifest.permission.ACCESS_NETWORK_STATE), 1)
+        }
+    }
+}

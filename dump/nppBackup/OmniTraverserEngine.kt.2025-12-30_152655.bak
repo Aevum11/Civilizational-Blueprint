@@ -1,0 +1,269 @@
+package com.et.physics.toolbox
+
+import kotlin.math.abs
+import kotlin.math.log10
+import kotlin.math.pow
+import kotlin.math.sqrt
+
+/**
+ * OmniTraverserEngine
+ *
+ * The core mathematical engine for Exception Theory (ET) derived physics analysis.
+ * Matches ET Scanner v5.0 "The Watcher Update" feature set strictly.
+ *
+ * ET PRINCIPLES:
+ * 1. P (Point): Infinite substrate (Raw Sensor Data Stream).
+ * 2. D (Descriptor): Finite constraint (Quantized values, coordinates).
+ * 3. T (Traverser): Indeterminate agency resolving P -> D (Analysis logic).
+ * 4. E (Exception): Substantiated Reality (Final Output).
+ *
+ * Core Formulae & Axioms:
+ * - Variance (Uniform D): V = (n^2 - 1) / 12 [Axiom 7]
+ * - Descriptor Gradient: f'(x) = ΔD / ΔP
+ * - Descriptor Distance (Pure Relationalism): Δs(p_i, p_box) = || f(d_i) - f(d_box) ||
+ * - Shimmer Index: Measure of P-D boundary activity (Entropy flux).
+ * - Dual Time: D_time (Descriptor/Coordinate) vs T_time (Agential/Proper).
+ */
+class OmniTraverserEngine {
+
+    // ET Constants
+    private val VARIANCE_IDEAL_UNIFORM = 0.08333 // ~ 1/12
+    private val MANIFOLD_RESONANCE_TARGET = 1.0 / 12.0
+    private val GAZE_THRESHOLD = 1.20 // Geometry of conscious detection
+
+    // State Vectors (P ∘ D)
+    private var varianceHistory = DoubleArray(50) { 0.0 }
+    private var gradientHistory = DoubleArray(50) { 0.0 }
+    private var historyIndex = 0
+
+    // Dual Time Accumulators
+    private var dTimeTotal: Double = 0.0 // Descriptor Time (Coordinate seconds)
+    private var tTimeTotal: Double = 0.0 // Agential Time (Experienced/Proper seconds)
+
+    // Calibration offsets (Hardware Entropy Profile)
+    private var splOffset = 0.0
+    private var tiltBias = FloatArray(3) { 0.0f }
+
+    // Indeterminacy Counters (T-Signatures)
+    // "Indeterminate Forms are flags of Agency"
+    private var zeroZeroForms = 0 // [0/0] Decision Points
+    private var infInfForms = 0   // [∞/∞] Scale Navigation
+
+    /**
+     * ET State Definitions (v5.0)
+     */
+    enum class EtState {
+        STATE_0_EXCEPTION, // V=0 (Substantiated, Perfect Order)
+        STATE_1_DESCRIPTOR, // Low V (Ordered, D-Dominant)
+        STATE_2_TRAVERSER, // High V (Indeterminate, T-Active)
+        STATE_3_POINT // Saturation (Chaos, P-Dominant)
+    }
+
+    /**
+     * Data structure for the Substantiated Moment (E)
+     * Includes all v5.0 Manifold Metrics.
+     */
+    data class SubstantiatedResult(
+        val shimmerIndex: Double, // Entropy / Variance metric
+        val descriptorGradient: Double, // Rate of change (Derivative)
+        val stabilityScore: Double, // 0.0 to 1.0
+        val bindingStrength: Double, // Percentage (0-100%) - T's grip on P
+        val ttfPrediction: Double, // Time to Failure in hours
+        val faultSeverity: Int, // 0=Green, 1=Yellow, 2=Red
+        val etState: EtState, // State of the manifold
+        val correctedSPL: Double, // Decibels
+        val preciseTilt: DoubleArray, // [Pitch, Roll, Azimuth]
+        val rmsVibration: Double, // m/s^2 (Variance proxy)
+        val dTime: Double, // Total Coordinate Time (s)
+        val tTime: Double, // Total Proper Time (s)
+        val descriptorDistance: Double, // Δs (Pure Relationalism)
+        val manifoldMetric: Double, // 12-fold resonance check (abs(Shimmer - 1/12))
+        val axiomsVerified: Int, // Count of verified axioms this cycle
+        val indeterminateForms: Int // Count of T-signatures resolved ([0/0] + [∞/∞])
+    )
+
+    /**
+     * Primary Navigation Algorithm (L'Hôpital's Resolution)
+     * Resolves raw sensor indeterminacy into a specific value.
+     */
+    fun resolveConfiguration(
+        accel: FloatArray,
+        gyro: FloatArray,
+        audioAmp: Double,
+        deltaTimeMs: Long // D_time step
+    ): SubstantiatedResult {
+
+        // --- 1. Substantiation (P -> D) ---
+        // P is the raw substrate (accel vector magnitude).
+        val rawMag = sqrt(accel[0] * accel[0] + accel[1] * accel[1] + accel[2] * accel[2])
+        
+        // --- 2. Variance & Shimmer (The Exception Axiom) ---
+        // Shimmer Index = Deviation from Substantiated Ideal (Variance 0).
+        // Actually, Shimmer is often defined as the variance itself in dynamic systems.
+        // Here we calculate recursive variance of the magnitude.
+        val variance = calculateRecursiveVariance(rawMag)
+        val shimmer = abs(variance) 
+        
+        // --- 3. Descriptor Gradient & Distance (Relationalism) ---
+        // f'(x) = ΔD / ΔP. Here, Rate of change of Shimmer (Entropy Gradient).
+        // "Gradient Variance" in v5.0 logs suggests analyzing the variance OF the gradient too,
+        // but we'll stick to the primary Gradient metric for TTF.
+        val previousShimmer = if (historyIndex > 0) varianceHistory[historyIndex - 1] else varianceHistory.last()
+        
+        updateHistory(shimmer)
+        val gradient = calculateGradient() // Slope of shimmer over history
+        
+        // Descriptor Distance: Δs = || f(d_i) - f(d_box) ||
+        // Pure relationalism: distance IS descriptor difference.
+        // We measure the "distance" the system has traveled in phase space (change in gradient).
+        val oldGradient = if (historyIndex > 1) gradientHistory[historyIndex - 1] else 0.0
+        val descriptorDistance = abs(gradient - oldGradient)
+
+        // --- 4. Dual Time Calculation (D_time vs T_time) ---
+        val dtSec = deltaTimeMs / 1000.0
+        dTimeTotal += dtSec
+        
+        // T_time (Proper/Agential Time) logic:
+        // T_time dilates when T is active (High Shimmer/Entropy).
+        // If Shimmer is 0 (Crystal), T_time = D_time.
+        // If Shimmer is high, T is "processing", so experienced time slows relative to D.
+        // Dilation Factor = 1 / (1 + Shimmer).
+        val dilationFactor = 1.0 / (1.0 + shimmer)
+        tTimeTotal += dtSec * dilationFactor
+
+        // --- 5. Indeterminate Form Detection (T-Signatures) ---
+        // L'Hôpital's Rule = The Navigation Algorithm.
+        // We detect conditions where the system is effectively [0/0] (stagnant/decision point)
+        // or [∞/∞] (saturation/scale jump).
+        var currentForms = 0
+        
+        // [0/0] Form: Both Magnitude change and Shimmer are near zero. Pure potential.
+        if (abs(rawMag - 9.81) < 0.01 && shimmer < 0.0001) {
+            zeroZeroForms++
+            currentForms++
+        }
+        
+        // [∞/∞] Form: Saturation. Magnitude or Gradient exceeding sensor/logic bounds.
+        // Assuming sensor max is ~80m/s^2.
+        if (rawMag > 75.0 || abs(gradient) > 50.0) {
+            infInfForms++
+            currentForms++
+        }
+
+        // --- 6. TTF Prediction (Gradient Singularity) ---
+        // Failure occurs when Gradient diverges (Vertical Asymptote in D_time).
+        // We project current gradient linearly to a Critical Variance (1.0).
+        val ttf = if (gradient > 0.0001) {
+            val criticalMass = 1.0
+            (criticalMass - shimmer) / gradient / 3600.0 // Hours
+        } else {
+            Double.POSITIVE_INFINITY
+        }
+
+        // --- 7. State & Severity Logic ---
+        val (state, severity) = determineStateAndSeverity(shimmer, gradient, rawMag)
+        
+        // Binding Strength: "T's grip on P".
+        // 100% = Perfect Crystal (Shimmer 0). 0% = Chaos.
+        // Formula: (1 - normalized_shimmer) * 100
+        val bindingStrength = ((1.0 - shimmer.coerceIn(0.0, 1.0)) * 100.0)
+
+        // --- 8. Crystallization (Precise Tilt) ---
+        // Use "Inverse Variance Weighting" to find the "Truth" amidst noise.
+        // Low variance samples are weighted heavily.
+        val weight = 1.0 / (1.0 + shimmer * 500.0) // Stronger weight on stability
+        tiltBias[0] = (tiltBias[0] * (1 - weight) + accel[0] * weight).toFloat()
+        tiltBias[1] = (tiltBias[1] * (1 - weight) + accel[1] * weight).toFloat()
+        tiltBias[2] = (tiltBias[2] * (1 - weight) + accel[2] * weight).toFloat()
+        
+        val pitch = Math.toDegrees(kotlin.math.atan2(tiltBias[1].toDouble(), tiltBias[2].toDouble()))
+        val roll = Math.toDegrees(kotlin.math.atan2(-tiltBias[0].toDouble(), sqrt(tiltBias[1] * tiltBias[1] + tiltBias[2] * tiltBias[2]).toDouble()))
+
+        // --- 9. Manifold Resonance & SPL ---
+        // 1/12 Manifold Resonance check.
+        // How close is the shimmer to the "Manifold Constant" (0.08333)?
+        val manifoldMetric = abs(shimmer - MANIFOLD_RESONANCE_TARGET)
+        
+        // SPL Correction:
+        // Audio amp is P. We adjust for D-field entropy.
+        val etAudioCorrection = if(audioAmp > 0) log10(1.0 + shimmer) * 5.0 else 0.0
+        val db = 20 * log10(audioAmp + 1e-6) + 90.0 + etAudioCorrection
+
+        // --- 10. Axiom Verification ---
+        // Check validity of core axioms in this frame.
+        var axiomsTrue = 0
+        // Axiom 7: Variance Formula (Is variance calculable?) -> Yes, strictly true if we are here.
+        axiomsTrue++ 
+        // Axiom 3: Point is Substrate (Do we have input?)
+        if (rawMag > 0) axiomsTrue++
+        // Axiom 4: Descriptor is Finite (Is outcome finite?)
+        if (!shimmer.isInfinite() && !shimmer.isNaN()) axiomsTrue++
+        // Axiom 11: S = P∘D∘T (Is Binding Strength valid?)
+        if (bindingStrength in 0.0..100.0) axiomsTrue++
+
+        return SubstantiatedResult(
+            shimmerIndex = shimmer,
+            descriptorGradient = gradient,
+            stabilityScore = (1.0 - shimmer).coerceIn(0.0, 1.0),
+            bindingStrength = bindingStrength,
+            ttfPrediction = ttf,
+            faultSeverity = severity,
+            etState = state,
+            correctedSPL = db,
+            preciseTilt = doubleArrayOf(pitch, roll, 0.0),
+            rmsVibration = variance,
+            dTime = dTimeTotal,
+            tTime = tTimeTotal,
+            descriptorDistance = descriptorDistance,
+            manifoldMetric = manifoldMetric,
+            axiomsVerified = axiomsTrue,
+            indeterminateForms = zeroZeroForms + infInfForms
+        )
+    }
+
+    private fun determineStateAndSeverity(shimmer: Double, gradient: Double, mag: Double): Pair<EtState, Int> {
+        return when {
+            mag > 50.0 -> Pair(EtState.STATE_3_POINT, 2) // Saturation/Chaos -> RED
+            shimmer > 0.5 || gradient > 0.1 -> Pair(EtState.STATE_2_TRAVERSER, 2) // High Indeterminacy -> RED
+            shimmer > 0.1 || gradient > 0.01 -> Pair(EtState.STATE_1_DESCRIPTOR, 1) // Mild Instability -> YELLOW
+            shimmer < 0.005 -> Pair(EtState.STATE_0_EXCEPTION, 0) // Crystal/Exception -> GREEN
+            else -> Pair(EtState.STATE_1_DESCRIPTOR, 0) // Normal Operation -> GREEN
+        }
+    }
+
+    private fun calculateRecursiveVariance(newValue: Float): Double {
+        // Standard variance over the history buffer
+        // Note: In strict ET, V = (n^2 - 1)/12 is for Uniform Distributions.
+        // For sample data, we use standard population variance as the "Shimmer".
+        val mean = varianceHistory.average()
+        return (newValue - mean).pow(2)
+    }
+
+    private fun updateHistory(shimmer: Double) {
+        varianceHistory[historyIndex] = shimmer
+        // We store the slope (gradient) in the gradient history for derivative of derivative checks if needed
+        // For now, gradientHistory tracks the calculated gradient of the previous step for smoothing
+        historyIndex = (historyIndex + 1) % varianceHistory.size
+    }
+
+    private fun calculateGradient(): Double {
+        // f'(x) = ΔD / ΔP
+        // Simple linear regression slope over the history buffer for stability
+        val n = varianceHistory.size
+        val half = n / 2
+        // Split into two halves to get a robust slope
+        val recentSum = varianceHistory.takeLast(half).sum()
+        val oldSum = varianceHistory.dropLast(half).sum()
+        return (recentSum - oldSum) / half
+    }
+
+    fun calibrate(accelBase: FloatArray) {
+        tiltBias = accelBase.clone()
+        varianceHistory.fill(0.0)
+        gradientHistory.fill(0.0)
+        dTimeTotal = 0.0
+        tTimeTotal = 0.0
+        zeroZeroForms = 0
+        infInfForms = 0
+    }
+}

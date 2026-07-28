@@ -1,0 +1,281 @@
+package com.et.physics.toolbox
+
+import android.Manifest
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
+import android.content.SharedPreferences
+import android.graphics.Color
+import android.graphics.BitmapFactory
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.Typeface
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.Uri
+import android.os.Build
+import android.os.Bundle
+import android.os.Handler
+import android.os.IBinder
+import android.os.Looper
+import android.os.PowerManager
+import android.provider.Settings
+import android.view.View
+import android.widget.*
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKey
+import androidx.camera.core.*
+import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.view.PreviewView
+import java.io.File
+import java.io.FileInputStream
+import java.io.DataOutputStream
+import java.net.HttpURLConnection
+import java.net.URL
+import kotlin.concurrent.thread
+import java.text.SimpleDateFormat
+import java.util.*
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
+import android.content.ContentValues
+
+class MainActivity : AppCompatActivity() {
+
+    private var serviceBinder: OmniMeasureService? = null
+    private var isBound = false
+    private lateinit var prefs: SharedPreferences
+    private lateinit var securePrefs: SharedPreferences
+
+    private lateinit var visualizer: VisualizerView
+    private lateinit var spinnerMode: Spinner
+    private lateinit var txtModeHelp: TextView
+    private lateinit var txtValues: TextView
+    private lateinit var txtStats: TextView
+    private lateinit var txtBattery: TextView
+    private lateinit var txtOffline: TextView
+    private lateinit var btnStart: Button
+    private lateinit var btnStop: Button
+    private lateinit var btnCalibrate: Button
+    private lateinit var btnReport: Button
+    private lateinit var btnAbout: Button
+    private lateinit var btnGpsToggle: ToggleButton
+    private lateinit var btnGraphToggle: ToggleButton
+    private lateinit var btnRecToggle: ToggleButton
+    private lateinit var btnBaseline: Button
+    private lateinit var btnAlarms: Button
+    private lateinit var btnSpectrogram: ToggleButton
+    private lateinit var btnUnits: ToggleButton 
+    private lateinit var btnDose: ToggleButton 
+    private lateinit var btnVoiceNote: ImageButton 
+    private lateinit var progressBar: ProgressBar
+    
+    // Tools
+    private lateinit var btnTools: Button
+    private lateinit var rulerView: RulerView
+    private lateinit var protractorView: ProtractorView
+    private lateinit var btnRulerAction: Button
+    private lateinit var btnSync: Button // New
+    
+    // Camera
+    private lateinit var viewFinder: PreviewView
+    private lateinit var btnCameraToggle: Button
+    private lateinit var btnCapture: Button
+    private lateinit var cameraContainer: FrameLayout
+    private var imageCapture: ImageCapture? = null
+    private lateinit var cameraExecutor: ExecutorService
+    private var isCameraActive = false
+
+    private val BUILD_DATE = SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Date())
+    private val APP_VERSION = "24.0-Networked"
+
+    private val handler = Handler(Looper.getMainLooper())
+    private val updateRunnable = object : Runnable { override fun run() { updateUI(); handler.postDelayed(this, 100) } }
+
+    private val connection = object : ServiceConnection {
+        override fun onServiceConnected(className: ComponentName, service: IBinder) {
+            val binder = service as OmniMeasureService.LocalBinder
+            serviceBinder = binder.getService()
+            isBound = true
+            if (serviceBinder?.currentMode != null) spinnerMode.setSelection(serviceBinder!!.currentMode.ordinal)
+            btnGpsToggle.isChecked = serviceBinder?.isGpsEnabled ?: false
+            btnRecToggle.isChecked = serviceBinder?.isRecordingAudio ?: false
+            if (serviceBinder?.hasBaseline == true) btnBaseline.text = "Reset Base" else btnBaseline.text = "Set Baseline"
+            btnUnits.isChecked = serviceBinder?.currentUnitSystem == OmniMeasureService.UnitSystem.IMPERIAL
+            btnDose.isChecked = serviceBinder?.currentDoseStandard == OmniTraverserEngine.DoseStandard.NIOSH
+        }
+        override fun onServiceDisconnected(arg0: ComponentName) { isBound = false; serviceBinder = null }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        prefs = getSharedPreferences("ET_Prefs", Context.MODE_PRIVATE)
+        try {
+            val masterKey = MasterKey.Builder(this).setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build()
+            securePrefs = EncryptedSharedPreferences.create(this, "ET_Secure_Prefs", masterKey, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
+        } catch (e: Exception) { securePrefs = getSharedPreferences("ET_Secure_Prefs_Fallback", Context.MODE_PRIVATE) }
+
+        visualizer = findViewById(R.id.visualizer); spinnerMode = findViewById(R.id.spinnerMode); txtModeHelp = findViewById(R.id.txtModeHelp); txtValues = findViewById(R.id.txtValues); txtStats = findViewById(R.id.txtStats); txtBattery = findViewById(R.id.txtBattery); txtOffline = findViewById(R.id.txtOffline); btnStart = findViewById(R.id.btnStart); btnStop = findViewById(R.id.btnStop); btnCalibrate = findViewById(R.id.btnCalibrate); btnReport = findViewById(R.id.btnReport); btnAbout = findViewById(R.id.btnAbout); btnGpsToggle = findViewById(R.id.btnGpsToggle); btnGraphToggle = findViewById(R.id.btnGraphToggle); btnRecToggle = findViewById(R.id.btnRecToggle); btnBaseline = findViewById(R.id.btnBaseline); btnAlarms = findViewById(R.id.btnAlarms); btnSpectrogram = findViewById(R.id.btnSpectrogram); btnUnits = findViewById(R.id.btnUnits); btnDose = findViewById(R.id.btnDose); btnVoiceNote = findViewById(R.id.btnVoiceNote); progressBar = findViewById(R.id.progressBar); viewFinder = findViewById(R.id.viewFinder); cameraContainer = findViewById(R.id.cameraContainer); btnCameraToggle = findViewById(R.id.btnCameraToggle); btnCapture = findViewById(R.id.btnCapture); 
+        
+        btnTools = findViewById(R.id.btnTools)
+        rulerView = findViewById(R.id.rulerView)
+        protractorView = findViewById(R.id.protractorView)
+        btnRulerAction = findViewById(R.id.btnRulerAction)
+        btnSync = findViewById(R.id.btnSync) // New
+        
+        cameraExecutor = Executors.newSingleThreadExecutor()
+
+        setupSpinner(); checkPermissions(); checkBatteryOptimization(); setupNetworkMonitor()
+
+        btnStart.setOnClickListener { val mode = OmniMeasureService.ScanMode.values()[spinnerMode.selectedItemPosition]; val intent = Intent(this, OmniMeasureService::class.java); startService(intent); bindService(intent, connection, Context.BIND_AUTO_CREATE); if(isBound) serviceBinder?.startMeasurement(mode) }
+        btnStop.setOnClickListener { serviceBinder?.stopMeasurement(); if (isBound) { unbindService(connection); isBound = false; serviceBinder = null }; handler.removeCallbacks(updateRunnable) }
+        btnCalibrate.setOnClickListener { showCalibrationDialog() }; btnCalibrate.setOnLongClickListener { serviceBinder?.tareAltitude(); Toast.makeText(this, "Altitude Tared", Toast.LENGTH_SHORT).show(); true }
+        btnReport.setOnClickListener { checkPrivacyAndShowReport() }; btnAbout.setOnClickListener { showAboutDialog() }
+        btnGpsToggle.setOnClickListener { if (btnGpsToggle.isChecked) { btnGpsToggle.isChecked = false; showGpsConsentDialog() } else { serviceBinder?.setGpsEnabled(false) } }
+        btnGraphToggle.setOnClickListener { if (btnGraphToggle.isChecked) { btnSpectrogram.isChecked = false; val trend = serviceBinder?.getTrendHistory(); if (trend != null && trend.isNotEmpty()) visualizer.setTrendData(trend) else { Toast.makeText(this, "No trend data.", Toast.LENGTH_SHORT).show(); btnGraphToggle.isChecked = false } } else { visualizer.setLiveMode() } }
+        btnSpectrogram.setOnClickListener { if (btnSpectrogram.isChecked) { btnGraphToggle.isChecked = false; visualizer.setSpectrumMode() } else { visualizer.setLiveMode() } }
+        btnRecToggle.setOnClickListener { serviceBinder?.setAudioRecordingEnabled(btnRecToggle.isChecked); if (btnRecToggle.isChecked) Toast.makeText(this, "Recording Audio (WAV)...", Toast.LENGTH_SHORT).show() }
+        btnBaseline.setOnClickListener { if (serviceBinder?.hasBaseline == true) { serviceBinder?.clearBaseline(); btnBaseline.text = "Set Baseline"; Toast.makeText(this, "Baseline Cleared", Toast.LENGTH_SHORT).show() } else { serviceBinder?.captureBaseline(); btnBaseline.text = "Reset Base"; Toast.makeText(this, "Baseline Captured", Toast.LENGTH_SHORT).show() } }
+        btnAlarms.setOnClickListener { showAlarmDialog() }
+        btnUnits.setOnClickListener { 
+            serviceBinder?.setUnitSystem(if (btnUnits.isChecked) OmniMeasureService.UnitSystem.IMPERIAL else OmniMeasureService.UnitSystem.METRIC)
+            if (rulerView.visibility == View.VISIBLE) rulerView.toggleUnit()
+        }
+        btnDose.setOnClickListener { serviceBinder?.setDoseStandard(if (btnDose.isChecked) OmniTraverserEngine.DoseStandard.NIOSH else OmniTraverserEngine.DoseStandard.OSHA) }
+        
+        btnVoiceNote.setOnTouchListener { _, event ->
+            when (event.action) {
+                android.view.MotionEvent.ACTION_DOWN -> { serviceBinder?.startVoiceMemo(); btnVoiceNote.setColorFilter(Color.RED); Toast.makeText(this, "Recording Memo...", Toast.LENGTH_SHORT).show() }
+                android.view.MotionEvent.ACTION_UP, android.view.MotionEvent.ACTION_CANCEL -> { serviceBinder?.stopVoiceMemo(); btnVoiceNote.setColorFilter(Color.WHITE); Toast.makeText(this, "Memo Saved", Toast.LENGTH_SHORT).show() }
+            }
+            true
+        }
+        
+        btnCameraToggle.setOnClickListener { if (isCameraActive) stopCamera() else startCamera() }; btnCapture.setOnClickListener { takePhoto() }
+        
+        // TOOLS MENU
+        btnTools.setOnClickListener {
+            val popup = PopupMenu(this, btnTools)
+            popup.menu.add("Ruler (Scrollable)")
+            popup.menu.add("Protractor (Gravity)")
+            popup.menu.add("Close Tools")
+            popup.setOnMenuItemClickListener { item ->
+                when(item.title) {
+                    "Ruler (Scrollable)" -> { 
+                        rulerView.visibility = View.VISIBLE; btnRulerAction.visibility = View.VISIBLE; protractorView.visibility = View.GONE; visualizer.visibility = View.GONE
+                        Toast.makeText(this, "Scroll screen to extend. Tap 'Mark' to pin.", Toast.LENGTH_LONG).show()
+                    }
+                    "Protractor (Gravity)" -> { 
+                        protractorView.visibility = View.VISIBLE; rulerView.visibility = View.GONE; btnRulerAction.visibility = View.GONE; visualizer.visibility = View.GONE 
+                    }
+                    "Close Tools" -> {
+                        rulerView.visibility = View.GONE; btnRulerAction.visibility = View.GONE; protractorView.visibility = View.GONE; visualizer.visibility = View.VISIBLE
+                    }
+                }
+                true
+            }
+            popup.show()
+        }
+        
+        btnRulerAction.setOnClickListener { rulerView.addMarkerAtCenter() }
+        
+        // SYNC MENU
+        btnSync.setOnClickListener {
+            val popup = PopupMenu(this, btnSync)
+            popup.menu.add("Start as LEADER")
+            popup.menu.add("Start as FOLLOWER")
+            popup.menu.add("Stop Sync")
+            popup.setOnMenuItemClickListener { item ->
+                when(item.title) {
+                    "Start as LEADER" -> { serviceBinder?.startSyncMode(true); Toast.makeText(this, "Scanning for peers...", Toast.LENGTH_LONG).show() }
+                    "Start as FOLLOWER" -> { serviceBinder?.startSyncMode(false); Toast.makeText(this, "Broadcasting presence...", Toast.LENGTH_LONG).show() }
+                    "Stop Sync" -> { serviceBinder?.stopSyncMode(); Toast.makeText(this, "Sync Stopped", Toast.LENGTH_SHORT).show() }
+                }
+                true
+            }
+            popup.show()
+        }
+        
+        handler.post(updateRunnable)
+    }
+    
+    // --- UI HELPERS ---
+    private fun convVib(v: Double, imperial: Boolean) = if (imperial) v * 0.03937 else v
+    private fun convPress(p: Double, imperial: Boolean) = if (imperial) p * 0.02953 else p
+    private fun convTemp(t: Double?, imperial: Boolean) = if (t == null) null else if (imperial) t * 1.8 + 32 else t
+    private fun convAlt(a: Double, imperial: Boolean) = if (imperial) a * 3.28084 else a
+    private fun getVibUnit(imp: Boolean) = if(imp) "in/s" else "mm/s"
+    private fun getPressUnit(imp: Boolean) = if(imp) "inHg" else "hPa"
+    private fun getTempUnit(imp: Boolean) = if(imp) "°F" else "°C"
+    private fun getAltUnit(imp: Boolean) = if(imp) "ft" else "m"
+
+    private val sbValues = StringBuilder(); private val sbStats = StringBuilder()
+    private fun updateUI() {
+        if (isBound && serviceBinder != null) {
+             val result = serviceBinder?.lastResult; val imperial = btnUnits.isChecked
+             // Modes
+             visualizer.setBaselines(serviceBinder?.baselineVib, serviceBinder?.baselineSpl)
+             if (visualizer.showTrendMode && System.currentTimeMillis() % 1000 < 200) { val trend = serviceBinder?.getTrendHistory(); if(trend != null) visualizer.setTrendData(trend) }
+             
+             // Update Protractor if visible
+             if (protractorView.visibility == View.VISIBLE && result != null) {
+                 protractorView.updateAngles(result.preciseTilt[0], result.preciseTilt[1])
+             }
+
+             if (result != null) {
+                sbValues.setLength(0)
+                if (result.gpsLat != null) sbValues.append("GPS: ").append(String.format("%.5f, %.5f", result.gpsLat, result.gpsLon)).append("\n")
+                else sbValues.append("Hdg: ").append(String.format("%.0f°", result.azimuth)).append("\n")
+                
+                if (result.alarmBreached) { txtValues.setBackgroundColor(Color.RED); txtValues.setTextColor(Color.WHITE) } else { txtValues.setBackgroundColor(Color.TRANSPARENT); txtValues.setTextColor(Color.parseColor("#00FF00")) }
+
+                sbValues.append("Vel: ").append(String.format("%.2f", convVib(result.velocityRms, imperial))).append(" ${getVibUnit(imperial)} | SPL: ").append(String.format("%.1f", result.correctedSPL))
+                txtValues.text = sbValues.toString()
+
+                sbStats.setLength(0)
+                // Add Sync Status
+                if (serviceBinder?.isSyncLeader == true) sbStats.append("SYNC: Leader (Peers: ${serviceBinder?.connectedPeers})\n")
+                else if (serviceBinder?.connectedPeers ?: 0 > 0) sbStats.append("SYNC: Follower (Connected)\n")
+                
+                sbStats.append("Dose: ").append(String.format("%.1f%%", result.dosePercent)).append(" (").append(result.doseStandard).append(")\n")
+                sbStats.append("P: ").append(String.format("%.1f", convPress(result.pressureHpa, imperial))).append(getPressUnit(imperial)).append(" | Alt: ").append(String.format("%.0f", convAlt(result.relativeAltitude, imperial))).append(getAltUnit(imperial)).append("\n")
+                val tempStr = if (result.ambientTempC != null) String.format("%.1f%s", convTemp(result.ambientTempC, imperial), getTempUnit(imperial)) else "N/A"
+                sbStats.append("Amb: ").append(tempStr).append(" (").append(result.thermalState).append(") | ").append(result.mechSource).append("\n")
+                sbStats.append("Pk: ").append(String.format("%.0f", result.dominantFreq)).append("Hz ").append(result.freqLabel).append("\n")
+                sbStats.append("Lux: ").append(String.format("%.0f", result.illuminanceLux)).append(" (").append(result.lightSource).append(")")
+                if(btnRecToggle.isChecked) sbStats.append(" [REC]")
+                txtStats.text = sbStats.toString()
+
+                if (visualizer.currentMode != VisualizerView.ViewMode.TREND && visualizer.visibility == View.VISIBLE) {
+                    visualizer.update(result.preciseTilt[0], result.preciseTilt[1], result.rmsVibration, result.correctedSPL, result.illuminanceLux, result.azimuth, result.pressureHpa, result.ambientTempC, result.fftMagnitudes)
+                }
+                val drain = serviceBinder?.batteryDrainRate ?: 0.0; val dur = serviceBinder?.getDurationString() ?: "00:00"
+                txtBattery.text = "$dur | -%.2f%%/hr".format(drain)
+             }
+        }
+    }
+    
+    // --- CAMERA, PRIVACY, DIALOGS (Same as v16.0) ---
+    private fun startCamera() { if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) { ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), 101); return }; cameraContainer.visibility = View.VISIBLE; visualizer.visibility = View.GONE; rulerView.visibility = View.GONE; protractorView.visibility = View.GONE; isCameraActive = true; btnCameraToggle.text = "Hide"; val cameraProviderFuture = ProcessCameraProvider.getInstance(this); cameraProviderFuture.addListener({ val cameraProvider = cameraProviderFuture.get(); val preview = Preview.Builder().build().also { it.setSurfaceProvider(viewFinder.surfaceProvider) }; imageCapture = ImageCapture.Builder().build(); val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA; try { cameraProvider.unbindAll(); cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture) } catch(exc: Exception) {} }, ContextCompat.getMainExecutor(this)) }
+    private fun stopCamera() { cameraContainer.visibility = View.GONE; visualizer.visibility = View.VISIBLE; isCameraActive = false; btnCameraToggle.text = "Cam"; val cameraProviderFuture = ProcessCameraProvider.getInstance(this); cameraProviderFuture.addListener({ cameraProviderFuture.get().unbindAll() }, ContextCompat.getMainExecutor(this)) }
+    private fun takePhoto() { val imageCapture = imageCapture ?: return; val photoFile = File(externalCacheDir, "ET_Temp_${System.currentTimeMillis()}.jpg"); val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build(); imageCapture.takePicture(outputOptions, ContextCompat.getMainExecutor(this), object : ImageCapture.OnImageSavedCallback { override fun onError(exc: ImageCaptureException) { Toast.makeText(baseContext, "Fail", Toast.LENGTH_SHORT).show() }; override fun onImageSaved(output: ImageCapture.OutputFileResults) { processAndSaveImage(photoFile) } }) }
+    private fun processAndSaveImage(tempFile: File) { thread { try { val originalBitmap = BitmapFactory.decodeFile(tempFile.absolutePath); val overlayBitmap = originalBitmap.copy(Bitmap.Config.ARGB_8888, true); val canvas = Canvas(overlayBitmap); val paint = Paint(); paint.color = Color.parseColor("#99000000"); paint.style = Paint.Style.FILL; val h = overlayBitmap.height; val w = overlayBitmap.width; canvas.drawRect(0f, h * 0.75f, w.toFloat(), h.toFloat(), paint); paint.color = Color.GREEN; paint.textSize = h * 0.03f; paint.isAntiAlias = true; paint.typeface = Typeface.MONOSPACE; val result = serviceBinder?.lastResult; val dateStr = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US).format(Date()); val line1 = "ET EVIDENCE CAM | $dateStr"; var line2 = "Waiting..."; if (result != null) { line2 = "SPL: %.1fdB | Vib: %.3f | Dose: %.1f%%".format(result.correctedSPL, result.rmsVibration, result.dosePercent) }; val x = w * 0.05f; var y = h * 0.79f; canvas.drawText(line1, x, y, paint); y += paint.textSize * 1.5f; canvas.drawText(line2, x, y, paint); val filename = "ET_Evid_${System.currentTimeMillis()}.jpg"; val contentValues = ContentValues().apply { put(MediaStore.MediaColumns.DISPLAY_NAME, filename); put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg"); if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/ET_Evidence") }; val uri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues); if (uri != null) { val outStream = contentResolver.openOutputStream(uri); overlayBitmap.compress(Bitmap.CompressFormat.JPEG, 95, outStream!!); outStream.close(); runOnUiThread { Toast.makeText(this, "Saved: $filename", Toast.LENGTH_LONG).show() } }; tempFile.delete(); originalBitmap.recycle(); overlayBitmap.recycle() } catch (e: Exception) { e.printStackTrace() } } }
+    private fun showAlarmDialog() { val layout = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(50, 40, 50, 10) }; val inVib = EditText(this).apply { hint = "Max Vib (mm/s)"; inputType = 8194 }; val inSpl = EditText(this).apply { hint = "Max SPL (dB)"; inputType = 8194 }; val inTemp = EditText(this).apply { hint = "Max Temp (°C)"; inputType = 8194 }; val inLuxMin = EditText(this).apply { hint = "Min Lux"; inputType = 8194 }; val inLuxMax = EditText(this).apply { hint = "Max Lux"; inputType = 8194 }; layout.addView(inVib); layout.addView(inSpl); layout.addView(inTemp); layout.addView(inLuxMin); layout.addView(inLuxMax); AlertDialog.Builder(this).setTitle("Set Sentinel Alarms").setView(layout).setPositiveButton("Set") { _, _ -> serviceBinder?.setAlarmConfig(OmniTraverserEngine.AlarmConfig(maxVelocity = inVib.text.toString().toDoubleOrNull(), maxSpl = inSpl.text.toString().toDoubleOrNull(), maxTemp = inTemp.text.toString().toDoubleOrNull(), minLux = inLuxMin.text.toString().toDoubleOrNull(), maxLux = inLuxMax.text.toString().toDoubleOrNull())); Toast.makeText(this, "Alarms Active", Toast.LENGTH_SHORT).show() }.setNeutralButton("Clear") { _, _ -> serviceBinder?.setAlarmConfig(null); Toast.makeText(this, "Alarms Cleared", Toast.LENGTH_SHORT).show() }.setNegativeButton("Cancel", null).show() }
+    private fun checkPrivacyAndShowReport() { if (!prefs.getBoolean("privacy_opt_in", false)) showPrivacyConsentDialog() else showReportDialog() }
+    private fun showPrivacyConsentDialog() { AlertDialog.Builder(this).setTitle("Privacy").setMessage("Upload? (Opt-In)").setPositiveButton("Enable") { _, _ -> prefs.edit().putBoolean("privacy_opt_in", true).apply(); showReportDialog() }.setNegativeButton("Cancel", null).show() }
+    private fun showReportDialog() { AlertDialog.Builder(this).setTitle("Export").setPositiveButton("PDF") { _, _ -> val pdf = serviceBinder?.generatePdfReport(this); if (pdf != null) { val uri = FileProvider.getUriForFile(this, "${packageName}.provider", pdf); startActivity(Intent(Intent.ACTION_SEND).apply { type = "application/pdf"; putExtra(Intent.EXTRA_STREAM, uri); addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION) }) } }.setNeutralButton("ZIP") { _, _ -> val zip = serviceBinder?.getLogZip(this); if (zip != null) queueZipReport(zip, "") }.setNegativeButton("CSV") { _, _ -> val csv = serviceBinder?.getLogCsv(this); if (csv != null) { val uri = FileProvider.getUriForFile(this, "${packageName}.provider", csv); startActivity(Intent(Intent.ACTION_SEND).apply { type = "text/csv"; putExtra(Intent.EXTRA_STREAM, uri); addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION) }) } }.show() }
+    private fun queueZipReport(zipFile: File, description: String) { serviceBinder?.flushPendingReports(this) }
+    private fun setupNetworkMonitor() {} 
+    private fun showAboutDialog() { AlertDialog.Builder(this).setTitle("ET Physics Toolbox").setMessage("v$APP_VERSION ($BUILD_DATE)\nEngine: OmniTraverser v24.0\nDevice: ${android.os.Build.MODEL}").setPositiveButton("OK", null).show() }
+    private fun showCalibrationDialog() { AlertDialog.Builder(this).setTitle("Calibrate").setPositiveButton("OK") { _, _ -> serviceBinder?.runCalibration() }.show() }
+    private fun checkPermissions() { ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.RECORD_AUDIO, Manifest.permission.FOREGROUND_SERVICE, Manifest.permission.INTERNET, Manifest.permission.ACCESS_NETWORK_STATE, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE), 1) }
+    private fun checkBatteryOptimization() {}
+    private fun showGpsConsentDialog() { AlertDialog.Builder(this).setTitle("GPS").setMessage("Enable?").setPositiveButton("OK") { _, _ -> serviceBinder?.setGpsEnabled(true); btnGpsToggle.isChecked = true }.show() }
+}

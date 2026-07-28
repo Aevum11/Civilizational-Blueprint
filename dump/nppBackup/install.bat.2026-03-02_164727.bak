@@ -1,0 +1,121 @@
+@echo off
+:: ==============================================================================
+:: PERSISTENCE WRAPPER: Forces the window to stay open unconditionally
+:: ==============================================================================
+echo %CMDCMDLINE% | find /i "/c" >nul
+if %errorlevel% equ 0 (
+    cmd /k "%~f0" %*
+    exit /b
+)
+
+setlocal EnableDelayedExpansion
+title ETPL Build Environment FORCE REPAIR
+
+echo ==============================================================================
+echo   ETPL BUILD ENVIRONMENT: SAFE REPAIR AND FORCE INSTALL
+echo ==============================================================================
+echo.
+
+:: 1. Check for Administrator Privileges
+echo [*] Checking for Administrator privileges...
+net session >nul 2>&1
+if %errorLevel% neq 0 (
+    echo [!] ERROR: Administrative privileges required.
+    echo [!] Please right-click this batch file and select "Run as administrator".
+    pause
+    exit /b 1
+)
+echo [OK] Running as Administrator.
+
+:: 2. ENVIRONMENT SANITIZATION (Local Only)
+echo [*] Creating isolated environment for installation...
+set "OLD_PATH=%PATH%"
+set "PATH=%SystemRoot%\system32;%SystemRoot%;%SystemRoot%\System32\Wbem;%SystemRoot%\System32\WindowsPowerShell\v1.0\"
+
+set "DOWNLOAD_DIR=%TEMP%\ETPL_Force_Repair"
+if exist "%DOWNLOAD_DIR%" rmdir /s /q "%DOWNLOAD_DIR%"
+mkdir "%DOWNLOAD_DIR%"
+cd /d "%DOWNLOAD_DIR%"
+
+:: ==============================================================================
+:: 3. VISUAL STUDIO BUILD TOOLS - FORCE REPAIR
+:: ==============================================================================
+echo [*] Step 1/2: Force Installing VS Build Tools (UCRT + Win11 SDK)...
+:: Added --ssl-no-revoke to bypass the CRYPT_E_NO_REVOCATION_CHECK error
+curl -sSL --ssl-no-revoke -o vs_bt.exe "https://aka.ms/vs/17/release/vs_buildtools.exe"
+
+if exist vs_bt.exe (
+    echo     Installing/Repairing components (this runs in the background)...
+    :: Removed all ^ line breaks to prevent "...was unexpected at this time" syntax errors
+    start /wait "" vs_bt.exe --quiet --wait --norestart --nocache --add Microsoft.VisualStudio.Workload.VCTools --includeRecommended --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.Component.VC.UCRT --add Microsoft.VisualStudio.Component.Windows11SDK.22621
+    echo [OK] VS Build Tools Step Complete.
+) else (
+    echo [!] ERROR: Could not download VS Build Tools. Check internet connection.
+)
+
+:: ==============================================================================
+:: 4. MSYS2 UCRT64 - FORCE CLEAN INSTALL
+:: ==============================================================================
+echo [*] Step 2/2: Force Installing MSYS2 UCRT64...
+if not exist "C:\msys64\usr\bin\bash.exe" (
+    echo     Downloading MSYS2...
+    curl -sSL --ssl-no-revoke -o msys2.exe "https://github.com/msys2/msys2-installer/releases/download/2024-01-13/msys2-x86_64-20240113.exe"
+    if exist msys2.exe (
+        start /wait "" msys2.exe in --confirm-command --accept-messages --root "C:\msys64"
+    )
+)
+
+if exist "C:\msys64\usr\bin\bash.exe" (
+    echo     Updating packages and forcing UCRT64 toolchain...
+    "C:\msys64\usr\bin\bash.exe" -lc "pacman --noconfirm -Syuu"
+    "C:\msys64\usr\bin\bash.exe" -lc "pacman --noconfirm -S mingw-w64-ucrt-x86_64-toolchain"
+    echo [OK] MSYS2 UCRT64 Step Complete.
+)
+
+:: ==============================================================================
+:: 5. VERIFICATION
+:: ==============================================================================
+echo.
+echo ==============================================================================
+echo   VERIFICATION PHASE
+echo ==============================================================================
+echo.
+
+:: Restore path for verification but prioritize new tools
+set "PATH=C:\msys64\ucrt64\bin;C:\msys64\usr\bin;%OLD_PATH%"
+
+set "LIB_CHECK=0"
+echo [*] Searching for msvcrt.lib...
+for /f "delims=" %%i in ('dir /s /b "C:\Program Files (x86)\Microsoft Visual Studio\*.lib" 2^>nul ^| findstr /i "msvcrt.lib"') do (
+    echo [FOUND] %%i
+    set "LIB_CHECK=1"
+)
+
+if "!LIB_CHECK!"=="0" (
+    echo [!] WARNING: msvcrt.lib still not found via standard scan.
+) else (
+    echo [OK] Required Libraries found.
+)
+
+echo.
+echo [*] LINKER CHECK:
+where lld-link.exe 2>nul || echo [!] lld-link.exe not in current path.
+where gcc.exe 2>nul || echo [!] gcc.exe not in current path.
+
+echo.
+echo ==============================================================================
+echo   REPAIR FINISHED
+echo ==============================================================================
+echo.
+echo To fix the "Strawberry Perl" conflict without destroying your existing PATH:
+echo 1. Open 'Edit the system environment variables' from Start.
+echo 2. Click 'Environment Variables'.
+echo 3. Find 'Path' in System Variables.
+echo 4. Move 'C:\msys64\ucrt64\bin' to the TOP.
+echo 5. Move any 'Strawberry' entries to the BOTTOM.
+echo.
+echo Cleaning up...
+cd /d "%~dp0"
+rmdir /s /q "%DOWNLOAD_DIR%"
+echo Press any key to exit.
+pause >nul

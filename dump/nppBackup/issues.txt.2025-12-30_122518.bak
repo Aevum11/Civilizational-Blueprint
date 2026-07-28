@@ -1,0 +1,42 @@
+Vibration window size still fixed & small
+100 samples @ ~50 Hz = ~2 s → ok for slow vibrations, but
+Too short for detecting slow trends (e.g. washing machine imbalance over 5–10 s)
+No configurable duration (user might want 5 s or 10 s for appliance checks)
+========================================================
+Audio FFT is basic & CPU-heavy
+Radix-2 in-place FFT on every 2048-sample block (~46 ms @ 44.1 kHz) is ok for flagship, but may stutter on budget devices
+No windowing function (Hanning/Hamming) → spectral leakage → less accurate peaks
+Only finds single dominant bin → poor for broadband or multi-tone sounds
+===========================================================
+dB still not true SPL
+DB_OFFSET = 90.0 is a rough guess; real mic sensitivity varies 10–20 dB between phones
+No user calibration mode (e.g. "quiet room → set as 30 dB")
+==========================================================
+No magnetometer / full rotation vector
+Still yaw-unaware → limited to pitch/roll only (no compass heading)
+Drift can accumulate over long periods despite complementary filter
+==============================================================
+No foreground service
+App dies in background → no "always-ready" behaviour
+Android ≥12 kills even foreground services without notification sometimes
+***********************************************************************
+Suggested improvements – next logical steps (early 2026)
+*******************************************************************
+Make vibration window configurable (top priority)
+→ Add UI slider: 1 s / 3 s / 5 s / 10 s
+→ Dynamically size ArrayDeque or switch to time-based pruning (better)
+Improve FFT audio
+→ Add Hanning window before FFT
+→ Interpolate peak frequency (parabolic) for sub-bin accuracy
+→ Optional: detect multiple strong peaks (e.g. harmonics)
+Add user dB calibration
+→ Button: "Quiet room" → average 5 s → set as baseline (e.g. 35 dB)
+→ Relative offset stored in SharedPreferences
+Consider TYPE_ROTATION_VECTOR or TYPE_GAME_ROTATION_VECTOR
+→ Android fused orientation (usually better than manual complementary filter)
+→ Gives full 3-axis (with magnetic heading if available)
+Add foreground service skeleton
+→ For any hope of background/always-on
+→ Persistent notification: "Omni-Measure active"
+Add basic vibration frequency detection
+→ Simple FFT on linear accel window → detect dominant mechanical frequency (fan, pump)

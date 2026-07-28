@@ -1,0 +1,293 @@
+import tkinter as tk
+from tkinter import filedialog, messagebox
+import math
+import threading
+import sys
+import time
+
+try:
+    from PIL import Image, ImageTk, ImageDraw
+except ImportError:
+    messagebox.showerror("Error", "Pillow is missing. Run: pip install pillow")
+    sys.exit(1)
+
+# ==============================================================================
+# ET KERNEL: INERTIAL MANIFOLD PHYSICS
+# ==============================================================================
+
+class ET_Inertia_Math:
+    """
+    Implements the Law of Descriptor Inertia.
+    D_new = D_old + (Gradient_Vector * Stiffness)
+    """
+    
+    @staticmethod
+    def get_gradient_vector(pixels, x, y, width, height):
+        """
+        Calculates the direction (dx, dy) and magnitude of the texture flow.
+        Returns: (vx, vy, magnitude)
+        """
+        # We look at the 3x3 grid to find the 'slope' of intensity
+        # Sobel-like operator in Pure Python
+        
+        # Clamp coords
+        x0 = max(0, x-1); x2 = min(width-1, x+1)
+        y0 = max(0, y-1); y2 = min(height-1, y+1)
+        
+        # Get luminance (Green channel proxy)
+        # Left/Right
+        val_l = pixels[x0, y][1]
+        val_r = pixels[x2, y][1]
+        # Up/Down
+        val_u = pixels[x, y0][1]
+        val_d = pixels[x, y2][1]
+        
+        # Gradient Vector
+        gx = val_r - val_l
+        gy = val_d - val_u
+        
+        # If Gradient is 0, we have no momentum (flat color)
+        mag = math.sqrt(gx*gx + gy*gy)
+        
+        if mag == 0:
+            return (0, 0, 0)
+            
+        # Normalize
+        return (gx/mag, gy/mag, mag)
+
+class ET_Inertia_Engine:
+    def __init__(self):
+        self.math = ET_Inertia_Math()
+        
+    def project_manifold(self, img_pil, mask_pil, stiffness, status_cb):
+        """
+        Projects descriptors into the void based on their momentum.
+        """
+        width, height = img_pil.size
+        pixels = img_pil.load()
+        mask = mask_pil.load()
+        
+        # Bounding box optimization
+        bbox = mask_pil.getbbox()
+        if not bbox: return img_pil
+        min_x, min_y, max_x, max_y = bbox
+        
+        # Expand context
+        pad = 5
+        min_x = max(0, min_x - pad); min_y = max(0, min_y - pad)
+        max_x = min(width, max_x + pad); max_y = min(height, max_y + pad)
+
+        # The Loop: We iterate inward
+        # Inertia requires us to process 'Layers' of the void
+        
+        # To prevent 'collapse' (spiraling), we scan from multiple directions
+        # and average the collision.
+        
+        passes = 30
+        
+        for step in range(passes):
+            if step % 5 == 0:
+                status_cb(f"Projecting Vector Field: Pass {step+1}/{passes}")
+            
+            updates = []
+            
+            # We scan the bounding box
+            for y in range(min_y, max_y):
+                for x in range(min_x, max_x):
+                    
+                    # Only process VOID pixels
+                    if mask[x, y] == 0: continue
+                    
+                    # Look for VALID neighbors to "inherit" momentum from
+                    # We check the 4 cardinal directions
+                    sources = []
+                    
+                    for dx, dy in [(-1,0), (1,0), (0,-1), (0,1)]:
+                        nx, ny = x + dx, y + dy
+                        
+                        # Boundary check
+                        if 0 <= nx < width and 0 <= ny < height:
+                            # If neighbor is valid (Substantiated), it can donate momentum
+                            if mask[nx, ny] == 0:
+                                sources.append((nx, ny, dx, dy))
+                    
+                    if not sources: continue
+                    
+                    # ET LOGIC: SELECT THE STRONGEST VECTOR
+                    # We don't just take the first one. We look for the one with highest 'Structure' (Gradient)
+                    
+                    best_src = None
+                    max_mag = -1
+                    
+                    for sx, sy, dx, dy in sources:
+                        # Get momentum of source
+                        vx, vy, mag = self.math.get_gradient_vector(pixels, sx, sy, width, height)
+                        
+                        # We favor high-magnitude edges (lines) over flat areas
+                        if mag > max_mag:
+                            max_mag = mag
+                            best_src = (sx, sy, vx, vy)
+                    
+                    if not best_src:
+                        # Fallback: Just take the first valid one if all are flat
+                        sx, sy, _, _ = sources[0]
+                        best_src = (sx, sy, 0, 0)
+
+                    # === PROJECTION ===
+                    sx, sy, vx, vy = best_src
+                    src_p = pixels[sx, sy]
+                    
+                    # INERTIA CALCULATION
+                    # We don't just copy. We drift.
+                    # D_new = D_source + (Stiffness * Gradient)
+                    # This continues the gradient ramp instead of flattening it
+                    
+                    # We apply the gradient vector to the color values
+                    # If vx, vy is the flow of intensity, we project it.
+                    
+                    # Factor: How strong is the flow?
+                    factor = stiffness * 0.5
+                    
+                    # Calculate drift
+                    dr = int(vx * factor * 10) # 10 is arbitrary scaler for visibility
+                    dg = int(vy * factor * 10)
+                    db = int(vx * factor * 10) # Simple monochrome drift assumption
+                    
+                    r = max(0, min(255, src_p[0] + dr))
+                    g = max(0, min(255, src_p[1] + dg))
+                    b = max(0, min(255, src_p[2] + db))
+                    
+                    updates.append((x, y, (r, g, b)))
+
+            # APPLY UPDATES
+            # This "Freezes" the projection for this layer
+            if not updates:
+                break # No more pixels to fill
+                
+            for ux, uy, uval in updates:
+                pixels[ux, uy] = uval
+                mask[ux, uy] = 0 # Substantiated
+                
+        return img_pil
+
+# ==============================================================================
+# GUI: INTERFACE
+# ==============================================================================
+
+class ET_V8_GUI:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("ET-V8: INERTIAL PROJECTOR (ANTI-COLLAPSE)")
+        self.root.geometry("1200x850")
+        self.root.configure(bg="#050505")
+        
+        self.engine = ET_Inertia_Engine()
+        self.pil_img = None
+        self.mask_img = None
+        
+        self._layout()
+
+    def _layout(self):
+        # Tools
+        t = tk.Frame(self.root, bg="#101010", pady=5)
+        t.pack(fill=tk.X)
+        
+        self.btn(t, "LOAD SUBSTRATE", self.load, "#005577")
+        self.btn(t, "RESET LAYER", self.reset, "#772200")
+        self.btn(t, "PROJECT (INERTIA)", self.run, "#007722")
+        
+        # Stiffness Slider (The ET Variable)
+        tk.Label(t, text="MANIFOLD STIFFNESS:", fg="white", bg="#101010").pack(side=tk.LEFT, padx=10)
+        self.stiff_var = tk.Scale(t, from_=0, to=10, orient=tk.HORIZONTAL, bg="#101010", fg="#00ff00", length=150)
+        self.stiff_var.set(5) # Default 5 (Balanced)
+        self.stiff_var.pack(side=tk.LEFT)
+        
+        self.status = tk.Label(t, text="Ready.", fg="#888", bg="#101010")
+        self.status.pack(side=tk.RIGHT, padx=20)
+        
+        # Scrollable View
+        frame = tk.Frame(self.root, bg="black")
+        frame.pack(fill=tk.BOTH, expand=True)
+        
+        self.canvas = tk.Canvas(frame, bg="#080808", cursor="crosshair")
+        vs = tk.Scrollbar(frame, orient="vertical", command=self.canvas.yview)
+        hs = tk.Scrollbar(frame, orient="horizontal", command=self.canvas.xview)
+        self.canvas.config(yscrollcommand=vs.set, xscrollcommand=hs.set)
+        
+        vs.pack(side=tk.RIGHT, fill=tk.Y)
+        hs.pack(side=tk.BOTTOM, fill=tk.X)
+        self.canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        
+        self.canvas.bind("<Button-1>", self.down)
+        self.canvas.bind("<B1-Motion>", self.drag)
+        self.canvas.bind("<ButtonRelease-1>", self.up)
+        
+        self.drawing = False
+        self.last_pos = None
+        self.brush = 25
+
+    def btn(self, p, txt, cmd, c):
+        tk.Button(p, text=txt, command=cmd, bg=c, fg="white", relief="flat", font=("Consolas", 10), padx=10).pack(side=tk.LEFT, padx=5)
+
+    def load(self):
+        path = filedialog.askopenfilename()
+        if not path: return
+        try:
+            self.pil_img = Image.open(path).convert("RGB")
+            self.mask_img = Image.new("L", self.pil_img.size, 0)
+            self.canvas.config(scrollregion=(0,0,self.pil_img.width, self.pil_img.height))
+            self.update_view()
+            self.status.config(text=f"Loaded: {self.pil_img.size}")
+        except: pass
+
+    def update_view(self):
+        if not self.pil_img: return
+        disp = self.pil_img.copy()
+        if self.mask_img.getbbox():
+            red = Image.new("RGB", self.pil_img.size, (255,0,0))
+            disp = Image.composite(red, disp, self.mask_img)
+        self.tk_img = ImageTk.PhotoImage(disp)
+        self.canvas.create_image(0,0, image=self.tk_img, anchor=tk.NW)
+
+    def down(self, e):
+        x = self.canvas.canvasx(e.x); y = self.canvas.canvasy(e.y)
+        self.drawing = True; self.last_pos = (x,y)
+
+    def drag(self, e):
+        if self.drawing and self.mask_img:
+            x = self.canvas.canvasx(e.x); y = self.canvas.canvasy(e.y)
+            draw = ImageDraw.Draw(self.mask_img)
+            draw.line([self.last_pos, (x,y)], fill=255, width=self.brush)
+            draw.ellipse([x-12, y-12, x+12, y+12], fill=255)
+            self.last_pos = (x,y)
+            # Fast feedback line
+            self.canvas.create_line(self.last_pos[0], self.last_pos[1], x, y, fill="red", width=self.brush, tags="tmp")
+
+    def up(self, e):
+        self.drawing = False
+        self.canvas.delete("tmp")
+        self.update_view()
+
+    def reset(self):
+        if self.mask_img: self.mask_img.paste(0, [0,0,self.mask_img.width, self.mask_img.height]); self.update_view()
+
+    def run(self):
+        if not self.pil_img: return
+        self.status.config(text="Calculating Inertial Vectors...")
+        stiffness = self.stiff_var.get()
+        threading.Thread(target=self._worker, args=(stiffness,)).start()
+
+    def _worker(self, stiff):
+        res = self.engine.project_manifold(self.pil_img, self.mask_img, stiff, self.log)
+        self.pil_img = res
+        self.mask_img.paste(0, [0,0,self.mask_img.width, self.mask_img.height])
+        self.root.after(0, self.update_view)
+        self.root.after(0, lambda: self.status.config(text="Projection Complete."))
+
+    def log(self, msg):
+        self.status.config(text=msg)
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = ET_V8_GUI(root)
+    root.mainloop()

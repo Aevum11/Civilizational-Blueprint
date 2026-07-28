@@ -1,0 +1,161 @@
+@echo off
+:: ==============================================================================
+:: PERSISTENCE WRAPPER: Forces the window to stay open unconditionally
+:: If launched via double-click or "Run as Admin" (which uses cmd /c), 
+:: this relaunches the script in a persistent shell (cmd /k).
+:: ==============================================================================
+echo %CMDCMDLINE% | find /i "/c" >nul
+if %errorlevel% equ 0 (
+    cmd /k "%~f0" %*
+    exit /b
+)
+
+setlocal EnableDelayedExpansion
+title ETPL Build Environment Force Installer
+
+echo ==============================================================================
+echo   ETPL Build Tools Force Installer and Environment Repair
+echo ==============================================================================
+echo.
+
+:: 1. Check for Administrator Privileges
+echo [*] Checking for Administrator privileges...
+net session >nul 2>&1
+if %errorLevel% neq 0 (
+    echo [!] ERROR: Administrative privileges required.
+    echo [!] Please right-click this batch file and select "Run as administrator".
+    echo.
+    echo Press any key to exit...
+    pause >nul
+    exit /b 1
+)
+echo [OK] Running as Administrator.
+echo.
+
+:: Set working directory to a temp folder for downloads
+set "DOWNLOAD_DIR=%TEMP%\ETPL_BuildTools"
+if not exist "%DOWNLOAD_DIR%" mkdir "%DOWNLOAD_DIR%"
+cd /d "%DOWNLOAD_DIR%" || (
+    echo [!] ERROR: Could not create or enter temp directory.
+    pause
+    exit /b 1
+)
+
+:: ==============================================================================
+:: 2. VISUAL STUDIO BUILD TOOLS (Fixes msvcrt.lib / vcruntime.lib errors)
+:: ==============================================================================
+echo [*] Step 1/3: Installing/Repairing Visual Studio Build Tools + Windows SDK...
+echo     Downloading VS Build Tools Bootstrapper...
+curl -sSL -o vs_buildtools.exe "https://aka.ms/vs/17/release/vs_buildtools.exe"
+
+if exist vs_buildtools.exe (
+    echo     Executing Unattended Install (This may take several minutes, please wait...^)
+    :: All arguments are on a single line to prevent silent syntax crashes
+    start /wait "" vs_buildtools.exe --quiet --wait --norestart --nocache --add Microsoft.VisualStudio.Workload.VCTools --includeRecommended --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.Component.VC.UCRT --add Microsoft.VisualStudio.Component.Windows11SDK.22621 --add Microsoft.VisualStudio.Component.VC.CoreBuildTools
+    echo [OK] Visual Studio Build Tools configured.
+) else (
+    echo [!] ERROR: Failed to download vs_buildtools.exe
+)
+echo.
+
+:: ==============================================================================
+:: 3. MSYS2 & MinGW-W64 (Fixes GetLastError GCC clashes)
+:: ==============================================================================
+echo [*] Step 2/3: Installing MSYS2 and UCRT64 GCC Toolchain...
+set "MSYS2_DIR=C:\msys64"
+echo     Downloading MSYS2 Installer...
+curl -sSL -o msys2-installer.exe "https://github.com/msys2/msys2-installer/releases/download/2024-01-13/msys2-x86_64-20240113.exe"
+
+if exist msys2-installer.exe (
+    if not exist "%MSYS2_DIR%\usr\bin\bash.exe" (
+        echo     Installing MSYS2 Base...
+        start /wait "" msys2-installer.exe in --confirm-command --accept-messages --root "%MSYS2_DIR%"
+    ) else (
+        echo     MSYS2 base already exists at %MSYS2_DIR%, proceeding to update...
+    )
+    
+    echo     Updating MSYS2 Pacman...
+    "%MSYS2_DIR%\usr\bin\bash.exe" -lc "pacman --noconfirm -Syuu"
+    
+    echo     Installing MinGW-w64 UCRT Toolchain...
+    "%MSYS2_DIR%\usr\bin\bash.exe" -lc "pacman --noconfirm -S mingw-w64-ucrt-x86_64-toolchain"
+    echo [OK] MSYS2 and UCRT64 GCC installed.
+) else (
+    echo [!] ERROR: Failed to download MSYS2 installer.
+)
+echo.
+
+:: ==============================================================================
+:: 4. LLVM / Clang
+:: ==============================================================================
+echo [*] Step 3/3: Installing LLVM (Clang)...
+echo     Downloading LLVM Installer...
+curl -sSL -o LLVM-installer.exe "https://github.com/llvm/llvm-project/releases/download/llvmorg-17.0.6/LLVM-17.0.6-win64.exe"
+
+if exist LLVM-installer.exe (
+    echo     Executing LLVM Silent Install...
+    start /wait "" LLVM-installer.exe /S
+    echo [OK] LLVM Installed.
+) else (
+    echo [!] ERROR: Failed to download LLVM installer.
+)
+echo.
+
+:: ==============================================================================
+:: 5. VERIFICATION
+:: ==============================================================================
+echo ==============================================================================
+echo   VERIFICATION PHASE
+echo ==============================================================================
+echo.
+
+echo [*] Checking Visual Studio paths (vswhere)...
+set "VSWHERE=%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
+if exist "%VSWHERE%" (
+    "%VSWHERE%" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+    echo [OK] Visual Studio C++ Compiler Located.
+) else (
+    echo [!] WARNING: vswhere.exe not found. Visual Studio may not be correctly installed.
+)
+
+echo.
+echo [*] Checking MSYS2/GCC...
+if exist "C:\msys64\ucrt64\bin\gcc.exe" (
+    "C:\msys64\ucrt64\bin\gcc.exe" --version | findstr /i "gcc"
+    echo [OK] UCRT64 GCC Confirmed.
+) else (
+    echo [!] WARNING: gcc.exe not found in C:\msys64\ucrt64\bin\
+)
+
+echo.
+echo [*] Checking LLVM/Clang...
+if exist "C:\Program Files\LLVM\bin\clang.exe" (
+    "C:\Program Files\LLVM\bin\clang.exe" --version | findstr /i "clang"
+    echo [OK] Clang Confirmed.
+) else (
+    echo [!] WARNING: clang.exe not found in C:\Program Files\LLVM\bin\
+)
+
+echo.
+echo ==============================================================================
+echo   CLEANUP AND IMPORTANT INSTRUCTIONS
+echo ==============================================================================
+echo [!] NOTE ON STRAWBERRY PERL: 
+echo     Your logs showed Strawberry Perl overriding your compiler path 
+echo     (C:\Strawberry\c\bin\gcc.exe). This causes "GetLastError" clashes!
+echo     Please open your System Environment Variables (System Properties -^> Advanced)
+echo     and move C:\Strawberry\... BELOW C:\msys64\ucrt64\bin, or remove it entirely.
+echo.
+echo Cleaning up temporary download files...
+cd /d "%~dp0"
+rmdir /s /q "%DOWNLOAD_DIR%"
+echo Cleanup complete.
+
+echo.
+echo ==============================================================================
+echo   INSTALLATION FINISHED
+echo ==============================================================================
+echo It is HIGHLY RECOMMENDED to restart your computer so environment variables apply.
+echo.
+echo You can now safely close this window, or execute other commands.
+echo ==============================================================================

@@ -1,0 +1,437 @@
+import tkinter as tk
+from tkinter import filedialog, messagebox, colorchooser
+import threading
+import sys
+import math
+
+try:
+    from PIL import Image, ImageTk, ImageDraw, ImageFilter, ImageEnhance
+except ImportError:
+    messagebox.showerror("Error", "Pillow is missing. Run: pip install pillow")
+    sys.exit(1)
+
+# ==============================================================================
+# ET KERNEL: TOTIENT MATH (STABILITY DESCRIPTOR)
+# ==============================================================================
+
+class ET_Totient_Math:
+    def __init__(self):
+        self.p1, self.p3, self.p4 = self._gen_tables()
+        
+    def _phi(self, n):
+        if n <= 0: return 0
+        result = n
+        p = 2
+        while p * p <= n:
+            if n % p == 0:
+                while n % p == 0: n //= p
+                result -= result // p
+            p += 1
+        if n > 1: result -= result // n
+        return result
+
+    def _gen_tables(self):
+        t1, t3, t4 = [], [], []
+        for i in range(256):
+            v1 = self._phi(i)
+            v2 = self._phi(v1)
+            v3 = self._phi(v2)
+            v4 = self._phi(v3)
+            t1.append(v1); t3.append(v3); t4.append(v4)
+        return t1, t3, t4
+
+# ==============================================================================
+# ET KERNEL: ALCHEMIST ENGINE (FULL RECONSTRUCTION)
+# ==============================================================================
+
+class ET_Alchemist_Engine:
+    def __init__(self):
+        self.math = ET_Totient_Math()
+
+    def process_alchemist_stack(self, img_pil, mask_pil, veil_color_rgb, 
+                              density, totient_power, 
+                              exposure, shadow, detail, 
+                              chroma_unbind, vibrance, status_cb):
+        """
+        Reconstructs Color (Cb/Cr) using Optical Physics + Totient Stability.
+        chroma_unbind: How much to subtract the veil color from the underlying object.
+        vibrance: Intelligent saturation reconstruction.
+        """
+        width, height = img_pil.size
+        
+        # 1. CONVERT EVERYTHING TO YCbCr (The Native Descriptor Space)
+        # We need to handle the Veil Color in YCbCr too.
+        status_cb("Deriving Chroma Descriptors...")
+        
+        # Convert Image
+        img_ycbcr = img_pil.convert("YCbCr")
+        y_chan, cb_chan, cr_chan = img_ycbcr.split()
+        
+        pixels_y = y_chan.load()
+        pixels_cb = cb_chan.load()
+        pixels_cr = cr_chan.load()
+        mask = mask_pil.load()
+        
+        # Convert Veil Color RGB -> YCbCr
+        # Manual conversion for precision matching Pillow's algorithm
+        vr, vg, vb = veil_color_rgb
+        vy = 0 + (0.299 * vr) + (0.587 * vg) + (0.114 * vb)
+        vcb = 128 - (0.168736 * vr) - (0.331264 * vg) + (0.5 * vb)
+        vcr = 128 + (0.5 * vr) - (0.418688 * vg) - (0.081312 * vb)
+        
+        # 2. GENERATE MAPS
+        # Totient Stability (On Luminance)
+        p1_map = y_chan.point(self.math.p1).load()
+        p3_map = y_chan.point(self.math.p3).load()
+        p4_map = y_chan.point(self.math.p4).load()
+        
+        # Optical Maps (On Luminance) - High Fidelity
+        # We use Y for transmission calculation because light intensity carries the thickness info
+        dark_ref = y_chan.filter(ImageFilter.MinFilter(15))
+        tx_map = dark_ref.filter(ImageFilter.GaussianBlur(2))
+        tx_map = tx_map.filter(ImageFilter.UnsharpMask(radius=2, percent=150, threshold=3))
+        tx_pix = tx_map.load()
+        
+        # Frequency Separation (Luma Detail)
+        blur_luma = y_chan.filter(ImageFilter.GaussianBlur(radius=3))
+        blur_pix = blur_luma.load()
+        
+        bbox = mask_pil.getbbox()
+        if not bbox: return img_pil
+        min_x, min_y, max_x, max_y = bbox
+        
+        updates_y = []
+        updates_cb = []
+        updates_cr = []
+        
+        # --- FACTORS ---
+        omega = density / 100.0
+        phi_w = totient_power / 100.0
+        t0 = 0.1
+        
+        # Color Factors
+        c_unbind = chroma_unbind / 100.0 # How much we attack Cb/Cr
+        vib_boost = 1.0 + (vibrance / 50.0)
+        
+        # Tone Factors
+        exp_factor = 1.0 - (exposure / 150.0)
+        gamma = 1.0 + (shadow / 40.0)
+        inv_gamma = 1.0 / gamma
+        det_boost = 1.0 + (detail / 50.0)
+        
+        # 3. THE ALCHEMIST LOOP
+        for y in range(min_y, max_y):
+            for x in range(min_x, max_x):
+                if mask[x, y] == 0: continue
+                
+                # Fetch Raw Descriptors
+                py = pixels_y[x, y]
+                pcb = pixels_cb[x, y]
+                pcr = pixels_cr[x, y]
+                
+                # --- A. ADAPTIVE VEIL (Luminance Only) ---
+                # We modulate Vy based on brightness (shadows)
+                lum_ratio = py / 255.0
+                mod_factor = 0.6 + (0.4 * lum_ratio)
+                
+                ay = max(1, vy * mod_factor)
+                # We do NOT modulate Acb/Acr usually, as hue is constant...
+                # BUT, in deep shadow, saturation drops.
+                # Let's keep Acb/Acr constant for stability, or slightly dampen.
+                acb = vcb 
+                acr = vcr
+                
+                # --- B. TRANSMISSION CALCULATION ---
+                # Optical (Dark Channel on Luma relative to Veil Luma)
+                local_min = tx_pix[x, y]
+                norm_y = local_min / ay
+                t_opt = 1.0 - (omega * norm_y)
+                
+                # Totient Stability (Phi 3+4 vs Phi 1)
+                val_p1 = p1_map[x, y]
+                val_p3 = p3_map[x, y]
+                val_p4 = p4_map[x, y]
+                stability = (val_p3 + val_p4) / (val_p1 + 10.0)
+                
+                # Hybrid Transmission
+                t_mod = (stability - 0.5) * 0.5
+                t_final = t_opt + (t_mod * phi_w)
+                t = max(t0, min(1.0, t_final))
+                
+                # --- C. LUMINANCE RECONSTRUCTION (J_Y) ---
+                # Standard Optical Equation
+                jy = ((py - ay) / t) + ay
+                
+                # --- D. CHROMINANCE RECONSTRUCTION (J_Cb, J_Cr) ---
+                # "Finding the table from the cup"
+                # If we know the Veil (Acb) and the Transmission (t), 
+                # we can find the hidden color.
+                
+                # However, Chroma is noisy. We use 'c_unbind' to dampen the effect.
+                # Logic: Jc = Pc - (Ac - 128) * ((1-t)/t) * strength
+                # Simpler: Jc = ((Pc - Ac) / t) + Ac
+                # We blend this 'Predicted Color' with the 'Original Color'
+                
+                # Predicted
+                jcb_pred = ((pcb - acb) / t) + acb
+                jcr_pred = ((pcr - acr) / t) + acr
+                
+                # Blend based on user preference (c_unbind)
+                # And STABILITY. If pixel is unstable noise, don't shift color wildly.
+                safe_blend = c_unbind * min(1.0, stability) # Totient Lock!
+                
+                final_cb = (jcb_pred * safe_blend) + (pcb * (1.0 - safe_blend))
+                final_cr = (jcr_pred * safe_blend) + (pcr * (1.0 - safe_blend))
+                
+                # --- E. TONE MAPPING (Y Channel) ---
+                
+                # Exposure Cap
+                jy = jy * exp_factor
+                
+                # Soft Knee Highlights
+                if jy > 200:
+                    exc = jy - 200
+                    jy = 200 + (55 * (1 - math.exp(-exc/150)))
+                
+                # Gamma
+                if jy > 0:
+                    n = jy / 255.0
+                    jy = math.pow(n, inv_gamma) * 255.0
+                    
+                # Detail Injection
+                oby = blur_pix[x, y]
+                det_y = py - oby
+                jy = jy + (det_y * det_boost)
+                
+                updates_y.append((x, y, int(max(0, min(255, jy)))))
+                updates_cb.append((x, y, int(max(0, min(255, final_cb)))))
+                updates_cr.append((x, y, int(max(0, min(255, final_cr)))))
+                
+        # Apply Updates
+        for ux, uy, uval in updates_y: pixels_y[ux, uy] = uval
+        for ux, uy, uval in updates_cb: pixels_cb[ux, uy] = uval
+        for ux, uy, uval in updates_cr: pixels_cr[ux, uy] = uval
+        
+        # 4. RECOMBINE & VIBRANCE
+        status_cb("Collapsing Manifold & Enhancing Vibrance...")
+        recon_img = Image.merge("YCbCr", (y_chan, cb_chan, cr_chan)).convert("RGB")
+        
+        # Vibrance (Smart Saturation)
+        # We mask back into the ROI
+        roi = recon_img.crop(bbox)
+        if vibrance > 0:
+            sat = ImageEnhance.Color(roi)
+            roi = sat.enhance(vib_boost)
+            
+        img_pil.paste(roi, bbox)
+        return img_pil
+
+# ==============================================================================
+# GUI
+# ==============================================================================
+
+class ET_V27_GUI:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("ET-V27: ALCHEMIST ENGINE (DESCRIPTOR RECONSTRUCTION)")
+        self.root.geometry("1200x980")
+        self.root.configure(bg="#050505")
+        
+        self.engine = ET_Alchemist_Engine()
+        self.pil_img = None
+        self.mask_img = None
+        self.backup_img = None
+        
+        self.veil_color = (200, 200, 200)
+        self.picking_color = False
+        
+        self._layout()
+
+    def _layout(self):
+        t = tk.Frame(self.root, bg="#101010", pady=10)
+        t.pack(fill=tk.X)
+        
+        # ROW 1: ACTIONS
+        r1 = tk.Frame(t, bg="#101010"); r1.pack(side=tk.TOP, fill=tk.X)
+        self.btn(r1, "LOAD", self.load, "#004488")
+        self.btn(r1, "RESET ALL", self.reset_all, "#880000")
+        self.btn(r1, "CLEAR MASK", self.clear_mask, "#550000")
+        self.btn(r1, "EXECUTE", self.run, "#006600")
+        
+        # ROW 2: PICKER
+        r2 = tk.Frame(t, bg="#101010"); r2.pack(side=tk.TOP, fill=tk.X, pady=5)
+        self.pick_btn = tk.Button(r2, text="[✚] PICK VEIL COLOR", command=self.toggle_picker, bg="#444", fg="white", font=("Arial", 10, "bold"), relief="raised")
+        self.pick_btn.pack(side=tk.LEFT, padx=10)
+        self.c_lbl = tk.Label(r2, text="      ", bg="#cccccc", relief="sunken", width=6)
+        self.c_lbl.pack(side=tk.LEFT)
+        self.stat = tk.Label(r2, text="Ready.", fg="#00ff00", bg="#101010")
+        self.stat.pack(side=tk.RIGHT, padx=20)
+        
+        # --- DESCRIPTOR STACK ---
+        r3 = tk.Frame(t, bg="#101010"); r3.pack(side=tk.TOP, fill=tk.X, pady=2)
+        
+        # 1. PHYSICS
+        f1 = tk.Frame(r3, bg="#101010"); f1.pack(side=tk.LEFT, padx=5)
+        tk.Label(f1, text="THICKNESS", fg="#888", bg="#101010", font=("Arial", 7)).pack()
+        self.thick_scale = tk.Scale(f1, from_=0, to=100, orient=tk.HORIZONTAL, bg="#101010", fg="#0f0", length=100)
+        self.thick_scale.set(85)
+        self.thick_scale.pack()
+        
+        # 2. SELECTOR
+        f2 = tk.Frame(r3, bg="#101010"); f2.pack(side=tk.LEFT, padx=5)
+        tk.Label(f2, text="TOTIENT POWER", fg="#0ff", bg="#101010", font=("Arial", 7, "bold")).pack()
+        self.phi_scale = tk.Scale(f2, from_=0, to=100, orient=tk.HORIZONTAL, bg="#101010", fg="#0ff", length=100)
+        self.phi_scale.set(50) 
+        self.phi_scale.pack()
+        
+        # 3. COLOR RECON (The New Magic)
+        f3 = tk.Frame(r3, bg="#101010"); f3.pack(side=tk.LEFT, padx=5)
+        tk.Label(f3, text="SPECTRAL UNBIND", fg="#f0f", bg="#101010", font=("Arial", 7, "bold")).pack()
+        self.unb_scale = tk.Scale(f3, from_=0, to=100, orient=tk.HORIZONTAL, bg="#101010", fg="#f0f", length=100)
+        self.unb_scale.set(40) # Starts moderate
+        self.unb_scale.pack()
+        
+        # 4. SHADOW
+        f4 = tk.Frame(r3, bg="#101010"); f4.pack(side=tk.LEFT, padx=5)
+        tk.Label(f4, text="SHADOW LIFT", fg="#888", bg="#101010", font=("Arial", 7)).pack()
+        self.shd_scale = tk.Scale(f4, from_=0, to=100, orient=tk.HORIZONTAL, bg="#101010", fg="#0f0", length=100)
+        self.shd_scale.set(50)
+        self.shd_scale.pack()
+        
+        # ROW 4: POLISH
+        r4 = tk.Frame(t, bg="#101010"); r4.pack(side=tk.TOP, fill=tk.X, pady=5)
+        
+        # Exposure
+        f5 = tk.Frame(r4, bg="#101010"); f5.pack(side=tk.LEFT, padx=5)
+        tk.Label(f5, text="EXP CAP", fg="#888", bg="#101010", font=("Arial", 7)).pack()
+        self.exp_scale = tk.Scale(f5, from_=0, to=100, orient=tk.HORIZONTAL, bg="#101010", fg="#0f0", length=100)
+        self.exp_scale.set(30)
+        self.exp_scale.pack()
+        
+        # Detail
+        f6 = tk.Frame(r4, bg="#101010"); f6.pack(side=tk.LEFT, padx=5)
+        tk.Label(f6, text="DETAIL", fg="#888", bg="#101010", font=("Arial", 7)).pack()
+        self.det_scale = tk.Scale(f6, from_=0, to=100, orient=tk.HORIZONTAL, bg="#101010", fg="#0f0", length=100)
+        self.det_scale.set(30)
+        self.det_scale.pack()
+        
+        # Vibrance
+        f7 = tk.Frame(r4, bg="#101010"); f7.pack(side=tk.LEFT, padx=5)
+        tk.Label(f7, text="VIBRANCE", fg="#f0f", bg="#101010", font=("Arial", 7)).pack()
+        self.vib_scale = tk.Scale(f7, from_=0, to=100, orient=tk.HORIZONTAL, bg="#101010", fg="#f0f", length=100)
+        self.vib_scale.set(20)
+        self.vib_scale.pack()
+
+        # CANVAS
+        container = tk.Frame(self.root)
+        container.pack(fill=tk.BOTH, expand=True)
+        self.cv = tk.Canvas(container, bg="#080808", cursor="crosshair")
+        vs = tk.Scrollbar(container, orient="vertical", command=self.cv.yview)
+        hs = tk.Scrollbar(container, orient="horizontal", command=self.cv.xview)
+        self.cv.config(yscrollcommand=vs.set, xscrollcommand=hs.set)
+        
+        vs.pack(side=tk.RIGHT, fill=tk.Y)
+        hs.pack(side=tk.BOTTOM, fill=tk.X)
+        self.cv.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        
+        self.cv.bind("<Button-1>", self.down)
+        self.cv.bind("<B1-Motion>", self.drag)
+        self.cv.bind("<ButtonRelease-1>", self.up)
+        
+        self.drawing=False; self.brush=30
+
+    def btn(self, p, t, c, b):
+        tk.Button(p, text=t, command=c, bg=b, fg="white", relief="flat", padx=10, pady=5).pack(side=tk.LEFT, padx=5)
+
+    def load(self):
+        path = filedialog.askopenfilename()
+        if not path: return
+        try:
+            self.pil_img = Image.open(path).convert("RGB")
+            self.backup_img = self.pil_img.copy()
+            self.mask_img = Image.new("L", self.pil_img.size, 0)
+            self.cv.config(scrollregion=(0,0,self.pil_img.width,self.pil_img.height))
+            self.update_view()
+            self.stat.config(text=f"Loaded: {self.pil_img.size}")
+        except: pass
+
+    def update_view(self):
+        if not self.pil_img: return
+        d = self.pil_img.copy()
+        if self.mask_img.getbbox():
+            r = Image.new("RGB", self.pil_img.size, (255,0,0)) 
+            d = Image.composite(r, d, self.mask_img)
+        self.tk = ImageTk.PhotoImage(d)
+        self.cv.create_image(0,0, image=self.tk, anchor=tk.NW)
+
+    def toggle_picker(self):
+        if not self.pil_img: return
+        self.picking_color = not self.picking_color
+        if self.picking_color:
+            self.pick_btn.config(bg="#ffaa00", fg="black", text="CLICK IMAGE TO PICK")
+            self.cv.config(cursor="target")
+        else:
+            self.pick_btn.config(bg="#444", fg="white", text="[✚] PICK VEIL COLOR")
+            self.cv.config(cursor="crosshair")
+
+    def down(self,e):
+        x=int(self.cv.canvasx(e.x)); y=int(self.cv.canvasy(e.y))
+        if self.picking_color and self.pil_img:
+            if 0 <= x < self.pil_img.width and 0 <= y < self.pil_img.height:
+                r,g,b = self.pil_img.getpixel((x,y))
+                self.veil_color = (r,g,b)
+                hex_c = '#%02x%02x%02x' % (r,g,b)
+                self.c_lbl.config(bg=hex_c)
+                self.toggle_picker()
+            return
+        self.drawing=True; self.lp=(x,y)
+        
+    def drag(self,e):
+        if self.drawing and self.mask_img:
+            x=int(self.cv.canvasx(e.x)); y=int(self.cv.canvasy(e.y))
+            d = ImageDraw.Draw(self.mask_img)
+            d.line([self.lp, (x,y)], fill=255, width=self.brush)
+            d.ellipse([x-15,y-15,x+15,y+15], fill=255)
+            self.lp=(x,y); 
+            self.cv.create_line(self.lp[0],self.lp[1],x,y,fill="red",width=self.brush,tags="t")
+
+    def up(self,e): 
+        if self.drawing: self.drawing=False; self.cv.delete("t"); self.update_view()
+    
+    def reset_all(self):
+        if self.backup_img:
+            self.pil_img = self.backup_img.copy()
+            self.clear_mask()
+            self.stat.config(text="Reset to Original.")
+
+    def clear_mask(self):
+        if self.mask_img: self.mask_img.paste(0,[0,0,self.mask_img.width,self.mask_img.height]); self.update_view()
+
+    def run(self):
+        if not self.pil_img: return
+        self.stat.config(text="Deriving Chroma Descriptors...")
+        
+        vc = self.veil_color
+        den = self.thick_scale.get()
+        phi = self.phi_scale.get()
+        exp = self.exp_scale.get()
+        shd = self.shd_scale.get()
+        det = self.det_scale.get()
+        unb = self.unb_scale.get()
+        vib = self.vib_scale.get()
+        
+        threading.Thread(target=self._w, args=(vc, den, phi, exp, shd, det, unb, vib)).start()
+
+    def _w(self, v, dn, p, e, s, d, u, vib):
+        res = self.engine.process_alchemist_stack(self.pil_img, self.mask_img, v, dn, p, e, s, d, u, vib, self.log)
+        self.pil_img = res
+        self.clear_mask()
+        self.root.after(0, self.update_view)
+        self.root.after(0, lambda: self.stat.config(text="Descriptor Reconstruction Complete."))
+
+    def log(self, m): self.stat.config(text=m)
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = ET_V27_GUI(root)
+    root.mainloop()

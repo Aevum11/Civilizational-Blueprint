@@ -1,0 +1,400 @@
+package com.et.physics.toolbox
+
+import kotlin.math.*
+
+/**
+ * OmniTraverserEngine v16.0 - "The Universal Tool"
+ *
+ * THE COMPLETE INTEGRATION:
+ * - ET Math (Shimmer, Intention, Efficiency) [v6.0]
+ * - Industrial Physics (ISO Velocity, Fault Diagnosis, FFT Labels) [v12.0]
+ * - Atmospheric (Pressure, Alt, HVAC) [v10.0]
+ * - Thermodynamics (Ambient Temp, Overheat) [v10.1]
+ * - Navigation (Compass, Mag Shimmer) [v9.8]
+ * - Audio (A-Weighting, Spectrogram Data) [v16.0]
+ */
+class OmniTraverserEngine {
+
+    private val MANIFOLD_RESONANCE_TARGET = 0.0833333333
+    private val PSI_SCALING_FACTOR = 100.0
+    
+    // --- State Vectors (Thread-Guarded) ---
+    private var varianceHistory = DoubleArray(128) { 0.0 }
+    private var gradientHistory = DoubleArray(128) { 0.0 }
+    private var historyIndex = 0
+
+    // --- Hz Tracking ---
+    private var lastTimestamp = 0L
+    private var hzHistory = DoubleArray(20) { 0.0 }
+    private var hzIndex = 0
+
+    // --- Physics State ---
+    private var gravity = FloatArray(3) { 0.0f }
+    private var geomagnetic = FloatArray(3) { 0.0f }
+    private val alphaGravity = 0.8f 
+    private var isGravitySettled = false
+    private var gravitySettlingSamples = 0
+    private val GRAVITY_SETTLING_NEEDED = 20 
+
+    // --- Velocity Integration (Leaky) ---
+    private var velocity = DoubleArray(3) { 0.0 } 
+    private val VELOCITY_HPF_COEFF = 0.95 
+
+    // --- Atmospheric State ---
+    private var pressureHistory = DoubleArray(50) { 0.0 }
+    private var pressureIndex = 0
+    private var basePressure = 1013.25
+    private var initialAltitude = 0.0
+
+    // --- Calibration ---
+    var splCalibrationOffset = 0.0
+    var accelOffset = FloatArray(3) { 0.0f }
+    var gyroOffset = FloatArray(3) { 0.0f }
+    private var isCalibrated = false
+    
+    // --- Alarm Config ---
+    data class AlarmConfig(
+        val maxVelocity: Double? = null,
+        val maxSpl: Double? = null,
+        val maxTemp: Double? = null,
+        val minPressure: Double? = null,
+        val maxPressure: Double? = null
+    )
+    var alarmConfig: AlarmConfig? = null
+
+    // --- Stability ---
+    private var longTermGradient = 0.0
+    private var dTimeTotal = 0.0
+    private var tTimeTotal = 0.0
+    private var traverserIntegral = 0.0
+
+    // --- Photonic ---
+    private var luxHistory = DoubleArray(50) { 0.0 }
+    private var luxIndex = 0
+
+    // --- FFT (1024 points) ---
+    private val fftSize = 1024 
+    private val real = DoubleArray(fftSize)
+    private val imag = DoubleArray(fftSize)
+    private val window = DoubleArray(fftSize) { 0.54 - 0.46 * cos(2.0 * PI * it / (fftSize - 1)) }
+    private val emptySpectrum = DoubleArray(fftSize / 2) { 0.0 }
+
+    private var lastValidResult: SubstantiatedResult? = null
+
+    // --- Scratchpads (Zero Alloc) ---
+    private val scratchVector = FloatArray(3)
+    private val calAccel = FloatArray(3)
+    private val linearAccel = FloatArray(3)
+    private val rotationMatrix = FloatArray(9)
+    private val orientationAngles = FloatArray(3)
+
+    enum class EtState { STATE_0_EXCEPTION, STATE_1_DESCRIPTOR, STATE_2_TRAVERSER, STATE_3_POINT }
+
+    data class SubstantiatedResult(
+        // Time & ET
+        val realHz: Double, val shimmerIndex: Double, val descriptorGradient: Double, val intentionIndex: Double,
+        val pythagoreanEfficiency: Double, val traverserIntegral: Double, val stabilityScore: Double,
+        val bindingStrength: Double, val ttfPrediction: Double, val etState: EtState,
+        // Physics
+        val rmsVibration: Double, val velocityRms: Double, val preciseTilt: DoubleArray, 
+        val azimuth: Double, val magneticShimmer: Double,
+        // Audio
+        val correctedSPL: Double, val dominantFreq: Double, val freqLabel: String, val spectralEntropy: Double,
+        val fftMagnitudes: DoubleArray, // For Spectrogram
+        // Atmosphere/Light
+        val illuminanceLux: Double, val lightSource: String,
+        val pressureHpa: Double, val altitudeMeters: Double, val relativeAltitude: Double, val pressureTrend: String,
+        val ambientTempC: Double?, val thermalState: String,
+        // GPS
+        val gpsLat: Double?, val gpsLon: Double?, val gpsAlt: Double?, val gpsAccuracy: Float?,
+        // Diagnostics
+        val mechSource: String, val faultPrediction: String, val diagnosisConfidence: Double, 
+        val isoZone: String, val faultSeverity: Int,
+        // Alarms
+        val alarmBreached: Boolean, val alarmMessage: String
+    )
+
+    class IIRFilter {
+        private val x1 = DoubleArray(3) { 0.0 }; private val y1 = DoubleArray(3) { 0.0 }
+        // 6th Order A-Weighting Approx Coefficients
+        private val b0_1 = 1.0; private val b1_1 = -2.0; private val b2_1 = 1.0
+        private val a1_1 = -1.99; private val a2_1 = 0.99
+        private val b0_2 = 1.0; private val b1_2 = 0.0; private val b2_2 = -1.0
+        private val a1_2 = -1.5; private val a2_2 = 0.6
+        fun process(input: Double): Double {
+            var y = b0_1*input + b1_1*x1[0] + b2_1*x1[1] - a1_1*y1[0] - a2_1*y1[1]
+            x1[1] = x1[0]; x1[0] = input; y1[1] = y1[0]; y1[0] = y
+            val s1 = y
+            y = b0_2*s1 + 1.0*x1[0] 
+            return y * 1.25 
+        }
+    }
+    private val aWeightingFilter = IIRFilter()
+
+    @Synchronized
+    fun setCalibration(accel: FloatArray, gyro: FloatArray, spl: Double) {
+        accelOffset = accel.clone(); accelOffset[2] -= 9.81f
+        gyroOffset = gyro.clone(); splCalibrationOffset = spl
+        isCalibrated = true
+    }
+    
+    @Synchronized
+    fun setAlarms(config: AlarmConfig?) { alarmConfig = config }
+    
+    @Synchronized
+    fun tareAltitude(currentPressure: Double) {
+        if (currentPressure > 0) initialAltitude = 44330.0 * (1.0 - (currentPressure / basePressure).pow(0.1903))
+    }
+
+    @Synchronized
+    fun resolveConfiguration(
+        accel: FloatArray, gyro: FloatArray, mag: FloatArray?, pressure: Float?, ambientTemp: Float?,
+        audioBuffer: ShortArray?, lux: Float?,
+        gpsLat: Double?, gpsLon: Double?, gpsAlt: Double?, gpsAcc: Float?,
+        displayRotation: Int, timestampNs: Long, sampleRate: Int
+    ): SubstantiatedResult {
+        
+        if (!validateSensorInput(accel) || !validateSensorInput(gyro)) return lastValidResult ?: createZeroResult()
+
+        // 1. Real Hz Tracking
+        var currentHz = 0.0
+        if (lastTimestamp != 0L) {
+            val deltaNs = timestampNs - lastTimestamp
+            if (deltaNs > 0) {
+                val instHz = 1_000_000_000.0 / deltaNs
+                hzHistory[hzIndex] = instHz; hzIndex = (hzIndex + 1) % hzHistory.size
+                currentHz = hzHistory.average()
+            }
+        }
+        lastTimestamp = timestampNs
+        val deltaTimeMs = if (currentHz > 0) (1000.0 / currentHz).toLong() else 20L
+        val dtSec = deltaTimeMs / 1000.0
+
+        if (!isGravitySettled) {
+            if (gravitySettlingSamples < GRAVITY_SETTLING_NEEDED) {
+                if (gravitySettlingSamples == 0) gravity = accel.clone()
+                else { for(i in 0..2) gravity[i] = (gravity[i] * gravitySettlingSamples + accel[i]) / (gravitySettlingSamples + 1) }
+                gravitySettlingSamples++
+                return createZeroResult().also { lastValidResult = it }
+            } else { isGravitySettled = true }
+        }
+
+        // 2. Vector Processing
+        remapSensorVector(accel, displayRotation, scratchVector)
+        for(i in 0..2) calAccel[i] = scratchVector[i] - accelOffset[i]
+        
+        // Low Pass Gravity
+        gravity[0] = alphaGravity * gravity[0] + (1 - alphaGravity) * calAccel[0]
+        gravity[1] = alphaGravity * gravity[1] + (1 - alphaGravity) * calAccel[1]
+        gravity[2] = alphaGravity * gravity[2] + (1 - alphaGravity) * calAccel[2]
+
+        // High Pass Vibration
+        for(i in 0..2) linearAccel[i] = calAccel[i] - gravity[i]
+        
+        // Velocity Integration (Leaky)
+        for (i in 0..2) velocity[i] = VELOCITY_HPF_COEFF * (velocity[i] + linearAccel[i].toDouble() * dtSec)
+        
+        val vibrationMag = sqrt(linearAccel[0]*linearAccel[0] + linearAccel[1]*linearAccel[1] + linearAccel[2]*linearAccel[2])
+        val velocityMag = sqrt(velocity[0]*velocity[0] + velocity[1]*velocity[1] + velocity[2]*velocity[2])
+        val velocityRms = velocityMag * 1000.0 
+        val rawMag = sqrt(calAccel[0]*calAccel[0] + calAccel[1]*calAccel[1] + calAccel[2]*calAccel[2])
+
+        // 3. Orientation
+        var azimuth = 0.0; var magneticShimmer = 0.0
+        if (mag != null) {
+            System.arraycopy(mag, 0, geomagnetic, 0, 3)
+            val magMag = sqrt(mag[0]*mag[0] + mag[1]*mag[1] + mag[2]*mag[2])
+            magneticShimmer = abs(magMag - 45.0) // 45uT avg earth
+            if (android.hardware.SensorManager.getRotationMatrix(rotationMatrix, null, gravity, geomagnetic)) {
+                android.hardware.SensorManager.getOrientation(rotationMatrix, orientationAngles)
+                azimuth = Math.toDegrees(orientationAngles[0].toDouble()); if (azimuth < 0) azimuth += 360.0
+            }
+        }
+
+        // 4. Atmospheric
+        var pressureHpa = 0.0; var altitude = 0.0; var relAltitude = 0.0; var pressureTrend = "Stable"
+        if (pressure != null && !pressure.isNaN()) {
+            pressureHpa = pressure.toDouble()
+            pressureHistory[pressureIndex] = pressureHpa
+            pressureIndex = (pressureIndex + 1) % pressureHistory.size
+            altitude = 44330.0 * (1.0 - (pressureHpa / basePressure).pow(0.1903))
+            if (initialAltitude == 0.0 && pressureHpa > 0) initialAltitude = altitude
+            relAltitude = altitude - initialAltitude
+            
+            val avgOld = pressureHistory.slice(0 until 25).average()
+            val avgNew = pressureHistory.slice(25 until 50).average()
+            val diff = avgNew - avgOld
+            pressureTrend = when { diff > 0.05 -> "Rising"; diff < -0.05 -> "Falling"; else -> "Stable" }
+            if (vibrationMag < 0.05 && abs(pressureHpa - avgNew) > 0.02) pressureTrend = "HVAC/Draft"
+        }
+
+        // 5. Thermal
+        var tempC: Double? = null; var thermalState = "N/A"
+        if (ambientTemp != null && !ambientTemp.isNaN()) {
+            tempC = ambientTemp.toDouble()
+            thermalState = when { tempC > 50.0 -> "Critical"; tempC > 35.0 -> "Hot"; tempC > 25.0 -> "Warm"; else -> "Normal" }
+        }
+
+        // 6. ET Math
+        val variance = calculateRecursiveVariance(rawMag)
+        val shimmer = abs(variance)
+        updateHistory(shimmer)
+        val shortTermGradient = calculateGradient()
+        longTermGradient = (longTermGradient * 0.999) + (shortTermGradient * 0.001)
+
+        // 7. Spectral (FFT + Waterfall)
+        var dominantFreq = 0.0; var spectralEntropy = 0.0; var freqLabel = "None"
+        var currentSpectrum = emptySpectrum
+        
+        if (audioBuffer != null && audioBuffer.size >= fftSize) {
+            for (i in 0 until fftSize) { real[i] = audioBuffer[i].toDouble() * window[i]; imag[i] = 0.0 }
+            computeFFT(real, imag)
+            
+            val magnitudes = DoubleArray(fftSize / 2)
+            var maxMag = 0.0; var maxIndex = 0; var totalEnergy = 0.0
+            
+            for (i in 0 until fftSize / 2) {
+                val m = sqrt(real[i]*real[i] + imag[i]*imag[i])
+                magnitudes[i] = m; totalEnergy += m
+                if (m > maxMag) { maxMag = m; maxIndex = i }
+            }
+            currentSpectrum = magnitudes // Export for waterfall
+
+            dominantFreq = maxIndex * sampleRate.toDouble() / fftSize
+            if (totalEnergy > 0) for (m in magnitudes) { val p = m / totalEnergy; if (p > 0) spectralEntropy -= p * ln(p) }
+            spectralEntropy /= ln((fftSize / 2).toDouble())
+            
+            freqLabel = when {
+                dominantFreq < 5.0 -> "Low Freq"
+                dominantFreq in 48.0..62.0 -> "Mains Hum"
+                dominantFreq in 100.0..800.0 -> "Mechanical"
+                dominantFreq in 800.0..5000.0 -> "Bearing"
+                dominantFreq > 5000.0 -> "Hiss"
+                else -> "Broadband"
+            }
+        }
+
+        dTimeTotal += dtSec
+        val intentionIndex = (0.5/dtSec + (1.0 - spectralEntropy)) * PSI_SCALING_FACTOR
+
+        // 8. Photonic
+        var currentLux = 0.0; var lightSource = "Unknown"
+        if (lux != null && !lux.isNaN()) {
+            currentLux = lux.toDouble(); luxHistory[luxIndex] = currentLux
+            luxIndex = (luxIndex + 1) % luxHistory.size
+            val meanLux = luxHistory.average()
+            val flicker = if(meanLux>0) sqrt(luxHistory.fold(0.0){s,e->s+(e-meanLux).pow(2)}/luxHistory.size)/meanLux else 0.0
+            lightSource = when { meanLux < 5.0->"Dark"; flicker<0.01->"Natural"; dominantFreq in 58.0..62.0->"Grid"; else->"Artificial" }
+        }
+
+        // 9. SPL
+        var db = 0.0
+        if (audioBuffer != null) {
+            var sumSq = 0.0
+            for (sample in audioBuffer) { val f = aWeightingFilter.process(sample.toDouble()); sumSq += f * f }
+            db = 20 * log10(sqrt(sumSq / audioBuffer.size) + 1e-6) + splCalibrationOffset + (log10(1.0 + shimmer) * 3.0)
+        }
+
+        // 10. Metrics & Diagnostics
+        val ttf = if (longTermGradient > 1e-7 && shimmer > 0.0001) (ln(1.0 / shimmer) / (longTermGradient * 10.0)) / 3600.0 else Double.POSITIVE_INFINITY
+        
+        // ISO 10816 Classification
+        var isoSeverity = when { velocityRms > 11.0 -> 3; velocityRms > 4.5 -> 2; velocityRms > 1.8 -> 1; else -> 0 }
+        if (tempC != null && tempC > 45.0 && velocityRms > 1.8) isoSeverity = max(isoSeverity, 2)
+
+        val isoZone = when(isoSeverity) { 3->"D"; 2->"C"; 1->"B"; else->"A" }
+        val state = when { isoSeverity >= 3 -> EtState.STATE_3_POINT; spectralEntropy < 0.3 -> EtState.STATE_2_TRAVERSER; else -> EtState.STATE_0_EXCEPTION }
+
+        // Fault Diagnosis
+        var mechSource = "Stable"; var faultPred = "Normal"; var diagConf = 0.0
+        if (isoSeverity > 0) {
+            mechSource = when {
+                dominantFreq < 20.0 -> "Structure"; dominantFreq in 20.0..60.0 -> "Unbalance"
+                dominantFreq in 60.0..120.0 -> "Misalign"; dominantFreq in 120.0..1000.0 -> "Looseness"
+                else -> "Bearing/Gear"
+            }
+            faultPred = "Check $mechSource"
+            diagConf = (1.0 - spectralEntropy) * min(1.0, velocityRms / 4.5)
+        }
+
+        // Alarm Check
+        var alarmBreached = false; var alarmMsg = ""
+        val cfg = alarmConfig
+        if (cfg != null) {
+            if (cfg.maxVelocity != null && velocityRms > cfg.maxVelocity) { alarmBreached = true; alarmMsg += "Vib " }
+            if (cfg.maxSpl != null && db > cfg.maxSpl) { alarmBreached = true; alarmMsg += "SPL " }
+            if (cfg.maxTemp != null && tempC != null && tempC > cfg.maxTemp) { alarmBreached = true; alarmMsg += "Heat " }
+            if (cfg.minPressure != null && pressureHpa < cfg.minPressure) { alarmBreached = true; alarmMsg += "LowP " }
+            if (cfg.maxPressure != null && pressureHpa > cfg.maxPressure) { alarmBreached = true; alarmMsg += "HighP " }
+        }
+
+        val tMag = vibrationMag.toDouble()
+        val dMag = sqrt(gravity[0]*gravity[0] + gravity[1]*gravity[1] + gravity[2]*gravity[2]).toDouble()
+        val eff = (1.0 / (1.0 + (tMag / (dMag + 0.0001)))).coerceIn(0.0, 1.0)
+        
+        val pitch = Math.toDegrees(atan2(gravity[1].toDouble(), gravity[2].toDouble()))
+        val roll = Math.toDegrees(atan2(-gravity[0].toDouble(), sqrt(gravity[1]*gravity[1] + gravity[2]*gravity[2]).toDouble()))
+
+        val result = SubstantiatedResult(
+            realHz = currentHz, shimmerIndex = shimmer, descriptorGradient = longTermGradient, intentionIndex = intentionIndex,
+            pythagoreanEfficiency = eff, traverserIntegral = traverserIntegral,
+            stabilityScore = (1.0 - shimmer).coerceIn(0.0, 1.0), bindingStrength = ((1.0 - shimmer.coerceIn(0.0, 1.0)) * 100.0),
+            ttfPrediction = ttf, faultSeverity = isoSeverity, isoZone = isoZone, etState = state,
+            correctedSPL = db, preciseTilt = doubleArrayOf(pitch, roll, 0.0), rmsVibration = vibrationMag.toDouble(),
+            velocityRms = velocityRms, illuminanceLux = currentLux, lightSource = lightSource,
+            dominantFreq = dominantFreq, freqLabel = freqLabel, spectralEntropy = spectralEntropy, fftMagnitudes = currentSpectrum,
+            azimuth = azimuth, magneticShimmer = magneticShimmer,
+            pressureHpa = pressureHpa, altitudeMeters = altitude, relativeAltitude = relAltitude, pressureTrend = pressureTrend,
+            ambientTempC = tempC, thermalState = thermalState,
+            gpsLat = gpsLat, gpsLon = gpsLon, gpsAlt = gpsAlt, gpsAccuracy = gpsAcc,
+            mechSource = mechSource, faultPrediction = faultPred, diagnosisConfidence = diagConf,
+            alarmBreached = alarmBreached, alarmMessage = alarmMsg
+        )
+        
+        lastValidResult = result
+        return result
+    }
+
+    private fun validateSensorInput(data: FloatArray): Boolean { for (v in data) { if (v.isNaN() || v.isInfinite() || abs(v) > 200.0f) return false }; return true }
+
+    private fun createZeroResult(): SubstantiatedResult {
+        return SubstantiatedResult(0.0,0.0,0.0,0.0,1.0,0.0,1.0,100.0,Double.POSITIVE_INFINITY,
+            0,"A",EtState.STATE_0_EXCEPTION,0.0,doubleArrayOf(0.0,0.0,0.0),0.0,0.0,0.0,"Unknown",0.0,"",0.0,
+            DoubleArray(512),0.0,0.0,0.0,0.0,0.0,"Init",null,"N/A",null,null,null,null,
+            "None","Init",0.0,false,"")
+    }
+
+    private fun remapSensorVector(vec: FloatArray, rotation: Int, output: FloatArray) {
+        val x = vec[0]; val y = vec[1]; val z = vec[2]
+        when (rotation) { 
+            1 -> { output[0] = -y; output[1] = x; output[2] = z }
+            2 -> { output[0] = -x; output[1] = -y; output[2] = z }
+            3 -> { output[0] = y; output[1] = -x; output[2] = z }
+            else -> { output[0] = x; output[1] = y; output[2] = z }
+        }
+    }
+
+    private fun computeFFT(real: DoubleArray, imag: DoubleArray) {
+        val n = real.size; var j = 0
+        for (i in 0 until n - 1) {
+            if (i < j) { val tr = real[j]; real[j] = real[i]; real[i] = tr; val ti = imag[j]; imag[j] = imag[i]; imag[i] = ti }
+            var k = n / 2; while (k <= j) { j -= k; k /= 2 }; j += k
+        }
+        var l = 2
+        while (l <= n) {
+            val hl = l / 2; val angle = -2.0 * PI / l; val wBaseR = cos(angle); val wBaseI = sin(angle); var wR = 1.0; var wI = 0.0
+            for (i in 0 until hl) {
+                for (k in i until n step l) {
+                    val idx = k + hl; val tr = wR * real[idx] - wI * imag[idx]; val ti = wR * imag[idx] + wI * real[idx]
+                    real[idx] = real[k] - tr; imag[idx] = imag[k] - ti; real[k] += tr; imag[k] += ti
+                }
+                val tR = wR * wBaseR - wI * wBaseI; wI = wR * wBaseI + wI * wBaseR; wR = tR
+            }
+            l *= 2
+        }
+    }
+
+    private fun calculateRecursiveVariance(newValue: Float): Double { val mean = varianceHistory.average(); return (newValue - mean).pow(2) }
+    private fun updateHistory(shimmer: Double) { varianceHistory[historyIndex] = shimmer; historyIndex = (historyIndex + 1) % varianceHistory.size }
+    private fun calculateGradient(): Double { val half = varianceHistory.size / 2; val recentSum = varianceHistory.takeLast(half).sum(); val oldSum = varianceHistory.dropLast(half).sum(); return (recentSum - oldSum) / half }
+}

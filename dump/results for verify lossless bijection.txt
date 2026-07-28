@@ -1,0 +1,85 @@
+"C:\Program Files\Python313\python.exe" "C:\Users\aevum\Desktop\Civilizational Blueprint\dump\verify_lossless_bijection.py" 
+================================================================================
+  PART 1: SYMBOLIC PROOF — ALGEBRAIC IDENTITY
+================================================================================
+
+  Forward:  ε = (N·log₂(r) - k) · 1200/N
+           ε = (1200*N*log(r)/log(2) - 1200*k)/N
+
+  Pullback: r' = 2^((k + ε·N/1200) / N)
+           exponent = log(r)/log(2)
+           simplified exponent = log(r)/log(2)
+           r' simplified = r
+
+  r' - r = 0
+  ✓ ALGEBRAIC IDENTITY CONFIRMED: r' = r EXACTLY
+    The pullback is the exact inverse of the projection.
+    Zero error. No precision floor. No approximation.
+    This is not a numerical result — it is an algebraic theorem.
+
+================================================================================
+  PART 2: PRECISION SCALING — ERROR IS COMPUTATIONAL, NOT MATHEMATICAL
+================================================================================
+
+  If the bijection had a mathematical error, the error would be CONSTANT
+  regardless of computational precision. If the error is purely computational,
+  it scales linearly with the dps (decimal places) setting.
+
+  Value             N |       50 dps      100 dps      200 dps      400 dps      800 dps
+  ------------ -------+-----------------------------------------------------------------
+  π                12 |      EXACT 0      EXACT 0    1.04e-201      EXACT 0      EXACT 0
+  e                12 |      EXACT 0      EXACT 0    1.20e-201      EXACT 0      EXACT 0
+  φ                12 |      EXACT 0      EXACT 0      EXACT 0      EXACT 0      EXACT 0
+  2/3              12 |      EXACT 0      EXACT 0      EXACT 0      EXACT 0      EXACT 0
+  137.036          12 |     2.50e-51    1.33e-101    1.53e-201      EXACT 0      EXACT 0
+  10^-100       27720 |     1.53e-50    7.43e-100    1.34e-199      EXACT 0      EXACT 0
+
+  If error halves in log₁₀ when dps doubles → error is PURELY computational.
+  The mathematical bijection has ZERO error.
+
+================================================================================
+  PART 3: EXACT CASES — POWERS OF 2 HAVE TRUE ZERO ε
+================================================================================
+
+  For r = 2^(k/N), the projection has ε = 0 EXACTLY (no rounding needed).
+  The pullback r' = 2^(k/N) = r, with zero error even numerically.
+
+  Tested 164 lattice-exact values across tower resolutions
+  164/164 recovered to < 10⁻¹⁹⁵ relative error
+  (the residual ~10⁻¹⁹⁸ is mpmath computing 2^(k/N) twice independently)
+
+================================================================================
+  THE THEOREM (from the Sempaevum paper, Theorem 12.1)
+================================================================================
+
+  The projection Π_N : ℝ⁺ → ℤ × {N/d : d|N} × ℝ given by
+
+      Π_N(r) = (k, d, ε)
+
+  with k = round(N·log₂r), d = N/gcd(|k|,N), ε = (N·log₂r − k)·1200/N
+
+  is a BIJECTION onto its image at every finite resolution N.
+
+  The pullback Π_N⁻¹ : (k, d, ε) → 2^((k + ε·N/1200)/N)
+
+  is the IDENTITY on ℝ⁺:
+
+      Π_N⁻¹(Π_N(r)) = 2^((k + (N·log₂r − k)·1200/N · N/1200) / N)
+                      = 2^((k + N·log₂r − k) / N)
+                      = 2^(N·log₂r / N)
+                      = 2^(log₂r)
+                      = r
+
+  This is ALGEBRAIC IDENTITY. The bijection is LOSSLESS.
+  There is no precision floor. There is no error.
+  The previous report of 10⁻¹⁹⁸ error was a computational artifact
+  of evaluating transcendental functions at finite machine precision.
+  The MATHEMATICS has zero error.
+
+================================================================================
+  VERIFIED: THE BIJECTION IS EXACTLY LOSSLESS
+  r ↦ (k, d, ε) ↦ r    by algebraic identity
+  Zero error. No floor. No approximation. Q.E.D.
+================================================================================
+
+Process finished with exit code 0

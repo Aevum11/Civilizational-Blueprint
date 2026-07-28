@@ -1,0 +1,298 @@
+import tkinter as tk
+from tkinter import filedialog, messagebox
+import threading
+import sys
+import math
+
+try:
+    from PIL import Image, ImageTk, ImageDraw, ImageFilter, ImageChops
+except ImportError:
+    messagebox.showerror("Error", "Pillow is missing. Run: pip install pillow")
+    sys.exit(1)
+
+# ==============================================================================
+# ET KERNEL: DUAL-MANIFOLD SYNTHESIS
+# ==============================================================================
+
+class ET_Dual_Engine:
+    def synthesize_layers(self, img_pil, mask_pil, tex_remove, structure_stiff, detail_amp, show_structure, status_cb):
+        """
+        tex_remove: Aggressiveness of texture unbinding (0-200%).
+        structure_stiff: Threshold for edge preservation (1-50).
+        detail_amp: Amplification of the preserved edges.
+        """
+        width, height = img_pil.size
+        
+        # 1. CREATE MANIFOLD A (THE MELT)
+        # This is the V12 logic: Frequency Separation to kill texture.
+        status_cb("Generating Manifold A (Texture Melt)...")
+        
+        # Low Freq Baseline
+        blur = img_pil.filter(ImageFilter.GaussianBlur(radius=2))
+        
+        # High Freq Map (Texture) = Raw - Blur
+        # In Pillow, we use Chops to do math on images quickly
+        # Bias 128 to handle negative values visually if needed, but we do raw math below
+        
+        pixels = img_pil.load()
+        blur_pix = blur.load()
+        mask = mask_pil.load()
+        
+        # 2. CREATE MANIFOLD B (THE SKELETON)
+        # We need a robust Edge Map.
+        status_cb("Generating Manifold B (Structure Skeleton)...")
+        # Find edges using Sobel-like filter built into Pillow
+        edges = img_pil.filter(ImageFilter.FIND_EDGES)
+        edge_pix = edges.load() # Grayscale intensity of edges
+        
+        bbox = mask_pil.getbbox()
+        if not bbox: return img_pil
+        min_x, min_y, max_x, max_y = bbox
+        
+        updates = []
+        
+        # Constants
+        tex_factor = tex_remove / 100.0
+        amp_factor = 1.0 + (detail_amp / 50.0)
+        
+        # The Stiffness Threshold (How bright an edge must be to count)
+        # Higher Stiffness = Only strong lines survive (Weave is ignored)
+        stiff_thresh = structure_stiff * 5 # Scale to 0-255 range approx
+        
+        # Debug Mask Generator
+        debug_layer = Image.new("RGB", (width, height), (0,0,0))
+        debug_pix = debug_layer.load()
+
+        for y in range(min_y, max_y):
+            for x in range(min_x, max_x):
+                if mask[x, y] == 0: continue
+                
+                # Raw Data
+                p = pixels[x, y]
+                b = blur_pix[x, y]
+                
+                # Edge Data (Luminance of edge map)
+                e_val = edge_pix[x, y] # Tuple or Int depending on mode
+                if isinstance(e_val, tuple):
+                    edge_lum = (e_val[0]+e_val[1]+e_val[2])//3
+                else:
+                    edge_lum = e_val
+                    
+                # --- ET LOGIC: DUAL SYNTHESIS ---
+                
+                # Step A: The Melt (Remove Texture)
+                # D_melt = P - (HighFreq * Factor)
+                # Effectively moving P towards Blur (B)
+                
+                hf_r = p[0] - b[0]
+                hf_g = p[1] - b[1]
+                hf_b = p[2] - b[2]
+                
+                melt_r = p[0] - (hf_r * tex_factor)
+                melt_g = p[1] - (hf_g * tex_factor)
+                melt_b = p[2] - (hf_b * tex_factor)
+                
+                # Step B: The Structure Lock
+                # Is this pixel a Structural Edge?
+                
+                # Calculate Structure Weight (0.0 to 1.0)
+                # If edge_lum > threshold, Weight -> 1.0
+                # If edge_lum < threshold, Weight -> 0.0
+                
+                if edge_lum > stiff_thresh:
+                    # It is STRUCTURE. Protect it.
+                    # Ramping weight for smoothness
+                    weight = min(1.0, (edge_lum - stiff_thresh) / 50.0)
+                else:
+                    # It is TEXTURE. Melt it.
+                    weight = 0.0
+                
+                # Step C: Synthesis
+                # Final = (Structure * Weight) + (Melt * (1-Weight))
+                
+                # If it's structure, we use the RAW pixel (amplified)
+                # If it's texture, we use the MELT pixel
+                
+                # Apply Detail Amp to the Raw part
+                raw_amp_r = b[0] + (hf_r * amp_factor)
+                raw_amp_g = b[1] + (hf_g * amp_factor)
+                raw_amp_b = b[2] + (hf_b * amp_factor)
+                
+                final_r = (raw_amp_r * weight) + (melt_r * (1.0 - weight))
+                final_g = (raw_amp_g * weight) + (melt_g * (1.0 - weight))
+                final_b = (raw_amp_b * weight) + (melt_b * (1.0 - weight))
+                
+                # Store for main image
+                updates.append((x, y, (
+                    int(max(0, min(255, final_r))),
+                    int(max(0, min(255, final_g))),
+                    int(max(0, min(255, final_b)))
+                )))
+                
+                # Store for debug view (Green = Structure, Black = Melt)
+                if show_structure:
+                    g_val = int(weight * 255)
+                    debug_pix[x, y] = (0, g_val, 0)
+        
+        # Apply Main Updates
+        for ux, uy, uval in updates:
+            pixels[ux, uy] = uval
+            
+        # If user wants to see the skeleton mask, return that instead
+        if show_structure:
+            return debug_layer
+            
+        return img_pil
+
+# ==============================================================================
+# GUI
+# ==============================================================================
+
+class ET_V14_GUI:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("ET-V14: DUAL-MANIFOLD SYNTHESIS")
+        self.root.geometry("1200x900")
+        self.root.configure(bg="#050505")
+        
+        self.engine = ET_Dual_Engine()
+        self.pil_img = None
+        self.mask_img = None
+        self.backup_img = None # Undo buffer
+        
+        self._layout()
+
+    def _layout(self):
+        t = tk.Frame(self.root, bg="#101010", pady=5)
+        t.pack(fill=tk.X)
+        
+        self.btn(t, "LOAD IMAGE", self.load, "#004488")
+        self.btn(t, "RESET", self.reset, "#882200")
+        self.btn(t, "SYNTHESIZE", self.run, "#228822")
+        
+        # 1. TEXTURE KILLER (V12 Logic)
+        tk.Label(t, text="TEXTURE REMOVE:", fg="white", bg="#101010").pack(side=tk.LEFT, padx=5)
+        self.tex_scale = tk.Scale(t, from_=0, to=200, orient=tk.HORIZONTAL, bg="#101010", fg="#0f0")
+        self.tex_scale.set(100) 
+        self.tex_scale.pack(side=tk.LEFT)
+        
+        # 2. STRUCTURE STIFFNESS (The Selector)
+        # High = Only keep hardest lines
+        # Low = Keep everything (does nothing)
+        tk.Label(t, text="SKELETON STIFFNESS:", fg="white", bg="#101010").pack(side=tk.LEFT, padx=5)
+        self.stiff_scale = tk.Scale(t, from_=1, to=50, orient=tk.HORIZONTAL, bg="#101010", fg="#0f0")
+        self.stiff_scale.set(10)
+        self.stiff_scale.pack(side=tk.LEFT)
+        
+        # 3. DETAIL AMP (V12 Detail)
+        tk.Label(t, text="DETAIL AMP:", fg="white", bg="#101010").pack(side=tk.LEFT, padx=5)
+        self.amp_scale = tk.Scale(t, from_=0, to=100, orient=tk.HORIZONTAL, bg="#101010", fg="#0f0")
+        self.amp_scale.set(20)
+        self.amp_scale.pack(side=tk.LEFT)
+        
+        # CHECKBOX: Show Structure
+        self.show_skel = tk.BooleanVar()
+        tk.Checkbutton(t, text="SHOW SKELETON", variable=self.show_skel, bg="#101010", fg="white", selectcolor="#222").pack(side=tk.LEFT, padx=10)
+
+        self.stat = tk.Label(t, text="Ready.", fg="#888", bg="#101010")
+        self.stat.pack(side=tk.RIGHT, padx=20)
+        
+        container = tk.Frame(self.root)
+        container.pack(fill=tk.BOTH, expand=True)
+        self.cv = tk.Canvas(container, bg="#080808", cursor="crosshair")
+        vs = tk.Scrollbar(container, orient="vertical", command=self.cv.yview)
+        hs = tk.Scrollbar(container, orient="horizontal", command=self.cv.xview)
+        self.cv.config(yscrollcommand=vs.set, xscrollcommand=hs.set)
+        
+        vs.pack(side=tk.RIGHT, fill=tk.Y)
+        hs.pack(side=tk.BOTTOM, fill=tk.X)
+        self.cv.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        
+        self.cv.bind("<Button-1>", self.down)
+        self.cv.bind("<B1-Motion>", self.drag)
+        self.cv.bind("<ButtonRelease-1>", self.up)
+        
+        self.drawing=False; self.brush=30
+
+    def btn(self, p, t, c, b):
+        tk.Button(p, text=t, command=c, bg=b, fg="white", relief="flat", padx=10).pack(side=tk.LEFT, padx=5)
+
+    def load(self):
+        path = filedialog.askopenfilename()
+        if not path: return
+        try:
+            self.pil_img = Image.open(path).convert("RGB")
+            self.backup_img = self.pil_img.copy()
+            self.mask_img = Image.new("L", self.pil_img.size, 0)
+            self.cv.config(scrollregion=(0,0,self.pil_img.width,self.pil_img.height))
+            self.update_view()
+            self.stat.config(text=f"Loaded: {self.pil_img.size}")
+        except: pass
+
+    def update_view(self):
+        if not self.pil_img: return
+        d = self.pil_img.copy()
+        if self.mask_img.getbbox():
+            r = Image.new("RGB", self.pil_img.size, (255,0,255))
+            d = Image.composite(r, d, self.mask_img)
+        self.tk = ImageTk.PhotoImage(d)
+        self.cv.create_image(0,0, image=self.tk, anchor=tk.NW)
+
+    def down(self,e): 
+        x=self.cv.canvasx(e.x); y=self.cv.canvasy(e.y)
+        self.drawing=True; self.lp=(x,y)
+        
+    def drag(self,e):
+        if self.drawing and self.mask_img:
+            x=self.cv.canvasx(e.x); y=self.cv.canvasy(e.y)
+            d = ImageDraw.Draw(self.mask_img)
+            d.line([self.lp, (x,y)], fill=128, width=self.brush)
+            d.ellipse([x-15,y-15,x+15,y+15], fill=128)
+            self.lp=(x,y); 
+            self.cv.create_line(self.lp[0],self.lp[1],x,y,fill="magenta",width=self.brush,tags="t")
+
+    def up(self,e): self.drawing=False; self.cv.delete("t"); self.update_view()
+    
+    def reset(self):
+        if self.backup_img:
+            self.pil_img = self.backup_img.copy()
+            if self.mask_img: self.mask_img.paste(0,[0,0,self.mask_img.width,self.mask_img.height])
+            self.update_view()
+            self.stat.config(text="Reset.")
+
+    def run(self):
+        if not self.pil_img: return
+        self.stat.config(text="Synthesizing Dual Manifold...")
+        
+        # Get Params
+        tex = self.tex_scale.get()
+        stiff = self.stiff_scale.get()
+        amp = self.amp_scale.get()
+        show = self.show_skel.get()
+        
+        # Use backup as source so we don't degrade quality on multiple runs
+        src = self.backup_img.copy()
+        
+        threading.Thread(target=self._w, args=(src, tex, stiff, amp, show)).start()
+
+    def _w(self, src, t, s, a, show):
+        res = self.engine.synthesize_layers(src, self.mask_img, t, s, a, show, self.log)
+        
+        if show:
+            # If showing skeleton, don't overwrite main image state, just display it
+            # We need to manually update the canvas image here
+            self.tk_debug = ImageTk.PhotoImage(res)
+            self.cv.create_image(0,0, image=self.tk_debug, anchor=tk.NW)
+            self.log("Displaying Structure Skeleton (Green). Uncheck to Apply.")
+        else:
+            self.pil_img = res
+            self.mask_img.paste(0,[0,0,self.mask_img.width,self.mask_img.height])
+            self.root.after(0, self.update_view)
+            self.root.after(0, lambda: self.stat.config(text="Synthesis Complete."))
+
+    def log(self, m): self.stat.config(text=m)
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = ET_V14_GUI(root)
+    root.mainloop()

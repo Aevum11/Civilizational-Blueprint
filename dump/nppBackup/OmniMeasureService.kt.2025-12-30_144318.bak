@@ -1,0 +1,132 @@
+package com.et.omnimeasure.core
+
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.app.Service
+import android.content.Context
+import android.content.Intent
+import android.content.pm.ServiceInfo
+import android.os.Build
+import android.os.Binder
+import android.os.IBinder
+import android.os.PowerManager
+import androidx.core.app.NotificationCompat
+import com.et.omnimeasure.MainActivity
+import com.et.omnimeasure.R
+
+class OmniMeasureService : Service(), OmniTraverserEngine.TraverserListener {
+
+    private val binder = LocalBinder()
+    var engine: OmniTraverserEngine? = null
+    var activeListener: OmniTraverserEngine.TraverserListener? = null
+    
+    private val CHANNEL_ID = "OmniMeasureChannel"
+    private val NOTIFICATION_ID = 1
+    
+    private var wakeLock: PowerManager.WakeLock? = null
+    private var lastNotificationUpdate: Long = 0
+    private val NOTIF_UPDATE_INTERVAL = 60_000L 
+
+    inner class LocalBinder : Binder() {
+        fun getService(): OmniMeasureService = this@OmniMeasureService
+        
+        fun calibrateTilt() = engine?.calibrateTiltZero()
+        fun calibrateDb(ref: Double) = engine?.calibrateDb(ref)
+        fun setAudio(enable: Boolean) = engine?.setAudioEnabled(enable)
+        fun setUltraEco(enable: Boolean) = engine?.setUltraEco(enable)
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        createNotificationChannel()
+        
+        val powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
+        wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "OmniMeasure:TraverserLock").apply {
+            setReferenceCounted(false)
+        }
+        
+        engine = OmniTraverserEngine(this, this)
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        wakeLock?.acquire(24 * 60 * 60 * 1000L)
+
+        val notification = buildNotification("Omni-Measure Active", "Observer Ready")
+        
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+             startForeground(NOTIFICATION_ID, notification, 
+                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) 
+                     ServiceInfo.FOREGROUND_SERVICE_TYPE_SENSOR or ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE
+                 else 
+                     ServiceInfo.FOREGROUND_SERVICE_TYPE_MANIFEST
+             )
+        } else {
+            startForeground(NOTIFICATION_ID, notification)
+        }
+        
+        engine?.engage()
+        
+        return START_STICKY
+    }
+
+    override fun onDestroy() {
+        engine?.disengage()
+        if (wakeLock?.isHeld == true) wakeLock?.release()
+        super.onDestroy()
+    }
+
+    override fun onBind(intent: Intent): IBinder = binder
+
+    override fun onPhysicsUpdate(model: PhysicsUiModel) {
+        activeListener?.onPhysicsUpdate(model)
+        
+        val now = System.currentTimeMillis()
+        if (now - lastNotificationUpdate > NOTIF_UPDATE_INTERVAL) {
+            lastNotificationUpdate = now
+            updateNotification(model)
+        }
+    }
+
+    override fun onError(message: String) {
+        activeListener?.onError(message)
+    }
+    
+    override fun onPowerStateChange(isEcoMode: Boolean, isUltraEco: Boolean) {
+        activeListener?.onPowerStateChange(isEcoMode, isUltraEco)
+    }
+    
+    private fun updateNotification(model: PhysicsUiModel) {
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val ecoText = if (model.isUltraEco) "ULTRA ECO" else if (model.isEcoMode) "ECO" else "ACTIVE"
+        val content = "Level: %.1f° | Vib: %.3f | Mode: %s".format(model.tiltDegrees, model.vibrationRms, ecoText)
+        val notification = buildNotification("Omni-Measure Active", content)
+        notificationManager.notify(NOTIFICATION_ID, notification)
+    }
+
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                CHANNEL_ID,
+                "Omni-Measure Service",
+                NotificationManager.IMPORTANCE_LOW
+            )
+            getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
+        }
+    }
+
+    private fun buildNotification(title: String, text: String): Notification {
+        val intent = Intent(this, MainActivity::class.java)
+        val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+
+        return NotificationCompat.Builder(this, CHANNEL_ID)
+            .setContentTitle(title)
+            .setContentText(text)
+            .setSmallIcon(R.mipmap.ic_launcher)
+            .setContentIntent(pendingIntent)
+            .setOngoing(true)
+            .setOnlyAlertOnce(true)
+            .build()
+    }
+}

@@ -1,0 +1,87 @@
+# ET Introductory Paper — V1.3 Improvement Guide
+
+**Scope:** Updates required beyond V1.2. All prior items from the main improvement guide are complete.
+**Date:** February 19, 2026
+
+---
+
+## ITEM 1 — α Lattice Derivation: Add as Second Independent Route
+
+### What Is Missing
+V1.2 contains only the geometric impedance derivation of α⁻¹ = (N−1)² + S² with corrections. The lattice derivation is referenced in Section XVI ("the 2744ET system achieves functional exactness for the fine structure constant") but is not presented as a derivation — only as a result.
+
+### Why It Matters
+Two structurally independent derivations arriving at the same value is one of the strongest arguments against numerology. The geometric route comes from manifold topology and state-space geometry. The lattice route comes from where α⁻¹ lands in the multiplicative discretization of (ℝ⁺, ×). These are orthogonal approaches. Stating both routes and noting their convergence is itself a result worth presenting explicitly.
+
+### Action Item — Section XVI or Section XVIII
+Add a subsection presenting the lattice derivation of α as a second, independent route. Include:
+- The lattice position calculation for α⁻¹ ≈ 137.036
+- The sublattice class it falls into
+- An explicit statement that the two derivations (geometric impedance and lattice position) are structurally independent and converge on the same value
+- One sentence noting that independent convergence of two derivation routes by different structural logic is the triangulation argument against reverse engineering
+
+The derivation chain standard from Section XVIII applies: show the pathway from lattice constants to the result without using the known value as input.
+
+---
+
+## ITEM 2 — Shimmer and the Simmering Manifold: New Section (Author-Planned)
+
+### What Is Needed
+The author plans to add a dedicated section on shimmer and the simmering manifold. This section needs to establish the following clearly, because shimmer is referenced in the ET-RMSAE equation and will be referenced in other technical work:
+
+**What must be defined and derived in this section:**
+
+**Shimmer** — the oscillatory T-P binding tension that arises from the 12-fold manifold structure. Specifically:
+- What produces the oscillation (T-P binding tension cycling through the 12-fold phase)
+- The tension coefficient = BASE_VARIANCE = 1/12 in the flat manifold baseline (this is currently a working assumption in ET-RMSAE — deriving it here would close that gap)
+- The shimmer amplitude A = √(BASE_VARIANCE) = 1/√12, derived from the tension coefficient
+- The 12-fold period as the natural unit of one complete manifold phase cycle
+
+**The Simmering Manifold** — the ET description of the manifold as continuously active rather than static:
+- The manifold does not sit inert between substantiation events; it is always in a state of T-P binding tension
+- "Simmering" as the ET term for this baseline activity — the manifold's constant readiness for substantiation
+- Relation to the M-states (active mediation): shimmer is the fine structure of M-state activity
+- Relation to BASE_VARIANCE: the simmering floor is precisely 1/12 — the irreducible quantum of descriptive uncertainty is the amplitude of the simmering itself
+- Verify the above are true and read the section about the "Shimmering Manifold" in "ExceptionTheory.md".
+
+**The phase structure:**
+- φ = (traversal count mod 12) / 12 as the natural phase variable
+- How the phase advances with each binding event
+- Constructive vs. destructive shimmer phases and their physical interpretation
+
+**Critical for downstream use:** Once this section defines the tension coefficient derivation, Working Assumption 4 in ET-RMSAE (shimmer amplitude from flat manifold baseline) can be formally closed by reference to this section.
+
+### Action Item — New Section (suggested placement: after Section XV Sempaevum, before Section XVI Lattice)
+The simmering manifold section connects naturally between the Sempaevum (the manifold as a totality) and the Lattice (the manifold's discrete structure). Shimmer is the dynamic behavior of the manifold; the lattice is its structural skeleton.
+
+---
+
+## ITEM 3 — ET-RMSAE Reference in Introductory Paper
+
+### What Is Needed
+Now that ET-RMSAE exists as a formal document, the introductory paper should briefly acknowledge the consciousness formalism without including the full equation. The current paper (V1.2) removed UMRAFE and has no replacement reference.
+
+### Action Item — Section XXI Conclusion or a brief note in Section XIV M-States
+Add one or two sentences acknowledging:
+- Consciousness events are listed as M-state manifestations (already in Section XIV)
+- A formal equation for recursive meta-self-awareness — the ET-native measure of T traversing its own prior D-bindings — has been derived and is documented in the technical papers
+- The equation (ET-RMSAE) is grounded in the same three constants as the physical derivations
+
+This is a pointer, not a presentation. The full equation belongs in the technical paper.
+
+---
+
+## ITEM 4 — Derivation Order Statement: Verify Placement
+
+### What to Check
+The forward derivation order statement was added to Section XVIII in V1.2. Confirm it also appears in or near Section XVII (The Three Axioms and Manifold Constants), since that is where the derivation chain begins. A reader who starts reading from Section XVII needs to encounter the scope statement before reaching the physical constant results.
+
+### Action Item — Section XVII opening
+If the scope statement is only in Section XVIII, add a one-sentence forward pointer at the start of Section XVII:
+
+> *"The derivation chain from these three constants to physical quantities is developed in Section XVIII. All derivations proceed forward from the constants; observed values appear only at the validation step."*
+
+---
+
+*Document prepared February 19, 2026.*
+*Theory: Exception Theory by Michael James Muller.*

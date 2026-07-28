@@ -1,0 +1,392 @@
+package com.et.omnimeasure.core
+
+import android.content.Context
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
+import android.media.AudioFormat
+import android.media.AudioRecord
+import android.media.MediaRecorder
+import android.os.SystemClock
+import android.view.Surface
+import android.view.WindowManager
+import java.util.ArrayDeque
+import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.math.*
+
+/**
+ * =========================================================================================
+ * OMNI-TRAVERSER ENGINE v8.0 (PROFESSIONAL GRADE)
+ * Logic: Exception Theory (P-D-T Substantiation)
+ * =========================================================================================
+ *
+ * PROFESSIONAL FEATURES:
+ * 1. Adaptive Motion Gating: Auto-downgrades to SENSOR_DELAY_NORMAL when stationary > 10s.
+ * 2. A-Weighting (dBA): Frequency-domain weighting for human-perceived loudness.
+ * 3. Statistical Confidence: Real-time Standard Deviation (Uncertainty) for Tilt/dB.
+ * 4. Explicit Audio: Microphone is strictly on-demand (Privacy/Battery).
+ */
+class OmniTraverserEngine(
+    private val context: Context,
+    private val listener: TraverserListener
+) : SensorEventListener {
+
+    interface TraverserListener {
+        fun onPhysicsUpdate(model: PhysicsUiModel)
+        fun onError(message: String)
+        fun onPowerStateChange(isEcoMode: Boolean)
+    }
+
+    private val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+    private val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+
+    // --- MANIFOLD CONSTANTS ---
+    private val UI_THROTTLE_MS = 50L
+    private val ECO_TIMEOUT_MS = 10_000L // 10s stillness triggers Eco Mode
+    private val MOTION_THRESHOLD = 0.15  // Threshold to wake form Eco Mode
+    private var dbOffset = 90.0
+
+    // --- T-STATE ---
+    private var isRunning = false
+    private var isEcoMode = false
+    private var lastMotionTimestamp = 0L
+    private var lastUiUpdate = 0L
+
+    // --- D-STATE (ORIENTATION & UNCERTAINTY) ---
+    private val rotationMatrix = FloatArray(9)
+    private val orientationAngles = FloatArray(3)
+    // Ring buffer for Tilt Uncertainty (StdDev)
+    private val tiltHistory = ArrayDeque<Double>(50) 
+    
+    // --- D-STATE (VIBRATION) ---
+    private val vibrationWindow = ArrayDeque<Double>(150)
+    private var vibrationWindowSum = 0.0
+    private var maxPeakInWindow = 0.0
+    
+    // --- D-STATE (AUDIO) ---
+    private var audioThread: Thread? = null
+    private val isAudioEnabled = AtomicBoolean(false)
+    private val isAudioRunning = AtomicBoolean(false)
+    private var currentDbA = 0.0 // A-Weighted Decibels
+    private var dbUncertainty = 0.0
+    private var dominantAudioFreq = 0.0
+    
+    // Pre-computed A-Weighting Curve (0Hz - 22kHz)
+    private var aWeightingCurve: DoubleArray? = null
+
+    // =========================================================================================
+    //  LIFECYCLE & POWER MANAGEMENT
+    // =========================================================================================
+
+    fun engage() {
+        if (isRunning) return
+        resetState()
+        isRunning = true
+        lastMotionTimestamp = SystemClock.elapsedRealtime()
+        
+        // Start in High Performance Mode (GAME = ~50Hz)
+        registerSensors(SensorManager.SENSOR_DELAY_GAME)
+        
+        // Audio is NOT started automatically (Battery/Privacy focus)
+    }
+
+    fun disengage() {
+        isRunning = false
+        sensorManager.unregisterListener(this)
+        stopAudioTraversal()
+    }
+    
+    fun setAudioEnabled(enabled: Boolean) {
+        if (enabled && !isAudioRunning.get()) {
+            isAudioEnabled.set(true)
+            startAudioTraversal()
+        } else if (!enabled) {
+            isAudioEnabled.set(false)
+            stopAudioTraversal()
+        }
+    }
+
+    private fun registerSensors(rate: Int) {
+        sensorManager.unregisterListener(this) // Clear existing
+        
+        // 1. Rotation Vector (Fusion)
+        sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR)?.let {
+            sensorManager.registerListener(this, it, rate)
+        }
+        
+        // 2. Linear Accel (Vibration) - Fallback to Accel if missing
+        sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION)?.let {
+            sensorManager.registerListener(this, it, rate)
+        } ?: sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)?.let {
+            sensorManager.registerListener(this, it, rate)
+        }
+
+        // 3. Light (Always UI rate)
+        sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT)?.let {
+            sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_UI)
+        }
+    }
+
+    private fun checkPowerState(currentVibMag: Double) {
+        val now = SystemClock.elapsedRealtime()
+        
+        if (currentVibMag > MOTION_THRESHOLD) {
+            lastMotionTimestamp = now
+            if (isEcoMode) {
+                // WAKE UP! (Substantiation Required)
+                isEcoMode = false
+                registerSensors(SensorManager.SENSOR_DELAY_GAME)
+                listener.onPowerStateChange(false)
+            }
+        } else {
+            if (!isEcoMode && (now - lastMotionTimestamp > ECO_TIMEOUT_MS)) {
+                // SLEEP (Entropy Reduction)
+                isEcoMode = true
+                registerSensors(SensorManager.SENSOR_DELAY_NORMAL) // ~5Hz
+                listener.onPowerStateChange(true)
+            }
+        }
+    }
+    
+    private fun resetState() {
+        vibrationWindow.clear()
+        vibrationWindowSum = 0.0
+        tiltHistory.clear()
+        maxPeakInWindow = 0.0
+    }
+
+    // =========================================================================================
+    //  PHYSICS LOOP
+    // =========================================================================================
+
+    override fun onSensorChanged(event: SensorEvent?) {
+        event ?: return
+        when (event.sensor.type) {
+            Sensor.TYPE_ROTATION_VECTOR -> processRotation(event)
+            Sensor.TYPE_LINEAR_ACCELERATION -> processVibration(event.values[0], event.values[1], event.values[2])
+            Sensor.TYPE_ACCELEROMETER -> { 
+                // Fallback for vibration if LINEAR_ACCEL missing
+                 processVibration(event.values[0], event.values[1], event.values[2])
+            }
+            Sensor.TYPE_LIGHT -> { /* Light data processed directly in UI loop via last value */ }
+        }
+    }
+
+    private fun processRotation(event: SensorEvent) {
+        SensorManager.getRotationMatrixFromVector(rotationMatrix, event.values)
+        SensorManager.getOrientation(rotationMatrix, orientationAngles)
+        
+        // Calculate Tilt for Uncertainty
+        val (p, r) = remapOrientation(orientationAngles)
+        val tilt = Math.toDegrees(acos(cos(p) * cos(r)))
+        
+        // Update History for Confidence Interval
+        if (tiltHistory.size >= 50) tiltHistory.removeFirst()
+        tiltHistory.addLast(tilt)
+        
+        throttleUiUpdate()
+    }
+
+    private fun processVibration(x: Float, y: Float, z: Float) {
+        val magSq = (x*x + y*y + z*z).toDouble()
+        val mag = sqrt(magSq)
+        
+        // Power Gating Check
+        checkPowerState(mag)
+
+        // Window Logic
+        vibrationWindow.addLast(magSq)
+        vibrationWindowSum += magSq
+        if (vibrationWindow.size > 150) vibrationWindowSum -= vibrationWindow.removeFirst()
+        
+        if (mag > maxPeakInWindow) maxPeakInWindow = mag
+        else maxPeakInWindow *= 0.99 
+    }
+
+    // =========================================================================================
+    //  AUDIO ENGINE (A-WEIGHTED)
+    // =========================================================================================
+
+    private fun startAudioTraversal() {
+        if (isAudioRunning.get()) return
+        isAudioRunning.set(true)
+        audioThread = Thread { audioLoop() }
+        audioThread?.start()
+    }
+    
+    private fun stopAudioTraversal() {
+        isAudioRunning.set(false)
+        try { audioThread?.join(500) } catch (e: Exception) {}
+    }
+
+    private fun audioLoop() {
+        val sampleRate = 44100
+        val fftSize = 2048
+        // Initialize A-Weighting Curve once
+        if (aWeightingCurve == null) precomputeAWeighting(fftSize, sampleRate)
+
+        val bufferSize = max(AudioRecord.getMinBufferSize(sampleRate, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT), fftSize)
+        val audioBuffer = ShortArray(bufferSize)
+        val fftReal = DoubleArray(fftSize)
+        val fftImag = DoubleArray(fftSize)
+        val dbHistory = ArrayDeque<Double>(20) // For Uncertainty
+
+        try {
+            val recorder = AudioRecord(MediaRecorder.AudioSource.MIC, sampleRate, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, bufferSize)
+            recorder.startRecording()
+            
+            while (isAudioRunning.get()) {
+                val read = recorder.read(audioBuffer, 0, fftSize)
+                if (read >= fftSize) {
+                    // Prepare FFT
+                    for(i in 0 until fftSize) {
+                        fftReal[i] = audioBuffer[i].toDouble()
+                        fftImag[i] = 0.0
+                    }
+                    
+                    // Compute FFT
+                    computeFFT(fftReal, fftImag, fftSize)
+                    
+                    // Apply A-Weighting in Frequency Domain & Sum Energy
+                    var weightedEnergySum = 0.0
+                    var maxMag = 0.0
+                    var maxIdx = 0
+                    
+                    // Iterate up to Nyquist (fftSize/2)
+                    for(i in 1 until fftSize/2) {
+                        val magSq = fftReal[i]*fftReal[i] + fftImag[i]*fftImag[i]
+                        val weight = aWeightingCurve!![i]
+                        
+                        // Apply Weight (weight is linear scaler, not dB)
+                        weightedEnergySum += magSq * weight
+                        
+                        if (magSq > maxMag) { maxMag = magSq; maxIdx = i }
+                    }
+                    
+                    // Convert Total Energy to dBA
+                    val rmsWeighted = sqrt(weightedEnergySum / (fftSize/2))
+                    val dba = if (rmsWeighted > 0) 20 * log10(rmsWeighted) + dbOffset else 0.0
+                    
+                    currentDbA = dba
+                    dominantAudioFreq = maxIdx.toDouble() * sampleRate / fftSize
+
+                    // Calc Uncertainty
+                    if (dbHistory.size >= 20) dbHistory.removeFirst()
+                    dbHistory.addLast(dba)
+                    dbUncertainty = calculateStdDev(dbHistory)
+                }
+            }
+            recorder.stop(); recorder.release()
+        } catch (e: Exception) {
+            listener.onError("Audio Error: ${e.message}")
+        }
+    }
+    
+    // A-WEIGHTING FORMULA (ISO 226)
+    private fun precomputeAWeighting(n: Int, sampleRate: Int) {
+        aWeightingCurve = DoubleArray(n/2)
+        for (i in 0 until n/2) {
+            val f = i.toDouble() * sampleRate / n
+            val f2 = f*f
+            val f4 = f2*f2
+            
+            // Standard A-weighting transfer function magnitude squared
+            val num = 12194.0.pow(2) * f4
+            val den = (f2 + 20.6.pow(2)) * sqrt((f2 + 107.7.pow(2))*(f2 + 737.9.pow(2))) * (f2 + 12194.0.pow(2))
+            
+            val ra = if (den > 0) num / den else 0.0
+            aWeightingCurve!![i] = ra 
+        }
+    }
+
+    // =========================================================================================
+    //  UI & UTILS
+    // =========================================================================================
+
+    private fun throttleUiUpdate() {
+        val now = SystemClock.elapsedRealtime()
+        if (now - lastUiUpdate < UI_THROTTLE_MS) return
+        lastUiUpdate = now
+
+        var rmsVib = 0.0
+        if (vibrationWindow.isNotEmpty()) rmsVib = sqrt(vibrationWindowSum / vibrationWindow.size)
+
+        val (p, r) = remapOrientation(orientationAngles)
+        val tiltDeg = Math.toDegrees(acos(cos(p) * cos(r)))
+        
+        // Calculate Confidence
+        val tiltUncertainty = calculateStdDev(tiltHistory)
+
+        val model = PhysicsUiModel(
+            tiltDegrees = tiltDeg,
+            tiltConfidence = tiltUncertainty,
+            vibrationRms = rmsVib,
+            vibrationPeak = maxPeakInWindow,
+            isEcoMode = isEcoMode,
+            dbA = currentDbA,
+            dbConfidence = dbUncertainty,
+            noiseFreq = dominantAudioFreq
+        )
+
+        listener.onPhysicsUpdate(model)
+    }
+
+    // --- MATH UTILS ---
+    private fun calculateStdDev(data: ArrayDeque<Double>): Double {
+        if (data.size < 2) return 0.0
+        val mean = data.average()
+        val sumSqDiff = data.sumOf { (it - mean).pow(2) }
+        return sqrt(sumSqDiff / (data.size - 1))
+    }
+    
+    private fun computeFFT(real: DoubleArray, imag: DoubleArray, n: Int) {
+        var j = 0
+        for (i in 0 until n - 1) {
+            if (i < j) {
+                val tr = real[i]; real[i] = real[j]; real[j] = tr
+                val ti = imag[i]; imag[i] = imag[j]; imag[j] = ti
+            }
+            var k = n / 2; while (k <= j) { j -= k; k /= 2 }; j += k
+        }
+        var l = 2
+        while (l <= n) {
+            val h = l / 2; val angle = -2.0 * PI / l
+            val wBaseR = cos(angle); val wBaseI = sin(angle)
+            var wR = 1.0; var wI = 0.0
+            for (i in 0 until h) {
+                for (k in i until n step l) {
+                    val idx = k + h
+                    val tr = wR * real[idx] - wI * imag[idx]
+                    val ti = wR * imag[idx] + wI * real[idx]
+                    real[idx] = real[k] - tr; imag[idx] = imag[k] - ti
+                    real[k] += tr; imag[k] += ti
+                }
+                val tR = wR * wBaseR - wI * wBaseI; wI = wR * wBaseI + wI * wBaseR; wR = tR
+            }
+            l *= 2
+        }
+    }
+    
+    private fun remapOrientation(angles: FloatArray): Pair<Double, Double> {
+        val p = angles[1].toDouble(); val r = angles[2].toDouble()
+        return when (windowManager.defaultDisplay.rotation) {
+            Surface.ROTATION_0 -> p to r
+            Surface.ROTATION_90 -> r to -p
+            Surface.ROTATION_180 -> -p to -r
+            Surface.ROTATION_270 -> -r to p
+            else -> p to r
+        }
+    }
+}
+
+data class PhysicsUiModel(
+    val tiltDegrees: Double,
+    val tiltConfidence: Double,
+    val vibrationRms: Double,
+    val vibrationPeak: Double,
+    val isEcoMode: Boolean,
+    val dbA: Double,
+    val dbConfidence: Double,
+    val noiseFreq: Double
+)

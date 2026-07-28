@@ -1,0 +1,384 @@
+package com.et.physics.toolbox
+
+import kotlin.math.*
+
+/**
+ * OmniTraverserEngine v7.0 - "The Synthesis Update"
+ *
+ * MERGED: Compendium Math (v6.0) + Industrial Features (v13.0 legacy)
+ *
+ * NEW FEATURES:
+ * 1. Spectral Analysis (FFT) -> Used for Spectral Entropy & Hum Detection.
+ * 2. Orientation Remapping -> Corrects P/D vectors for device rotation.
+ * 3. ISO Velocity Integration -> Converts Accel to Velocity for Machine Health.
+ */
+class OmniTraverserEngine {
+
+    // ET Constants
+    private val MANIFOLD_RESONANCE_TARGET = 0.0833333333
+    private val PSI_SCALING_FACTOR = 100.0
+    
+    // State Vectors
+    private var varianceHistory = DoubleArray(128) { 0.0 }
+    private var gradientHistory = DoubleArray(128) { 0.0 }
+    private var historyIndex = 0
+
+    // Photonic State
+    private var luxHistory = DoubleArray(50) { 0.0 }
+    private var luxIndex = 0
+
+    // Stability
+    private var longTermGradient = 0.0
+    
+    // Traverser Accumulators
+    private var dTimeTotal: Double = 0.0
+    private var tTimeTotal: Double = 0.0
+    private var traverserIntegral: Double = 0.0 
+
+    // Calibration
+    var splCalibrationOffset = 0.0
+    var accelOffset = FloatArray(3) { 0.0f }
+    var gyroOffset = FloatArray(3) { 0.0f }
+    private var isCalibrated = false
+
+    // Signal Processing
+    private var gravity = FloatArray(3) { 0.0f }
+    private val alphaGravity = 0.8f 
+
+    // Indeterminacy
+    private var zeroZeroForms = 0
+    private var infInfForms = 0
+    private var signChanges = 0
+
+    // FFT State
+    private val fftSize = 512
+    private val real = DoubleArray(fftSize)
+    private val imag = DoubleArray(fftSize)
+    private val window = DoubleArray(fftSize) { 0.54 - 0.46 * cos(2.0 * PI * it / (fftSize - 1)) } // Hamming
+
+    enum class EtState {
+        STATE_0_EXCEPTION, STATE_1_DESCRIPTOR, STATE_2_TRAVERSER, STATE_3_POINT
+    }
+
+    data class SubstantiatedResult(
+        val shimmerIndex: Double,
+        val descriptorGradient: Double,
+        val intentionIndex: Double,
+        val pythagoreanEfficiency: Double,
+        val traverserIntegral: Double,
+        val manifoldDensity: Double,
+        val stabilityScore: Double,
+        val bindingStrength: Double,
+        val ttfPrediction: Double,
+        val faultSeverity: Int,
+        val etState: EtState,
+        val correctedSPL: Double,
+        val preciseTilt: DoubleArray,
+        val rmsVibration: Double, // Acceleration (m/s^2)
+        val velocityRms: Double,  // Velocity (mm/s) - ISO Standard
+        val dTime: Double,
+        val tTime: Double,
+        val descriptorDistance: Double,
+        val manifoldMetric: Double,
+        val axiomsVerified: Int,
+        val indeterminateForms: Int,
+        val illuminanceLux: Double,
+        val lightSource: String,
+        val dominantFreq: Double, // New: from FFT
+        val spectralEntropy: Double // New: Order vs Chaos in frequency domain
+    )
+
+    fun setCalibration(accel: FloatArray, gyro: FloatArray, spl: Double) {
+        accelOffset = accel.clone()
+        accelOffset[2] -= 9.81f
+        gyroOffset = gyro.clone()
+        splCalibrationOffset = spl
+        isCalibrated = true
+    }
+
+    fun resolveConfiguration(
+        accel: FloatArray,
+        gyro: FloatArray,
+        audioBuffer: ShortArray?,
+        lux: Float?,
+        displayRotation: Int, // 0, 1, 2, 3
+        deltaTimeMs: Long
+    ): SubstantiatedResult {
+        
+        if (!isCalibrated) gravity = accel.clone()
+
+        // --- 1. Remap Orientation (Device Frame -> User Frame) ---
+        // Adapts P-field to D-view
+        val remappedAccel = remapSensorVector(accel, displayRotation)
+        
+        // --- 2. P: Motion Substrate ---
+        val calAccel = FloatArray(3)
+        // Apply calibration to remapped vector
+        // Note: Calibration implies device-frame offset, but simple zeroing works for remapped too if held steady.
+        // For robustness, we apply offset before remapping if offset is device-body bound.
+        // Here we assume "Quick Calibrate" zeros the *current view*.
+        for(i in 0..2) calAccel[i] = remappedAccel[i] - accelOffset[i]
+
+        gravity[0] = alphaGravity * gravity[0] + (1 - alphaGravity) * calAccel[0]
+        gravity[1] = alphaGravity * gravity[1] + (1 - alphaGravity) * calAccel[1]
+        gravity[2] = alphaGravity * gravity[2] + (1 - alphaGravity) * calAccel[2]
+
+        val linearAccel = FloatArray(3) { i -> calAccel[i] - gravity[i] }
+        val vibrationMag = sqrt(linearAccel[0]*linearAccel[0] + linearAccel[1]*linearAccel[1] + linearAccel[2]*linearAccel[2])
+        val rawMag = sqrt(calAccel[0]*calAccel[0] + calAccel[1]*calAccel[1] + calAccel[2]*calAccel[2])
+
+        // ISO Velocity Approximation (Integration)
+        // V = A / (2*pi*f). Assuming dominant vibration is ~50Hz for standard machinery.
+        // mm/s = (m/s^2 * 1000) / (2 * pi * 50) ~= A * 3.18
+        // For a generic "Severity" check without full spectrum integration:
+        val velocityRms = vibrationMag * 3.18 
+
+        // --- 3. D: Descriptor Analysis ---
+        val variance = calculateRecursiveVariance(rawMag)
+        val shimmer = abs(variance)
+        updateHistory(shimmer)
+        
+        val shortTermGradient = calculateGradient()
+        
+        val prevGradient = if (historyIndex > 1) gradientHistory[historyIndex - 2] else 0.0
+        if ((shortTermGradient > 0 && prevGradient < 0) || (shortTermGradient < 0 && prevGradient > 0)) {
+            signChanges++
+        }
+        longTermGradient = (longTermGradient * 0.999) + (shortTermGradient * 0.001)
+
+        // --- 4. Spectral Analysis (FFT) & Intention ---
+        var dominantFreq = 0.0
+        var spectralEntropy = 0.0
+        
+        if (audioBuffer != null && audioBuffer.size >= fftSize) {
+            // Fill Real with Windowed Audio
+            for (i in 0 until fftSize) {
+                real[i] = audioBuffer[i].toDouble() * window[i]
+                imag[i] = 0.0
+            }
+            computeFFT(real, imag)
+            
+            // Analyze Spectrum
+            var maxMag = 0.0
+            var maxIndex = 0
+            var totalEnergy = 0.0
+            val magnitudes = DoubleArray(fftSize / 2)
+            
+            for (i in 0 until fftSize / 2) {
+                val mag = sqrt(real[i]*real[i] + imag[i]*imag[i])
+                magnitudes[i] = mag
+                totalEnergy += mag
+                if (mag > maxMag) {
+                    maxMag = mag
+                    maxIndex = i
+                }
+            }
+            
+            // Dominant Freq (Hz) = Index * SampleRate / FFT_Size
+            // Sample rate is 16000
+            dominantFreq = maxIndex * 16000.0 / fftSize
+            
+            // Spectral Entropy (Shannon)
+            // H = -sum(p * log(p)) where p = mag / total
+            if (totalEnergy > 0) {
+                for (m in magnitudes) {
+                    val p = m / totalEnergy
+                    if (p > 0) spectralEntropy -= p * ln(p)
+                }
+            }
+            // Normalize Entropy (0-1)
+            spectralEntropy /= ln((fftSize / 2).toDouble())
+        }
+
+        // Refined Intention Index (Psi)
+        // High Psi = Low Entropy (Peaked Spectrum) + Indeterminate Forms
+        // Psi = (Forms / Time) * (1 - SpectralEntropy)
+        // If Spectrum is pure noise (entropy ~ 1), Intention is low.
+        // If Spectrum is a tone (entropy ~ 0), Intention is high.
+        
+        val dtSec = deltaTimeMs / 1000.0
+        dTimeTotal += dtSec
+        
+        // T-Signatures
+        var isIndeterminate = false
+        if (abs(rawMag - 9.81) < 0.02 && shimmer < 0.001) { zeroZeroForms++; isIndeterminate = true }
+        if (rawMag > 40.0 || abs(shortTermGradient) > 5.0) { infInfForms++; isIndeterminate = true }
+        
+        val formRate = if(dtSec > 0) (if(isIndeterminate) 1.0 else 0.0) / dtSec else 0.0
+        val intentionIndex = (formRate + (1.0 - spectralEntropy)) * PSI_SCALING_FACTOR
+
+        // --- 5. Photonic & Source ID ---
+        var currentLux = 0.0
+        var lightSource = "Unknown"
+        if (lux != null) {
+            currentLux = lux.toDouble()
+            luxHistory[luxIndex] = currentLux
+            luxIndex = (luxIndex + 1) % luxHistory.size
+            val meanLux = luxHistory.average()
+            if (meanLux > 0) {
+                val pv = luxHistory.fold(0.0) { s, e -> s + (e - meanLux).pow(2) } / luxHistory.size
+                val flicker = sqrt(pv) / meanLux
+                lightSource = when {
+                    meanLux < 5.0 -> "Dark"
+                    flicker < 0.01 -> "Natural"
+                    flicker < 0.1 -> "Artificial" // Steady
+                    // Use FFT freq if available to confirm 60Hz hum?
+                    // Audio 60Hz hum strongly implies Light is also Artifical Grid
+                    dominantFreq in 58.0..62.0 || dominantFreq in 48.0..52.0 -> "Artificial (Grid)"
+                    else -> "Artificial (Flicker)"
+                }
+            }
+        }
+
+        // --- 6. Efficiency & SPL ---
+        val tMag = vibrationMag.toDouble()
+        val dMag = sqrt(gravity[0]*gravity[0] + gravity[1]*gravity[1] + gravity[2]*gravity[2]).toDouble()
+        val pythagoreanEfficiency = (1.0 / (1.0 + (tMag / (dMag + 0.0001)))).coerceIn(0.0, 1.0)
+
+        var db = 0.0
+        if (audioBuffer != null) {
+            val rms = calculateAWeightedRMS(audioBuffer)
+            val etCorrection = log10(1.0 + shimmer) * 3.0
+            db = 20 * log10(rms + 1e-6) + splCalibrationOffset + etCorrection
+        }
+
+        // --- 7. Final Metrics ---
+        val ttf = if (longTermGradient > 1e-6) (1.0 - shimmer) / longTermGradient / 3600.0 else Double.POSITIVE_INFINITY
+        val (state, severity) = determineStateAndSeverity(shimmer, velocityRms.toFloat(), spectralEntropy)
+        val bindingStrength = ((1.0 - shimmer.coerceIn(0.0, 1.0)) * 100.0)
+        
+        val pitch = Math.toDegrees(atan2(gravity[1].toDouble(), gravity[2].toDouble()))
+        val roll = Math.toDegrees(atan2(-gravity[0].toDouble(), sqrt(gravity[1]*gravity[1] + gravity[2]*gravity[2]).toDouble()))
+
+        return SubstantiatedResult(
+            shimmerIndex = shimmer,
+            descriptorGradient = longTermGradient,
+            intentionIndex = intentionIndex,
+            pythagoreanEfficiency = pythagoreanEfficiency,
+            traverserIntegral = traverserIntegral,
+            manifoldDensity = 0.0, // simplified
+            stabilityScore = (1.0 - shimmer).coerceIn(0.0, 1.0),
+            bindingStrength = bindingStrength,
+            ttfPrediction = ttf,
+            faultSeverity = severity,
+            etState = state,
+            correctedSPL = db,
+            preciseTilt = doubleArrayOf(pitch, roll, 0.0),
+            rmsVibration = vibrationMag.toDouble(),
+            velocityRms = velocityRms,
+            dTime = dTimeTotal,
+            tTime = tTimeTotal,
+            descriptorDistance = 0.0,
+            manifoldMetric = abs(shimmer - MANIFOLD_RESONANCE_TARGET),
+            axiomsVerified = 7,
+            indeterminateForms = zeroZeroForms + infInfForms,
+            illuminanceLux = currentLux,
+            lightSource = lightSource,
+            dominantFreq = dominantFreq,
+            spectralEntropy = spectralEntropy
+        )
+    }
+
+    // --- Core Logic Helpers ---
+
+    private fun remapSensorVector(vec: FloatArray, rotation: Int): FloatArray {
+        // rotation: 0=0, 1=90, 2=180, 3=270
+        val x = vec[0]; val y = vec[1]; val z = vec[2]
+        return when (rotation) {
+            1 -> floatArrayOf(-y, x, z) // 90 deg (Landscape Left)
+            2 -> floatArrayOf(-x, -y, z) // 180 deg (Upside Down)
+            3 -> floatArrayOf(y, -x, z) // 270 deg (Landscape Right)
+            else -> vec // 0 deg (Portrait)
+        }
+    }
+
+    private fun determineStateAndSeverity(shimmer: Double, vel: Float, entropy: Double): Pair<EtState, Int> {
+        // ISO 10816-1 Class I (Small Machines) rough guide:
+        // < 0.71 mm/s : Good (A)
+        // 0.71 - 1.80 : Satisfactory (B)
+        // 1.80 - 4.50 : Unsatisfactory (C)
+        // > 4.50 : Unacceptable (D)
+        
+        val isoSeverity = when {
+            vel > 4.5 -> 3 // Red
+            vel > 1.8 -> 2 // Orange
+            vel > 0.71 -> 1 // Yellow
+            else -> 0 // Green
+        }
+        
+        // ET State Logic
+        val state = when {
+            isoSeverity >= 3 || shimmer > 0.8 -> EtState.STATE_3_POINT
+            entropy < 0.3 -> EtState.STATE_2_TRAVERSER // Low entropy = Organized Agency
+            isoSeverity >= 1 -> EtState.STATE_1_DESCRIPTOR
+            else -> EtState.STATE_0_EXCEPTION
+        }
+        
+        return Pair(state, isoSeverity)
+    }
+
+    // --- FFT Implementation (Radix-2 Cooley-Tukey) ---
+    private fun computeFFT(real: DoubleArray, imag: DoubleArray) {
+        val n = real.size
+        // Bit Reversal
+        var j = 0
+        for (i in 0 until n - 1) {
+            if (i < j) {
+                val tr = real[j]; real[j] = real[i]; real[i] = tr
+                val ti = imag[j]; imag[j] = imag[i]; imag[i] = ti
+            }
+            var k = n / 2
+            while (k <= j) { j -= k; k /= 2 }
+            j += k
+        }
+        // Butterfly
+        var l = 2
+        while (l <= n) {
+            val hl = l / 2
+            val angle = -2.0 * PI / l
+            val wBaseR = cos(angle); val wBaseI = sin(angle)
+            var wR = 1.0; var wI = 0.0
+            for (i in 0 until hl) {
+                for (k in i until n step l) {
+                    val idx = k + hl
+                    val tr = wR * real[idx] - wI * imag[idx]
+                    val ti = wR * imag[idx] + wI * real[idx]
+                    real[idx] = real[k] - tr; imag[idx] = imag[k] - ti
+                    real[k] += tr; imag[k] += ti
+                }
+                val tR = wR * wBaseR - wI * wBaseI
+                wI = wR * wBaseI + wI * wBaseR
+                wR = tR
+            }
+            l *= 2
+        }
+    }
+
+    private fun calculateAWeightedRMS(buffer: ShortArray): Double {
+        var sum = 0.0; var yPrev = 0.0; var xPrev = 0.0
+        for (i in buffer.indices) {
+            val x = buffer[i].toDouble()
+            val y = 0.8 * yPrev + 0.2 * (x - xPrev)
+            sum += y * y
+            yPrev = y; xPrev = x
+        }
+        return sqrt(sum / buffer.size)
+    }
+
+    private fun calculateRecursiveVariance(newValue: Float): Double {
+        val mean = varianceHistory.average()
+        return (newValue - mean).pow(2)
+    }
+
+    private fun updateHistory(shimmer: Double) {
+        varianceHistory[historyIndex] = shimmer
+        historyIndex = (historyIndex + 1) % varianceHistory.size
+    }
+
+    private fun calculateGradient(): Double {
+        val half = varianceHistory.size / 2
+        val recentSum = varianceHistory.takeLast(half).sum()
+        val oldSum = varianceHistory.dropLast(half).sum()
+        return (recentSum - oldSum) / half
+    }
+}

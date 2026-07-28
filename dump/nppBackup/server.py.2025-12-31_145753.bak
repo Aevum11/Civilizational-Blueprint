@@ -1,0 +1,102 @@
+import os
+import datetime
+import zipfile
+from flask import Flask, request, jsonify
+from werkzeug.utils import secure_filename
+
+# --- CONFIGURATION ---
+HOST = '0.0.0.0'
+PORT = 5000
+UPLOAD_FOLDER = 'received_reports'
+ALLOWED_EXTENSIONS = {'zip', 'csv'} 
+
+# SECURITY: Load API Key from Environment or Default
+# On Windows: set ET_API_KEY=my_secret_key && python server.py
+# On Mac/Linux: export ET_API_KEY=my_secret_key && python server.py
+API_KEY = os.environ.get("ET_API_KEY", "CHANGE_ME_IN_PROD") 
+
+app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB Limit
+
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def check_auth(request):
+    token = request.headers.get('X-ET-AUTH-TOKEN')
+    return token == API_KEY
+
+@app.route('/api/v1/status', methods=['GET'])
+def status():
+    return jsonify({
+        "status": "online", 
+        "server": "ET-Diagnostic-Node-v10",
+        "secure_mode": API_KEY != "CHANGE_ME_IN_PROD"
+    }), 200
+
+@app.route('/api/v1/upload', methods=['POST'])
+def upload_file():
+    # 1. Security Check
+    if not check_auth(request):
+        return jsonify({"error": "Unauthorized"}), 401
+
+    # 2. File Validation
+    if 'file' not in request.files:
+        return jsonify({"error": "No file part"}), 400
+    
+    file = request.files['file']
+    description = request.form.get('description', '')
+
+    if file.filename == '':
+        return jsonify({"error": "No selected file"}), 400
+    
+    if file and allowed_file(file.filename):
+        # 3. Organization
+        date_str = datetime.datetime.now().strftime("%Y-%m-%d")
+        daily_folder = os.path.join(app.config['UPLOAD_FOLDER'], date_str)
+        if not os.path.exists(daily_folder):
+            os.makedirs(daily_folder)
+
+        # 4. Save
+        filename = secure_filename(file.filename)
+        timestamp = datetime.datetime.now().strftime("%H%M%S")
+        save_path = os.path.join(daily_folder, f"{timestamp}_{filename}")
+        
+        file.save(save_path)
+        
+        # 5. Integrity Check (if ZIP)
+        if filename.endswith('.zip'):
+            try:
+                with zipfile.ZipFile(save_path, 'r') as zip_ref:
+                    if zip_ref.testzip() is not None:
+                         return jsonify({"error": "Corrupted ZIP"}), 400
+            except:
+                return jsonify({"error": "Invalid ZIP format"}), 400
+
+        # 6. Save Description
+        if description:
+            desc_path = os.path.join(daily_folder, f"{timestamp}_desc.txt")
+            with open(desc_path, "w", encoding="utf-8") as f:
+                f.write(description)
+        
+        print(f"[+] Report Received: {filename} from {request.remote_addr}")
+        return jsonify({"message": "Upload successful"}), 201
+
+    return jsonify({"error": "Invalid file type"}), 400
+
+if __name__ == '__main__':
+    print(f"[*] ET Physics Server v10.1")
+    print(f"[*] Storage: {os.path.abspath(UPLOAD_FOLDER)}")
+    
+    # HTTPS Check
+    # To generate certs: openssl req -x509 -newkey rsa:4096 -nodes -out cert.pem -keyout key.pem -days 365
+    if os.path.exists('cert.pem') and os.path.exists('key.pem'):
+        print("[*] SSL Enabled (HTTPS)")
+        app.run(host=HOST, port=PORT, ssl_context=('cert.pem', 'key.pem'))
+    else:
+        print("[!] WARNING: Running in HTTP mode (Insecure). Generate certs for production.")
+        app.run(host=HOST, port=PORT)

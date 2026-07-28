@@ -1,0 +1,437 @@
+import tkinter as tk
+from tkinter import filedialog, messagebox, colorchooser
+import threading
+import sys
+import math
+import random
+
+try:
+    from PIL import Image, ImageTk, ImageDraw, ImageFilter, ImageEnhance, ImageChops, ImageOps
+except ImportError:
+    messagebox.showerror("Error", "Pillow is missing. Run: pip install pillow")
+    sys.exit(1)
+
+# ==============================================================================
+# ET KERNEL: NON-PHOTONIC PHYSICS (MASS & TIME)
+# ==============================================================================
+
+class ET_TransDimensional_Engine:
+    def process_transdimensional_stack(self, img_pil, mask_pil, veil_color, 
+                                     density, totient_power, 
+                                     gravimetric_force, chronal_flow,
+                                     exposure, shadow, detail, 
+                                     status_cb):
+        """
+        Solves for D_visual using D_light (Optics), D_mass (Curvature), and D_time (Flow).
+        """
+        width, height = img_pil.size
+        pixels = img_pil.load()
+        mask = mask_pil.load()
+        
+        # 1. ANALYZE DESCRIPTOR FIELDS
+        status_cb("Analyzing Mass (Curvature) & Time (Flow) Descriptors...")
+        
+        gray = img_pil.convert("L")
+        
+        # --- A. GRAVIMETRIC MAP (Mass/Stress) ---
+        # We approximate the Hessian (2nd Derivative) to find "Pressure Points"
+        # High curvature = The object pressing against the veil
+        
+        # Laplace Filter approximates sum of 2nd derivatives (Curvature)
+        curvature_map = gray.filter(ImageFilter.Kernel((3, 3), 
+             (-1, -1, -1, 
+              -1,  8, -1, 
+              -1, -1, -1), scale=1))
+        
+        # Blur slightly to get "Mass Blobs" instead of noise lines
+        curvature_map = curvature_map.filter(ImageFilter.GaussianBlur(1))
+        curve_pix = curvature_map.load()
+        
+        # --- B. CHRONAL MAP (Time/Flow) ---
+        # We need the Direction of the texture flow to propagate continuity.
+        # Simple Gradient (Sobel) gives us the orthogonal flow vector.
+        # We compute this on the fly during the loop for efficiency.
+        g_pix = gray.load()
+        
+        # --- C. OPTICAL MAP (Light/Transparency) ---
+        # V26 Logic for the transparent parts
+        dark_ref = img_pil.filter(ImageFilter.MinFilter(15))
+        tx_map = dark_ref.filter(ImageFilter.GaussianBlur(2))
+        tx_pix = tx_map.load()
+        
+        # Reference for Frequency Separation (Detail)
+        blur_ref = img_pil.filter(ImageFilter.GaussianBlur(3))
+        blur_pix = blur_ref.load()
+        
+        bbox = mask_pil.getbbox()
+        if not bbox: return img_pil
+        
+        updates = []
+        
+        # --- FACTORS ---
+        omega = density / 100.0
+        phi_w = totient_power / 100.0
+        
+        # Non-Photonic Factors
+        # Gravimetric: How much we shape the void based on stress lines
+        grav_w = gravimetric_force / 50.0 
+        
+        # Chronal: How aggressively we propagate the pattern (Flow)
+        # Higher = Longer reach into the void
+        time_w = chronal_flow / 20.0 
+        
+        ar, ag, ab = veil_color
+        
+        # Tone mapping
+        exp_factor = 1.0 - (exposure / 150.0)
+        gamma_val = 1.0 + (shadow / 40.0)
+        inv_gamma = 1.0 / gamma_val
+        det_boost = 1.0 + (detail / 50.0)
+        
+        # Totient Pre-calc (Phi 1-4)
+        def phi(n):
+            r = n; p = 2
+            while p*p <= n:
+                if n%p==0: 
+                    while n%p==0: n//=p
+                    r -= r//p
+                p+=1
+            if n>1: r-=r//n
+            return r
+            
+        phi_table = [phi(i) for i in range(256)]
+        
+        # 2. THE TRANS-DIMENSIONAL LOOP
+        # We process inside the bounding box
+        for y in range(bbox[1], bbox[3]):
+            for x in range(bbox[0], bbox[2]):
+                if mask[x, y] == 0: continue
+                
+                pr, pg, pb = pixels[x, y]
+                
+                # --- PHASE 1: DESCRIPTOR IDENTIFICATION ---
+                
+                # Totient Stability (Is it Veil or Object?)
+                lum = int((pr+pg+pb)/3)
+                p1 = phi_table[lum]
+                # Approximation of higher orders for speed
+                p2 = phi_table[p1]
+                p3 = phi_table[p2]
+                
+                # Stability Ratio
+                stability = (p3 + p2) / (p1 + 5.0)
+                
+                # --- PHASE 2: OPTICAL SOLVER (LIGHT) ---
+                # Calculate Transmission assuming transparency
+                local_min = tx_pix[x, y]
+                dr = local_min[0] / max(1, ar)
+                dg = local_min[1] / max(1, ag)
+                db = local_min[2] / max(1, ab)
+                
+                t_opt = 1.0 - (omega * min(dr, dg, db))
+                
+                # Modulate t with Stability (Phi)
+                t_final = t_opt + ((stability - 0.5) * phi_w)
+                t = max(0.01, min(1.0, t_final)) # Allow near-zero for solids
+                
+                # Optical Recovery Result (J_light)
+                jl_r = ((pr - ar) / t) + ar
+                jl_g = ((pg - ag) / t) + ag
+                jl_b = ((pb - ab) / t) + ab
+                
+                # --- PHASE 3: GRAVIMETRIC SOLVER (MASS) ---
+                # If t is low (Solid), Optical Recovery fails (Noise).
+                # We switch to deriving form from Curvature (Stress).
+                
+                # Get local stress (Curvature)
+                stress = curve_pix[x, y]
+                
+                # If Stress is high, it indicates an edge/ridge of the hidden object.
+                # We translate Stress -> Luminance Drop (Shadow) or Rise (Highlight)
+                # This reconstructs the "Shape" without needing light to pass through.
+                
+                # We infer the "Mass Color" by sampling the nearby flow (Chronal)
+                # Ideally we search, but for per-pixel speed we assume local continuity
+                
+                # Gravimetric Distortion:
+                # D_mass = Stress * Weight.
+                # We subtract this from the Veil Color to simulate the object pressing through.
+                d_mass = stress * grav_w * 2.0
+                
+                # --- PHASE 4: CHRONAL SOLVER (TIME/FLOW) ---
+                # We need to fetch the "Past" (Surrounding Texture) and move it to "Present" (Void).
+                
+                # Calculate Flow Vector (Gradient)
+                # Look at immediate neighbors
+                gx = 0; gy = 0
+                if 0 < x < width-1 and 0 < y < height-1:
+                    gx = g_pix[x+1, y] - g_pix[x-1, y]
+                    gy = g_pix[x, y+1] - g_pix[x, y-1]
+                
+                # Inverse Flow: Look BACKWARDS along the gradient to find the source texture
+                # DNA Source Coordinate
+                src_x = int(x - (gx * time_w))
+                src_y = int(y - (gy * time_w))
+                
+                # Clamp source
+                src_x = max(0, min(width-1, src_x))
+                src_y = max(0, min(height-1, src_y))
+                
+                # Fetch Chronal DNA
+                cr, cg, cb = pixels[src_x, src_y]
+                
+                # --- PHASE 5: UNIFIED INTEGRATION ---
+                # Combine Light, Mass, and Time based on Transmission (t)
+                
+                # Solidity Factor (1.0 = Solid, 0.0 = Transparent)
+                solidity = 1.0 - t
+                
+                # If Solid: Use Chronal DNA (Texture) + Gravimetric Shape (Form)
+                # If Transparent: Use Optical Recovery (Light)
+                
+                # Mass-Inferred Pixel
+                # Start with Chronal DNA (Texture)
+                im_r, im_g, im_b = cr, cg, cb
+                
+                # Apply Gravimetric Form (Shading based on stress)
+                # Stress usually implies occlusion/shadow in the valley
+                im_r -= d_mass; im_g -= d_mass; im_b -= d_mass
+                
+                # Blend Optical vs Inferred
+                # We use 'solidity' to mix them
+                final_r = (jl_r * (1-solidity)) + (im_r * solidity)
+                final_g = (jl_g * (1-solidity)) + (im_g * solidity)
+                final_b = (jl_b * (1-solidity)) + (im_b * solidity)
+                
+                # --- PHASE 6: POLISH (V23) ---
+                # Tone Mapping
+                final_r *= exp_factor; final_g *= exp_factor; final_b *= exp_factor
+                
+                # Detail Injection (High Freq from original)
+                obr, obg, obb = blur_pix[x, y]
+                dr = pr - obr; dg = pg - obg; db = pb - obb
+                
+                final_r += (dr * det_boost)
+                final_g += (dg * det_boost)
+                final_b += (db * det_boost)
+                
+                # Gamma
+                def gamma_cor(v):
+                    if v < 0: return 0
+                    return math.pow(v/255.0, inv_gamma) * 255.0
+                
+                final_r = gamma_cor(final_r)
+                final_g = gamma_cor(final_g)
+                final_b = gamma_cor(final_b)
+                
+                updates.append((x, y, (int(final_r), int(final_g), int(final_b))))
+                
+        for ux, uy, uval in updates:
+            pixels[ux, uy] = uval
+            
+        return img_pil
+
+# ==============================================================================
+# GUI
+# ==============================================================================
+
+class ET_V34_GUI:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("ET-V34: TRANS-DIMENSIONAL ENGINE (MASS/TIME/LIGHT)")
+        self.root.geometry("1200x980")
+        self.root.configure(bg="#050505")
+        
+        self.engine = ET_TransDimensional_Engine()
+        self.pil_img = None
+        self.mask_img = None
+        self.backup_img = None
+        
+        self.veil_color = (200, 200, 200)
+        self.picking_color = False
+        
+        self._layout()
+
+    def _layout(self):
+        t = tk.Frame(self.root, bg="#101010", pady=10)
+        t.pack(fill=tk.X)
+        
+        r1 = tk.Frame(t, bg="#101010"); r1.pack(side=tk.TOP, fill=tk.X)
+        self.btn(r1, "LOAD", self.load, "#004488")
+        self.btn(r1, "RESET", self.reset_all, "#880000")
+        self.btn(r1, "CLEAR MASK", self.clear_mask, "#550000")
+        self.btn(r1, "EXECUTE", self.run, "#006600")
+        
+        r2 = tk.Frame(t, bg="#101010"); r2.pack(side=tk.TOP, fill=tk.X, pady=5)
+        self.pick_btn = tk.Button(r2, text="[✚] PICK VEIL", command=self.toggle_picker, bg="#444", fg="white", font=("Arial", 9, "bold"), relief="raised")
+        self.pick_btn.pack(side=tk.LEFT, padx=10)
+        self.c_lbl = tk.Label(r2, text="      ", bg="#cccccc", relief="sunken", width=6)
+        self.c_lbl.pack(side=tk.LEFT)
+        self.stat = tk.Label(r2, text="Ready.", fg="#00ff00", bg="#101010")
+        self.stat.pack(side=tk.RIGHT, padx=20)
+        
+        # --- DESCRIPTOR MATRIX ---
+        r3 = tk.Frame(t, bg="#101010"); r3.pack(side=tk.TOP, fill=tk.X, pady=2)
+        
+        # 1. OPTICAL (Light)
+        f1 = tk.Frame(r3, bg="#101010"); f1.pack(side=tk.LEFT, padx=5)
+        tk.Label(f1, text="D-LIGHT (Optical)", fg="#888", bg="#101010", font=("Arial", 7)).pack()
+        self.thick_scale = tk.Scale(f1, from_=0, to=100, orient=tk.HORIZONTAL, bg="#101010", fg="#0f0", length=100)
+        self.thick_scale.set(85)
+        self.thick_scale.pack()
+        
+        # 2. GRAVIMETRIC (Mass)
+        f2 = tk.Frame(r3, bg="#101010"); f2.pack(side=tk.LEFT, padx=5)
+        tk.Label(f2, text="D-MASS (Gravity)", fg="#f0f", bg="#101010", font=("Arial", 7, "bold")).pack()
+        self.grav_scale = tk.Scale(f2, from_=0, to=100, orient=tk.HORIZONTAL, bg="#101010", fg="#f0f", length=100)
+        self.grav_scale.set(40) # Derive form from stress
+        self.grav_scale.pack()
+        
+        # 3. CHRONAL (Time)
+        f3 = tk.Frame(r3, bg="#101010"); f3.pack(side=tk.LEFT, padx=5)
+        tk.Label(f3, text="D-TIME (Flow)", fg="#0ff", bg="#101010", font=("Arial", 7, "bold")).pack()
+        self.time_scale = tk.Scale(f3, from_=0, to=100, orient=tk.HORIZONTAL, bg="#101010", fg="#0ff", length=100)
+        self.time_scale.set(50) # Derive texture from continuity
+        self.time_scale.pack()
+        
+        # 4. TOTIENT (Stability)
+        f4 = tk.Frame(r3, bg="#101010"); f4.pack(side=tk.LEFT, padx=5)
+        tk.Label(f4, text="TOTIENT (Phi)", fg="#fff", bg="#101010", font=("Arial", 7)).pack()
+        self.phi_scale = tk.Scale(f4, from_=0, to=100, orient=tk.HORIZONTAL, bg="#101010", fg="#fff", length=100)
+        self.phi_scale.set(50)
+        self.phi_scale.pack()
+        
+        # ROW 4: POLISH
+        r4 = tk.Frame(t, bg="#101010"); r4.pack(side=tk.TOP, fill=tk.X, pady=5)
+        
+        f5 = tk.Frame(r4, bg="#101010"); f5.pack(side=tk.LEFT, padx=5)
+        tk.Label(f5, text="SHADOW LIFT", fg="#888", bg="#101010", font=("Arial", 7)).pack()
+        self.shd_scale = tk.Scale(f5, from_=0, to=100, orient=tk.HORIZONTAL, bg="#101010", fg="#0f0", length=100)
+        self.shd_scale.set(50)
+        self.shd_scale.pack()
+        
+        f6 = tk.Frame(r4, bg="#101010"); f6.pack(side=tk.LEFT, padx=5)
+        tk.Label(f6, text="EXPOSURE CAP", fg="#888", bg="#101010", font=("Arial", 7)).pack()
+        self.exp_scale = tk.Scale(f6, from_=0, to=100, orient=tk.HORIZONTAL, bg="#101010", fg="#0f0", length=100)
+        self.exp_scale.set(40)
+        self.exp_scale.pack()
+        
+        f7 = tk.Frame(r4, bg="#101010"); f7.pack(side=tk.LEFT, padx=5)
+        tk.Label(f7, text="DETAIL", fg="#888", bg="#101010", font=("Arial", 7)).pack()
+        self.det_scale = tk.Scale(f7, from_=0, to=100, orient=tk.HORIZONTAL, bg="#101010", fg="#0f0", length=100)
+        self.det_scale.set(30)
+        self.det_scale.pack()
+
+        container = tk.Frame(self.root)
+        container.pack(fill=tk.BOTH, expand=True)
+        self.cv = tk.Canvas(container, bg="#080808", cursor="crosshair")
+        vs = tk.Scrollbar(container, orient="vertical", command=self.cv.yview)
+        hs = tk.Scrollbar(container, orient="horizontal", command=self.cv.xview)
+        self.cv.config(yscrollcommand=vs.set, xscrollcommand=hs.set)
+        vs.pack(side=tk.RIGHT, fill=tk.Y)
+        hs.pack(side=tk.BOTTOM, fill=tk.X)
+        self.cv.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        
+        self.cv.bind("<Button-1>", self.down)
+        self.cv.bind("<B1-Motion>", self.drag)
+        self.cv.bind("<ButtonRelease-1>", self.up)
+        
+        self.drawing=False; self.brush=30
+
+    def btn(self, p, t, c, b):
+        tk.Button(p, text=t, command=c, bg=b, fg="white", relief="flat", padx=10, pady=5).pack(side=tk.LEFT, padx=5)
+
+    def load(self):
+        path = filedialog.askopenfilename()
+        if not path: return
+        try:
+            self.pil_img = Image.open(path).convert("RGB")
+            self.backup_img = self.pil_img.copy()
+            self.mask_img = Image.new("L", self.pil_img.size, 0)
+            self.cv.config(scrollregion=(0,0,self.pil_img.width,self.pil_img.height))
+            self.update_view()
+            self.stat.config(text=f"Loaded: {self.pil_img.size}")
+        except: pass
+
+    def update_view(self):
+        if not self.pil_img: return
+        d = self.pil_img.copy()
+        if self.mask_img.getbbox():
+            r = Image.new("RGB", self.pil_img.size, (0,255,255)) 
+            d = Image.composite(r, d, self.mask_img)
+        self.tk = ImageTk.PhotoImage(d)
+        self.cv.create_image(0,0, image=self.tk, anchor=tk.NW)
+
+    def toggle_picker(self):
+        if not self.pil_img: return
+        self.picking_color = not self.picking_color
+        if self.picking_color:
+            self.pick_btn.config(bg="#ffaa00", fg="black", text="PICK")
+            self.cv.config(cursor="target")
+        else:
+            self.pick_btn.config(bg="#444", fg="white", text="[✚] VEIL")
+            self.cv.config(cursor="crosshair")
+
+    def down(self,e): 
+        x=int(self.cv.canvasx(e.x)); y=int(self.cv.canvasy(e.y))
+        if self.picking_color and self.pil_img:
+            if 0 <= x < self.pil_img.width and 0 <= y < self.pil_img.height:
+                r,g,b = self.pil_img.getpixel((x,y))
+                self.veil_color = (r,g,b)
+                hex_c = '#%02x%02x%02x' % (r,g,b)
+                self.c_lbl.config(bg=hex_c)
+                self.toggle_picker()
+            return
+        self.drawing=True; self.lp=(x,y)
+        
+    def drag(self,e):
+        if self.drawing and self.mask_img:
+            x=int(self.cv.canvasx(e.x)); y=int(self.cv.canvasy(e.y))
+            # ImageDraw is correctly imported
+            d = ImageDraw.Draw(self.mask_img)
+            d.line([self.lp, (x,y)], fill=255, width=self.brush)
+            d.ellipse([x-15,y-15,x+15,y+15], fill=255)
+            self.lp=(x,y); 
+            self.cv.create_line(self.lp[0],self.lp[1],x,y,fill="cyan",width=self.brush,tags="t")
+
+    def up(self,e): 
+        if self.drawing: self.drawing=False; self.cv.delete("t"); self.update_view()
+    
+    def reset_all(self):
+        if self.backup_img:
+            self.pil_img = self.backup_img.copy()
+            self.clear_mask()
+            self.stat.config(text="Reset.")
+
+    def clear_mask(self):
+        if self.mask_img: self.mask_img.paste(0,[0,0,self.mask_img.width,self.mask_img.height]); self.update_view()
+
+    def run(self):
+        if not self.pil_img: return
+        self.stat.config(text="Solving Trans-Dimensional Stack...")
+        
+        vc = self.veil_color
+        den = self.thick_scale.get()
+        phi = self.phi_scale.get()
+        grav = self.grav_scale.get()
+        flow = self.time_scale.get()
+        
+        exp = self.exp_scale.get()
+        shd = self.shd_scale.get()
+        det = self.det_scale.get()
+        
+        threading.Thread(target=self._w, args=(vc, den, phi, grav, flow, exp, shd, det)).start()
+
+    def _w(self, *args):
+        res = self.engine.process_transdimensional_stack(self.pil_img, self.mask_img, *args, self.log)
+        self.pil_img = res
+        self.clear_mask()
+        self.root.after(0, self.update_view)
+        self.root.after(0, lambda: self.stat.config(text="Resolution Complete."))
+
+    def log(self, m): self.stat.config(text=m)
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = ET_V34_GUI(root)
+    root.mainloop()

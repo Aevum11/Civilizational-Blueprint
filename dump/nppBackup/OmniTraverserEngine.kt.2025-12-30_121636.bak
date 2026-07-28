@@ -1,0 +1,524 @@
+package com.et.omnimeasure.core
+
+import android.content.Context
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
+import android.media.AudioFormat
+import android.media.AudioRecord
+import android.media.MediaRecorder
+import android.view.Surface
+import android.view.WindowManager
+import kotlin.math.*
+import java.util.ArrayDeque
+import java.util.concurrent.atomic.AtomicBoolean
+
+/**
+ * =========================================================================================
+ * OMNI-TRAVERSER ENGINE v6.0 (THE WATCHER UPDATE)
+ * Logic: Exception Theory (P-D-T Substantiation)
+ * =========================================================================================
+ *
+ * [P] Substrate: Android Hardware Sensors (Accel, Gyro, Light, Mic).
+ * [D] Descriptors: Finite constraints (Gravity, Decibels, Lux, Frequency).
+ * [T] Traverser: The Logic Agents resolving Indeterminacy into Reality.
+ *
+ * FEATURES:
+ * 1. Manifold Rectification: Sensor Fusion (Gyro+Accel) in Device Frame.
+ * 2. Energy Variance: Rolling Window RMS (2s history) for True Vibration Energy.
+ * 3. Photonic Density: Logarithmic mapping of Lux to Context.
+ * 4. Acoustic Traversal: FFT-based Frequency Analysis & SPL-calibrated dB metering.
+ * 5. Privacy Axiom: All processing is local (No Cloud/Internet).
+ */
+class OmniTraverserEngine(
+    private val context: Context,
+    private val listener: TraverserListener
+) : SensorEventListener {
+
+    // --- INTERFACE ---
+    interface TraverserListener {
+        fun onPhysicsUpdate(model: PhysicsUiModel)
+        fun onCalibrationState(isCalibrating: Boolean, progress: Int)
+        fun onError(message: String)
+    }
+
+    // --- SYSTEM SERVICES ---
+    private val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+    private val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+
+    // --- MANIFOLD CONSTANTS ---
+    private val NS2S = 1.0f / 1_000_000_000.0f
+    private val FUSION_ALPHA = 0.98f    // Trust Gyro 98%, Accel 2% (Binding Strength)
+    private val GRAVITY_ALPHA = 0.90f   // Heavy smoothing for Gravity Isolation (Accel Anchor)
+    private val UI_THROTTLE_MS = 32L    // ~30 FPS Limit
+    private val DB_OFFSET = 90.0        // Approximate Offset for SPL (Hardware Dependent)
+
+    // --- T-STATE (FLAGS) ---
+    private var isRunning = false
+    private var hasSubstantiated = false // Initialization Flag
+    private var lastTimestamp: Long = 0
+    private var lastUiUpdate: Long = 0
+
+    // --- D-STATE (ORIENTATION - DEVICE FRAME) ---
+    // We maintain orientation in the Device Frame to accurately subtract gravity
+    // regardless of how the user holds the phone. Remapping happens only at UI output.
+    private var devicePitch = 0.0 // Rotation around X
+    private var deviceRoll = 0.0  // Rotation around Y
+
+    // --- D-STATE (VIBRATION / VARIANCE) ---
+    private val gravityVector = FloatArray(3) // Low-Pass Gravity (for Tilt correction)
+    
+    // Rolling Window for RMS Energy (Time-based aggregation)
+    // Stores squared magnitudes. Size 100 @ 50Hz = ~2 seconds history.
+    private val vibrationWindow = ArrayDeque<Double>(100) 
+    private val VIBRATION_WINDOW_CAPACITY = 100
+    private var vibrationWindowSum = 0.0
+    private var maxPeakInWindow = 0.0
+
+    // --- D-STATE (PHOTONIC) ---
+    private var smoothedLux = 0f
+
+    // --- D-STATE (ACOUSTIC) ---
+    private var audioThread: Thread? = null
+    private val isAudioRunning = AtomicBoolean(false)
+    private var currentDb = 0.0
+    private var dominantFreq = 0.0
+
+    // --- CALIBRATION (BIAS REMOVAL) ---
+    private var isCalibrating = false
+    private var calibrationBufferCount = 0
+    private val CALIBRATION_FRAMES = 100
+    private val gyroBias = FloatArray(3)
+
+    // =========================================================================================
+    //  LIFECYCLE (BINDING/UNBINDING)
+    // =========================================================================================
+
+    fun engage() {
+        if (isRunning) return
+        
+        // Reset State
+        resetState()
+        
+        // Bind Hardware Traversers
+        // SENSOR_DELAY_GAME (~20ms) allows capturing 50Hz vibration variance.
+        sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)?.let {
+            sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_GAME)
+        } ?: listener.onError("Substrate Missing: Accelerometer")
+
+        sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE)?.let {
+            sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_GAME)
+        }
+
+        sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT)?.let {
+            sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_UI)
+        }
+
+        startAudioTraversal()
+        isRunning = true
+    }
+
+    fun disengage() {
+        sensorManager.unregisterListener(this)
+        stopAudioTraversal()
+        isRunning = false
+    }
+
+    private fun resetState() {
+        hasSubstantiated = false
+        lastTimestamp = 0
+        devicePitch = 0.0
+        deviceRoll = 0.0
+        vibrationWindow.clear()
+        vibrationWindowSum = 0.0
+        maxPeakInWindow = 0.0
+    }
+
+    fun startCalibration() {
+        if (!isRunning) return
+        isCalibrating = true
+        calibrationBufferCount = 0
+        gyroBias.fill(0f)
+        listener.onCalibrationState(true, 0)
+    }
+
+    // =========================================================================================
+    //  PHYSICS LOOP (SENSOR EVENTS)
+    // =========================================================================================
+
+    override fun onSensorChanged(event: SensorEvent?) {
+        event ?: return
+        when (event.sensor.type) {
+            Sensor.TYPE_ACCELEROMETER -> processAccel(event)
+            Sensor.TYPE_GYROSCOPE -> processGyro(event)
+            Sensor.TYPE_LIGHT -> processLight(event)
+        }
+    }
+
+    // --- 1. ACCELEROMETER (THE ANCHOR & THE SHIMMER) ---
+    private fun processAccel(event: SensorEvent) {
+        val x = event.values[0]
+        val y = event.values[1]
+        val z = event.values[2]
+
+        // Initialization (Singularity Resolution)
+        if (!hasSubstantiated) {
+            gravityVector[0] = x; gravityVector[1] = y; gravityVector[2] = z
+            hasSubstantiated = true
+            return
+        }
+
+        // A. Update Low-Pass Gravity (The Anchor for Orientation)
+        gravityVector[0] = GRAVITY_ALPHA * gravityVector[0] + (1 - GRAVITY_ALPHA) * x
+        gravityVector[1] = GRAVITY_ALPHA * gravityVector[1] + (1 - GRAVITY_ALPHA) * y
+        gravityVector[2] = GRAVITY_ALPHA * gravityVector[2] + (1 - GRAVITY_ALPHA) * z
+
+        // B. Calculate True Linear Acceleration (The Shimmer)
+        // CRITICAL FIX: Instead of subtracting LPF gravity (which lags during rotation),
+        // we subtract the "Expected Gravity" derived from the Fused Gyro Orientation.
+        // This removes false vibration signals when the user tilts the phone.
+        
+        // Expected Gravity in Device Frame based on Pitch/Roll
+        // g_x = -g * sin(roll)
+        // g_y = g * sin(pitch) * cos(roll)
+        // g_z = g * cos(pitch) * cos(roll)
+        val g = 9.81
+        val expectedGx = -g * sin(deviceRoll)
+        val expectedGy = g * sin(devicePitch) * cos(deviceRoll)
+        val expectedGz = g * cos(devicePitch) * cos(deviceRoll)
+
+        val linX = x - expectedGx
+        val linY = y - expectedGy
+        val linZ = z - expectedGz
+
+        // C. Variance Accumulation (Rolling Window RMS)
+        val magSq = (linX * linX) + (linY * linY) + (linZ * linZ)
+        
+        // Update Rolling Window
+        if (vibrationWindow.size >= VIBRATION_WINDOW_CAPACITY) {
+            vibrationWindowSum -= vibrationWindow.removeFirst()
+        }
+        vibrationWindow.addLast(magSq)
+        vibrationWindowSum += magSq
+        
+        // Peak Detection (Decays slowly)
+        val currentPeak = sqrt(magSq)
+        if (currentPeak > maxPeakInWindow) {
+            maxPeakInWindow = currentPeak
+        } else {
+            maxPeakInWindow *= 0.99 // Decay factor
+        }
+        
+        // Also drive UI update from Accel (redundancy)
+        throttleUiUpdate()
+    }
+
+    // --- 2. GYROSCOPE (THE NAVIGATOR & FUSION) ---
+    private fun processGyro(event: SensorEvent) {
+        if (!hasSubstantiated || lastTimestamp == 0L) {
+            lastTimestamp = event.timestamp
+            return
+        }
+
+        // A. Calibration Intercept
+        if (isCalibrating) {
+            accumulateCalibration(event)
+            return
+        }
+
+        // B. Time Delta
+        val dt = (event.timestamp - lastTimestamp) * NS2S
+        lastTimestamp = event.timestamp
+
+        // C. Bias Correction
+        val gX = event.values[0] - gyroBias[0]
+        val gY = event.values[1] - gyroBias[1]
+        val gZ = event.values[2] - gyroBias[2]
+
+        // D. Complementary Filter (Fusion in Device Frame)
+        // 1. Integrate Gyro (Prediction)
+        // Rotation around X (Pitch) is driven by Gyro X
+        // Rotation around Y (Roll) is driven by Gyro Y
+        // (Simplified Euler integration for small dt)
+        val predPitch = devicePitch + gX * dt
+        val predRoll = deviceRoll + gY * dt
+
+        // 2. Calculate Accel Anchor (Correction)
+        // Pitch = atan2(Gy, Gz), Roll = atan2(-Gx, Gz)
+        // using the Low-Pass Gravity Vector
+        val accelPitch = atan2(gravityVector[1].toDouble(), gravityVector[2].toDouble())
+        val accelRoll = atan2(-gravityVector[0].toDouble(), gravityVector[2].toDouble())
+
+        // 3. Fuse
+        devicePitch = FUSION_ALPHA * predPitch + (1 - FUSION_ALPHA) * accelPitch
+        deviceRoll = FUSION_ALPHA * predRoll + (1 - FUSION_ALPHA) * accelRoll
+
+        // Drive UI Update
+        throttleUiUpdate()
+    }
+
+    // --- 3. LIGHT (PHOTONIC DENSITY) ---
+    private fun processLight(event: SensorEvent) {
+        val raw = event.values[0]
+        // Simple smoothing to reject flicker
+        smoothedLux = if (smoothedLux == 0f) raw else (smoothedLux * 0.7f) + (raw * 0.3f)
+        
+        // FIX: Drive UI update here too, in case device is stationary (no gyro events)
+        throttleUiUpdate()
+    }
+
+    // =========================================================================================
+    //  AUDIO ENGINE (ACOUSTIC TRAVERSAL - FFT)
+    // =========================================================================================
+
+    private fun startAudioTraversal() {
+        if (isAudioRunning.get()) return
+        isAudioRunning.set(true)
+        audioThread = Thread { audioLoop() }
+        audioThread?.start()
+    }
+
+    private fun stopAudioTraversal() {
+        isAudioRunning.set(false)
+        try { audioThread?.join(500) } catch (e: Exception) {}
+    }
+
+    private fun audioLoop() {
+        val sampleRate = 44100
+        val bufferSize = AudioRecord.getMinBufferSize(sampleRate, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT)
+        // FFT needs power of 2 size. 2048 is good for ~21Hz resolution @ 44.1kHz
+        val fftSize = 2048 
+        val processBuffer = ShortArray(fftSize)
+        
+        if (bufferSize < 0) return 
+
+        try {
+            val recorder = AudioRecord(MediaRecorder.AudioSource.MIC, sampleRate, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, max(bufferSize, fftSize))
+            recorder.startRecording()
+            
+            while (isAudioRunning.get()) {
+                val read = recorder.read(processBuffer, 0, fftSize)
+                if (read >= fftSize) {
+                    // 1. Decibel Calculation (RMS of entire buffer)
+                    var sumSq = 0.0
+                    for (sample in processBuffer) {
+                        sumSq += sample * sample
+                    }
+                    val rms = sqrt(sumSq / read)
+                    // SPL Calibration approximation
+                    currentDb = if (rms > 0) 20 * log10(rms) + DB_OFFSET - 90.0 else 0.0 // Normalized around typical mic sensitivity
+
+                    // 2. FFT Frequency Identification
+                    dominantFreq = calculateDominantFrequency(processBuffer, sampleRate)
+                }
+            }
+            recorder.stop()
+            recorder.release()
+        } catch (e: Exception) {
+            listener.onError("Audio Init Failed: ${e.message}")
+        }
+    }
+
+    /**
+     * SIMPLE RADIX-2 FFT (Magnitude Only)
+     * Identifies the dominant frequency bin.
+     */
+    private fun calculateDominantFrequency(data: ShortArray, sampleRate: Int): Double {
+        val n = data.size
+        val real = DoubleArray(n) { data[it].toDouble() }
+        val imag = DoubleArray(n) { 0.0 }
+
+        // Bit Reversal
+        var j = 0
+        for (i in 0 until n - 1) {
+            if (i < j) {
+                val tr = real[i]; real[i] = real[j]; real[j] = tr
+                val ti = imag[i]; imag[i] = imag[j]; imag[j] = ti
+            }
+            var k = n / 2
+            while (k <= j) {
+                j -= k
+                k /= 2
+            }
+            j += k
+        }
+
+        // Butterflies
+        var l = 2
+        while (l <= n) {
+            val h = l / 2
+            var k = 0
+            while (k < n) {
+                for (i in 0 until h) {
+                    val angle = -2.0 * PI * i / l
+                    val wr = cos(angle)
+                    val wi = sin(angle)
+                    
+                    val idx = k + i + h
+                    val tr = wr * real[idx] - wi * imag[idx]
+                    val ti = wr * imag[idx] + wi * real[idx]
+                    
+                    real[idx] = real[k + i] - tr
+                    imag[idx] = imag[k + i] - ti
+                    real[k + i] += tr
+                    imag[k + i] += ti
+                }
+                k += l
+            }
+            l *= 2
+        }
+
+        // Find Peak Magnitude (ignore DC component at index 0)
+        var maxMag = 0.0
+        var maxIdx = 0
+        // Search up to Nyquist (n/2)
+        for (i in 1 until n / 2) {
+            val mag = sqrt(real[i] * real[i] + imag[i] * imag[i])
+            if (mag > maxMag) {
+                maxMag = mag
+                maxIdx = i
+            }
+        }
+
+        return (maxIdx * sampleRate).toDouble() / n
+    }
+
+    // =========================================================================================
+    //  SUBSTANTIATION (UI & LOGIC MAPPING)
+    // =========================================================================================
+
+    private fun throttleUiUpdate() {
+        val now = System.currentTimeMillis()
+        if (now - lastUiUpdate < UI_THROTTLE_MS) return
+        lastUiUpdate = now
+
+        // 1. Calculate Vibration RMS (From Rolling Window)
+        var rmsVib = 0.0
+        if (vibrationWindow.size > 0) {
+            rmsVib = sqrt(vibrationWindowSum / vibrationWindow.size)
+        }
+        
+        // 2. Remap Orientation to Display (Observer Relativity)
+        // We have Device Pitch/Roll. We need to present this relative to how the user
+        // is holding the screen.
+        val (remapPitch, remapRoll) = remapDeviceOrientationToDisplay(devicePitch, deviceRoll)
+        
+        // Total Tilt (Spherical distance from vertical)
+        val tiltDeg = Math.toDegrees(acos(cos(remapPitch) * cos(remapRoll)))
+        
+        // 3. Interpret Data (Translation Layer)
+        val (vibLabel, vibDesc) = interpretVibration(rmsVib)
+        val (luxLabel, luxDesc) = interpretLux(smoothedLux)
+        val (noiseSource, noiseDesc) = interpretSound(dominantFreq)
+
+        // 4. Build Model
+        val model = PhysicsUiModel(
+            tiltDegrees = tiltDeg,
+            pitch = Math.toDegrees(remapPitch),
+            roll = Math.toDegrees(remapRoll),
+            vibrationRms = rmsVib,
+            vibrationPeak = maxPeakInWindow,
+            vibrationLabel = vibLabel,
+            luxValue = smoothedLux,
+            luxLabel = luxLabel,
+            luxDesc = luxDesc,
+            dbValue = currentDb,
+            noiseFreq = dominantFreq,
+            noiseSource = noiseSource
+        )
+
+        listener.onPhysicsUpdate(model)
+    }
+
+    // --- UTILITIES ---
+
+    /**
+     * Remaps the Device Frame Pitch/Roll to the Screen Frame based on Rotation.
+     */
+    private fun remapDeviceOrientationToDisplay(pitch: Double, roll: Double): Pair<Double, Double> {
+        return when (windowManager.defaultDisplay.rotation) {
+            // Portrait: X is right, Y is up. Pitch/Roll match device.
+            Surface.ROTATION_0 -> pitch to roll
+            
+            // Landscape Left (CCW): Screen Top is Device Left (-X). Screen Right is Device Top (+Y).
+            // Swap axes and invert signs appropriately.
+            Surface.ROTATION_90 -> roll to -pitch
+            
+            // Upside Down: Invert both.
+            Surface.ROTATION_180 -> -pitch to -roll
+            
+            // Landscape Right (CW): Screen Top is Device Right (+X).
+            Surface.ROTATION_270 -> -roll to pitch
+            
+            else -> pitch to roll
+        }
+    }
+
+    private fun accumulateCalibration(event: SensorEvent) {
+        calibrationBufferCount++
+        gyroBias[0] += event.values[0]
+        gyroBias[1] += event.values[1]
+        gyroBias[2] += event.values[2]
+        listener.onCalibrationState(true, (calibrationBufferCount * 100) / CALIBRATION_FRAMES)
+        
+        if (calibrationBufferCount >= CALIBRATION_FRAMES) {
+            gyroBias[0] /= CALIBRATION_FRAMES
+            gyroBias[1] /= CALIBRATION_FRAMES
+            gyroBias[2] /= CALIBRATION_FRAMES
+            isCalibrating = false
+            hasSubstantiated = false // Hard reset to apply bias
+            listener.onCalibrationState(false, 100)
+        }
+    }
+
+    // --- INTERPRETATION DICTIONARIES (ET SEMANTICS) ---
+
+    private fun interpretVibration(rms: Double): Pair<String, String> {
+        return when {
+            rms < 0.05 -> "Stable" to "Stationary"
+            rms < 0.30 -> "Micro-Tremor" to "AC/Machinery"
+            rms < 0.80 -> "Light Shake" to "Vehicle Idle"
+            rms < 2.00 -> "Moderate" to "Cobblestones/Run"
+            else -> "High Energy" to "Impact/Danger"
+        }
+    }
+
+    private fun interpretLux(lux: Float): Pair<String, String> {
+        return when {
+            lux < 10 -> "Dark" to "Night Vision"
+            lux < 200 -> "Dim" to "Relaxation"
+            lux < 800 -> "Normal" to "Workspace"
+            lux < 5000 -> "Bright" to "Overcast Day"
+            else -> "Intense" to "Direct Sun"
+        }
+    }
+
+    private fun interpretSound(freq: Double): Pair<String, String> {
+        return when {
+            freq < 50 -> "Low Rumble" to "Traffic/Thunder"
+            freq in 50.0..62.0 -> "Mains Hum" to "Electrical 50/60Hz"
+            freq in 80.0..300.0 -> "Human Male" to "Speech Range"
+            freq in 300.0..1200.0 -> "Mid Range" to "Speech/Music"
+            freq > 2000 -> "High Pitch" to "Whine/Alarm"
+            else -> "Broadband" to "White Noise"
+        }
+    }
+
+    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
+}
+
+data class PhysicsUiModel(
+    val tiltDegrees: Double,
+    val pitch: Double,
+    val roll: Double,
+    val vibrationRms: Double,
+    val vibrationPeak: Double,
+    val vibrationLabel: String,
+    val luxValue: Float,
+    val luxLabel: String,
+    val luxDesc: String,
+    val dbValue: Double,
+    val noiseFreq: Double,
+    val noiseSource: String
+)

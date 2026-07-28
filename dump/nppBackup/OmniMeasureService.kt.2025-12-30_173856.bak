@@ -1,0 +1,308 @@
+package com.et.physics.toolbox
+
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.app.Service
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.content.SharedPreferences
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
+import android.media.AudioFormat
+import android.media.AudioRecord
+import android.media.MediaRecorder
+import android.os.BatteryManager
+import android.os.Binder
+import android.os.Build
+import android.os.IBinder
+import android.os.PowerManager
+import androidx.core.app.NotificationCompat
+import java.util.concurrent.ConcurrentLinkedQueue
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import kotlinx.coroutines.*
+import kotlin.math.sqrt
+
+class OmniMeasureService : Service(), SensorEventListener {
+
+    enum class ScanMode {
+        BATTERY_SAVER,      // 5Hz Accel, Mic OFF
+        LEVEL_STABILITY,    // 16Hz Accel, Mic OFF
+        VIBRATION_MONITOR,  // 50Hz Accel + Gyro, Mic Event-Triggered
+        NOISE_SCANNER       // 16Hz Accel, Mic Continuous (Duty Cycled)
+    }
+
+    inner class LocalBinder : Binder() {
+        fun getService(): OmniMeasureService = this@OmniMeasureService
+    }
+
+    private val binder = LocalBinder()
+    private lateinit var sensorManager: SensorManager
+    private val etEngine = OmniTraverserEngine()
+    private lateinit var prefs: SharedPreferences
+
+    private val dataLog = ConcurrentLinkedQueue<String>()
+    var lastResult: OmniTraverserEngine.SubstantiatedResult? = null
+        private set
+
+    // Session Logic
+    var currentMode = ScanMode.LEVEL_STABILITY
+    var sessionStartTime: Long = 0
+    private var startBatteryLevel: Int = 0
+    var batteryDrainRate: Double = 0.0 // % per hour
+    
+    // Mic Duty Cycling
+    private var isMicScanning = false
+    private var micDutyCycleSeconds = 5
+    private var micIntervalSeconds = 60
+
+    private var isRunning = false
+    private var job: Job? = null
+    private val scope = CoroutineScope(Dispatchers.Default)
+    private var wakeLock: PowerManager.WakeLock? = null
+    private var audioRecord: AudioRecord? = null
+    private val sampleRate = 16000 // Reduced from 44.1k for efficiency
+    private val bufferSize = AudioRecord.getMinBufferSize(sampleRate, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT)
+
+    override fun onBind(intent: Intent): IBinder = binder
+
+    override fun onCreate() {
+        super.onCreate()
+        sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        prefs = getSharedPreferences("ET_Prefs", Context.MODE_PRIVATE)
+        
+        // Load Calibration
+        val ax = prefs.getFloat("cal_acc_x", 0f)
+        val ay = prefs.getFloat("cal_acc_y", 0f)
+        val az = prefs.getFloat("cal_acc_z", 0f) // Stores offset relative to expected 9.81
+        val spl = prefs.getFloat("cal_spl", 0f).toDouble()
+        etEngine.setCalibration(floatArrayOf(ax, ay, az), floatArrayOf(0f,0f,0f), spl)
+
+        createNotificationChannel()
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if (intent?.action == "STOP_SERVICE") {
+            stopMeasurement()
+            stopForeground(true)
+            stopSelf()
+        }
+        return START_NOT_STICKY
+    }
+
+    fun startMeasurement(mode: ScanMode) {
+        if (isRunning) stopMeasurement() // Restart if mode change
+        isRunning = true
+        currentMode = mode
+        sessionStartTime = System.currentTimeMillis()
+        startBatteryLevel = getBatteryLevel()
+        
+        // Acquire WakeLock
+        val pm = getSystemService(Context.POWER_SERVICE) as PowerManager
+        wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "ET:ScanLock")
+        wakeLock?.acquire(12*60*60*1000L)
+
+        // Notification
+        val modeIcon = when(mode) {
+            ScanMode.BATTERY_SAVER -> "🔋"
+            ScanMode.LEVEL_STABILITY -> "📐"
+            ScanMode.VIBRATION_MONITOR -> "📳"
+            ScanMode.NOISE_SCANNER -> "🔊"
+        }
+        startForeground(1, buildNotification("ET Scanner Active $modeIcon", "Mode: $mode"))
+
+        // Register Sensors based on Mode
+        val delay = when(mode) {
+            ScanMode.BATTERY_SAVER -> SensorManager.SENSOR_DELAY_NORMAL // ~5Hz
+            ScanMode.LEVEL_STABILITY -> SensorManager.SENSOR_DELAY_UI // ~16Hz
+            else -> SensorManager.SENSOR_DELAY_GAME // ~50Hz
+        }
+
+        val accel = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
+        sensorManager.registerListener(this, accel, delay)
+
+        if (mode == ScanMode.VIBRATION_MONITOR) {
+            val gyro = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
+            sensorManager.registerListener(this, gyro, delay)
+        }
+
+        // Start Audio based on Mode
+        if (mode == ScanMode.NOISE_SCANNER || mode == ScanMode.VIBRATION_MONITOR) {
+            startAudioLoop()
+        }
+    }
+
+    fun stopMeasurement() {
+        isRunning = false
+        job?.cancel()
+        sensorManager.unregisterListener(this)
+        stopAudio()
+        wakeLock?.release()
+    }
+
+    // --- Audio Logic with Duty Cycling ---
+    private fun startAudioLoop() {
+        job = scope.launch {
+            try {
+                audioRecord = AudioRecord(MediaRecorder.AudioSource.MIC, sampleRate, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, bufferSize)
+                val buffer = ShortArray(bufferSize)
+                
+                while (isActive && isRunning) {
+                    // Duty Cycle Logic
+                    if (currentMode == ScanMode.NOISE_SCANNER) {
+                        isMicScanning = true
+                        audioRecord?.startRecording()
+                        val endTime = System.currentTimeMillis() + (micDutyCycleSeconds * 1000)
+                        
+                        while (System.currentTimeMillis() < endTime && isActive) {
+                            val read = audioRecord?.read(buffer, 0, bufferSize) ?: 0
+                            if (read > 0) {
+                                // Pass raw buffer to Engine for A-Weighting
+                                synchronized(this) { currentAudioBuffer = buffer.clone() }
+                            }
+                        }
+                        
+                        audioRecord?.stop()
+                        isMicScanning = false
+                        // Sleep for interval
+                        delay(micIntervalSeconds * 1000L)
+                    } else if (currentMode == ScanMode.VIBRATION_MONITOR) {
+                        // Continuous but only processed if vibration high (logic handled in engine result)
+                        if (audioRecord?.recordingState != AudioRecord.RECORDSTATE_RECORDING) audioRecord?.startRecording()
+                         val read = audioRecord?.read(buffer, 0, bufferSize) ?: 0
+                         if (read > 0) synchronized(this) { currentAudioBuffer = buffer.clone() }
+                         delay(50)
+                    }
+                }
+            } catch (e: Exception) { e.printStackTrace() }
+        }
+    }
+    
+    private fun stopAudio() {
+        try {
+            audioRecord?.stop()
+            audioRecord?.release()
+        } catch(e: Exception) {}
+    }
+
+    // --- Sensor Event ---
+    private var lastAccel = FloatArray(3)
+    private var lastGyro = FloatArray(3)
+    private var currentAudioBuffer: ShortArray? = null
+    private var lastComputeTime = 0L
+
+    override fun onSensorChanged(event: SensorEvent?) {
+        event ?: return
+        if (event.sensor.type == Sensor.TYPE_ACCELEROMETER) lastAccel = event.values.clone()
+        if (event.sensor.type == Sensor.TYPE_GYROSCOPE) lastGyro = event.values.clone()
+
+        val now = System.currentTimeMillis()
+        val dt = now - lastComputeTime
+        
+        // Rate Limiting Logic for ET Calculation
+        // Even if sampling fast, we might compute slower in Battery Saver
+        val computeInterval = if(currentMode == ScanMode.BATTERY_SAVER) 200 else 50 
+        
+        if (dt >= computeInterval) {
+            val bufferToProcess = synchronized(this) { 
+                val b = currentAudioBuffer
+                currentAudioBuffer = null 
+                b
+            }
+            
+            val result = etEngine.resolveConfiguration(lastAccel, lastGyro, bufferToProcess, dt)
+            lastResult = result
+            lastComputeTime = now
+            
+            logData(result, now)
+            updateBatteryStats(now)
+        }
+    }
+
+    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
+
+    private fun logData(result: OmniTraverserEngine.SubstantiatedResult, time: Long) {
+        val timeString = SimpleDateFormat("HH:mm:ss.SSS", Locale.US).format(Date(time))
+        val line = "$timeString,${result.shimmerIndex},${result.rmsVibration},${result.correctedSPL},${result.faultSeverity}"
+        dataLog.add(line)
+        if (dataLog.size > 10000) dataLog.poll()
+    }
+
+    private fun updateBatteryStats(now: Long) {
+        if ((now - sessionStartTime) % 60000 < 100) { // Check every min
+            val cur = getBatteryLevel()
+            val hrs = (now - sessionStartTime) / 3600000.0
+            if (hrs > 0.1) batteryDrainRate = (startBatteryLevel - cur) / hrs
+        }
+    }
+    
+    // --- Calibration ---
+    fun runCalibration() {
+        // Simple calibration: Average current static accel to find bias
+        // Saves to SharedPreferences
+        scope.launch {
+            val samples = 50
+            var ax = 0.0; var ay = 0.0; var az = 0.0
+            // We assume device is flat: Z should be 9.81
+            // Any deviation in X/Y is offset. Deviation in Z from 9.81 is offset.
+            for(i in 1..samples) {
+                ax += lastAccel[0]
+                ay += lastAccel[1]
+                az += lastAccel[2]
+                delay(20)
+            }
+            ax /= samples; ay /= samples; az /= samples
+            
+            prefs.edit()
+                .putFloat("cal_acc_x", ax.toFloat())
+                .putFloat("cal_acc_y", ay.toFloat())
+                .putFloat("cal_acc_z", az.toFloat())
+                .apply()
+                
+            etEngine.setCalibration(floatArrayOf(ax.toFloat(), ay.toFloat(), az.toFloat()), floatArrayOf(0f,0f,0f), 0.0)
+        }
+    }
+
+    private fun getBatteryLevel(): Int {
+        val intent = registerReceiver(null, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+        return intent?.getIntExtra(BatteryManager.EXTRA_LEVEL, -1) ?: 100
+    }
+
+    fun getLogCsv(): String {
+        val sb = StringBuilder()
+        sb.append("Time,Shimmer,Vib_RMS,SPL_dBA,Severity\n")
+        dataLog.forEach { sb.append(it).append("\n") }
+        return sb.toString()
+    }
+
+    fun getDurationString(): String {
+        if (sessionStartTime == 0L) return "00:00"
+        val diff = System.currentTimeMillis() - sessionStartTime
+        val min = (diff / 60000) % 60
+        val hr = (diff / 3600000)
+        return String.format("%02d:%02d", hr, min)
+    }
+
+    private fun buildNotification(title: String, text: String): Notification {
+        val pendingIntent = PendingIntent.getActivity(this, 0, Intent(this, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE)
+        return NotificationCompat.Builder(this, "ET_CHANNEL_ID")
+            .setContentTitle(title)
+            .setContentText(text)
+            .setSmallIcon(android.R.drawable.ic_menu_compass)
+            .setContentIntent(pendingIntent)
+            .build()
+    }
+
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel("ET_CHANNEL_ID", "ET Scanner", NotificationManager.IMPORTANCE_LOW)
+            getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
+        }
+    }
+}

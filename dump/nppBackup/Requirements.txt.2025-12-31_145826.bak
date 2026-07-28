@@ -1,0 +1,20 @@
+Core Web Framework
+
+flask==3.0.0
+werkzeug==3.0.1
+
+Security & SSL
+
+Required for gen_certs.py to create self-signed certificates
+
+pyopenssl==24.0.0
+
+Rate Limiting
+
+Required if you uncomment the rate limiting lines in server.py
+
+flask-limiter==3.5.0
+
+Optional: Production WSGI Server (Recommended over Flask's built-in server)
+
+gunicorn==21.2.0

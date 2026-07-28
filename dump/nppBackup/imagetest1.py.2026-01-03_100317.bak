@@ -1,0 +1,255 @@
+import tkinter as tk
+from tkinter import filedialog, messagebox
+import threading
+import sys
+import math
+
+try:
+    from PIL import Image, ImageTk, ImageDraw, ImageFilter, ImageStat
+except ImportError:
+    messagebox.showerror("Error", "Pillow is missing. Run: pip install pillow")
+    sys.exit(1)
+
+# ==============================================================================
+# ET KERNEL: SPECTRAL UNBINDING (FREQUENCY SEPARATION)
+# ==============================================================================
+
+class ET_Spectral_Math:
+    """
+    Implements Variance Normalization.
+    P_total = D_low_freq (Underneath) + D_high_freq (Top Texture)
+    Goal: D_low_freq = P_total - D_high_freq
+    """
+    
+    @staticmethod
+    def get_local_variance(pixels, x, y, r, g, b):
+        """
+        Calculates the divergence of a pixel from its local manifold.
+        High Variance = Top Layer Texture (Weave/Fold).
+        Low Variance = Deep Layer Signal.
+        """
+        # We compare pixel to a Gaussian smoothed version (approximated by neighbors)
+        # 3x3 neighbor average
+        sum_r, sum_g, sum_b = 0, 0, 0
+        count = 0
+        
+        for dy in [-1, 0, 1]:
+            for dx in [-1, 0, 1]:
+                try:
+                    p = pixels[x+dx, y+dy]
+                    sum_r += p[0]; sum_g += p[1]; sum_b += p[2]
+                    count += 1
+                except: pass
+                
+        if count == 0: return 0
+        
+        avg_r = sum_r / count
+        avg_g = sum_g / count
+        avg_b = sum_b / count
+        
+        # The Difference is the "High Frequency" texture
+        diff_r = r - avg_r
+        diff_g = g - avg_g
+        diff_b = b - avg_b
+        
+        return (diff_r, diff_g, diff_b)
+
+class ET_Spectral_Engine:
+    def lift_spectral_layer(self, img_pil, mask_pil, texture_remove, signal_boost, status_cb):
+        """
+        texture_remove: How aggressively to flatten the top layer texture.
+        signal_boost: Amplification of the deep signal.
+        """
+        width, height = img_pil.size
+        
+        # 1. CREATE MANIFOLD MAPS
+        # We need a blurred version to act as the "Low Frequency" baseline
+        status_cb("Calculating Manifold Baseline (Low Frequency)...")
+        # Gaussian blur approximates the underlying shape without the weave
+        base_layer = img_pil.filter(ImageFilter.GaussianBlur(radius=3))
+        
+        pixels = img_pil.load()
+        base_pixels = base_layer.load()
+        mask = mask_pil.load()
+        
+        bbox = mask_pil.getbbox()
+        if not bbox: return img_pil
+        min_x, min_y, max_x, max_y = bbox
+        
+        updates = []
+        
+        # Gain calculation
+        gain = 1.0 + (signal_boost / 20.0)
+        flatten_strength = texture_remove / 100.0
+        
+        # 2. SPECTRAL SUBTRACTION LOOP
+        for y in range(min_y, max_y):
+            for x in range(min_x, max_x):
+                if mask[x, y] == 0: continue
+                
+                # P (Raw Reality)
+                raw = pixels[x, y]
+                # L (Low Freq / Deep Signal approximation)
+                low = base_pixels[x, y]
+                
+                # Calculate High Freq (The Texture of the Veil)
+                # H = P - L
+                hf_r = raw[0] - low[0]
+                hf_g = raw[1] - low[1]
+                hf_b = raw[2] - low[2]
+                
+                # --- ET LOGIC: VARIANCE REJECTION ---
+                # We assume the "Veil" is mostly High Frequency (texture).
+                # We assume the "Object" is Low Frequency (shape/color).
+                
+                # We subtract the High Frequency component based on strength
+                # D_new = P - (H * Strength)
+                # Effectively, we are pushing the pixel closer to the 'Low' value
+                
+                nr = raw[0] - (hf_r * flatten_strength)
+                ng = raw[1] - (hf_g * flatten_strength)
+                nb = raw[2] - (hf_b * flatten_strength)
+                
+                # --- ET LOGIC: SIGNAL AMPLIFICATION ---
+                # Now that texture is gone, we boost the remaining Low Freq signal.
+                # But we do it RELATIVE to the local neighborhood to enhance contrast.
+                
+                # We center the boost around the local luminance to avoid washing out
+                lum = (low[0]+low[1]+low[2])/3.0
+                
+                # Contrast stretch
+                nr = (nr - lum) * gain + lum
+                ng = (ng - lum) * gain + lum
+                nb = (nb - lum) * gain + lum
+                
+                # Clamp
+                nr = max(0, min(255, int(nr)))
+                ng = max(0, min(255, int(ng)))
+                nb = max(0, min(255, int(nb)))
+                
+                updates.append((x, y, (nr, ng, nb)))
+        
+        for ux, uy, uval in updates:
+            pixels[ux, uy] = uval
+            
+        return img_pil
+
+# ==============================================================================
+# GUI
+# ==============================================================================
+
+class ET_V12_GUI:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("ET-V12: SPECTRAL UNBINDER (TEXTURE REMOVER)")
+        self.root.geometry("1200x900")
+        self.root.configure(bg="#050505")
+        
+        self.engine = ET_Spectral_Engine()
+        self.pil_img = None
+        self.mask_img = None
+        
+        self._layout()
+
+    def _layout(self):
+        t = tk.Frame(self.root, bg="#101010", pady=5)
+        t.pack(fill=tk.X)
+        
+        self.btn(t, "LOAD IMAGE", self.load, "#004488")
+        self.btn(t, "RESET", self.reset, "#882200")
+        self.btn(t, "UNBIND TEXTURE (SMOOTH)", self.run, "#228822")
+        
+        # CONTROLS
+        # Texture Removal: Flattens the weave/noise of the top layer
+        tk.Label(t, text="TEXTURE REMOVE:", fg="white", bg="#101010").pack(side=tk.LEFT, padx=5)
+        self.tex_scale = tk.Scale(t, from_=0, to=200, orient=tk.HORIZONTAL, bg="#101010", fg="#0f0")
+        self.tex_scale.set(100) # 100% removal of high freq
+        self.tex_scale.pack(side=tk.LEFT)
+        
+        # Signal Boost: Enhances the color difference of what remains
+        tk.Label(t, text="SIGNAL GAIN:", fg="white", bg="#101010").pack(side=tk.LEFT, padx=5)
+        self.gain_scale = tk.Scale(t, from_=0, to=100, orient=tk.HORIZONTAL, bg="#101010", fg="#0f0")
+        self.gain_scale.set(30)
+        self.gain_scale.pack(side=tk.LEFT)
+
+        self.stat = tk.Label(t, text="Ready.", fg="#888", bg="#101010")
+        self.stat.pack(side=tk.RIGHT, padx=20)
+        
+        container = tk.Frame(self.root)
+        container.pack(fill=tk.BOTH, expand=True)
+        self.cv = tk.Canvas(container, bg="#080808", cursor="crosshair")
+        vs = tk.Scrollbar(container, orient="vertical", command=self.cv.yview)
+        hs = tk.Scrollbar(container, orient="horizontal", command=self.cv.xview)
+        self.cv.config(yscrollcommand=vs.set, xscrollcommand=hs.set)
+        
+        vs.pack(side=tk.RIGHT, fill=tk.Y)
+        hs.pack(side=tk.BOTTOM, fill=tk.X)
+        self.cv.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        
+        self.cv.bind("<Button-1>", self.down)
+        self.cv.bind("<B1-Motion>", self.drag)
+        self.cv.bind("<ButtonRelease-1>", self.up)
+        
+        self.drawing=False; self.brush=30
+
+    def btn(self, p, t, c, b):
+        tk.Button(p, text=t, command=c, bg=b, fg="white", relief="flat", padx=10).pack(side=tk.LEFT, padx=5)
+
+    def load(self):
+        path = filedialog.askopenfilename()
+        if not path: return
+        try:
+            self.pil_img = Image.open(path).convert("RGB")
+            self.mask_img = Image.new("L", self.pil_img.size, 0)
+            self.cv.config(scrollregion=(0,0,self.pil_img.width,self.pil_img.height))
+            self.update_view()
+            self.stat.config(text=f"Loaded: {self.pil_img.size}")
+        except: pass
+
+    def update_view(self):
+        if not self.pil_img: return
+        d = self.pil_img.copy()
+        if self.mask_img.getbbox():
+            r = Image.new("RGB", self.pil_img.size, (255,0,255)) # Purple mask
+            d = Image.composite(r, d, self.mask_img)
+        self.tk = ImageTk.PhotoImage(d)
+        self.cv.create_image(0,0, image=self.tk, anchor=tk.NW)
+
+    def down(self,e): 
+        x=self.cv.canvasx(e.x); y=self.cv.canvasy(e.y)
+        self.drawing=True; self.lp=(x,y)
+        
+    def drag(self,e):
+        if self.drawing and self.mask_img:
+            x=self.cv.canvasx(e.x); y=self.cv.canvasy(e.y)
+            d = ImageDraw.Draw(self.mask_img)
+            d.line([self.lp, (x,y)], fill=128, width=self.brush)
+            d.ellipse([x-15,y-15,x+15,y+15], fill=128)
+            self.lp=(x,y); 
+            self.cv.create_line(self.lp[0],self.lp[1],x,y,fill="magenta",width=self.brush,tags="t")
+
+    def up(self,e): self.drawing=False; self.cv.delete("t"); self.update_view()
+    
+    def reset(self):
+        if self.mask_img: self.mask_img.paste(0,[0,0,self.mask_img.width,self.mask_img.height]); self.update_view()
+
+    def run(self):
+        if not self.pil_img: return
+        self.stat.config(text="Unbinding Texture Frequency...")
+        tex = self.tex_scale.get()
+        gain = self.gain_scale.get()
+        threading.Thread(target=self._w, args=(tex,gain)).start()
+
+    def _w(self, t, g):
+        res = self.engine.lift_spectral_layer(self.pil_img, self.mask_img, t, g, self.log)
+        self.pil_img = res
+        self.mask_img.paste(0,[0,0,self.mask_img.width,self.mask_img.height])
+        self.root.after(0, self.update_view)
+        self.root.after(0, lambda: self.stat.config(text="Spectral Lift Complete."))
+
+    def log(self, m): self.stat.config(text=m)
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = ET_V12_GUI(root)
+    root.mainloop()

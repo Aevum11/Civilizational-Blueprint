@@ -1,0 +1,45 @@
+@echo off
+title ET-V5 SUBSTRATE BINDER
+color 0A
+
+echo ==================================================
+echo  ET DEPENDENCY BINDER | EXCEPTION THEORY v5.0
+echo ==================================================
+echo.
+echo [ET] SCANNING LOCAL MANIFOLD...
+
+:: Check for Python Substrate
+python --version >nul 2>&1
+if %errorlevel% neq 0 (
+    echo [CRITICAL] PYTHON SUBSTRATE NOT FOUND (NOT IN PATH).
+    echo [!] Install Python 3.x and ensure "Add to PATH" is checked.
+    pause
+    exit /b
+)
+
+echo [ET] SUBSTRATE DETECTED. INITIATING BINDING...
+echo.
+
+:: 1. Upgrade PIP (The Binder Agent)
+echo [CMD] python -m pip install --upgrade pip
+python -m pip install --upgrade pip
+
+:: 2. Install Descriptors (The Libraries)
+echo.
+echo [ET] BINDING REQUIRED DESCRIPTORS (NumPy, OpenCV, Pillow)...
+echo [CMD] python -m pip install numpy opencv-python pillow
+python -m pip install numpy opencv-python pillow
+
+echo.
+if %errorlevel% equ 0 (
+    echo ==================================================
+    echo  [ET] SUBSTANTIATION COMPLETE.
+    echo  [ET] SYSTEM IS READY FOR TRAVERSAL.
+    echo ==================================================
+) else (
+    echo ==================================================
+    echo  [ET] BINDING FAILURE. VARIANCE DETECTED.
+    echo ==================================================
+)
+
+pause

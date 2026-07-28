@@ -1,0 +1,50 @@
+@echo off
+setlocal
+title Exception Theory Universal Astronomer Installer (Standalone)
+
+echo ========================================================
+echo  Exception Theory Universal Astronomer v7.5
+echo  Standalone Dependency Installer
+echo ========================================================
+echo.
+
+:: 1. Check for Python
+python --version >nul 2>&1
+if %errorlevel% neq 0 (
+    echo [ERROR] Python is not detected.
+    pause
+    exit /b 1
+)
+
+:: 2. Install All Dependencies Directly
+:: Core libraries: numpy, scipy, matplotlib
+:: Astronomy/Data: astropy, netCDF4, h5py
+:: Optional/Recommended: fitsio, joblib
+echo [INFO] Installing all required and optional packages...
+
+python -m pip install numpy>=1.20.0 scipy>=1.7.0 matplotlib>=3.4.0 astropy>=5.0 netCDF4>=1.5.0 h5py>=3.0.0 fitsio>=1.1.0 joblib>=1.0.0
+
+if %errorlevel% neq 0 (
+    echo.
+    echo [ERROR] Installation failed. Check the error output above.
+    pause
+    exit /b %errorlevel%
+)
+
+:: 3. Verify Logic
+echo.
+echo [INFO] Verifying installation...
+python -c "import numpy; import scipy; import matplotlib; import astropy; import netCDF4; import h5py; import fitsio; import joblib; import tkinter; print('\n[SUCCESS] All components verified successfully.')"
+
+if %errorlevel% neq 0 (
+    echo.
+    echo [WARNING] Verification failed. Tkinter or a package might be missing.
+    pause
+    exit /b 1
+)
+
+echo.
+echo ========================================================
+echo  Ready.
+echo ========================================================
+pause

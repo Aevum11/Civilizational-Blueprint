@@ -1,0 +1,431 @@
+import tkinter as tk
+from tkinter import filedialog, messagebox, colorchooser
+import threading
+import sys
+import math
+import random
+
+try:
+    from PIL import Image, ImageTk, ImageDraw, ImageFilter, ImageEnhance, ImageChops
+except ImportError:
+    messagebox.showerror("Error", "Pillow is missing. Run: pip install pillow")
+    sys.exit(1)
+
+# ==============================================================================
+# ET KERNEL: UNIFIED FIELD MATH (TOTIENTS + OPTICS + INFERENCE)
+# ==============================================================================
+
+class ET_Unified_Math:
+    def __init__(self):
+        self.p1, self.p2, self.p3, self.p4 = self._gen_phi_tables()
+        
+    def _phi(self, n):
+        if n <= 0: return 0
+        result = n
+        p = 2
+        while p * p <= n:
+            if n % p == 0:
+                while n % p == 0: n //= p
+                result -= result // p
+            p += 1
+        if n > 1: result -= result // n
+        return result
+
+    def _gen_phi_tables(self):
+        # Generate the Totient Chain
+        t1, t2, t3, t4 = [], [], [], []
+        for i in range(256):
+            v1 = self._phi(i)
+            v2 = self._phi(v1)
+            v3 = self._phi(v2)
+            v4 = self._phi(v3)
+            t1.append(v1); t2.append(v2); t3.append(v3); t4.append(v4)
+        return t1, t2, t3, t4
+
+class ET_Grand_Engine:
+    def __init__(self):
+        self.math = ET_Unified_Math()
+
+    def process_grand_stack(self, img_pil, mask_pil, veil_color, 
+                          density, totient_power, 
+                          solid_bypass, radiosity,
+                          exposure, shadow, detail, 
+                          chroma, clarity, status_cb):
+        
+        width, height = img_pil.size
+        pixels = img_pil.load()
+        mask = mask_pil.load()
+        
+        # 1. ANALYSIS PHASE
+        status_cb("Analyzing Totient Chains & Environmental Radiosity...")
+        
+        gray = img_pil.convert("L")
+        
+        # Totient Maps (Structure Detection)
+        p1_map = gray.point(self.math.p1).load() # Surface
+        p3_map = gray.point(self.math.p3).load() # Deep
+        p4_map = gray.point(self.math.p4).load() # Core
+        
+        # Optical Maps (Transmission)
+        dark_ref = img_pil.filter(ImageFilter.MinFilter(15))
+        tx_map = dark_ref.filter(ImageFilter.GaussianBlur(2))
+        tx_map = tx_map.filter(ImageFilter.UnsharpMask(radius=2, percent=150, threshold=3))
+        tx_pix = tx_map.load()
+        
+        # Radiosity Sampling (For Solid Reconstruction)
+        # We need the average color of the SURROUNDINGS to fill solid voids
+        bbox = mask_pil.getbbox()
+        if not bbox: return img_pil
+        
+        env_r, env_g, env_b = 128, 128, 128
+        count = 0
+        margin = 20
+        bx0 = max(0, bbox[0]-margin); by0 = max(0, bbox[1]-margin)
+        bx1 = min(width, bbox[2]+margin); by1 = min(height, bbox[3]+margin)
+        
+        for y in range(by0, by1, 5):
+            for x in range(bx0, bx1, 5):
+                if mask[x, y] == 0:
+                    pr, pg, pb = pixels[x, y]
+                    env_r += pr; env_g += pg; env_b += pb
+                    count += 1
+        if count > 0:
+            env_r //= count; env_g //= count; env_b //= count
+            
+        # Frequency Reference (For Detail Injection)
+        orig_blur = img_pil.filter(ImageFilter.GaussianBlur(radius=3))
+        orig_blur_pix = orig_blur.load()
+        
+        updates = []
+        
+        # --- FACTORS ---
+        omega = density / 100.0
+        phi_w = totient_power / 100.0
+        bypass_w = solid_bypass / 100.0
+        rad_w = radiosity / 50.0
+        
+        ar_base, ag_base, ab_base = veil_color
+        
+        exp_factor = 1.0 - (exposure / 150.0)
+        gamma = 1.0 + (shadow / 40.0)
+        inv_gamma = 1.0 / gamma
+        det_boost = 1.0 + (detail / 50.0)
+        
+        # 2. THE GRAND LOOP
+        for y in range(bbox[1], bbox[3]):
+            for x in range(bbox[0], bbox[2]):
+                if mask[x, y] == 0: continue
+                
+                pr, pg, pb = pixels[x, y]
+                
+                # --- A. TOTIENT STABILITY (THE SELECTOR) ---
+                val_p1 = p1_map[x, y]
+                val_p3 = p3_map[x, y]
+                val_p4 = p4_map[x, y]
+                
+                # Stability = Ratio of Core to Surface
+                # High = Transparent/Structure. Low = Solid/Noise.
+                stability = (val_p3 + val_p4) / (val_p1 + 10.0)
+                
+                # --- B. OPTICAL PHYSICS (TRANSPARENCY) ---
+                # Adaptive Veil Color
+                p_lum = (pr + pg + pb) / 3.0
+                lum_ratio = p_lum / 255.0
+                mod_factor = 0.6 + (0.4 * lum_ratio)
+                
+                ar = max(1, ar_base * mod_factor)
+                ag = max(1, ag_base * mod_factor)
+                ab = max(1, ab_base * mod_factor)
+                
+                # Transmission
+                local_min = tx_pix[x, y]
+                dr = local_min[0] / ar
+                dg = local_min[1] / ag
+                db = local_min[2] / ab
+                t_opt = 1.0 - (omega * min(dr, dg, db))
+                
+                # Totient Modulation
+                t_mod = (stability - 0.5) * 0.5
+                t_final = t_opt + (t_mod * phi_w)
+                t = max(0.05, min(1.0, t_final)) # Allow t to go lower for solids
+                
+                # Optical Recovery
+                jr = ((pr - ar) / t) + ar
+                jg = ((pg - ag) / t) + ag
+                jb = ((pb - ab) / t) + ab
+                
+                # --- C. INFERENCE PHYSICS (SOLIDITY) ---
+                # If t is very low, Optical Recovery blows up (Noise).
+                # We switch to Environmental Inference.
+                
+                # Radiosity Inference:
+                # We infer the pixel color based on the Environmental Average + Pixel Luma
+                # "Using the cup to find the table" -> Using Env to tint the darkness
+                
+                # Calculate deviation of this pixel from local blur (Structure)
+                obr, obg, obb = orig_blur_pix[x, y]
+                struc_r = pr - obr
+                struc_g = pg - obg
+                struc_b = pb - obb
+                
+                # Inferred Pixel = EnvColor + (Structure * RadiosityForce)
+                ir = env_r + (struc_r * rad_w)
+                ig = env_g + (struc_g * rad_w)
+                ib = env_b + (struc_b * rad_w)
+                
+                # --- D. FUSION (THE UNIFICATION) ---
+                # Blend Optical (J) and Inferred (I) based on "Solid Bypass" slider
+                # and the Stability metric.
+                
+                # If Bypass is high, we favor Inference for unstable pixels.
+                # Blend weight: 0.0 = Optical, 1.0 = Inference
+                
+                # Heuristic: If t is low (Solid), blend towards Inference
+                solidity = 1.0 - t 
+                blend = solidity * bypass_w
+                
+                final_r = (jr * (1-blend)) + (ir * blend)
+                final_g = (jg * (1-blend)) + (ig * blend)
+                final_b = (jb * (1-blend)) + (ib * blend)
+                
+                # --- E. TONE MAPPING (V26 Polish) ---
+                
+                # Detail Re-Injection
+                final_r += (struc_r * det_boost)
+                final_g += (struc_g * det_boost)
+                final_b += (struc_b * det_boost)
+                
+                # Soft Knee & Gamma
+                def map_val(v):
+                    v = v * exp_factor
+                    if v > 200:
+                        excess = v - 200
+                        v = 200 + (55 * (1 - math.exp(-excess/150)))
+                    if v < 0: return 0
+                    n = v / 255.0
+                    res = math.pow(n, inv_gamma)
+                    return res * 255.0
+
+                final_r = map_val(final_r)
+                final_g = map_val(final_g)
+                final_b = map_val(final_b)
+                
+                updates.append((x, y, (int(final_r), int(final_g), int(final_b))))
+                
+        for ux, uy, uval in updates:
+            pixels[ux, uy] = uval
+            
+        # 3. GLOBAL POLISH
+        roi = img_pil.crop(bbox)
+        
+        if chroma > 0:
+            roi = ImageEnhance.Color(roi).enhance(1.0 + (chroma/50.0))
+        if clarity > 0:
+            roi = roi.filter(ImageFilter.UnsharpMask(radius=2, percent=int(clarity*1.5), threshold=3))
+            
+        img_pil.paste(roi, bbox)
+        return img_pil
+
+# ==============================================================================
+# GUI
+# ==============================================================================
+
+class ET_V33_GUI:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("ET-V33: GRAND UNIFIED ENGINE (OPTICS + INFERENCE)")
+        self.root.geometry("1200x980")
+        self.root.configure(bg="#050505")
+        
+        self.engine = ET_Grand_Engine()
+        self.pil_img = None
+        self.mask_img = None
+        self.backup_img = None
+        
+        self.veil_color = (200, 200, 200)
+        self.picking_color = False
+        
+        self._layout()
+
+    def _layout(self):
+        t = tk.Frame(self.root, bg="#101010", pady=10)
+        t.pack(fill=tk.X)
+        
+        r1 = tk.Frame(t, bg="#101010"); r1.pack(side=tk.TOP, fill=tk.X)
+        self.btn(r1, "LOAD", self.load, "#004488")
+        self.btn(r1, "RESET", self.reset_all, "#880000")
+        self.btn(r1, "CLEAR MASK", self.clear_mask, "#550000")
+        self.btn(r1, "EXECUTE", self.run, "#006600")
+        
+        r2 = tk.Frame(t, bg="#101010"); r2.pack(side=tk.TOP, fill=tk.X, pady=5)
+        self.pick_btn = tk.Button(r2, text="[✚] PICK VEIL COLOR", command=self.toggle_picker, bg="#444", fg="white", font=("Arial", 10, "bold"), relief="raised")
+        self.pick_btn.pack(side=tk.LEFT, padx=10)
+        self.c_lbl = tk.Label(r2, text="      ", bg="#cccccc", relief="sunken", width=6)
+        self.c_lbl.pack(side=tk.LEFT)
+        self.stat = tk.Label(r2, text="Ready.", fg="#00ff00", bg="#101010")
+        self.stat.pack(side=tk.RIGHT, padx=20)
+        
+        # --- UNIFIED CONTROLS ---
+        r3 = tk.Frame(t, bg="#101010"); r3.pack(side=tk.TOP, fill=tk.X, pady=2)
+        
+        # 1. OPTICAL (V26)
+        f1 = tk.Frame(r3, bg="#101010"); f1.pack(side=tk.LEFT, padx=5)
+        tk.Label(f1, text="THICKNESS (Optical)", fg="#888", bg="#101010", font=("Arial", 7)).pack()
+        self.thick_scale = tk.Scale(f1, from_=0, to=100, orient=tk.HORIZONTAL, bg="#101010", fg="#0f0", length=100)
+        self.thick_scale.set(85)
+        self.thick_scale.pack()
+        
+        # 2. SELECTOR (V26)
+        f2 = tk.Frame(r3, bg="#101010"); f2.pack(side=tk.LEFT, padx=5)
+        tk.Label(f2, text="TOTIENT POWER", fg="#0ff", bg="#101010", font=("Arial", 7)).pack()
+        self.phi_scale = tk.Scale(f2, from_=0, to=100, orient=tk.HORIZONTAL, bg="#101010", fg="#0ff", length=100)
+        self.phi_scale.set(50)
+        self.phi_scale.pack()
+        
+        # 3. SOLIDITY (V30/32) - THE NEW INTEGRATION
+        f3 = tk.Frame(r3, bg="#101010"); f3.pack(side=tk.LEFT, padx=5)
+        tk.Label(f3, text="SOLID BYPASS", fg="#f0f", bg="#101010", font=("Arial", 7, "bold")).pack()
+        self.byp_scale = tk.Scale(f3, from_=0, to=100, orient=tk.HORIZONTAL, bg="#101010", fg="#f0f", length=100)
+        self.byp_scale.set(0) # Default 0 = Pure Optical
+        self.byp_scale.pack()
+        
+        f4 = tk.Frame(r3, bg="#101010"); f4.pack(side=tk.LEFT, padx=5)
+        tk.Label(f4, text="RADIOSITY (Color)", fg="#f0f", bg="#101010", font=("Arial", 7)).pack()
+        self.rad_scale = tk.Scale(f4, from_=0, to=100, orient=tk.HORIZONTAL, bg="#101010", fg="#f0f", length=100)
+        self.rad_scale.set(40)
+        self.rad_scale.pack()
+        
+        # 4. POLISH (V23)
+        r4 = tk.Frame(t, bg="#101010"); r4.pack(side=tk.TOP, fill=tk.X, pady=5)
+        
+        f5 = tk.Frame(r4, bg="#101010"); f5.pack(side=tk.LEFT, padx=5)
+        tk.Label(f5, text="SHADOW LIFT", fg="#888", bg="#101010", font=("Arial", 7)).pack()
+        self.shd_scale = tk.Scale(f5, from_=0, to=100, orient=tk.HORIZONTAL, bg="#101010", fg="#0f0", length=100)
+        self.shd_scale.set(50)
+        self.shd_scale.pack()
+        
+        f6 = tk.Frame(r4, bg="#101010"); f6.pack(side=tk.LEFT, padx=5)
+        tk.Label(f6, text="EXPOSURE CAP", fg="#888", bg="#101010", font=("Arial", 7)).pack()
+        self.exp_scale = tk.Scale(f6, from_=0, to=100, orient=tk.HORIZONTAL, bg="#101010", fg="#0f0", length=100)
+        self.exp_scale.set(40)
+        self.exp_scale.pack()
+        
+        f7 = tk.Frame(r4, bg="#101010"); f7.pack(side=tk.LEFT, padx=5)
+        tk.Label(f7, text="CHROMA", fg="#0ff", bg="#101010", font=("Arial", 7)).pack()
+        self.chr_scale = tk.Scale(f7, from_=0, to=100, orient=tk.HORIZONTAL, bg="#101010", fg="#0ff", length=100)
+        self.chr_scale.set(30)
+        self.chr_scale.pack()
+
+        container = tk.Frame(self.root)
+        container.pack(fill=tk.BOTH, expand=True)
+        self.cv = tk.Canvas(container, bg="#080808", cursor="crosshair")
+        vs = tk.Scrollbar(container, orient="vertical", command=self.cv.yview)
+        hs = tk.Scrollbar(container, orient="horizontal", command=self.cv.xview)
+        self.cv.config(yscrollcommand=vs.set, xscrollcommand=hs.set)
+        vs.pack(side=tk.RIGHT, fill=tk.Y)
+        hs.pack(side=tk.BOTTOM, fill=tk.X)
+        self.cv.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        
+        self.cv.bind("<Button-1>", self.down)
+        self.cv.bind("<B1-Motion>", self.drag)
+        self.cv.bind("<ButtonRelease-1>", self.up)
+        
+        self.drawing=False; self.brush=30
+
+    def btn(self, p, t, c, b):
+        tk.Button(p, text=t, command=c, bg=b, fg="white", relief="flat", padx=10, pady=5).pack(side=tk.LEFT, padx=5)
+
+    def load(self):
+        path = filedialog.askopenfilename()
+        if not path: return
+        try:
+            self.pil_img = Image.open(path).convert("RGB")
+            self.backup_img = self.pil_img.copy()
+            self.mask_img = Image.new("L", self.pil_img.size, 0)
+            self.cv.config(scrollregion=(0,0,self.pil_img.width,self.pil_img.height))
+            self.update_view()
+            self.stat.config(text=f"Loaded: {self.pil_img.size}")
+        except: pass
+
+    def update_view(self):
+        if not self.pil_img: return
+        d = self.pil_img.copy()
+        if self.mask_img.getbbox():
+            r = Image.new("RGB", self.pil_img.size, (255,0,255)) 
+            d = Image.composite(r, d, self.mask_img)
+        self.tk = ImageTk.PhotoImage(d)
+        self.cv.create_image(0,0, image=self.tk, anchor=tk.NW)
+
+    def toggle_picker(self):
+        if not self.pil_img: return
+        self.picking_color = not self.picking_color
+        if self.picking_color:
+            self.pick_btn.config(bg="#ffaa00", fg="black", text="PICK")
+            self.cv.config(cursor="target")
+        else:
+            self.pick_btn.config(bg="#444", fg="white", text="[✚] VEIL")
+            self.cv.config(cursor="crosshair")
+
+    def down(self,e): 
+        x=int(self.cv.canvasx(e.x)); y=int(self.cv.canvasy(e.y))
+        if self.picking_color and self.pil_img:
+            if 0 <= x < self.pil_img.width and 0 <= y < self.pil_img.height:
+                r,g,b = self.pil_img.getpixel((x,y))
+                self.veil_color = (r,g,b)
+                hex_c = '#%02x%02x%02x' % (r,g,b)
+                self.c_lbl.config(bg=hex_c)
+                self.toggle_picker()
+            return
+        self.drawing=True; self.lp=(x,y)
+        
+    def drag(self,e):
+        if self.drawing and self.mask_img:
+            x=int(self.cv.canvasx(e.x)); y=int(self.cv.canvasy(e.y))
+            d = ImageDraw.Draw(self.mask_img)
+            d.line([self.lp, (x,y)], fill=255, width=self.brush)
+            d.ellipse([x-15,y-15,x+15,y+15], fill=255)
+            self.lp=(x,y); 
+            self.cv.create_line(self.lp[0],self.lp[1],x,y,fill="magenta",width=self.brush,tags="t")
+
+    def up(self,e): 
+        if self.drawing: self.drawing=False; self.cv.delete("t"); self.update_view()
+    
+    def reset_all(self):
+        if self.backup_img:
+            self.pil_img = self.backup_img.copy()
+            self.clear_mask()
+            self.stat.config(text="Reset.")
+
+    def clear_mask(self):
+        if self.mask_img: self.mask_img.paste(0,[0,0,self.mask_img.width,self.mask_img.height]); self.update_view()
+
+    def run(self):
+        if not self.pil_img: return
+        self.stat.config(text="Executing Unified Stack...")
+        
+        vc = self.veil_color
+        den = self.thick_scale.get()
+        phi = self.phi_scale.get()
+        byp = self.byp_scale.get()
+        rad = self.rad_scale.get()
+        exp = self.exp_scale.get()
+        shd = self.shd_scale.get()
+        det = 30 # Default detail
+        chr = self.chr_scale.get()
+        clar = 20 # Default clarity
+        
+        threading.Thread(target=self._w, args=(vc, den, phi, byp, rad, exp, shd, det, chr, clar)).start()
+
+    def _w(self, *args):
+        res = self.engine.process_grand_stack(self.pil_img, self.mask_img, *args, self.log)
+        self.pil_img = res
+        self.clear_mask()
+        self.root.after(0, self.update_view)
+        self.root.after(0, lambda: self.stat.config(text="Unified Processing Complete."))
+
+    def log(self, m): self.stat.config(text=m)
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = ET_V33_GUI(root)
+    root.mainloop()

@@ -1,0 +1,438 @@
+"""
+ET Fine Structure Route — Production Visualization
+All ET math, no placeholders.
+"""
+import sys
+sys.path.insert(0, '/home/claude')
+
+import math
+import numpy as np
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
+import matplotlib.gridspec as gridspec
+from matplotlib.colors import LinearSegmentedColormap
+from math import gcd, log2
+
+# ── ET Constants ──────────────────────────────────────────────────────────────
+N = 12
+K = 2.0/3.0
+A0 = (N-1)**2 + 4**2   # = 137
+ALPHA_EM_LOW   = 7.2973525693e-3
+ALPHA_EM_MZ    = 1.0/127.906
+ALPHA_EM_GUT_SM    = 1.0/41.5
+ALPHA_EM_GUT_SUSY  = 1.0/25.0
+ALPHA_S_1GEV   = 0.50
+ALPHA_S_MZ     = 0.1181
+ALPHA_S_GUT    = 1.0/41.5
+ALPHA_W_MZ     = 1.0/29.7
+ALPHA_G        = 5.906e-39
+
+SUBLATTICE_COLORS = {
+    1:  '#FFD700',   # gold  — octave (trivial, gravity)
+    2:  '#FF8C00',   # orange — quadratic (tritone, Higgs)
+    3:  '#FF2222',   # red    — cubic (strong, 3D, unification)
+    4:  '#AA22FF',   # purple — quartic (weak)
+    5:  '#2255FF',   # blue   — quintic (golden ratio)
+    6:  '#22AAFF',   # cyan   — hexadic (composite)
+    8:  '#22FF44',   # green  — octet (8 gluons, 24ET)
+    9:  '#44FF88',   # mint   — nonic (3gen×3color, 36ET)
+    12: '#CCCCCC',   # grey   — full 12ET resolution (EM low)
+    18: '#AAAAAA',
+    24: '#888888',
+    36: '#666666',
+    48: '#555555',
+    72: '#444444',
+}
+DEFAULT_COLOR = '#FFFFFF'
+
+def et_project(r, n=12):
+    if r <= 0: return None
+    l2   = log2(r)
+    k_ex = n * l2
+    k    = round(k_ex)
+    g    = gcd(abs(k), n) if k != 0 else n
+    d    = n // g
+    eps  = (k_ex - k) * (1200.0 / n)
+    return dict(k=k, d=d, eps=eps, log2=l2, g=g)
+
+def sublattice_label(d, n):
+    names = {1:'Octave\n(d=1)',2:'Quadratic\n(d=2)',3:'Cubic\n(d=3)',
+             4:'Quartic\n(d=4)',6:'Hexadic\n(d=6)',8:'Octet\n(d=8)',
+             9:'Nonic\n(d=9)',12:f'Full {n}ET\n(d={n})',
+             18:'d=18',24:'d=24',36:'d=36',72:f'Full 72ET\n(d=72)'}
+    return names.get(d, f'd={d}')
+
+# ── Running couplings (one-loop ET) ───────────────────────────────────────────
+def alpha_em_run(mu, mu0=1e-3, a0=ALPHA_EM_LOW):
+    # simplified one-loop running with N_f=6
+    b0 = (2*K**2 * N * (14.0/3 + 3)) / (3 * math.pi)  # ET Koide-corrected
+    lr = math.log(mu/mu0) if mu > 0 else 0
+    d  = 1.0 - b0 * a0 * lr
+    return a0/d if d > 0 else None
+
+def alpha_s_run(mu, mu0=91.2, a0=ALPHA_S_MZ):
+    N_c, N_f = 3, 6
+    b0 = (11*N_c - 2*N_f) / (12*math.pi)
+    lr = math.log(mu/mu0) if mu > 0 else 0
+    d  = 1.0 + b0 * a0 * lr
+    return a0/d if d > 0 else None
+
+# ── Build route data ──────────────────────────────────────────────────────────
+log10_energies = np.linspace(-0.5, 16.5, 400)
+energies = 10.0**log10_energies
+
+em_vals, s_vals, em_ds, s_ds = [], [], [], []
+for mu in energies:
+    a_em = alpha_em_run(mu)
+    a_s  = alpha_s_run(mu)
+    em_vals.append(a_em)
+    s_vals.append(a_s)
+    if a_em and a_em < 1:
+        em_ds.append(et_project(a_em, 12)['d'])
+    else:
+        em_ds.append(None)
+    if a_s and 0 < a_s < 1:
+        s_ds.append(et_project(a_s, 12)['d'])
+    else:
+        s_ds.append(None)
+
+# ── Figure setup ──────────────────────────────────────────────────────────────
+fig = plt.figure(figsize=(22, 28), facecolor='#0a0a0f')
+gs  = gridspec.GridSpec(4, 2, figure=fig,
+                         hspace=0.38, wspace=0.30,
+                         left=0.07, right=0.97, top=0.95, bottom=0.04)
+
+title_kw = dict(color='white', fontsize=13, fontweight='bold', pad=10)
+ax_kw    = dict(facecolor='#111118')
+
+# ═══════════════ PANEL 1: Running couplings + sublattice color ════════════════
+ax1 = fig.add_subplot(gs[0, :], **ax_kw)
+ax1.set_title("ET Fine Structure Route: Running Couplings & Their 12ET Sublattice Families", **title_kw)
+
+# Plot running couplings
+valid_em = [(log10_energies[i], em_vals[i]) for i in range(len(energies)) if em_vals[i]]
+valid_s  = [(log10_energies[i], s_vals[i])  for i in range(len(energies))
+            if s_vals[i] and 0 < s_vals[i] < 2]
+
+lx_em, ly_em = zip(*valid_em)
+ax1.semilogy(lx_em, ly_em, color='#4488FF', lw=2.0, label='α_EM (running)', zorder=5)
+lx_s, ly_s = zip(*valid_s)
+ax1.semilogy(lx_s, ly_s, color='#FF4444', lw=2.0, label='α_s (running)', zorder=5)
+
+# Gravity (constant)
+ax1.axhline(ALPHA_G, color=SUBLATTICE_COLORS[1], lw=1.0, ls='--', alpha=0.6, label='α_G (gravity, d=1 always)')
+
+# Key scale markers
+key_scales = {
+    r'$M_Z$ (91 GeV)': 1.96,
+    r'$\Lambda_{QCD}$ (~200 MeV)': -0.70,
+    r'GUT SM ($10^{15}$ GeV)': 15.0,
+    r'GUT SUSY ($10^{16}$ GeV)': 16.0,
+}
+for label, log10_mu in key_scales.items():
+    ax1.axvline(log10_mu, color='white', lw=0.6, ls=':', alpha=0.4)
+    ax1.text(log10_mu+0.05, 3e-2, label, color='white', fontsize=7, rotation=90, va='top', alpha=0.8)
+
+# Key coupling points
+key_points = [
+    (log2(1e-3), ALPHA_EM_LOW,    'd=12', '#CCCCCC', 80),
+    (1.96,       ALPHA_EM_MZ,     'd=1',  '#FFD700', 80),
+    (15.0,       ALPHA_EM_GUT_SM, 'd=12', '#CCCCCC', 40),
+    (16.0,       ALPHA_EM_GUT_SUSY,'d=3', '#FF2222', 40),
+    (0.0,        ALPHA_S_1GEV,    'd=1',  '#FFD700', 80),
+    (1.96,       ALPHA_S_MZ,      'd=12', '#CCCCCC', 80),
+]
+for lmu, alpha, dlabel, col, ms in key_points:
+    ax1.scatter([lmu], [alpha], s=ms, color=col, zorder=10, edgecolors='white', lw=0.5)
+
+ax1.set_xlabel('log₁₀(μ/GeV)', color='white', fontsize=10)
+ax1.set_ylabel('Coupling constant α', color='white', fontsize=10)
+ax1.tick_params(colors='white')
+for sp in ax1.spines.values(): sp.set_color('#555566')
+ax1.set_xlim(-0.5, 16.5)
+ax1.set_ylim(1e-40, 2e0)
+ax1.legend(loc='upper right', fontsize=8, facecolor='#1a1a2e', labelcolor='white', framealpha=0.9)
+ax1.grid(True, color='#333344', alpha=0.4, lw=0.5)
+
+# ═══════════════ PANEL 2: α Route — d values across energy ═══════════════════
+ax2 = fig.add_subplot(gs[1, 0], **ax_kw)
+ax2.set_title("The α Route: 12ET Sublattice Family d vs Energy", **title_kw)
+
+route_energies = [1e-3, 1e1, 91.2, 1e5, 1e10, 1e15, 1e16]
+route_vals     = [alpha_em_run(mu) for mu in route_energies]
+route_ds       = []
+route_labels   = ['1 eV', '10 GeV', 'M_Z', '10⁵ GeV', '10¹⁰ GeV', 'GUT SM', 'GUT SUSY']
+route_colors   = []
+
+for a in route_vals:
+    if a and 0 < a < 1:
+        p = et_project(a, 12)
+        d = p['d']
+    else:
+        d = None
+    route_ds.append(d)
+    route_colors.append(SUBLATTICE_COLORS.get(d, DEFAULT_COLOR) if d else '#333333')
+
+log10_route = [math.log10(mu) for mu in route_energies]
+valid_idx   = [i for i in range(len(route_ds)) if route_ds[i] is not None]
+
+ax2.plot([log10_route[i] for i in valid_idx],
+         [route_ds[i] for i in valid_idx],
+         color='white', lw=1.0, ls='--', zorder=3, alpha=0.5)
+
+for i in valid_idx:
+    ax2.scatter([log10_route[i]], [route_ds[i]],
+                s=180, color=route_colors[i], zorder=10,
+                edgecolors='white', lw=0.8)
+    ax2.text(log10_route[i], route_ds[i]+0.4, route_labels[i],
+             ha='center', color='white', fontsize=7.5)
+
+# Annotate d=12 → d=1 → d=3
+for d_val, desc, col in [(12,'Full Res\n(d=12)','#CCCCCC'),(1,'Octave\n(d=1)','#FFD700'),(3,'Cubic\n(d=3)','#FF2222')]:
+    ax2.axhline(d_val, color=col, lw=0.8, ls='-', alpha=0.3)
+    ax2.text(16.3, d_val, desc, color=col, fontsize=7, va='center', ha='right')
+
+ax2.set_xlabel('log₁₀(μ/GeV)', color='white', fontsize=10)
+ax2.set_ylabel('12ET sublattice family d', color='white', fontsize=10)
+ax2.set_yticks([1,2,3,4,6,12])
+ax2.set_yticklabels(['1\n(Octave)','2\n(Quad)','3\n(Cubic)','4\n(Quartic)','6\n(Hexadic)','12\n(Full)'], fontsize=7)
+ax2.tick_params(colors='white')
+for sp in ax2.spines.values(): sp.set_color('#555566')
+ax2.set_xlim(-0.5, 16.5)
+ax2.set_ylim(0, 14)
+ax2.grid(True, color='#333344', alpha=0.4)
+ax2.text(0.5, 0.05, 'ROUTE: d=12 → d=1 → d=3', transform=ax2.transAxes,
+         ha='center', color='#FF2222', fontsize=9, fontweight='bold')
+
+# ═══════════════ PANEL 3: Gravity-EM hierarchy diagram ═══════════════════════
+ax3 = fig.add_subplot(gs[1, 1], **ax_kw)
+ax3.set_title("Gravity-EM Hierarchy: Octave Positions on the ET Lattice", **title_kw)
+
+octave_forces = {
+    'α_s\n(~1 GeV)\nd=1':        (1,  SUBLATTICE_COLORS[1],  'Strong (1 GeV)'),
+    'α_EM\n(low)\nd=12':         (7.08, SUBLATTICE_COLORS[12], 'EM (atomic)'),
+    'α_W\n(MZ)\nd=12':           (4.92, SUBLATTICE_COLORS[12], 'Weak (MZ)'),
+    'α_s\n(MZ)\nd=12':           (3.08, SUBLATTICE_COLORS[12], 'Strong (MZ)'),
+    'α_EM\n(MZ)\nd=1':           (7,   SUBLATTICE_COLORS[1],  'EM (MZ, 2^(-7)!)'),
+    'α_G\n(all)\nd=1':           (127, SUBLATTICE_COLORS[1],  'Gravity'),
+}
+
+positions = [1, 3.08, 4.92, 7, 7.08, 127]
+labels    = ['α_s(1GeV)\nd=1', 'α_s(MZ)\nd=12', 'α_W(MZ)\nd=12',
+             'α_EM(MZ)\nd=1', 'α_EM(low)\nd=12', 'α_G\nd=1']
+colors    = [SUBLATTICE_COLORS[1], SUBLATTICE_COLORS[12], SUBLATTICE_COLORS[12],
+             SUBLATTICE_COLORS[1], SUBLATTICE_COLORS[12], SUBLATTICE_COLORS[1]]
+
+# Use a split y-axis approach (two ranges)
+ax3_top = fig.add_axes([0.545, 0.585, 0.42, 0.07], facecolor='#111118')   # tiny top for gravity
+ax3.set_ylim(0, 20)
+
+for pos, lbl, col in zip(positions[:5], labels[:5], colors[:5]):
+    ax3.barh([pos], [1], height=0.6, color=col, left=-0.5, alpha=0.85)
+    ax3.text(0.55, pos, lbl, va='center', color='white', fontsize=7.5)
+
+# Gravity on separate tiny panel
+ax3_top.barh([0], [1], height=0.5, color=SUBLATTICE_COLORS[1], left=-0.5, alpha=0.85)
+ax3_top.text(0.55, 0, 'α_G  d=1\n(127th octave)', va='center', color='white', fontsize=7)
+ax3_top.set_xticks([])
+ax3_top.set_yticks([0])
+ax3_top.set_yticklabels(['127'], color='white', fontsize=7)
+ax3_top.tick_params(colors='white')
+for sp in ax3_top.spines.values(): sp.set_color('#FF8800')
+ax3_top.set_facecolor('#1a0a00')
+ax3_top.set_title('Gravity\n(far below)', color='#FFD700', fontsize=7, pad=2)
+
+ax3.set_xlabel('(bars show d=1=gold, d=12=grey)', color='#888899', fontsize=8)
+ax3.set_ylabel('Octave position (−k/12)', color='white', fontsize=9)
+ax3.set_yticks(positions[:5])
+ax3.set_yticklabels([f'{p:.1f}' for p in positions[:5]], color='white', fontsize=8)
+ax3.tick_params(colors='white')
+for sp in ax3.spines.values(): sp.set_color('#555566')
+
+# Annotate the key gaps
+ax3.annotate('', xy=(1.7, 7), xytext=(1.7, 7.08),
+             arrowprops=dict(arrowstyle='<->', color='#888899', lw=1))
+ax3.text(1.9, 7.04, '←EM↔strong\n  at MZ', color='#DDDDDD', fontsize=6)
+ax3.annotate('', xy=(1.7, 1), xytext=(1.7, 7),
+             arrowprops=dict(arrowstyle='<->', color='#22AAFF', lw=1.2))
+ax3.text(1.9, 4, '6×N\n(72 steps)', color='#22AAFF', fontsize=8)
+
+ax3.text(0.5, 0.02, '10×N gap to gravity\n(1440 steps total)', transform=ax3.transAxes,
+         ha='center', color='#FFD700', fontsize=8)
+ax3.grid(True, color='#333344', alpha=0.4, axis='y')
+
+# ═══════════════ PANEL 4: Force Linking at Each Lattice ══════════════════════
+ax4 = fig.add_subplot(gs[2, :], **ax_kw)
+ax4.set_title("Force Linking: Which Couplings Share the Same Sublattice Family d at Each nET", **title_kw)
+
+lattices   = [12, 24, 36, 48, 60, 72]
+couplings  = {
+    'α_EM(low)':  (ALPHA_EM_LOW,       '#4488FF', 'o', 10),
+    'α_EM(MZ)':   (ALPHA_EM_MZ,        '#88AAFF', 's', 10),
+    'α_EM(GUT)':  (ALPHA_EM_GUT_SM,    '#4444FF', 'D', 10),
+    'α_s(1GeV)':  (ALPHA_S_1GEV,       '#FF4444', 'o', 10),
+    'α_s(MZ)':    (ALPHA_S_MZ,         '#FF8888', 's', 10),
+    'α_s(GUT)':   (ALPHA_S_GUT,        '#FF0000', 'D', 10),
+    'α_W(MZ)':    (ALPHA_W_MZ,         '#AA44FF', 's', 10),
+    'α_G':        (ALPHA_G,            '#FFD700', '^', 12),
+}
+
+# For each (lattice, coupling), compute d and plot in a grid
+n_coup = len(couplings)
+n_lat  = len(lattices)
+
+x_positions = np.arange(n_lat)
+y_positions = np.arange(n_coup)
+
+# Draw a heatmap of d values
+d_matrix = np.zeros((n_coup, n_lat))
+c_matrix = []
+
+coup_names = list(couplings.keys())
+for j, n_et in enumerate(lattices):
+    for i, cname in enumerate(coup_names):
+        val, col, mrk, ms = couplings[cname]
+        p = et_project(val, n_et)
+        d = p['d'] if p else 0
+        d_matrix[i, j] = d
+        c_matrix.append((i, j, d, SUBLATTICE_COLORS.get(d, DEFAULT_COLOR)))
+
+# Plot as scatter grid
+for i, j, d, col in c_matrix:
+    ax4.scatter(j, i, s=900, c=col, marker='s', zorder=5, alpha=0.9,
+                edgecolors='#111118', lw=0.5)
+    ax4.text(j, i, f'd={d}', ha='center', va='center',
+             color='black' if col != '#444444' else 'white', fontsize=7.5, fontweight='bold')
+
+# Draw connecting lines for forces that share d at a given lattice
+for j in range(n_lat):
+    d_vals = [int(d_matrix[i, j]) for i in range(n_coup)]
+    # Find groups sharing d
+    from collections import defaultdict
+    groups = defaultdict(list)
+    for i, d in enumerate(d_vals):
+        groups[d].append(i)
+    for d, idxs in groups.items():
+        if len(idxs) > 1:
+            y_min = min(idxs) - 0.3
+            y_max = max(idxs) + 0.3
+            ax4.plot([j+0.45, j+0.45], [y_min, y_max],
+                     color=SUBLATTICE_COLORS.get(d, DEFAULT_COLOR),
+                     lw=3.0, solid_capstyle='round', alpha=0.7, zorder=6)
+
+ax4.set_xticks(x_positions)
+ax4.set_xticklabels([f'{n}ET' for n in lattices], color='white', fontsize=10)
+ax4.set_yticks(y_positions)
+ax4.set_yticklabels(coup_names, color='white', fontsize=9)
+ax4.set_xlabel('ET Lattice Resolution', color='white', fontsize=11)
+ax4.tick_params(colors='white')
+for sp in ax4.spines.values(): sp.set_color('#555566')
+ax4.set_xlim(-0.6, n_lat-0.4)
+ax4.set_ylim(-0.8, n_coup-0.2)
+ax4.grid(True, color='#333344', alpha=0.3, lw=0.5)
+
+# Legend for sublattice colors
+legend_items = [(d, col, sublattice_label(d,12).replace('\n',' '))
+                for d, col in sorted(SUBLATTICE_COLORS.items()) if d <= 12]
+legend_patches = [mpatches.Patch(color=col, label=f'd={d}: {lbl}')
+                  for d, col, lbl in legend_items[:8]]
+ax4.legend(handles=legend_patches, loc='lower right', fontsize=7.5,
+           facecolor='#1a1a2e', labelcolor='white', framealpha=0.95,
+           ncol=2, title='Sublattice Families', title_fontsize=8)
+
+ax4.text(0.5, 1.02, "Colored vertical bars (right of each column) show forces sharing d — these are 'linked forces'",
+         transform=ax4.transAxes, ha='center', color='#AAAACC', fontsize=8)
+
+# ═══════════════ PANEL 5: The Unification Map ════════════════════════════════
+ax5 = fig.add_subplot(gs[3, 0], **ax_kw)
+ax5.set_title("The Unification Map: All Forces at GUT Scale in 12ET", **title_kw)
+
+gut_forces = {
+    'α_G\n(gravity)':    (ALPHA_G,           127, 1),
+    'α_EM\n(low)':       (ALPHA_EM_LOW,       7.08, 12),
+    'α_EM\n(at MZ)':     (ALPHA_EM_MZ,        7,   1),
+    'α_s\n(at MZ)':      (ALPHA_S_MZ,         3.08, 12),
+    'α_s\n(1 GeV)':      (ALPHA_S_1GEV,       1,   1),
+    'α_EM=α_s=α_W\n(GUT SM)':  (ALPHA_EM_GUT_SM, 5.375, 12),
+    'α_EM=α_s=α_W\n(GUT SUSY)': (ALPHA_EM_GUT_SUSY, 4.64, 3),
+}
+
+x_labels = list(gut_forces.keys())
+vals   = [v[0] for v in gut_forces.values()]
+octavs = [v[1] for v in gut_forces.values()]
+ds     = [v[2] for v in gut_forces.values()]
+cols   = [SUBLATTICE_COLORS.get(d, DEFAULT_COLOR) for d in ds]
+
+bars = ax5.barh(x_labels, octavs, color=cols, alpha=0.85,
+                edgecolor='#555566', lw=0.8)
+for i, (val, d, oct) in enumerate(zip(vals, ds, octavs)):
+    ax5.text(oct + 0.3, i, f'1/α={1/val:.1f}, d={d}',
+             va='center', color='white', fontsize=7.5)
+
+ax5.set_xlabel('Octave depth (−k/12 in 12ET)', color='white', fontsize=10)
+ax5.tick_params(colors='white', labelsize=8)
+for sp in ax5.spines.values(): sp.set_color('#555566')
+ax5.set_xlim(0, 135)
+ax5.grid(True, color='#333344', alpha=0.4, axis='x')
+ax5.axvline(7,   color=SUBLATTICE_COLORS[1],  lw=1.5, ls='--', alpha=0.7, label='Octave d=1 line at 7')
+ax5.axvline(4.64, color=SUBLATTICE_COLORS[3], lw=1.5, ls='--', alpha=0.7, label='Cubic d=3 (SUSY GUT)')
+ax5.legend(fontsize=7, facecolor='#1a1a2e', labelcolor='white', loc='lower right')
+
+# ═══════════════ PANEL 6: The Complete 12ET Route Arrow Diagram ═══════════════
+ax6 = fig.add_subplot(gs[3, 1], **ax_kw)
+ax6.set_title("The d-Route: Descriptor Simplification as Energy Rises", **title_kw)
+ax6.set_xlim(0, 10)
+ax6.set_ylim(0, 14)
+ax6.axis('off')
+
+# Draw the route as circles connected by arrows
+route_steps = [
+    (5, 12.5, 'FULL RESOLUTION (d=12)',   '#CCCCCC', '~1 eV\nAtomic physics\nα_EM = 1/137'),
+    (5, 9.5,  'OCTAVE CLASS (d=1)',        '#FFD700', '91 GeV = M_Z\nElectroweak\nα_EM ≈ 2⁻⁷ = 1/128'),
+    (5, 6.5,  'CUBIC (d=3)',              '#FF2222', '10¹⁶ GeV (SUSY GUT)\nUnification!\nα_EM=α_s=α_W=1/25'),
+    (5, 3.5,  'ALL FORCES UNIFIED\nat Cubic d=3',   '#FF8844', 'Physical reality lives here\n3D space, 3 colors, 3 generations'),
+]
+
+for x, y, label, col, note in route_steps:
+    circle = plt.Circle((x, y), 1.3, color=col, alpha=0.85, zorder=5)
+    ax6.add_patch(circle)
+    ax6.text(x, y+0.15, label, ha='center', va='center',
+             color='black' if col not in ['#111118','#444444'] else 'white',
+             fontsize=7.5, fontweight='bold', zorder=6)
+    ax6.text(x, y-0.45, note, ha='center', va='center',
+             color='black' if col not in ['#111118','#444444'] else 'white',
+             fontsize=6, zorder=6)
+
+# Draw arrows between steps
+for i in range(len(route_steps)-1):
+    x1, y1 = route_steps[i][0], route_steps[i][1]
+    x2, y2 = route_steps[i+1][0], route_steps[i+1][1]
+    ax6.annotate('', xy=(x2, y2+1.35), xytext=(x1, y1-1.35),
+                 arrowprops=dict(arrowstyle='->', color='white', lw=2.0))
+    mid_y = (y1 + y2)/2
+    ax6.text(x1+1.5, mid_y, 'Energy↑\nT traverses\nfiner P', ha='left',
+             color='#8888AA', fontsize=7, style='italic')
+
+# Side annotation
+ax6.text(0.5, 13, 'Identification Principle:', color='#88AAFF', fontsize=8, fontweight='bold')
+ax6.text(0.5, 12.4, 'P = ET lattice (infinite substrate)', color='#AAAACC', fontsize=7)
+ax6.text(0.5, 12.0, 'D = Coupling constants {k, d, ε}', color='#AAAACC', fontsize=7)
+ax6.text(0.5, 11.6, 'T = Renormalization group (RGE)', color='#AAAACC', fontsize=7)
+
+ax6.text(0.5, 10.8, 'Descriptor Gap Principle:', color='#88AAFF', fontsize=8, fontweight='bold')
+ax6.text(0.5, 10.3, 'Each missing unification = a sublattice\nfamily not yet accessible', color='#AAAACC', fontsize=7)
+ax6.text(0.5, 9.6,  '12ET → 24ET adds d=8 (8 gluons)\n36ET adds d=9 (3gen×3color)\n72ET = full SM layer',
+         color='#CCCCDD', fontsize=6.5)
+
+# ── Overall title ──────────────────────────────────────────────────────────────
+fig.text(0.5, 0.972,
+         "THE FINE STRUCTURE ROUTE — Force Unification Through ET Lattice Resolution\n"
+         "Exception Theory (ET) | P∘D∘T = E | A₀ = (N−1)² + S² = 137 | MANIFOLD_SYMMETRY = 12",
+         ha='center', color='white', fontsize=12, fontweight='bold',
+         bbox=dict(boxstyle='round,pad=0.4', facecolor='#1a1a3e', alpha=0.85))
+
+plt.savefig('/mnt/user-data/outputs/ET_Fine_Structure_Route_Visualization.png',
+            dpi=150, bbox_inches='tight', facecolor='#0a0a0f')
+print("[Visualization saved]")

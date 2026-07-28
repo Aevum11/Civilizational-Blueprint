@@ -1,0 +1,150 @@
+package com.et.omnimeasure
+
+import android.Manifest
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
+import android.content.pm.PackageManager
+import android.graphics.Color
+import android.os.Bundle
+import android.os.IBinder
+import android.widget.Button
+import android.widget.TextView
+import android.widget.Toast
+import android.widget.ToggleButton
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import com.et.omnimeasure.core.OmniMeasureService
+import com.et.omnimeasure.core.PhysicsUiModel
+import com.et.omnimeasure.core.OmniTraverserEngine
+
+class MainActivity : AppCompatActivity(), OmniTraverserEngine.TraverserListener {
+
+    private var measureService: OmniMeasureService? = null
+    private var serviceBinder: OmniMeasureService.LocalBinder? = null
+    private var isBound = false
+    
+    private lateinit var txtTilt: TextView
+    private lateinit var txtVib: TextView
+    private lateinit var txtSound: TextView
+    private lateinit var txtStatus: TextView
+    private lateinit var btnMic: ToggleButton
+
+    private val connection = object : ServiceConnection {
+        override fun onServiceConnected(className: ComponentName, service: IBinder) {
+            serviceBinder = service as OmniMeasureService.LocalBinder
+            measureService = serviceBinder?.getService()
+            measureService?.activeListener = this@MainActivity
+            isBound = true
+            btnMic.isChecked = false
+        }
+        override fun onServiceDisconnected(arg0: ComponentName) { isBound = false }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        
+        bindViews()
+        checkPermissions()
+    }
+
+    private fun bindViews() {
+        txtTilt = findViewById(R.id.txt_tilt)
+        txtVib = findViewById(R.id.txt_vib)
+        txtSound = findViewById(R.id.txt_sound)
+        txtStatus = findViewById(R.id.txt_status_bar)
+        
+        btnMic = findViewById(R.id.btn_mic_toggle) 
+        btnMic.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
+                    serviceBinder?.setAudio(true)
+                } else {
+                    btnMic.isChecked = false
+                    ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.RECORD_AUDIO), 101)
+                }
+            } else {
+                serviceBinder?.setAudio(false)
+            }
+        }
+
+        // CALIBRATION CONTROLS
+        findViewById<Button>(R.id.btn_zero_tilt).setOnClickListener {
+            serviceBinder?.calibrateTilt()
+            Toast.makeText(this, "Tilt Zeroed", Toast.LENGTH_SHORT).show()
+        }
+        
+        findViewById<Button>(R.id.btn_cal_db).setOnClickListener {
+            // In a real app, show a dialog to enter reference dB. Assuming 40dB quiet room here.
+            serviceBinder?.calibrateDb(40.0)
+            Toast.makeText(this, "dB Calibrated to 40dBA", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun startService() {
+        val intent = Intent(this, OmniMeasureService::class.java)
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            startForegroundService(intent)
+        } else {
+            startService(intent)
+        }
+        bindService(intent, connection, Context.BIND_AUTO_CREATE)
+    }
+
+    private fun checkPermissions() {
+        val perms = arrayOf(Manifest.permission.FOREGROUND_SERVICE)
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.FOREGROUND_SERVICE) != PackageManager.PERMISSION_GRANTED) {
+             ActivityCompat.requestPermissions(this, perms, 102)
+        } else {
+            startService()
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 101 && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            btnMic.isChecked = true
+            serviceBinder?.setAudio(true)
+        } else if (requestCode == 102) {
+            startService()
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (isBound) {
+            measureService?.activeListener = null
+            unbindService(connection)
+            isBound = false
+        }
+    }
+
+    override fun onPhysicsUpdate(model: PhysicsUiModel) {
+        runOnUiThread {
+            txtTilt.text = "Level: %.2f° (±%.2f)".format(model.tiltDegrees, model.tiltConfidence)
+            txtVib.text = "Vib: %.3f | Mech: %.1f Hz".format(model.vibrationRms, model.mechFreq)
+            
+            if (model.isEcoMode) {
+                txtStatus.text = "ECO MODE (Low Power)"
+                txtStatus.setTextColor(Color.GREEN)
+            } else {
+                txtStatus.text = "ACTIVE"
+                txtStatus.setTextColor(Color.CYAN)
+            }
+
+            if (btnMic.isChecked) {
+                txtSound.text = "Sound: %.1f dBA (±%.1f)\nPeak: %.0f Hz".format(model.dbA, model.dbConfidence, model.noiseFreq)
+            } else {
+                txtSound.text = "Sound: OFF"
+            }
+        }
+    }
+
+    override fun onPowerStateChange(isEcoMode: Boolean) {}
+    override fun onError(message: String) {
+        runOnUiThread { Toast.makeText(this, message, Toast.LENGTH_SHORT).show() }
+    }
+}

@@ -1,0 +1,403 @@
+import tkinter as tk
+from tkinter import filedialog, messagebox, colorchooser
+import threading
+import sys
+import math
+
+try:
+    from PIL import Image, ImageTk, ImageDraw, ImageFilter, ImageOps
+except ImportError:
+    messagebox.showerror("Error", "Pillow is missing. Run: pip install pillow")
+    sys.exit(1)
+
+# ==============================================================================
+# ET KERNEL: RECURSIVE NUMBER THEORY (HIGHER ORDER TOTIENTS)
+# ==============================================================================
+
+class ET_Recursive_Math:
+    """
+    Computes the Totient Chain to Depth 4.
+    Used to distinguish Surface Noise (Phi-1/2) from Deep Structure (Phi-3/4).
+    """
+    def __init__(self):
+        self.p1, self.p2, self.p3, self.p4 = self._gen_tables()
+        
+    def _phi(self, n):
+        if n <= 0: return 0
+        result = n
+        p = 2
+        while p * p <= n:
+            if n % p == 0:
+                while n % p == 0:
+                    n //= p
+                result -= result // p
+            p += 1
+        if n > 1:
+            result -= result // n
+        return result
+
+    def _gen_tables(self):
+        t1, t2, t3, t4 = [], [], [], []
+        for i in range(256):
+            # Order 1 (Surface)
+            v1 = self._phi(i)
+            # Order 2 (Geometry)
+            v2 = self._phi(v1)
+            # Order 3 (Resonance)
+            v3 = self._phi(v2)
+            # Order 4 (Singularity)
+            v4 = self._phi(v3)
+            
+            # Normalize for map generation (Scale up to 255 for visibility)
+            # We want to use these as weights, so we keep them raw but accessible
+            t1.append(v1)
+            t2.append(v2)
+            t3.append(v3)
+            t4.append(v4)
+        return t1, t2, t3, t4
+
+class ET_Recursive_Engine:
+    def __init__(self):
+        self.math = ET_Recursive_Math()
+
+    def lift_recursive_layer(self, img_pil, mask_pil, veil_color, density, surface_rem, deep_lock, shadow_lift, clarity, status_cb):
+        """
+        Uses Higher Order Totients to modulate Optical Transmission.
+        surface_rem: How much to penalize Phi-1/2 (The Veil).
+        deep_lock: How much to protect Phi-3/4 (The Object).
+        """
+        width, height = img_pil.size
+        pixels = img_pil.load()
+        mask = mask_pil.load()
+        
+        # 1. GENERATE TOTIENT MAPS (The 4 Descriptors)
+        status_cb("Calculating Totient Chain (Orders 1-4)...")
+        gray = img_pil.convert("L")
+        
+        # We need the Phi values per pixel to calculate stability
+        # Map raw image to its totient values
+        # This is fast via LUT
+        p1_map = gray.point(self.math.p1).load()
+        # p2_map = gray.point(self.math.p2).load() # Implicit in chain logic
+        p3_map = gray.point(self.math.p3).load()
+        p4_map = gray.point(self.math.p4).load()
+        
+        # 2. OPTICAL THICKNESS (Base Physics)
+        # We still need the Optical Base to know WHERE the veil is optically
+        dark_ref = img_pil.filter(ImageFilter.MinFilter(15))
+        tx_map = dark_ref.filter(ImageFilter.GaussianBlur(2))
+        tx_map = tx_map.filter(ImageFilter.UnsharpMask(radius=2, percent=150, threshold=3))
+        tx_pix = tx_map.load()
+        
+        bbox = mask_pil.getbbox()
+        if not bbox: return img_pil
+        min_x, min_y, max_x, max_y = bbox
+        
+        updates = []
+        
+        # Factors
+        omega = density / 100.0
+        ar_base, ag_base, ab_base = veil_color
+        
+        # Totient Weights
+        # Surface Remove: 0.0 - 2.0 (Multiplier for instability)
+        w_surf = surface_rem / 50.0 
+        # Deep Lock: 0.0 - 2.0 (Multiplier for stability)
+        w_deep = deep_lock / 50.0
+        
+        # Gamma
+        gamma = 1.0 + (shadow_lift / 40.0)
+        inv_gamma = 1.0 / gamma
+        
+        # 3. THE RECURSIVE LOOP
+        for y in range(min_y, max_y):
+            for x in range(min_x, max_x):
+                if mask[x, y] == 0: continue
+                
+                pr, pg, pb = pixels[x, y]
+                
+                # A. ADAPTIVE VEIL (V21 Logic)
+                p_lum = (pr + pg + pb) / 3.0
+                lum_ratio = p_lum / 255.0
+                mod_factor = 0.5 + (0.5 * lum_ratio)
+                
+                ar = max(1, ar_base * mod_factor)
+                ag = max(1, ag_base * mod_factor)
+                ab = max(1, ab_base * mod_factor)
+                
+                # B. OPTICAL TRANSMISSION (Base)
+                local_min = tx_pix[x, y]
+                dr = local_min[0] / ar
+                dg = local_min[1] / ag
+                db = local_min[2] / ab
+                t_opt = 1.0 - (omega * min(dr, dg, db))
+                
+                # C. TOTIENT MODULATION (The Innovation)
+                # We analyze the stability of the pixel.
+                # Stability = (Phi4 + Phi3) / (Phi1 + 1)
+                
+                # Get the totient values for this pixel's luminance
+                # Note: We use the coordinate lookup on the pre-mapped images
+                val_p1 = p1_map[x, y]
+                val_p3 = p3_map[x, y]
+                val_p4 = p4_map[x, y]
+                
+                # Ratio: Deep Structure vs Surface Noise
+                # If Phi3/4 are high relative to Phi1, it is a Stable Prime (Object).
+                # If they drop off fast, it is Unstable Composite (Veil).
+                
+                # Calculate Stability Coefficient
+                # We add 1 to avoid div zero
+                stability = (val_p3 + val_p4) / (val_p1 + 10.0)
+                
+                # If Stability is HIGH (Object) -> Increase Transmission (t -> 1.0)
+                # If Stability is LOW (Veil) -> Decrease Transmission (t -> 0.1)
+                
+                # Apply Weights
+                # We want to remove surface (Low Stability)
+                # We want to keep deep (High Stability)
+                
+                # t_mod = t_opt * (1 + (Stability * DeepLock) - (InvStability * SurfRem))
+                
+                # Heuristic:
+                # If pixel is stable, t should be boosted.
+                # If pixel is unstable, t should be reduced (cut away).
+                
+                mod = stability * w_deep
+                # Inverse stability (instability)
+                instability = 1.0 - stability
+                pen = instability * w_surf
+                
+                # Combine
+                t_final = t_opt + mod - pen
+                
+                # Clamp
+                t = max(0.1, min(1.0, t_final))
+                
+                # D. RECOVERY
+                jr = ((pr - ar) / t) + ar
+                jg = ((pg - ag) / t) + ag
+                jb = ((pb - ab) / t) + ab
+                
+                # E. TONE MAPPING
+                # Soft Knee + Gamma
+                def map_val(v):
+                    # Exposure Cap implicitly handled by soft knee start point
+                    if v > 210:
+                        excess = v - 210
+                        v = 210 + (45 * (1 - math.exp(-excess/120)))
+                    
+                    if v < 0: return 0
+                    n = v / 255.0
+                    res = math.pow(n, inv_gamma)
+                    return res * 255.0
+
+                final_r = map_val(jr)
+                final_g = map_val(jg)
+                final_b = map_val(jb)
+                
+                updates.append((x, y, (int(final_r), int(final_g), int(final_b))))
+                
+        # Apply Updates
+        for ux, uy, uval in updates:
+            pixels[ux, uy] = uval
+            
+        # 4. POST: CLARITY & CHROMA
+        if clarity > 0:
+            roi = img_pil.crop(bbox)
+            roi = roi.filter(ImageFilter.UnsharpMask(radius=2, percent=int(clarity*1.5), threshold=3))
+            img_pil.paste(roi, bbox)
+            
+        return img_pil
+
+# ==============================================================================
+# GUI
+# ==============================================================================
+
+class ET_V25_GUI:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("ET-V25: RECURSIVE TOTIENT ENGINE (MULTI-ORDER)")
+        self.root.geometry("1200x950")
+        self.root.configure(bg="#050505")
+        
+        self.engine = ET_Recursive_Engine()
+        self.pil_img = None
+        self.mask_img = None
+        self.backup_img = None
+        
+        self.veil_color = (200, 200, 200)
+        self.picking_color = False
+        
+        self._layout()
+
+    def _layout(self):
+        t = tk.Frame(self.root, bg="#101010", pady=10)
+        t.pack(fill=tk.X)
+        
+        # ROW 1: ACTIONS
+        r1 = tk.Frame(t, bg="#101010"); r1.pack(side=tk.TOP, fill=tk.X)
+        self.btn(r1, "LOAD", self.load, "#004488")
+        self.btn(r1, "RESET", self.reset_all, "#880000")
+        self.btn(r1, "CLEAR MASK", self.clear_mask, "#550000")
+        self.btn(r1, "EXECUTE", self.run, "#006600")
+        
+        # ROW 2: PICKER
+        r2 = tk.Frame(t, bg="#101010"); r2.pack(side=tk.TOP, fill=tk.X, pady=5)
+        self.pick_btn = tk.Button(r2, text="[✚] PICK VEIL COLOR", command=self.toggle_picker, bg="#444", fg="white", font=("Arial", 10, "bold"), relief="raised")
+        self.pick_btn.pack(side=tk.LEFT, padx=10)
+        self.c_lbl = tk.Label(r2, text="      ", bg="#cccccc", relief="sunken", width=6)
+        self.c_lbl.pack(side=tk.LEFT)
+        self.stat = tk.Label(r2, text="Ready.", fg="#00ff00", bg="#101010")
+        self.stat.pack(side=tk.RIGHT, padx=20)
+        
+        # ROW 3: RECURSIVE CONTROLS
+        r3 = tk.Frame(t, bg="#101010"); r3.pack(side=tk.TOP, fill=tk.X, pady=2)
+        
+        # Thickness
+        f1 = tk.Frame(r3, bg="#101010"); f1.pack(side=tk.LEFT, padx=5)
+        tk.Label(f1, text="THICKNESS (Optical)", fg="#888", bg="#101010", font=("Arial", 7)).pack()
+        self.thick_scale = tk.Scale(f1, from_=0, to=100, orient=tk.HORIZONTAL, bg="#101010", fg="#0f0", length=120)
+        self.thick_scale.set(85)
+        self.thick_scale.pack()
+        
+        # SURFACE REMOVAL (Phi 1/2)
+        f2 = tk.Frame(r3, bg="#101010"); f2.pack(side=tk.LEFT, padx=5)
+        tk.Label(f2, text="SURFACE PEEL (Phi 1/2)", fg="#0ff", bg="#101010", font=("Arial", 7, "bold")).pack()
+        self.surf_scale = tk.Scale(f2, from_=0, to=100, orient=tk.HORIZONTAL, bg="#101010", fg="#0ff", length=120)
+        self.surf_scale.set(60) 
+        self.surf_scale.pack()
+        
+        # DEEP LOCK (Phi 3/4)
+        f3 = tk.Frame(r3, bg="#101010"); f3.pack(side=tk.LEFT, padx=5)
+        tk.Label(f3, text="DEEP LOCK (Phi 3/4)", fg="#0ff", bg="#101010", font=("Arial", 7, "bold")).pack()
+        self.deep_scale = tk.Scale(f3, from_=0, to=100, orient=tk.HORIZONTAL, bg="#101010", fg="#0ff", length=120)
+        self.deep_scale.set(80)
+        self.deep_scale.pack()
+        
+        # ROW 4: POST
+        r4 = tk.Frame(t, bg="#101010"); r4.pack(side=tk.TOP, fill=tk.X, pady=5)
+        
+        f4 = tk.Frame(r4, bg="#101010"); f4.pack(side=tk.LEFT, padx=5)
+        tk.Label(f4, text="SHADOW LIFT", fg="#888", bg="#101010", font=("Arial", 7)).pack()
+        self.shd_scale = tk.Scale(f4, from_=0, to=100, orient=tk.HORIZONTAL, bg="#101010", fg="#0f0", length=120)
+        self.shd_scale.set(50)
+        self.shd_scale.pack()
+        
+        f5 = tk.Frame(r4, bg="#101010"); f5.pack(side=tk.LEFT, padx=5)
+        tk.Label(f5, text="CLARITY", fg="#888", bg="#101010", font=("Arial", 7)).pack()
+        self.cla_scale = tk.Scale(f5, from_=0, to=100, orient=tk.HORIZONTAL, bg="#101010", fg="#0f0", length=120)
+        self.cla_scale.set(30)
+        self.cla_scale.pack()
+
+        # CANVAS
+        container = tk.Frame(self.root)
+        container.pack(fill=tk.BOTH, expand=True)
+        self.cv = tk.Canvas(container, bg="#080808", cursor="crosshair")
+        vs = tk.Scrollbar(container, orient="vertical", command=self.cv.yview)
+        hs = tk.Scrollbar(container, orient="horizontal", command=self.cv.xview)
+        self.cv.config(yscrollcommand=vs.set, xscrollcommand=hs.set)
+        
+        vs.pack(side=tk.RIGHT, fill=tk.Y)
+        hs.pack(side=tk.BOTTOM, fill=tk.X)
+        self.cv.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        
+        self.cv.bind("<Button-1>", self.down)
+        self.cv.bind("<B1-Motion>", self.drag)
+        self.cv.bind("<ButtonRelease-1>", self.up)
+        
+        self.drawing=False; self.brush=30
+
+    def btn(self, p, t, c, b):
+        tk.Button(p, text=t, command=c, bg=b, fg="white", relief="flat", padx=10, pady=5).pack(side=tk.LEFT, padx=5)
+
+    def load(self):
+        path = filedialog.askopenfilename()
+        if not path: return
+        try:
+            self.pil_img = Image.open(path).convert("RGB")
+            self.backup_img = self.pil_img.copy()
+            self.mask_img = Image.new("L", self.pil_img.size, 0)
+            self.cv.config(scrollregion=(0,0,self.pil_img.width,self.pil_img.height))
+            self.update_view()
+            self.stat.config(text=f"Loaded: {self.pil_img.size}")
+        except: pass
+
+    def update_view(self):
+        if not self.pil_img: return
+        d = self.pil_img.copy()
+        if self.mask_img.getbbox():
+            r = Image.new("RGB", self.pil_img.size, (255,0,0)) 
+            d = Image.composite(r, d, self.mask_img)
+        self.tk = ImageTk.PhotoImage(d)
+        self.cv.create_image(0,0, image=self.tk, anchor=tk.NW)
+
+    def toggle_picker(self):
+        if not self.pil_img: return
+        self.picking_color = not self.picking_color
+        if self.picking_color:
+            self.pick_btn.config(bg="#ffaa00", fg="black", text="CLICK IMAGE TO PICK")
+            self.cv.config(cursor="target")
+        else:
+            self.pick_btn.config(bg="#444", fg="white", text="[✚] PICK VEIL COLOR")
+            self.cv.config(cursor="crosshair")
+
+    def down(self,e):
+        x=int(self.cv.canvasx(e.x)); y=int(self.cv.canvasy(e.y))
+        if self.picking_color and self.pil_img:
+            if 0 <= x < self.pil_img.width and 0 <= y < self.pil_img.height:
+                r,g,b = self.pil_img.getpixel((x,y))
+                self.veil_color = (r,g,b)
+                hex_c = '#%02x%02x%02x' % (r,g,b)
+                self.c_lbl.config(bg=hex_c)
+                self.toggle_picker()
+            return
+        self.drawing=True; self.lp=(x,y)
+        
+    def drag(self,e):
+        if self.drawing and self.mask_img:
+            x=int(self.cv.canvasx(e.x)); y=int(self.cv.canvasy(e.y))
+            d = ImageDraw.Draw(self.mask_img)
+            d.line([self.lp, (x,y)], fill=255, width=self.brush)
+            d.ellipse([x-15,y-15,x+15,y+15], fill=255)
+            self.lp=(x,y); 
+            self.cv.create_line(self.lp[0],self.lp[1],x,y,fill="red",width=self.brush,tags="t")
+
+    def up(self,e): 
+        if self.drawing: self.drawing=False; self.cv.delete("t"); self.update_view()
+    
+    def reset_all(self):
+        if self.backup_img:
+            self.pil_img = self.backup_img.copy()
+            self.clear_mask()
+            self.stat.config(text="Reset to Original.")
+
+    def clear_mask(self):
+        if self.mask_img: self.mask_img.paste(0,[0,0,self.mask_img.width,self.mask_img.height]); self.update_view()
+
+    def run(self):
+        if not self.pil_img: return
+        self.stat.config(text="Analyzing Totient Chain...")
+        
+        vc = self.veil_color
+        thick = self.thick_scale.get()
+        surf = self.surf_scale.get()
+        deep = self.deep_scale.get()
+        shd = self.shd_scale.get()
+        cla = self.cla_scale.get()
+        
+        threading.Thread(target=self._w, args=(vc, thick, surf, deep, shd, cla)).start()
+
+    def _w(self, v, t, s, d, sh, c):
+        res = self.engine.lift_recursive_layer(self.pil_img, self.mask_img, v, t, s, d, sh, c, self.log)
+        self.pil_img = res
+        self.clear_mask()
+        self.root.after(0, self.update_view)
+        self.root.after(0, lambda: self.stat.config(text="Recursive Lift Complete."))
+
+    def log(self, m): self.stat.config(text=m)
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = ET_V25_GUI(root)
+    root.mainloop()

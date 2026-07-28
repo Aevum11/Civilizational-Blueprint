@@ -1,0 +1,127 @@
+\contentsline {section}{\numberline {1}Introduction}{1}{section.1}%
+\contentsline {subsection}{\numberline {1.1}The object identified in this paper}{1}{subsection.1.1}%
+\contentsline {subsection}{\numberline {1.2}The empirical regularity the object explains}{2}{subsection.1.2}%
+\contentsline {subsection}{\numberline {1.3}The thesis}{3}{subsection.1.3}%
+\contentsline {subsection}{\numberline {1.4}Relation to existing work}{3}{subsection.1.4}%
+\contentsline {subsection}{\numberline {1.5}Scope and organisation}{4}{subsection.1.5}%
+\contentsline {section}{\numberline {2}The Founding Axiom and the primitive Cardinals}{4}{section.2}%
+\contentsline {subsection}{\numberline {2.1}The Founding Axiom}{4}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}The master equation}{5}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}The three Cardinals}{5}{subsection.2.3}%
+\contentsline {subsection}{\numberline {2.4}Three disjoint infinities}{6}{subsection.2.4}%
+\contentsline {subsection}{\numberline {2.5}Intrinsic mediation}{6}{subsection.2.5}%
+\contentsline {subsection}{\numberline {2.6}The totality $\Sigma $}{7}{subsection.2.6}%
+\contentsline {subsection}{\numberline {2.7}The binding order}{7}{subsection.2.7}%
+\contentsline {subsection}{\numberline {2.8}Modes of self-presentation}{7}{subsection.2.8}%
+\contentsline {subsection}{\numberline {2.9}The four manifold states}{8}{subsection.2.9}%
+\contentsline {subsection}{\numberline {2.10}Variance and the grounding function}{9}{subsection.2.10}%
+\contentsline {paragraph}{Statistical variance of a discrete uniform descriptor distribution.}{10}{section*.3}%
+\contentsline {paragraph}{Statistical variance of a continuous uniform distribution on $[0,1]$.}{10}{section*.4}%
+\contentsline {paragraph}{Relation between \eqref {eq:var-discrete} and \eqref {eq:var-continuous}.}{10}{section*.5}%
+\contentsline {paragraph}{Asymptotic descriptor-count variance.}{10}{section*.6}%
+\contentsline {subsection}{\numberline {2.11}The four manifold states as four classical geometries}{11}{subsection.2.11}%
+\contentsline {section}{\numberline {3}The triple identity and the three operational tools}{13}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Three simultaneous categorical readings}{13}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}The universality anchor $3=3=3=\Sigma $ versus the composition equation $P\circ D\circ T = E$}{13}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}The three operational tools}{14}{subsection.3.3}%
+\contentsline {subsection}{\numberline {3.4}The Identification Principle}{15}{subsection.3.4}%
+\contentsline {subsection}{\numberline {3.5}The Descriptor Gap Principle}{15}{subsection.3.5}%
+\contentsline {subsection}{\numberline {3.6}The Subsumption Law}{16}{subsection.3.6}%
+\contentsline {subsection}{\numberline {3.7}The closed methodological loop}{17}{subsection.3.7}%
+\contentsline {subsection}{\numberline {3.8}Integrative levels}{18}{subsection.3.8}%
+\contentsline {section}{\numberline {4}The three temporal aspects}{18}{section.4}%
+\contentsline {subsection}{\numberline {4.1}The three temporal aspects}{19}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}The temporal master equation}{19}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Uniqueness of the temporal Exception}{19}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.4}The Minkowski interval}{20}{subsection.4.4}%
+\contentsline {subsection}{\numberline {4.5}Event-horizon reconciliation}{20}{subsection.4.5}%
+\contentsline {subsection}{\numberline {4.6}Scope of this section}{21}{subsection.4.6}%
+\contentsline {section}{\numberline {5}The forced value $N=12$}{21}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Derivation I: product of the two counts}{21}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Derivation II: least common multiple of the small sublattice orders}{22}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}Derivation III: the stability window}{22}{subsection.5.3}%
+\contentsline {subsection}{\numberline {5.4}The three manifold constants}{22}{subsection.5.4}%
+\contentsline {subsection}{\numberline {5.5}A derived fine-structure constant}{23}{subsection.5.5}%
+\contentsline {section}{\numberline {6}The lattice on the multiplicative manifold}{23}{section.6}%
+\contentsline {subsection}{\numberline {6.1}The projection formula}{23}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}Interpretation}{24}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.3}The annihilation boundary}{24}{subsection.6.3}%
+\contentsline {subsection}{\numberline {6.4}Convention independence}{24}{subsection.6.4}%
+\contentsline {subsection}{\numberline {6.5}Three canonical projections}{25}{subsection.6.5}%
+\contentsline {subsection}{\numberline {6.6}The Anti-Numerology Protocol}{25}{subsection.6.6}%
+\contentsline {section}{\numberline {7}Sublattice family structure}{26}{section.7}%
+\contentsline {subsection}{\numberline {7.1}The divisor classification}{26}{subsection.7.1}%
+\contentsline {subsection}{\numberline {7.2}The totient multiplicity}{27}{subsection.7.2}%
+\contentsline {subsection}{\numberline {7.3}Physical reading of the six families}{27}{subsection.7.3}%
+\contentsline {subsection}{\numberline {7.4}Classification theorem}{27}{subsection.7.4}%
+\contentsline {subsection}{\numberline {7.5}Magical impedance: per-family coupling strength}{28}{subsection.7.5}%
+\contentsline {section}{\numberline {8}The LCM tower of refinements}{28}{section.8}%
+\contentsline {subsection}{\numberline {8.1}When $N=12$ is insufficient}{28}{subsection.8.1}%
+\contentsline {subsection}{\numberline {8.2}Canonical refinements}{29}{subsection.8.2}%
+\contentsline {subsection}{\numberline {8.3}Unification of the two readings}{29}{subsection.8.3}%
+\contentsline {subsection}{\numberline {8.4}The continuous limit}{29}{subsection.8.4}%
+\contentsline {subsection}{\numberline {8.5}Correspondence with integrative levels}{30}{subsection.8.5}%
+\contentsline {section}{\numberline {9}The complex lattice}{32}{section.9}%
+\contentsline {subsection}{\numberline {9.1}Imaginary-axis projection}{32}{subsection.9.1}%
+\contentsline {subsection}{\numberline {9.2}Complex projection and the Gaussian integer lattice}{32}{subsection.9.2}%
+\contentsline {subsection}{\numberline {9.3}The D--T gradient}{33}{subsection.9.3}%
+\contentsline {subsection}{\numberline {9.4}The Gaussian-prime correspondence}{33}{subsection.9.4}%
+\contentsline {section}{\numberline {10}The 24-family catalog and the 144-cell Force Quadrant Grid}{33}{section.10}%
+\contentsline {subsection}{\numberline {10.1}The $12$ real-axis FORCE families and the $12$ imaginary-axis PHASE families}{34}{subsection.10.1}%
+\contentsline {subsection}{\numberline {10.2}The $42$ combined off-axis families}{34}{subsection.10.2}%
+\contentsline {subsection}{\numberline {10.3}The $144$-cell Force Quadrant Grid}{35}{subsection.10.3}%
+\contentsline {section}{\numberline {11}Cascade dynamics and stability}{36}{section.11}%
+\contentsline {subsection}{\numberline {11.1}Cascade generators}{36}{subsection.11.1}%
+\contentsline {subsection}{\numberline {11.2}The palindromic cascade}{37}{subsection.11.2}%
+\contentsline {subsection}{\numberline {11.3}Use of the palindromic cascade}{37}{subsection.11.3}%
+\contentsline {section}{\numberline {12}The $\partial I$ lattice-aware fractal}{37}{section.12}%
+\contentsline {subsection}{\numberline {12.1}The lattice-adaptive iteration map}{37}{subsection.12.1}%
+\contentsline {subsection}{\numberline {12.2}The lattice-adaptive exponent $p(z_{n},n)$}{38}{subsection.12.2}%
+\contentsline {subsection}{\numberline {12.3}The shimmer modulation $\Psi _{n}$}{39}{subsection.12.3}%
+\contentsline {subsection}{\numberline {12.4}The all-families perturbation $\varepsilon (z_{n})$}{39}{subsection.12.4}%
+\contentsline {subsection}{\numberline {12.5}Distance estimation}{40}{subsection.12.5}%
+\contentsline {subsection}{\numberline {12.6}Classification}{40}{subsection.12.6}%
+\contentsline {subsection}{\numberline {12.7}Structural summary}{40}{subsection.12.7}%
+\contentsline {section}{\numberline {13}Three minimal backbones at $N=12$}{41}{section.13}%
+\contentsline {subsection}{\numberline {13.1}PDT decomposition of the projection formula}{41}{subsection.13.1}%
+\contentsline {subsection}{\numberline {13.2}EML: the continuous-$D$ minimal generator (Odrzywołek 2026)}{41}{subsection.13.2}%
+\contentsline {subsection}{\numberline {13.3}Webb 1935: the discrete-logical minimal generator at $n=12$}{42}{subsection.13.3}%
+\contentsline {subsection}{\numberline {13.4}The palindromic cascade: the discrete-multiplicative minimal generator on $\{d:d\mid 12\}$}{43}{subsection.13.4}%
+\contentsline {subsection}{\numberline {13.5}The triple minimal-backbone theorem}{43}{subsection.13.5}%
+\contentsline {section}{\numberline {14}The Four Projection Paths and essential-infinity handling}{43}{section.14}%
+\contentsline {subsection}{\numberline {14.1}The four paths}{44}{subsection.14.1}%
+\contentsline {subsection}{\numberline {14.2}Subsumption of user inputs}{45}{subsection.14.2}%
+\contentsline {section}{\numberline {15}Mathematics as a domain of the Sempaevum}{45}{section.15}%
+\contentsline {subsection}{\numberline {15.1}The $P$, $D$, $T$ of mathematics}{45}{subsection.15.1}%
+\contentsline {subsection}{\numberline {15.2}Axiom-count projections of standard formal systems}{46}{subsection.15.2}%
+\contentsline {subsection}{\numberline {15.3}Chaitin's $\Omega $ via Path D.P}{46}{subsection.15.3}%
+\contentsline {subsection}{\numberline {15.4}G\"odel sentences via integrative-level classification}{46}{subsection.15.4}%
+\contentsline {subsection}{\numberline {15.5}Large cardinals via consistency-strength}{47}{subsection.15.5}%
+\contentsline {subsection}{\numberline {15.6}The universality statement for mathematics}{47}{subsection.15.6}%
+\contentsline {section}{\numberline {16}Self-consistency: the Koide attractor}{47}{section.16}%
+\contentsline {subsection}{\numberline {16.1}Losslessness theorem}{48}{subsection.16.1}%
+\contentsline {section}{\numberline {17}The Complete Gaze Equation}{49}{section.17}%
+\contentsline {subsection}{\numberline {17.1}The unification: Gain$(T)=F_{w}$}{49}{subsection.17.1}%
+\contentsline {subsection}{\numberline {17.2}Variance collapse and threshold classification}{49}{subsection.17.2}%
+\contentsline {subsection}{\numberline {17.3}The Gaze thresholds as just-intonation intervals}{50}{subsection.17.3}%
+\contentsline {section}{\numberline {18}Empirical confrontation}{50}{section.18}%
+\contentsline {subsection}{\numberline {18.1}Twelve-tone equal temperament}{50}{subsection.18.1}%
+\contentsline {subsection}{\numberline {18.2}The fine-structure constant}{51}{subsection.18.2}%
+\contentsline {subsection}{\numberline {18.3}The Koide ratio}{52}{subsection.18.3}%
+\contentsline {subsection}{\numberline {18.4}Geometric ratios}{52}{subsection.18.4}%
+\contentsline {subsection}{\numberline {18.5}Celestial mechanics}{52}{subsection.18.5}%
+\contentsline {subsection}{\numberline {18.6}Biochemistry}{52}{subsection.18.6}%
+\contentsline {subsection}{\numberline {18.7}Summary of the empirical confrontation}{53}{subsection.18.7}%
+\contentsline {section}{\numberline {19}Relationship to Fourier analysis and differential geometry}{53}{section.19}%
+\contentsline {subsection}{\numberline {19.1}Fourier analysis}{53}{subsection.19.1}%
+\contentsline {subsection}{\numberline {19.2}Riemannian curvature}{54}{subsection.19.2}%
+\contentsline {subsection}{\numberline {19.3}Gauss--Bonnet and topological invariants}{54}{subsection.19.3}%
+\contentsline {section}{\numberline {20}The Complete Determination Theorem}{54}{section.20}%
+\contentsline {subsection}{\numberline {20.1}Historical precedents within the framework}{55}{subsection.20.1}%
+\contentsline {subsection}{\numberline {20.2}The Complete Determination Theorem}{55}{subsection.20.2}%
+\contentsline {section}{\numberline {21}Falsifiable predictions}{56}{section.21}%
+\contentsline {subsection}{\numberline {21.1}The closure-versus-linear distinction in biochemistry}{56}{subsection.21.1}%
+\contentsline {subsection}{\numberline {21.2}Orbital resonances on low-$d$ attractors}{56}{subsection.21.2}%
+\contentsline {subsection}{\numberline {21.3}Fine-structure constant lattice identity}{56}{subsection.21.3}%
+\contentsline {subsection}{\numberline {21.4}New sublattice identification}{56}{subsection.21.4}%
+\contentsline {section}{\numberline {22}Conclusion}{57}{section.22}%

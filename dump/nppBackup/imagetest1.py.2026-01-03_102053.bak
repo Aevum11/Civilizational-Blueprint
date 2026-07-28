@@ -1,0 +1,260 @@
+import tkinter as tk
+from tkinter import filedialog, messagebox
+import threading
+import sys
+import math
+
+try:
+    from PIL import Image, ImageTk, ImageDraw, ImageFilter
+except ImportError:
+    messagebox.showerror("Error", "Pillow is missing. Run: pip install pillow")
+    sys.exit(1)
+
+# ==============================================================================
+# ET KERNEL: UNIFIED FIELD THEORY (OMNI-STACK)
+# ==============================================================================
+
+class ET_Unified_Engine:
+    def process_unified_stack(self, img_pil, mask_pil, weave_sz, tex_str, signal_amp, gamma, status_cb):
+        """
+        Combines Chromatic Protection, Texture Unbinding, and Signal Amplification.
+        """
+        width, height = img_pil.size
+        
+        # 1. CHROMATIC SEPARATION (Descriptor Isolation)
+        # We work in YCbCr to protect D_chroma (Color Identity)
+        status_cb("Isolating Descriptors (Y/Cb/Cr Separation)...")
+        img_ycbcr = img_pil.convert("YCbCr")
+        y_chan, cb_chan, cr_chan = img_ycbcr.split()
+        
+        # 2. FREQUENCY DECOMPOSITION (Texture Mapping)
+        # We analyze D_freq on the Luminance channel only.
+        # Uses Median Filter (V15 Logic) to find the "Base Shape"
+        
+        # Ensure odd kernel size
+        k_size = int(weave_sz)
+        if k_size % 2 == 0: k_size += 1
+        
+        status_cb("Mapping Texture Frequency...")
+        y_base = y_chan.filter(ImageFilter.MedianFilter(size=k_size))
+        
+        # Accessors
+        y_pix = y_chan.load()
+        base_pix = y_base.load()
+        mask = mask_pil.load()
+        
+        bbox = mask_pil.getbbox()
+        if not bbox: return img_pil
+        min_x, min_y, max_x, max_y = bbox
+        
+        updates = []
+        
+        # Factors
+        tex_remove = tex_str / 100.0
+        amp_factor = 1.0 + (signal_amp / 50.0)
+        
+        # 3. THE UNIFIED LOOP
+        for py in range(min_y, max_y):
+            for px in range(min_x, max_x):
+                if mask[px, py] == 0: continue
+                
+                # Raw Luminance (P)
+                raw_l = y_pix[px, py]
+                # Base Shape (B)
+                base_l = base_pix[px, py]
+                
+                # A. TEXTURE UNBINDING (V12/V15 Logic)
+                # Texture T = Raw - Base
+                tex = raw_l - base_l
+                
+                # Subtract Texture from Raw
+                # clean_l = P - (T * Strength)
+                # Effectively pushes the pixel towards the Median value
+                clean_l = raw_l - (tex * tex_remove)
+                
+                # B. SIGNAL AMPLIFICATION (V11 Logic)
+                # Now that we have clean luminance, we stretch it to see "deeper".
+                # We pivot around the local base to preserve context.
+                
+                # Contrast Stretch
+                boosted_l = (clean_l - base_l) * amp_factor + base_l
+                
+                # C. GAMMA CORRECTION (Depth Recovery)
+                # Boosts shadows to reveal hidden geometry.
+                if gamma != 1.0:
+                    # Normalize 0-1
+                    norm = max(0, min(255, boosted_l)) / 255.0
+                    # Gamma Pow
+                    try:
+                        g_val = math.pow(norm, 1.0/gamma)
+                    except:
+                        g_val = norm
+                    boosted_l = g_val * 255.0
+                
+                # Clamp
+                final_l = int(max(0, min(255, boosted_l)))
+                
+                updates.append((px, py, final_l))
+                
+        # Apply to Y Channel
+        for ux, uy, uval in updates:
+            y_pix[ux, uy] = uval
+            
+        # 4. RECOMBINATION (State Collapse)
+        status_cb("Collapsing Wavefunction (Recombining)...")
+        # Merge the modified Y with the ORIGINAL Cb/Cr
+        final_img = Image.merge("YCbCr", (y_chan, cb_chan, cr_chan))
+        
+        return final_img.convert("RGB")
+
+# ==============================================================================
+# GUI
+# ==============================================================================
+
+class ET_V17_GUI:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("ET-V17: UNIFIED FIELD ENGINE (OMNI-STACK)")
+        self.root.geometry("1200x950")
+        self.root.configure(bg="#050505")
+        
+        self.engine = ET_Unified_Engine()
+        self.pil_img = None
+        self.mask_img = None
+        self.backup_img = None
+        
+        self._layout()
+
+    def _layout(self):
+        # Tools Frame
+        t = tk.Frame(self.root, bg="#101010", pady=10)
+        t.pack(fill=tk.X)
+        
+        # Buttons
+        self.btn(t, "LOAD", self.load, "#004488")
+        self.btn(t, "RESET", self.reset, "#882200")
+        self.btn(t, "EXECUTE STACK", self.run, "#228822")
+        
+        # --- DESCRIPTOR CONTROLS ---
+        
+        # 1. TEXTURE (Weave Size)
+        f1 = tk.Frame(t, bg="#101010"); f1.pack(side=tk.LEFT, padx=10)
+        tk.Label(f1, text="WEAVE SIZE", fg="#888", bg="#101010", font=("Arial", 8)).pack()
+        self.sz_scale = tk.Scale(f1, from_=1, to=15, orient=tk.HORIZONTAL, bg="#101010", fg="#0f0", length=100)
+        self.sz_scale.set(3)
+        self.sz_scale.pack()
+        
+        # 2. UNBIND (Texture Remove)
+        f2 = tk.Frame(t, bg="#101010"); f2.pack(side=tk.LEFT, padx=10)
+        tk.Label(f2, text="TEXTURE REMOVE", fg="#888", bg="#101010", font=("Arial", 8)).pack()
+        self.tex_scale = tk.Scale(f2, from_=0, to=150, orient=tk.HORIZONTAL, bg="#101010", fg="#0f0", length=100)
+        self.tex_scale.set(100)
+        self.tex_scale.pack()
+        
+        # 3. SIGNAL AMP (Contrast)
+        f3 = tk.Frame(t, bg="#101010"); f3.pack(side=tk.LEFT, padx=10)
+        tk.Label(f3, text="SIGNAL AMP", fg="#888", bg="#101010", font=("Arial", 8)).pack()
+        self.amp_scale = tk.Scale(f3, from_=0, to=100, orient=tk.HORIZONTAL, bg="#101010", fg="#0f0", length=100)
+        self.amp_scale.set(30)
+        self.amp_scale.pack()
+        
+        # 4. GAMMA (Depth)
+        f4 = tk.Frame(t, bg="#101010"); f4.pack(side=tk.LEFT, padx=10)
+        tk.Label(f4, text="DEEP GAMMA", fg="#888", bg="#101010", font=("Arial", 8)).pack()
+        self.gam_scale = tk.Scale(f4, from_=10, to=30, orient=tk.HORIZONTAL, bg="#101010", fg="#0f0", length=100)
+        self.gam_scale.set(15) # 1.5
+        self.gam_scale.pack()
+
+        self.stat = tk.Label(t, text="Ready.", fg="#888", bg="#101010")
+        self.stat.pack(side=tk.RIGHT, padx=20)
+        
+        # Canvas
+        container = tk.Frame(self.root)
+        container.pack(fill=tk.BOTH, expand=True)
+        self.cv = tk.Canvas(container, bg="#080808", cursor="crosshair")
+        vs = tk.Scrollbar(container, orient="vertical", command=self.cv.yview)
+        hs = tk.Scrollbar(container, orient="horizontal", command=self.cv.xview)
+        self.cv.config(yscrollcommand=vs.set, xscrollcommand=hs.set)
+        
+        vs.pack(side=tk.RIGHT, fill=tk.Y)
+        hs.pack(side=tk.BOTTOM, fill=tk.X)
+        self.cv.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        
+        self.cv.bind("<Button-1>", self.down)
+        self.cv.bind("<B1-Motion>", self.drag)
+        self.cv.bind("<ButtonRelease-1>", self.up)
+        
+        self.drawing=False; self.brush=30
+
+    def btn(self, p, t, c, b):
+        tk.Button(p, text=t, command=c, bg=b, fg="white", relief="flat", padx=10, pady=5).pack(side=tk.LEFT, padx=5)
+
+    def load(self):
+        path = filedialog.askopenfilename()
+        if not path: return
+        try:
+            self.pil_img = Image.open(path).convert("RGB")
+            self.backup_img = self.pil_img.copy()
+            self.mask_img = Image.new("L", self.pil_img.size, 0)
+            self.cv.config(scrollregion=(0,0,self.pil_img.width,self.pil_img.height))
+            self.update_view()
+            self.stat.config(text=f"Loaded: {self.pil_img.size}")
+        except: pass
+
+    def update_view(self):
+        if not self.pil_img: return
+        d = self.pil_img.copy()
+        if self.mask_img.getbbox():
+            r = Image.new("RGB", self.pil_img.size, (0,255,0)) 
+            d = Image.composite(r, d, self.mask_img)
+        self.tk = ImageTk.PhotoImage(d)
+        self.cv.create_image(0,0, image=self.tk, anchor=tk.NW)
+
+    def down(self,e): 
+        x=self.cv.canvasx(e.x); y=self.cv.canvasy(e.y)
+        self.drawing=True; self.lp=(x,y)
+        
+    def drag(self,e):
+        if self.drawing and self.mask_img:
+            x=self.cv.canvasx(e.x); y=self.cv.canvasy(e.y)
+            d = ImageDraw.Draw(self.mask_img)
+            # Use 128 for semitransparent mask feel in processing if needed, 
+            # but for binary logic we draw 255. Logic uses >0 check.
+            d.line([self.lp, (x,y)], fill=255, width=self.brush)
+            d.ellipse([x-15,y-15,x+15,y+15], fill=255)
+            self.lp=(x,y); 
+            self.cv.create_line(self.lp[0],self.lp[1],x,y,fill="lime",width=self.brush,tags="t")
+
+    def up(self,e): self.drawing=False; self.cv.delete("t"); self.update_view()
+    
+    def reset(self):
+        if self.backup_img:
+            self.pil_img = self.backup_img.copy()
+            if self.mask_img: self.mask_img.paste(0,[0,0,self.mask_img.width,self.mask_img.height])
+            self.update_view()
+            self.stat.config(text="Reset.")
+
+    def run(self):
+        if not self.pil_img: return
+        self.stat.config(text="Processing Unified Stack...")
+        
+        sz = self.sz_scale.get()
+        tex = self.tex_scale.get()
+        amp = self.amp_scale.get()
+        gam = self.gam_scale.get() / 10.0
+        
+        threading.Thread(target=self._w, args=(sz, tex, amp, gam)).start()
+
+    def _w(self, s, t, a, g):
+        res = self.engine.process_unified_stack(self.pil_img, self.mask_img, s, t, a, g, self.log)
+        self.pil_img = res
+        self.mask_img.paste(0,[0,0,self.mask_img.width,self.mask_img.height])
+        self.root.after(0, self.update_view)
+        self.root.after(0, lambda: self.stat.config(text="Unified Processing Complete."))
+
+    def log(self, m): self.stat.config(text=m)
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = ET_V17_GUI(root)
+    root.mainloop()

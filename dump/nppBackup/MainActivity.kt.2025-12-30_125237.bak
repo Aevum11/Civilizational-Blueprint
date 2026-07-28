@@ -1,0 +1,149 @@
+package com.et.omnimeasure
+
+import android.Manifest
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
+import android.content.pm.PackageManager
+import android.graphics.Color
+import android.os.Bundle
+import android.os.IBinder
+import android.widget.Button
+import android.widget.TextView
+import android.widget.Toast
+import android.widget.ToggleButton
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import com.et.omnimeasure.core.OmniMeasureService
+import com.et.omnimeasure.core.PhysicsUiModel
+import com.et.omnimeasure.core.OmniTraverserEngine
+
+class MainActivity : AppCompatActivity(), OmniTraverserEngine.TraverserListener {
+
+    private var measureService: OmniMeasureService? = null
+    private var isBound = false
+    
+    // UI Refs
+    private lateinit var txtTilt: TextView
+    private lateinit var txtVib: TextView
+    private lateinit var txtSound: TextView
+    private lateinit var txtStatus: TextView
+    private lateinit var btnMic: ToggleButton
+
+    private val connection = object : ServiceConnection {
+        override fun onServiceConnected(className: ComponentName, service: IBinder) {
+            val binder = service as OmniMeasureService.LocalBinder
+            measureService = binder.getService()
+            measureService?.activeListener = this@MainActivity
+            isBound = true
+            
+            // Sync Toggle State (Default to OFF for privacy)
+            btnMic.isChecked = false
+        }
+        override fun onServiceDisconnected(arg0: ComponentName) { isBound = false }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        bindViews()
+        checkPermissions()
+    }
+
+    private fun bindViews() {
+        txtTilt = findViewById(R.id.txt_tilt)
+        txtVib = findViewById(R.id.txt_vib)
+        txtSound = findViewById(R.id.txt_sound)
+        txtStatus = findViewById(R.id.txt_status_bar)
+        
+        btnMic = findViewById(R.id.btn_mic_toggle) 
+        btnMic.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
+                    measureService?.engine?.setAudioEnabled(true)
+                } else {
+                    btnMic.isChecked = false
+                    ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.RECORD_AUDIO), 101)
+                }
+            } else {
+                measureService?.engine?.setAudioEnabled(false)
+            }
+        }
+    }
+
+    private fun startService() {
+        val intent = Intent(this, OmniMeasureService::class.java)
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            startForegroundService(intent)
+        } else {
+            startService(intent)
+        }
+        bindService(intent, connection, Context.BIND_AUTO_CREATE)
+    }
+
+    private fun checkPermissions() {
+        // Only ask for FOREGROUND_SERVICE initially. Audio is on-demand.
+        val perms = arrayOf(Manifest.permission.FOREGROUND_SERVICE)
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.FOREGROUND_SERVICE) != PackageManager.PERMISSION_GRANTED) {
+             ActivityCompat.requestPermissions(this, perms, 102)
+        } else {
+            startService()
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 101 && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            btnMic.isChecked = true // Retry enable audio
+            measureService?.engine?.setAudioEnabled(true)
+        } else if (requestCode == 102) {
+            startService()
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (isBound) {
+            measureService?.activeListener = null
+            unbindService(connection)
+            isBound = false
+        }
+    }
+
+    // --- DATA UPDATE ---
+    override fun onPhysicsUpdate(model: PhysicsUiModel) {
+        runOnUiThread {
+            // TILT + CONFIDENCE
+            txtTilt.text = "Level: %.1f° (±%.2f)".format(model.tiltDegrees, model.tiltConfidence)
+            
+            // VIBRATION + MODE
+            txtVib.text = "Vib: %.3f RMS".format(model.vibrationRms)
+            
+            // STATUS (ECO MODE)
+            if (model.isEcoMode) {
+                txtStatus.text = "ECO MODE (Low Power)"
+                txtStatus.setTextColor(Color.GREEN)
+            } else {
+                txtStatus.text = "ACTIVE (High Precision)"
+                txtStatus.setTextColor(Color.CYAN)
+            }
+
+            // SOUND (dBA)
+            if (btnMic.isChecked) {
+                txtSound.text = "Sound: %.1f dBA (±%.1f)\nPeak Freq: %.0f Hz".format(model.dbA, model.dbConfidence, model.noiseFreq)
+            } else {
+                txtSound.text = "Sound: OFF (Tap Mic to Measure)"
+            }
+        }
+    }
+
+    override fun onPowerStateChange(isEcoMode: Boolean) {
+        // Handled via onPhysicsUpdate model flags
+    }
+
+    override fun onError(message: String) {
+        runOnUiThread { Toast.makeText(this, message, Toast.LENGTH_SHORT).show() }
+    }
+}

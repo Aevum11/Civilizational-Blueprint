@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- 
+      Security Policy:
+      Allow cleartext (HTTP) traffic ONLY to local private networks (LAN).
+      This allows you to connect to your computer's IP (e.g., 192.168.1.x)
+      without needing a complex SSL certificate setup, while keeping
+      internet traffic secure.
+    -->
+    <domain-config cleartextTrafficPermitted="true">
+        <!-- Localhost for Emulator -->
+        <domain includeSubdomains="true">10.0.2.2</domain>
+        <!-- Common Local IP Ranges -->
+        <domain includeSubdomains="true">192.168.0.0</domain>
+        <domain includeSubdomains="true">192.168.1.0</domain>
+        <domain includeSubdomains="true">172.16.0.0</domain>
+        <domain includeSubdomains="true">10.0.0.0</domain>
+    </domain-config>
+</network-security-config>

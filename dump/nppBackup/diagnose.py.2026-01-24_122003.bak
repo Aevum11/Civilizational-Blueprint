@@ -1,0 +1,87 @@
+import sys
+import os
+import platform
+import subprocess
+import importlib.util
+
+def check_module(module_name):
+    if importlib.util.find_spec(module_name) is not None:
+        try:
+            __import__(module_name)
+            return "available (importable)"
+        except Exception as e:
+            return f"found but import failed: {e}"
+    else:
+        return "not found"
+
+print("=== Python Environment Diagnostics ===\n")
+
+print("Python executable:")
+print(sys.executable)
+print()
+
+print("Python version:")
+print(sys.version)
+print()
+
+print("Platform information:")
+print(platform.platform())
+print(f"Architecture: {platform.architecture()}")
+print(f"Machine: {platform.machine()}")
+print()
+
+print("Current working directory:")
+print(os.getcwd())
+print()
+
+print("sys.path (module search paths):")
+for p in sys.path:
+    print(f"  {p}")
+print()
+
+print("Virtual environment check:")
+if hasattr(sys, 'real_prefix') or (sys.base_prefix != sys.prefix):
+    print("YES - Running inside a virtual environment")
+    print(f"  Virtual env location: {sys.prefix}")
+    print(f"  Base Python location: {sys.base_prefix}")
+else:
+    print("NO - Using system/global Python")
+    print(f"  Prefix: {sys.prefix}")
+print()
+
+print("Key environment variables:")
+print(f"PATH: {os.environ.get('PATH', 'Not set')}")
+print(f"PYTHONPATH: {os.environ.get('PYTHONPATH', 'Not set')}")
+print()
+
+print("pip availability:")
+try:
+    import pip
+    print(f"pip version: {pip.__version__}")
+    # Try running pip list to see if it works
+    result = subprocess.run([sys.executable, "-m", "pip", "list", "--format=freeze"], 
+                            capture_output=True, text=True)
+    if result.returncode == 0:
+        print("pip list works (first 10 packages):")
+        lines = result.stdout.strip().splitlines()[:10]
+        for line in lines:
+            print(f"  {line}")
+        if len(result.stdout.strip().splitlines()) > 10:
+            print("  ... (more packages installed)")
+    else:
+        print(f"pip list failed: {result.stderr.strip()}")
+except ImportError:
+    print("pip module not importable")
+except Exception as e:
+    print(f"Error checking pip: {e}")
+print()
+
+print("Common module checks:")
+common_modules = ["os", "sys", "json", "datetime", "subprocess", "pathlib", "venv", "site"]
+for mod in common_modules:
+    status = check_module(mod)
+    print(f"  {mod}: {status}")
+print()
+
+print("=== End of diagnostics ===")
+print("\nCopy the entire output and share it if you need further help.")

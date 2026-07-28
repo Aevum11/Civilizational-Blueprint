@@ -1,0 +1,74 @@
+{
+  "saved": "2026-07-18 08:31:48",
+  "endpoints": [
+    {
+      "id": "SWD\\MMDEVAPI\\{0.0.0.00000000}.{7974A6F0-822C-468D-BB29-BE7AC2D34323}",
+      "name": "SAMSUNG (NVIDIA High Definition Audio)",
+      "status": "Unknown"
+    },
+    {
+      "id": "SWD\\MMDEVAPI\\{0.0.1.00000000}.{B95B58DA-045C-4067-A262-EFE486411365}",
+      "name": "Headset (I27 Hands-Free AG Audio)",
+      "status": "OK"
+    },
+    {
+      "id": "SWD\\MMDEVAPI\\{0.0.0.00000000}.{CA3406E1-8044-4565-8010-07E710797B72}",
+      "name": "Headphones (I27 Stereo)",
+      "status": "OK"
+    },
+    {
+      "id": "SWD\\MMDEVAPI\\{0.0.0.00000000}.{DC26C05C-9532-4055-96F9-25B15F4A9869}",
+      "name": "Speakers (HyperX QuadCast S)",
+      "status": "Unknown"
+    },
+    {
+      "id": "SWD\\MMDEVAPI\\{0.0.0.00000000}.{D8412403-C861-4548-8D44-0D8241DC4B1E}",
+      "name": "Headset (I27 Hands-Free AG Audio)",
+      "status": "OK"
+    },
+    {
+      "id": "SWD\\MMDEVAPI\\{0.0.1.00000000}.{1B4E2DE4-CB64-40F3-B466-353DFAC6EDD6}",
+      "name": "Microphone (HyperX QuadCast S)",
+      "status": "Unknown"
+    },
+    {
+      "id": "SWD\\MMDEVAPI\\{0.0.0.00000000}.{A9FA1A56-D0A9-463C-9022-8326759E39BD}",
+      "name": "Speakers (Realtek(R) Audio)",
+      "status": "OK"
+    }
+  ],
+  "powercfg_usb_suspend": {
+    "ac": 1,
+    "dc": 1
+  },
+  "radio_suspend": [
+    {
+      "instance": "BTHENUM\\DEV_8E25F7586BE4\\7&8244667&1&BLUETOOTHDEVICE_8E25F7586BE4",
+      "value": "absent"
+    },
+    {
+      "instance": "BTH\\MS_BTHLE\\6&2BA5B12F&0&3",
+      "value": "absent"
+    },
+    {
+      "instance": "USB\\VID_8087&PID_0AAA\\5&17411534&0&14",
+      "value": "absent"
+    },
+    {
+      "instance": "BTHENUM\\{0000110E-0000-1000-8000-00805F9B34FB}_VID&000105D6_PID&000A\\7&8244667&1&8E25F7586BE4_C00000000",
+      "value": "absent"
+    },
+    {
+      "instance": "BTH\\MS_BTHBRB\\6&2BA5B12F&0&1",
+      "value": "absent"
+    },
+    {
+      "instance": "BTH\\MS_RFCOMM\\6&2BA5B12F&0&0",
+      "value": "absent"
+    },
+    {
+      "instance": "BTHENUM\\{0000110C-0000-1000-8000-00805F9B34FB}_VID&000105D6_PID&000A\\7&8244667&1&8E25F7586BE4_C00000000",
+      "value": "absent"
+    }
+  ]
+}

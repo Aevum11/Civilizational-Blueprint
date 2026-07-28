@@ -1,0 +1,43 @@
+package com.et.physics.toolbox
+
+import org.junit.Test
+import org.junit.Assert.*
+import kotlin.math.abs
+
+/**
+ * Unit Tests for OmniTraverser Engine v19.0
+ */
+class OmniTraverserEngineTest {
+
+    private val engine = OmniTraverserEngine()
+
+    @Test
+    fun testZeroInputResult() {
+        val result = engine.resolveConfiguration(
+            floatArrayOf(0f, 0f, 0f), floatArrayOf(0f, 0f, 0f), null, null, null, null, null, null, null, null, null, 0, 1000000L, 16000
+        )
+        assertEquals(0.0, result.shimmerIndex, 0.001)
+        assertEquals(OmniTraverserEngine.EtState.STATE_0_EXCEPTION, result.etState)
+    }
+
+    @Test
+    fun testIsoVelocityIntegration() {
+        for(i in 0..50) engine.resolveConfiguration(floatArrayOf(0f,0f,9.81f), floatArrayOf(0f,0f,0f), null, null, null, null, null, null, null, null, null, 0, 0, 16000)
+        val res = engine.resolveConfiguration(floatArrayOf(0.5f, 0f, 9.81f), floatArrayOf(0f, 0f, 0f), null, null, null, null, null, null, null, null, null, 0, System.nanoTime() + 20000000, 16000)
+        assertTrue("Velocity should be registered (>0)", res.velocityRms > 0.0)
+    }
+
+    @Test
+    fun testThermalAlert() {
+        val res = engine.resolveConfiguration(floatArrayOf(0f,0f,9.81f), floatArrayOf(0f,0f,0f), null, null, 60.0f, null, null, null, null, null, null, 0, System.nanoTime(), 16000)
+        assertEquals("Critical", res.thermalState)
+    }
+
+    @Test
+    fun testAWeightingFilter() {
+        val buffer = ShortArray(1024)
+        for(i in buffer.indices) buffer[i] = (10000 * Math.sin(2.0 * Math.PI * 1000.0 * i / 16000.0)).toInt().toShort()
+        val res = engine.resolveConfiguration(floatArrayOf(0f,0f,9.81f), floatArrayOf(0f,0f,0f), null, null, null, buffer, null, null, null, null, null, 0, System.nanoTime(), 16000)
+        assertTrue("SPL should be calculated", res.correctedSPL > 40.0)
+    }
+}

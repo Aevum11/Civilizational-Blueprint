@@ -1,0 +1,417 @@
+import tkinter as tk
+from tkinter import filedialog, messagebox, colorchooser
+import threading
+import sys
+import math
+
+try:
+    from PIL import Image, ImageTk, ImageDraw, ImageFilter, ImageEnhance
+except ImportError:
+    messagebox.showerror("Error", "Pillow is missing. Run: pip install pillow")
+    sys.exit(1)
+
+# ==============================================================================
+# ET KERNEL: RECURSIVE TOTIENT MATH (THE SELECTOR)
+# ==============================================================================
+
+class ET_Totient_Math:
+    def __init__(self):
+        self.p1, self.p2, self.p3, self.p4 = self._gen_tables()
+        
+    def _phi(self, n):
+        if n <= 0: return 0
+        result = n
+        p = 2
+        while p * p <= n:
+            if n % p == 0:
+                while n % p == 0: n //= p
+                result -= result // p
+            p += 1
+        if n > 1: result -= result // n
+        return result
+
+    def _gen_tables(self):
+        # Generate LUTs for instant mapping
+        t1, t2, t3, t4 = [], [], [], []
+        for i in range(256):
+            v1 = self._phi(i)
+            v2 = self._phi(v1)
+            v3 = self._phi(v2)
+            v4 = self._phi(v3)
+            t1.append(v1); t2.append(v2); t3.append(v3); t4.append(v4)
+        return t1, t2, t3, t4
+
+# ==============================================================================
+# ET KERNEL: HYPER-INTEGRATED ENGINE (THE RENDERER)
+# ==============================================================================
+
+class ET_Hyper_Engine:
+    def __init__(self):
+        self.math = ET_Totient_Math()
+
+    def process_hyper_stack(self, img_pil, mask_pil, veil_color, 
+                          density, totient_power, 
+                          exposure, shadow, detail, 
+                          chroma, clarity, status_cb):
+        """
+        Integrates V25 Selector into V23 Pipeline.
+        """
+        width, height = img_pil.size
+        pixels = img_pil.load()
+        mask = mask_pil.load()
+        
+        # 1. PREP: TOTIENT MAPS (Structure Detection)
+        status_cb("Mapping Totient Stability Chains...")
+        gray = img_pil.convert("L")
+        p1_map = gray.point(self.math.p1).load() # Surface Noise
+        p3_map = gray.point(self.math.p3).load() # Deep Resonance
+        p4_map = gray.point(self.math.p4).load() # Core Singularity
+        
+        # 2. PREP: OPTICAL MAPS (Thickness Detection)
+        # High-Fidelity Transmission Map (V23 Logic)
+        dark_ref = img_pil.filter(ImageFilter.MinFilter(15))
+        tx_map = dark_ref.filter(ImageFilter.GaussianBlur(2))
+        tx_map = tx_map.filter(ImageFilter.UnsharpMask(radius=2, percent=150, threshold=3))
+        tx_pix = tx_map.load()
+        
+        # 3. PREP: FREQUENCY SEPARATION (Detail Preservation)
+        # Blur reference to split Base vs Detail
+        orig_blur = img_pil.filter(ImageFilter.GaussianBlur(radius=3))
+        orig_blur_pix = orig_blur.load()
+        
+        bbox = mask_pil.getbbox()
+        if not bbox: return img_pil
+        min_x, min_y, max_x, max_y = bbox
+        
+        updates = []
+        
+        # --- FACTORS ---
+        omega = density / 100.0         # Optical Density
+        phi_w = totient_power / 100.0   # How much Totients affect Transmission
+        t0 = 0.1                        # Min Transmission
+        
+        ar_base, ag_base, ab_base = veil_color
+        
+        # Tone Mapping Factors (V23)
+        exp_factor = 1.0 - (exposure / 150.0) # Exposure Cap
+        gamma = 1.0 + (shadow / 40.0)         # Shadow Lift
+        inv_gamma = 1.0 / gamma
+        detail_factor = 1.0 + (detail / 50.0) # Detail Boost
+        
+        # 4. THE HYPER LOOP
+        for y in range(min_y, max_y):
+            for x in range(min_x, max_x):
+                if mask[x, y] == 0: continue
+                
+                pr, pg, pb = pixels[x, y]
+                
+                # --- A. ADAPTIVE VEIL (V23) ---
+                p_lum = (pr + pg + pb) / 3.0
+                lum_ratio = p_lum / 255.0
+                mod_factor = 0.6 + (0.4 * lum_ratio)
+                
+                ar = max(1, ar_base * mod_factor)
+                ag = max(1, ag_base * mod_factor)
+                ab = max(1, ab_base * mod_factor)
+                
+                # --- B. CALCULATE TRANSMISSION (HYBRID) ---
+                
+                # 1. Optical Guess (Dark Channel)
+                local_min = tx_pix[x, y]
+                dr = local_min[0] / ar
+                dg = local_min[1] / ag
+                db = local_min[2] / ab
+                t_opt = 1.0 - (omega * min(dr, dg, db))
+                
+                # 2. Totient Stability (Number Theory)
+                # Ratio of Deep Structure (P3+P4) to Surface Noise (P1)
+                val_p1 = p1_map[x, y]
+                val_p3 = p3_map[x, y]
+                val_p4 = p4_map[x, y]
+                
+                # Stability Index (High = Object, Low = Veil)
+                stability = (val_p3 + val_p4) / (val_p1 + 10.0)
+                
+                # 3. Integration
+                # If Phi Power is high, Stability boosts transmission (protects object)
+                # and Instability reduces transmission (removes veil)
+                
+                # t_phi logic:
+                # If stable (>1.0), we push t towards 1.0
+                # If unstable (<1.0), we push t towards 0.0
+                t_mod = (stability - 0.5) * 0.5 # Shift range
+                
+                # Blend Optical and Totient
+                t_final = t_opt + (t_mod * phi_w)
+                
+                # Clamp
+                t = max(t0, min(1.0, t_final))
+                
+                # --- C. OPTICAL RECOVERY ---
+                jr = ((pr - ar) / t) + ar
+                jg = ((pg - ag) / t) + ag
+                jb = ((pb - ab) / t) + ab
+                
+                # --- D. FREQUENCY DETAIL INJECTION (V23) ---
+                obr, obg, obb = orig_blur_pix[x, y]
+                det_r = pr - obr
+                det_g = pg - obg
+                det_b = pb - obb
+                
+                # --- E. TONE MAPPING (V23 Soft Knee) ---
+                def map_val(v):
+                    # Exposure Cap
+                    v = v * exp_factor 
+                    
+                    # Soft Highlight Compression (>200)
+                    if v > 200:
+                        excess = v - 200
+                        v = 200 + (55 * (1 - math.exp(-excess/150)))
+                    
+                    if v < 0: return 0
+                    
+                    # Gamma Expansion (Shadow Lift)
+                    n = v / 255.0
+                    res = math.pow(n, inv_gamma)
+                    return res * 255.0
+
+                base_r = map_val(jr)
+                base_g = map_val(jg)
+                base_b = map_val(jb)
+                
+                # --- F. RECOMBINE ---
+                final_r = base_r + (det_r * detail_factor)
+                final_g = base_g + (det_g * detail_factor)
+                final_b = base_b + (det_b * detail_factor)
+                
+                updates.append((x, y, (int(final_r), int(final_g), int(final_b))))
+                
+        # Apply Updates
+        for ux, uy, uval in updates:
+            pixels[ux, uy] = uval
+            
+        # 5. GLOBAL POLISH (Chroma & Clarity)
+        # Crop ROI
+        roi = img_pil.crop(bbox)
+        
+        # Chroma Boost
+        if chroma > 0:
+            sat = ImageEnhance.Color(roi)
+            roi = sat.enhance(1.0 + (chroma / 50.0))
+            
+        # Clarity (Unsharp Mask)
+        if clarity > 0:
+            roi = roi.filter(ImageFilter.UnsharpMask(radius=2, percent=int(clarity*1.5), threshold=3))
+            
+        img_pil.paste(roi, bbox)
+        return img_pil
+
+# ==============================================================================
+# GUI
+# ==============================================================================
+
+class ET_V26_GUI:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("ET-V26: HYPER-INTEGRATED ENGINE (ALL FEATURES)")
+        self.root.geometry("1200x980")
+        self.root.configure(bg="#050505")
+        
+        self.engine = ET_Hyper_Engine()
+        self.pil_img = None
+        self.mask_img = None
+        self.backup_img = None
+        
+        self.veil_color = (200, 200, 200)
+        self.picking_color = False
+        
+        self._layout()
+
+    def _layout(self):
+        t = tk.Frame(self.root, bg="#101010", pady=10)
+        t.pack(fill=tk.X)
+        
+        # ROW 1: ACTIONS
+        r1 = tk.Frame(t, bg="#101010"); r1.pack(side=tk.TOP, fill=tk.X)
+        self.btn(r1, "LOAD", self.load, "#004488")
+        self.btn(r1, "RESET", self.reset_all, "#880000")
+        self.btn(r1, "CLEAR MASK", self.clear_mask, "#550000")
+        self.btn(r1, "EXECUTE", self.run, "#006600")
+        
+        # ROW 2: PICKER
+        r2 = tk.Frame(t, bg="#101010"); r2.pack(side=tk.TOP, fill=tk.X, pady=5)
+        self.pick_btn = tk.Button(r2, text="[✚] PICK VEIL COLOR", command=self.toggle_picker, bg="#444", fg="white", font=("Arial", 10, "bold"), relief="raised")
+        self.pick_btn.pack(side=tk.LEFT, padx=10)
+        self.c_lbl = tk.Label(r2, text="      ", bg="#cccccc", relief="sunken", width=6)
+        self.c_lbl.pack(side=tk.LEFT)
+        self.stat = tk.Label(r2, text="Ready.", fg="#00ff00", bg="#101010")
+        self.stat.pack(side=tk.RIGHT, padx=20)
+        
+        # --- CONTROL STACK ---
+        r3 = tk.Frame(t, bg="#101010"); r3.pack(side=tk.TOP, fill=tk.X, pady=2)
+        
+        # 1. OPTICAL
+        f1 = tk.Frame(r3, bg="#101010"); f1.pack(side=tk.LEFT, padx=5)
+        tk.Label(f1, text="THICKNESS", fg="#888", bg="#101010", font=("Arial", 7)).pack()
+        self.thick_scale = tk.Scale(f1, from_=0, to=100, orient=tk.HORIZONTAL, bg="#101010", fg="#0f0", length=100)
+        self.thick_scale.set(85)
+        self.thick_scale.pack()
+        
+        # 2. TOTIENT (New Magic)
+        f2 = tk.Frame(r3, bg="#101010"); f2.pack(side=tk.LEFT, padx=5)
+        tk.Label(f2, text="TOTIENT POWER", fg="#0ff", bg="#101010", font=("Arial", 7, "bold")).pack()
+        self.phi_scale = tk.Scale(f2, from_=0, to=100, orient=tk.HORIZONTAL, bg="#101010", fg="#0ff", length=100)
+        self.phi_scale.set(50) 
+        self.phi_scale.pack()
+        
+        # 3. EXPOSURE
+        f3 = tk.Frame(r3, bg="#101010"); f3.pack(side=tk.LEFT, padx=5)
+        tk.Label(f3, text="EXPOSURE CAP", fg="#888", bg="#101010", font=("Arial", 7)).pack()
+        self.exp_scale = tk.Scale(f3, from_=0, to=100, orient=tk.HORIZONTAL, bg="#101010", fg="#0f0", length=100)
+        self.exp_scale.set(40) 
+        self.exp_scale.pack()
+        
+        # 4. SHADOW
+        f4 = tk.Frame(r3, bg="#101010"); f4.pack(side=tk.LEFT, padx=5)
+        tk.Label(f4, text="SHADOW LIFT", fg="#888", bg="#101010", font=("Arial", 7)).pack()
+        self.shd_scale = tk.Scale(f4, from_=0, to=100, orient=tk.HORIZONTAL, bg="#101010", fg="#0f0", length=100)
+        self.shd_scale.set(50)
+        self.shd_scale.pack()
+        
+        # ROW 4: POLISH
+        r4 = tk.Frame(t, bg="#101010"); r4.pack(side=tk.TOP, fill=tk.X, pady=5)
+        
+        # Detail
+        f5 = tk.Frame(r4, bg="#101010"); f5.pack(side=tk.LEFT, padx=5)
+        tk.Label(f5, text="DETAIL BOOST", fg="#888", bg="#101010", font=("Arial", 7)).pack()
+        self.det_scale = tk.Scale(f5, from_=0, to=100, orient=tk.HORIZONTAL, bg="#101010", fg="#0f0", length=100)
+        self.det_scale.set(30)
+        self.det_scale.pack()
+        
+        # Chroma
+        f6 = tk.Frame(r4, bg="#101010"); f6.pack(side=tk.LEFT, padx=5)
+        tk.Label(f6, text="CHROMA", fg="#0ff", bg="#101010", font=("Arial", 7)).pack()
+        self.sat_scale = tk.Scale(f6, from_=0, to=100, orient=tk.HORIZONTAL, bg="#101010", fg="#0ff", length=100)
+        self.sat_scale.set(30)
+        self.sat_scale.pack()
+        
+        # Clarity
+        f7 = tk.Frame(r4, bg="#101010"); f7.pack(side=tk.LEFT, padx=5)
+        tk.Label(f7, text="CLARITY", fg="#0ff", bg="#101010", font=("Arial", 7)).pack()
+        self.cla_scale = tk.Scale(f7, from_=0, to=100, orient=tk.HORIZONTAL, bg="#101010", fg="#0ff", length=100)
+        self.cla_scale.set(20)
+        self.cla_scale.pack()
+
+        # CANVAS
+        container = tk.Frame(self.root)
+        container.pack(fill=tk.BOTH, expand=True)
+        self.cv = tk.Canvas(container, bg="#080808", cursor="crosshair")
+        vs = tk.Scrollbar(container, orient="vertical", command=self.cv.yview)
+        hs = tk.Scrollbar(container, orient="horizontal", command=self.cv.xview)
+        self.cv.config(yscrollcommand=vs.set, xscrollcommand=hs.set)
+        
+        vs.pack(side=tk.RIGHT, fill=tk.Y)
+        hs.pack(side=tk.BOTTOM, fill=tk.X)
+        self.cv.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        
+        self.cv.bind("<Button-1>", self.down)
+        self.cv.bind("<B1-Motion>", self.drag)
+        self.cv.bind("<ButtonRelease-1>", self.up)
+        
+        self.drawing=False; self.brush=30
+
+    def btn(self, p, t, c, b):
+        tk.Button(p, text=t, command=c, bg=b, fg="white", relief="flat", padx=10, pady=5).pack(side=tk.LEFT, padx=5)
+
+    def load(self):
+        path = filedialog.askopenfilename()
+        if not path: return
+        try:
+            self.pil_img = Image.open(path).convert("RGB")
+            self.backup_img = self.pil_img.copy()
+            self.mask_img = Image.new("L", self.pil_img.size, 0)
+            self.cv.config(scrollregion=(0,0,self.pil_img.width,self.pil_img.height))
+            self.update_view()
+            self.stat.config(text=f"Loaded: {self.pil_img.size}")
+        except: pass
+
+    def update_view(self):
+        if not self.pil_img: return
+        d = self.pil_img.copy()
+        if self.mask_img.getbbox():
+            r = Image.new("RGB", self.pil_img.size, (255,0,0)) 
+            d = Image.composite(r, d, self.mask_img)
+        self.tk = ImageTk.PhotoImage(d)
+        self.cv.create_image(0,0, image=self.tk, anchor=tk.NW)
+
+    def toggle_picker(self):
+        if not self.pil_img: return
+        self.picking_color = not self.picking_color
+        if self.picking_color:
+            self.pick_btn.config(bg="#ffaa00", fg="black", text="CLICK IMAGE TO PICK")
+            self.cv.config(cursor="target")
+        else:
+            self.pick_btn.config(bg="#444", fg="white", text="[✚] PICK VEIL COLOR")
+            self.cv.config(cursor="crosshair")
+
+    def down(self,e):
+        x=int(self.cv.canvasx(e.x)); y=int(self.cv.canvasy(e.y))
+        if self.picking_color and self.pil_img:
+            if 0 <= x < self.pil_img.width and 0 <= y < self.pil_img.height:
+                r,g,b = self.pil_img.getpixel((x,y))
+                self.veil_color = (r,g,b)
+                hex_c = '#%02x%02x%02x' % (r,g,b)
+                self.c_lbl.config(bg=hex_c)
+                self.toggle_picker()
+            return
+        self.drawing=True; self.lp=(x,y)
+        
+    def drag(self,e):
+        if self.drawing and self.mask_img:
+            x=int(self.cv.canvasx(e.x)); y=int(self.cv.canvasy(e.y))
+            d = ImageDraw.Draw(self.mask_img)
+            d.line([self.lp, (x,y)], fill=255, width=self.brush)
+            d.ellipse([x-15,y-15,x+15,y+15], fill=255)
+            self.lp=(x,y); 
+            self.cv.create_line(self.lp[0],self.lp[1],x,y,fill="red",width=self.brush,tags="t")
+
+    def up(self,e): 
+        if self.drawing: self.drawing=False; self.cv.delete("t"); self.update_view()
+    
+    def reset_all(self):
+        if self.backup_img:
+            self.pil_img = self.backup_img.copy()
+            self.clear_mask()
+            self.stat.config(text="Reset to Original.")
+
+    def clear_mask(self):
+        if self.mask_img: self.mask_img.paste(0,[0,0,self.mask_img.width,self.mask_img.height]); self.update_view()
+
+    def run(self):
+        if not self.pil_img: return
+        self.stat.config(text="Executing Hyper-Integrated Stack...")
+        
+        vc = self.veil_color
+        th = self.thick_scale.get()
+        phi = self.phi_scale.get()
+        exp = self.exp_scale.get()
+        shd = self.shd_scale.get()
+        det = self.det_scale.get()
+        chr = self.sat_scale.get()
+        cla = self.cla_scale.get()
+        
+        threading.Thread(target=self._w, args=(vc, th, phi, exp, shd, det, chr, cla)).start()
+
+    def _w(self, v, t, p, e, s, d, c, cl):
+        res = self.engine.process_hyper_stack(self.pil_img, self.mask_img, v, t, p, e, s, d, c, cl, self.log)
+        self.pil_img = res
+        self.clear_mask()
+        self.root.after(0, self.update_view)
+        self.root.after(0, lambda: self.stat.config(text="Hyper-Stack Complete."))
+
+    def log(self, m): self.stat.config(text=m)
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = ET_V26_GUI(root)
+    root.mainloop()

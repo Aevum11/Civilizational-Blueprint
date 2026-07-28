@@ -1,0 +1,231 @@
+package com.et.physics.toolbox
+
+import kotlin.math.abs
+import kotlin.math.log10
+import kotlin.math.pow
+import kotlin.math.sqrt
+import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.sin
+
+/**
+ * OmniTraverserEngine
+ *
+ * The core mathematical engine for Exception Theory (ET) derived physics analysis.
+ * Updated for v5.1 with Signal Processing and Adaptive Sampling logic.
+ */
+class OmniTraverserEngine {
+
+    // ET Constants
+    private val MANIFOLD_RESONANCE_TARGET = 1.0 / 12.0
+
+    // State Vectors (P ∘ D)
+    private var varianceHistory = DoubleArray(100) { 0.0 }
+    private var gradientHistory = DoubleArray(100) { 0.0 }
+    private var historyIndex = 0
+
+    // Long-term Stability
+    private var longTermGradient = 0.0
+    
+    // Dual Time
+    private var dTimeTotal: Double = 0.0
+    private var tTimeTotal: Double = 0.0
+
+    // Calibration & Offsets
+    var splCalibrationOffset = 0.0
+    var accelOffset = FloatArray(3) { 0.0f }
+    var gyroOffset = FloatArray(3) { 0.0f }
+    private var isCalibrated = false
+
+    // Signal Processing State
+    private var gravity = FloatArray(3) { 0.0f } // Low-pass filter state
+    private val alphaGravity = 0.8f // Gravity smoothing factor
+    
+    // Indeterminacy
+    private var zeroZeroForms = 0
+    private var infInfForms = 0
+
+    enum class EtState {
+        STATE_0_EXCEPTION, STATE_1_DESCRIPTOR, STATE_2_TRAVERSER, STATE_3_POINT
+    }
+
+    data class SubstantiatedResult(
+        val shimmerIndex: Double,
+        val descriptorGradient: Double,
+        val stabilityScore: Double,
+        val bindingStrength: Double,
+        val ttfPrediction: Double,
+        val faultSeverity: Int,
+        val etState: EtState,
+        val correctedSPL: Double,
+        val preciseTilt: DoubleArray,
+        val rmsVibration: Double,
+        val dTime: Double,
+        val tTime: Double,
+        val descriptorDistance: Double,
+        val manifoldMetric: Double,
+        val axiomsVerified: Int,
+        val indeterminateForms: Int
+    )
+
+    fun setCalibration(accel: FloatArray, gyro: FloatArray, spl: Double) {
+        accelOffset = accel.clone()
+        // We assume Z should be 9.81, so offset is measured - 9.81
+        accelOffset[2] -= 9.81f 
+        gyroOffset = gyro.clone()
+        splCalibrationOffset = spl
+        isCalibrated = true
+    }
+
+    /**
+     * Resolves the configuration with advanced signal processing.
+     * @param audioBuffer If provided, A-weighting and RMS is calculated here.
+     */
+    fun resolveConfiguration(
+        accel: FloatArray,
+        gyro: FloatArray,
+        audioBuffer: ShortArray?,
+        deltaTimeMs: Long
+    ): SubstantiatedResult {
+
+        // 1. Calibration Application
+        val calAccel = FloatArray(3)
+        val calGyro = FloatArray(3)
+        for(i in 0..2) {
+            calAccel[i] = accel[i] - accelOffset[i]
+            calGyro[i] = gyro[i] - gyroOffset[i]
+        }
+
+        // 2. Signal Processing: High-Pass Filter for Vibration
+        // Remove gravity component to get linear acceleration (vibration)
+        gravity[0] = alphaGravity * gravity[0] + (1 - alphaGravity) * calAccel[0]
+        gravity[1] = alphaGravity * gravity[1] + (1 - alphaGravity) * calAccel[1]
+        gravity[2] = alphaGravity * gravity[2] + (1 - alphaGravity) * calAccel[2]
+
+        val linear_acceleration = FloatArray(3)
+        linear_acceleration[0] = calAccel[0] - gravity[0]
+        linear_acceleration[1] = calAccel[1] - gravity[1]
+        linear_acceleration[2] = calAccel[2] - gravity[2]
+
+        val vibrationMag = sqrt(
+            linear_acceleration[0] * linear_acceleration[0] +
+            linear_acceleration[1] * linear_acceleration[1] +
+            linear_acceleration[2] * linear_acceleration[2]
+        )
+
+        // 3. Audio A-Weighting & RMS
+        var db = 0.0
+        if (audioBuffer != null && audioBuffer.isNotEmpty()) {
+            val rms = calculateAWeightedRMS(audioBuffer)
+            val etAudioCorrection = log10(1.0 + abs(varianceHistory.average())) * 2.0
+            db = 20 * log10(rms + 1e-6) + splCalibrationOffset + etAudioCorrection
+        }
+
+        // 4. ET Logic (Variance/Shimmer)
+        // We use the raw magnitude including gravity for the "Manifold Pressure" (Shimmer)
+        // but the vibration magnitude for mechanical fault detection.
+        val rawMag = sqrt(calAccel[0] * calAccel[0] + calAccel[1] * calAccel[1] + calAccel[2] * calAccel[2])
+        val variance = calculateRecursiveVariance(rawMag)
+        val shimmer = abs(variance)
+
+        updateHistory(shimmer)
+        val shortTermGradient = calculateGradient()
+        
+        // Long-term accumulation
+        longTermGradient = (longTermGradient * 0.999) + (shortTermGradient * 0.001)
+
+        // 5. Dual Time
+        val dtSec = deltaTimeMs / 1000.0
+        dTimeTotal += dtSec
+        val dilationFactor = 1.0 / (1.0 + shimmer * 10.0)
+        tTimeTotal += dtSec * dilationFactor
+
+        // 6. Indeterminate Forms
+        if (abs(rawMag - 9.81) < 0.01 && shimmer < 0.00001) zeroZeroForms++
+        if (rawMag > 50.0 || abs(shortTermGradient) > 10.0) infInfForms++
+
+        // 7. TTF
+        val ttf = if (longTermGradient > 0.000001) {
+            (1.0 - shimmer) / longTermGradient / 3600.0
+        } else Double.POSITIVE_INFINITY
+
+        // 8. State
+        val (state, severity) = determineStateAndSeverity(shimmer, longTermGradient, vibrationMag)
+        val bindingStrength = ((1.0 - shimmer.coerceIn(0.0, 1.0)) * 100.0)
+
+        // 9. Tilt (Low-pass filtered gravity)
+        val pitch = Math.toDegrees(kotlin.math.atan2(gravity[1].toDouble(), gravity[2].toDouble()))
+        val roll = Math.toDegrees(kotlin.math.atan2(-gravity[0].toDouble(), sqrt(gravity[1]*gravity[1] + gravity[2]*gravity[2]).toDouble()))
+
+        // 10. Descriptor Distance
+        val oldGrad = if(historyIndex > 1) gradientHistory[historyIndex-1] else 0.0
+        val descriptorDistance = abs(shortTermGradient - oldGrad)
+
+        return SubstantiatedResult(
+            shimmerIndex = shimmer,
+            descriptorGradient = longTermGradient,
+            stabilityScore = (1.0 - shimmer).coerceIn(0.0, 1.0),
+            bindingStrength = bindingStrength,
+            ttfPrediction = ttf,
+            faultSeverity = severity,
+            etState = state,
+            correctedSPL = db,
+            preciseTilt = doubleArrayOf(pitch, roll, 0.0),
+            rmsVibration = vibrationMag.toDouble(), // Return filtered vibration
+            dTime = dTimeTotal,
+            tTime = tTimeTotal,
+            descriptorDistance = descriptorDistance,
+            manifoldMetric = abs(shimmer - MANIFOLD_RESONANCE_TARGET),
+            axiomsVerified = 7, // Placeholder for verified count
+            indeterminateForms = zeroZeroForms + infInfForms
+        )
+    }
+
+    // --- Signal Processing Helpers ---
+
+    private fun calculateAWeightedRMS(buffer: ShortArray): Double {
+        // Simplified A-weighting approximation for 16kHz sample rate
+        // We use a simple high-pass to kill <100Hz and a slight boost around 2-3kHz
+        // Real A-weighting requires complex IIR, this is a "Phone Toolbox" approximation
+        var sum = 0.0
+        // Simple DC removal / High Pass @ ~100Hz
+        // y[i] = 0.96 * (y[i-1] + x[i] - x[i-1])
+        var yPrev = 0.0
+        var xPrev = 0.0
+        
+        for (i in buffer.indices) {
+            val x = buffer[i].toDouble()
+            val y = 0.96 * (yPrev + x - xPrev)
+            sum += y * y
+            yPrev = y
+            xPrev = x
+        }
+        return sqrt(sum / buffer.size)
+    }
+
+    private fun determineStateAndSeverity(shimmer: Double, gradient: Double, vib: Float): Pair<EtState, Int> {
+        return when {
+            vib > 5.0 -> Pair(EtState.STATE_3_POINT, 3) // High vibration
+            shimmer > 0.5 || gradient > 0.05 -> Pair(EtState.STATE_2_TRAVERSER, 2)
+            shimmer > 0.1 || gradient > 0.01 -> Pair(EtState.STATE_1_DESCRIPTOR, 1)
+            else -> Pair(EtState.STATE_0_EXCEPTION, 0)
+        }
+    }
+
+    private fun calculateRecursiveVariance(newValue: Float): Double {
+        val mean = varianceHistory.average()
+        return (newValue - mean).pow(2)
+    }
+
+    private fun updateHistory(shimmer: Double) {
+        varianceHistory[historyIndex] = shimmer
+        historyIndex = (historyIndex + 1) % varianceHistory.size
+    }
+
+    private fun calculateGradient(): Double {
+        val half = varianceHistory.size / 2
+        val recentSum = varianceHistory.takeLast(half).sum()
+        val oldSum = varianceHistory.dropLast(half).sum()
+        return (recentSum - oldSum) / half
+    }
+}

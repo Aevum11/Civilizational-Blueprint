@@ -1,0 +1,1160 @@
+\documentclass[11pt,a4paper]{article}
+
+% -------------------- Packages --------------------
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{bm}
+
+% -------------------- Theorem environments --------------------
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{axiom}[theorem]{Axiom}
+\newtheorem{principle}[theorem]{Principle}
+
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{example}[theorem]{Example}
+
+% -------------------- Macros --------------------
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\PP}{\mathbb{P}}
+\newcommand{\DD}{\mathbb{D}}
+\newcommand{\TT}{\mathbb{T}}
+\DeclareMathOperator{\round}{round}
+\DeclareMathOperator{\lcm}{lcm}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\dom}{\mathrm{dom}}
+
+% -------------------- Title --------------------
+\title{\bfseries The Discrete Structure of the Multiplicative Manifold:\\[2pt]
+A Forced Lattice Derived from Three Primitive Categories}
+
+\author{Michael James Muller\\
+\small\textit{Aevum Defluo}}
+
+\date{April 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\noindent
+A recurring observation across physics, chemistry, biology, geometry, and music is that many dimensionless ratios of structural importance are either small rationals (the Koide lepton ratio $2/3$; the Neptune--Pluto mean-motion resonance $3/2$; the $3{:}4{:}5$ Pythagorean triple; bond angles at $120^{\circ}$, $109.47^{\circ}$, $90^{\circ}$; the step counts of major metabolic cycles $8,10,4$), or sit near such rationals with small, reproducible offsets (the fine-structure constant $\alpha^{-1}\approx 137.036$; the Pythagorean comma of $\approx 1.955$ cents). This paper derives the discrete structure that is responsible for this clustering. Starting from three disjoint primitive categories $(P,D,T)$ with explicitly declared cardinalities, we prove that the multiplicative group of positive reals $(\R^{+},\times)$ admits a canonical discretisation at the resolution $N=12$, show that the sublattice families at this resolution are exactly the divisors of $N$ with Euler-totient multiplicity, extend the construction through a tower of refinements whose canonical landmarks are the least common multiples $12,60,420,2520,27720$, and prove a self-consistency identity which states that the lattice's own four defining constants $\{N,1/N,2/3,3/2\}$ all project onto a single sublattice position. We then exhibit the lattice fingerprints of a representative sample of empirical ratios in particle physics, atomic structure, musical intonation, geometry, biochemistry, and celestial mechanics, and discuss the precise sense in which this structure is complementary to, rather than in competition with, Fourier analysis and conventional differential geometry. The construction involves no tunable parameters, no data-fitting, and no external axioms: the integer $N=12$, the Euclidean-temperament step $2^{1/12}$, and the six simple sublattice families $\{1,2,3,4,6,12\}$ are all forced.
+\end{abstract}
+
+\tableofcontents
+
+% ===========================================================
+\section{Introduction}
+% ===========================================================
+
+\subsection{The empirical regularity}
+
+Across branches of quantitative science, dimensionless ratios of structural importance cluster on a conspicuously small number of attractors on the positive real line. Four observations make the pattern concrete:
+
+\begin{enumerate}[leftmargin=*]
+\item \emph{The Koide formula.} For the masses $(m_e,m_{\mu},m_{\tau})$ of the three charged leptons, the dimensionless combination
+\[
+Q \;=\; \frac{m_e+m_{\mu}+m_{\tau}}{\bigl(\sqrt{m_e}+\sqrt{m_{\mu}}+\sqrt{m_{\tau}}\bigr)^{2}}
+\]
+evaluates to $0.6666605\pm 0.000002$, within $6$ parts per million of the rational $2/3$~\cite{Koide1982}. No Standard-Model parameter is pinned to that rational; the coincidence remains unexplained.
+\item \emph{Orbital resonance.} The mean-motion ratio of Neptune to Pluto is $T_{\mathrm{Neptune}}/T_{\mathrm{Pluto}}=2/3$ to the precision measurable~\cite{CohenHubbard1965}. The Laplace resonance of Io--Europa--Ganymede is $1{:}2{:}4$. The Jupiter/Earth period ratio is close to $12$. These are among many instances of gravitational binding selecting small-integer frequency ratios.
+\item \emph{Temperament.} In twelve-tone equal temperament the perfect fifth is $2^{7/12}\approx 1.4983$, differing from the just ratio $3/2$ by the \emph{Pythagorean comma} of $\approx 1.955$ cents. This is not a historical accident: the $12$-division of the octave is the unique small division at which the full cycle of fifths returns to near-closure within an auditorily imperceptible error.
+\item \emph{Biochemical cycle lengths.} The citric acid cycle has $8$ steps, the urea cycle $4$ core steps, glycolysis $10$ steps, the ATP-synthase $c_{10}$ ring $10$ subunits, the cell cycle $4$ phases~\cite{Alberts}. Small integers dominate.
+\end{enumerate}
+
+We will show that these attractors are not unrelated. All four come from the same underlying discrete structure: a canonical lattice on the multiplicative group $(\R^{+},\times)$ at a forced resolution $N=12$, refined through a tower of least common multiples.
+
+\subsection{The thesis}
+
+Let $(\R^{+},\times)$ be endowed with the multiplicative group structure on the positive reals, and let $\log_{2}:\R^{+}\to\R$ be the group isomorphism onto the additive reals. Classical harmonic analysis recognises that this is the natural arena for multiplicative phenomena, but offers no canonical scale of discretisation: the ``octave'' is a cultural choice, and within the octave one can in principle divide into any integer number of logarithmically equal steps.
+
+We claim that the question of how finely to divide has a forced, non-arbitrary answer once one adopts a particular three-element categorical framework, which we introduce in Section~\ref{sec:primitives}. Under that framework:
+\begin{itemize}[leftmargin=*]
+\item the base division is forced to $N=12$;
+\item the six simple sublattice families are forced to the divisors $\{1,2,3,4,6,12\}$;
+\item the refinements at which the primes $5,7,11$ first enter as native families are forced to $60,84,27720$ respectively;
+\item the lattice projection is convention-independent (Theorem~\ref{thm:conv});
+\item the lattice's own four defining constants project onto a single sublattice point (Theorem~\ref{thm:self}).
+\end{itemize}
+
+This is the Exception-Theory (ET) lattice. Once it is stated, the clustering observations above appear as straightforward consequences of a first-order classification theorem (Proposition~\ref{prop:classification}).
+
+\subsection{Relation to existing work}
+
+The ET lattice is not in competition with either Fourier analysis or differential geometry; it is complementary to both. Fourier analysis decomposes signals into continuous frequencies; the ET lattice classifies individual frequency ratios by sublattice family. Differential geometry describes curvature through the Riemann tensor; the ET lattice relates curvature to a discrete classification via the identity $C(n) = n^{2}(n^{2}-1)/12$ (Proposition~\ref{prop:riemann}), in which the ET base variance $1/12$ appears as the denominator. The Pythagorean comma of twelve-tone equal temperament emerges as the $d=12$ sublattice's descriptor gap (\S\ref{subsec:temperament}).
+
+The formalism is close to long-known number theory: the lattice coordinates are integers with Euclidean-algorithm classification, and the Gaussian prime decomposition of small primes ($p=2$ ramified; $p\equiv 3\pmod 4$ inert; $p\equiv 1\pmod 4$ split) controls the sublattice family structure. What is novel is the derivation of the resolution $N=12$ from a three-element categorical framework, and the recognition that the self-projection of the framework's own constants lands on a single sublattice point.
+
+\subsection{Scope and organisation}
+
+Section~\ref{sec:primitives} states the Founding Axiom, introduces the three primitive Cardinals and the master equation $P\circ D\circ T = E$, explains the three-disjoint-infinities structure that makes mediation intrinsic, and derives the four manifold states. Section~\ref{sec:triads} gives the three-way categorical identity $\mathrm{PDT} = \mathrm{EIM} = \Phi = \Sigma$, formulates the Subsumption Law as the primary completeness criterion, and introduces the notion of integrative levels. Section~\ref{sec:N12} gives three independent derivations of the forced value $N=12$. Section~\ref{sec:lattice} constructs the lattice on $(\R^{+},\times)$ and proves its convention-independence. Section~\ref{sec:sublattice} classifies the sublattice families. Section~\ref{sec:tower} constructs the LCM tower of refinements. Section~\ref{sec:complex} extends the lattice to $\C^{\times}$ via the imaginary axis. Section~\ref{sec:cascade} describes the cascade dynamics and stability. Section~\ref{sec:selfcons} proves the self-consistency identity. Section~\ref{sec:applications} confronts the lattice with empirical data. Section~\ref{sec:comparison} places the lattice alongside Fourier analysis and Riemannian geometry. Section~\ref{sec:predictions} formulates falsifiable predictions.
+
+% ===========================================================
+\section{The Founding Axiom and the primitive Cardinals}\label{sec:primitives}
+% ===========================================================
+
+\subsection{The Founding Axiom}
+
+Exception Theory rests on a single tautological axiom from which all structure descends.
+
+\begin{axiom}[Founding Axiom]\label{ax:founding}
+For every exception there is an exception, except the Exception.
+\end{axiom}
+
+Though its form is nearly an aphorism, the axiom has precise mathematical content. It asserts two things simultaneously:
+\begin{itemize}[leftmargin=*]
+\item \emph{Universal exceptability}. For every claim, rule, configuration, or description $X$, there exists a counterexample or limiting condition $X'$ --- an ``exception to $X$''.
+\item \emph{One unique terminus}. The iteration of ``take an exception'' does not regress without end: it terminates at one distinguished object, called the \emph{Exception}, which is itself the exception to all further iteration. The Exception admits no further exception.
+\end{itemize}
+
+The Founding Axiom is a tautological ground. It permits self-reference at the base: the self-referential loop ``every exception has an exception except this one'' is not a contradiction but the defining feature of the Exception. Where classical set theory prohibits a set-of-all-sets to avoid Russell's paradox, the Founding Axiom \emph{absorbs} the self-referential totality as its terminal case. The catastrophe that classical set theory forestalls by prohibition is, in this framework, handled by the axiom's provision of a single un-exceptable object.
+
+The Exception, which we denote $E$, plays two roles simultaneously: the terminus of the exception-iteration, and the fully substantiated configuration that results when all primitive Cardinals are bound. These two roles coincide, and their coincidence is formalised by the master equation.
+
+\subsection{The master equation}
+
+\begin{axiom}[Master equation]\label{ax:master}
+\[
+\boxed{\;P \circ D \circ T \;=\; E.\;}
+\]
+\end{axiom}
+
+The master equation is the structural content of the Founding Axiom. It states that the Exception is constituted by the binding, through a composition operator $\circ$, of three primitive constituents: a \emph{Point} $P$, a \emph{Descriptor} $D$, and a \emph{Traverser} $T$. Three are required; three suffice. Neither fewer nor more produce a substantiated Exception. The operator $\circ$ will be shown in Proposition~\ref{prop:intrinsic} to be not an external postulate but a forced consequence of the three Cardinals' properties.
+
+\subsection{The three Cardinals}
+
+The symbols $P$, $D$, $T$ denote not individual elements but totalities: each is, in the sense made precise below, ``the set of all sets of its kind''. Such a totality is called a \emph{Cardinal}.
+
+\begin{definition}[Cardinal]\label{def:cardinal}
+A \emph{Cardinal} is a totality characterised by
+\[
+P \;=\; \{x : x \text{ is a Point}\}, \qquad
+D \;=\; \{x : x \text{ is a Descriptor}\}, \qquad
+T \;=\; \{x : x \text{ is a Traverser}\}.
+\]
+\end{definition}
+
+\begin{remark}[Cardinals and proper classes]\label{rem:propclass}
+Cardinals in the sense of Definition~\ref{def:cardinal} are \emph{not} proper classes of standard set theories (NBG, MK). The characteristic restriction on proper classes is that they cannot be members of any collection whatsoever; the Cardinals, by contrast, are themselves members of a larger totality $\Sigma$ introduced in \S\ref{subsec:Sigma}, and participate in that totality through the composition operator $\circ$. Self-membership is not prohibited in this framework: the Founding Axiom absorbs the self-referential loop as a terminal case rather than forbidding it as a paradox. This is the mathematical content of the remark that ``ET absorbs Russell's paradox'': the loop is the Exception's defining feature, not a contradiction to be avoided.
+\end{remark}
+
+Each Cardinal has a declared cardinality.
+
+\begin{axiom}[Cardinalities]\label{ax:cardinalities}
+\[
+|P| \;=\; \Omega, \qquad |D| \;=\; n, \qquad |T| \;=\; \bigl[\tfrac{0}{0}\bigr],
+\]
+where
+\begin{itemize}[leftmargin=*]
+\item $\Omega$ is an \emph{absolute infinity}: undifferentiated substrate, larger than every set-theoretic cardinal, not identifiable with any specific $\aleph_{\kappa}$;
+\item $n$ is \emph{absolutely finite}: a positive integer (variable across applications but always finite whenever $D$ is bound to a specific $P$);
+\item $\bigl[\tfrac{0}{0}\bigr]$ denotes \emph{indeterminate} cardinality --- neither finite nor infinite in the standard sense, but the cardinality of an operator whose outputs are determined by binding rather than by set-theoretic enumeration.
+\end{itemize}
+\end{axiom}
+
+\subsection{Three disjoint infinities}\label{subsec:three-infinities}
+
+The declared cardinality $|D|=n$ characterises $D$ \emph{when bound to a specific $P$}; unbound, the space of possible Descriptors is itself unbounded. Thus each of the three Cardinals is, in its own mode, infinite:
+\begin{itemize}[leftmargin=*]
+\item $P$ is \emph{absolutely infinite}: undifferentiated substrate beneath any described content.
+\item $D$ is \emph{the infinite that chooses finitude}: the totality of possible constraints, unbounded when alone, rendered finite by the $P$--$D$ singularity --- the binding in which the infinite becomes small enough to be held. The finitude $|D|=n$ is the signature of that binding, not an inherent limit on $D$.
+\item $T$ is \emph{indeterminately infinite}: the cardinality $\bigl[\tfrac{0}{0}\bigr]$ is not the absence of cardinality, but the cardinality of genuine choice --- the navigation of all possible configurations, which is, in its own mode, as total as either of the others.
+\end{itemize}
+
+These three infinities are categorically disjoint.
+
+\begin{axiom}[Categorical disjointness]\label{ax:disjoint}
+\[
+P \cap D \;=\; \emptyset, \qquad D \cap T \;=\; \emptyset, \qquad T \cap P \;=\; \emptyset.
+\]
+\end{axiom}
+
+\subsection{Intrinsic mediation}
+
+The two preceding facts --- that each Cardinal is infinite in its own mode, and that the three are pairwise disjoint --- together force a structural consequence.
+
+\begin{proposition}[Intrinsic mediation]\label{prop:intrinsic}
+If three Cardinals $P,D,T$ are each unbounded in their respective modes and are pairwise disjoint (Axioms~\ref{ax:cardinalities}--\ref{ax:disjoint}), then their coexistence within a single ontological space necessarily produces an internal binding relation. The relation is not a fourth primitive added from outside; it is the only structurally possible expression of three unbounded disjoint totalities coexisting.
+\end{proposition}
+
+\begin{proof}[Argument]
+Three totalities each ``filling all of its own mode of infinity'' leave no exterior gap between them: a complete infinity, by definition, admits no external region in its own mode. Disjointness, however, demands that the three totalities remain categorically distinct. These two conditions are compatible only if the Cardinals mediate one another intrinsically --- their interaction being the only possible way for three complete, disjoint infinities to coexist without contradiction. The operator $\circ$ of the master equation is this intrinsic mediation. It is not a postulated fourth element; it is a forced consequence of the three Cardinals' joint presence. \qed
+\end{proof}
+
+\begin{remark}
+Proposition~\ref{prop:intrinsic} removes a question that would otherwise need its own axiom: why is there a composition operator $\circ$ at all, and why is it ternary? The answer is that the existence and arity of $\circ$ are structural consequences of the Cardinals; $\circ$ does not need to be posited independently.
+\end{remark}
+
+\begin{remark}[Symmetry of mediation]\label{rem:mediation-symmetry}
+The mediation is equal in all three Cardinals. $P$ does not ``receive'' the mediation while $D$ and $T$ ``perform'' it; each Cardinal participates in $\circ$ with the same structural status. Any apparent asymmetry is an artefact of reading-order: the Cardinals are written $P \circ D \circ T$ for the binding-order reason of Axiom~\ref{ax:order}, but the binding itself is symmetric in that each Cardinal is equally a constituent of the Exception. Three complete disjoint infinities, by necessity, mediate each other; none of the three is merely the recipient of the other two.
+\end{remark}
+
+\subsection{The totality $\Sigma$}\label{subsec:Sigma}
+
+\begin{definition}[Something]\label{def:Sigma}
+The \emph{totality} $\Sigma$ is
+\[
+\Sigma \;=\; (P \circ D \circ T), \qquad \forall x: x \in \Sigma.
+\]
+\end{definition}
+
+$\Sigma$ is constituted by \emph{mediation}, not by \emph{enumeration}. A set-theoretic union $P \cup D \cup T$ would combine the Cardinals without generative interaction, yielding no more than a list; the composition $P \circ D \circ T$ produces Something --- the totality of configurations that can, or do, exist. This distinction will be essential: the ET lattice derived in the following sections is the discrete structure on the multiplicative aspect of $\Sigma$, not on a union of primitive sets.
+
+\begin{remark}[No outside]
+The statement $\forall x : x \in \Sigma$ asserts that nothing is outside Something: every object of any domain is a configuration of the three Cardinals. No alternative ontological category exists that is not already subsumed by $P$, $D$, or $T$. This claim is made rigorous by the Subsumption Law in the next section.
+\end{remark}
+
+\subsection{The binding order}
+
+\begin{axiom}[Binding order]\label{ax:order}
+There is no configuration of the form $D \circ P$ preceding the establishment of $P$. Operationally, $P$ must be specified before $D$ can describe it; $D$ must be specified before $T$ can navigate it. The primitive ordering is $P \to D \to T$.
+\end{axiom}
+
+The force of Axiom~\ref{ax:order} is structural. Any derivation from the Cardinals must respect the order: identify the substrate first, the constraints second, the agency third. Reversing the order collapses meaning. In the projection protocol of Section~\ref{sec:lattice} this ordering appears concretely: the substrate is identified first (it determines the reference period), the lattice is the finite-$D$ structure second, the rounding is the $T$-act third.
+
+\subsection{Modes of self-presentation}
+
+Each Cardinal reveals itself in a characteristic way; these modes are the diagnostic signatures by which $P$, $D$, $T$ are identified in any concrete phenomenon.
+
+\begin{itemize}[leftmargin=*]
+\item $P$ reveals itself as \emph{unreachable depth}. Any object has an apparent edge, but no edge terminates absolutely: beneath any described surface there is always more. The asymptotic limit that is approached but never attained is $P$. A pencil mark is the canonical illustration: the moment the point is ``reached'', description has already been attached, and the bare Point recedes further.
+\item $D$ reveals itself as the \emph{articulable surface}. Everything that can be named, measured, formalised, or predicted is $D$-content. Mathematical laws, physical constants, sensory properties, chemical formulae, statistical distributions --- all are members of $D$.
+\item $T$ reveals itself as the \emph{unrepeatable act of becoming}. Agency is visible only in the event of substantiation --- not as a static property but as the act of resolving indeterminacy into an irreversible moment. Wavefunction collapse, the click of a detector, the decision of an agent, the rounding of a continuous quantity to a discrete lattice coordinate: these are $T$'s self-presentations.
+\end{itemize}
+
+These modes of self-presentation will be used implicitly when identifying which Cardinal is playing which role in a concrete example.
+
+\subsection{The four manifold states}
+
+The power set of $\{P,D,T\}$ has eight elements. Two are trivial (the empty configuration and the three singletons, which describe nothing by the master equation and binding order). Removing singletons and empties leaves exactly four states consisting of two or three Cardinals each.
+
+\begin{definition}[Manifold states]\label{def:states}
+The four \emph{manifold states} are
+\[
+\{P,D,T\},\qquad \{P,D\},\qquad \{D,T\},\qquad \{P,T\},
+\]
+called \emph{Exception}, \emph{Unsubstantiated}, \emph{Mediation}, and \emph{Incoherence} respectively.
+\end{definition}
+
+We denote the cardinality of this set by $S$:
+\begin{equation}
+S \;=\; \binom{3}{2}+\binom{3}{3} \;=\; 3+1 \;=\; 4.
+\label{eq:S}
+\end{equation}
+Thus $|P|=\Omega$, $|D|=n$, $|T|=[0/0]$, $|\Pi|=3$, $S=4$.
+
+\begin{proposition}[Incoherence is structurally forbidden]\label{prop:incoherence}
+The state $\{P,T\}$ admits no consistent binding: it contains substrate ($P$) and agency ($T$) but no finite constraint ($D$) by which agency can bind to substrate. Any attempt at a $P$--$T$ binding produces a contradiction or dissolves into one of the other three states.
+\end{proposition}
+
+The proof is immediate: without $D$, an element of $T$ has no finite profile against which to test consistency with an element of $P$. In physical applications the $\{P,T\}$ state corresponds to null-pointer--like conditions: singularities, divisions by zero, paradoxes of self-reference without adequate stratification.
+
+Incoherence is a structural boundary: it is an open set in the sense that it admits no substantiated members, only configurations approaching it from within one of the three coherent states. The ET manifold therefore has a well-defined forbidden zone, and coherent configurations near this zone carry specific diagnostic signatures that will emerge in \S\ref{sec:cascade}.
+
+% ===========================================================
+\section{The triple identity and the Subsumption Law}\label{sec:triads}
+% ===========================================================
+
+\subsection{Three simultaneous categorical readings}
+
+The structure given in \S\ref{sec:primitives} admits three parallel categorical readings, each complete, each with exactly three members, each mutually entailing the other two.
+
+\begin{theorem}[The triple identity $3=3=3=\Sigma$]\label{thm:triads}
+The three Cardinals admit three complete simultaneous readings whose joint identity is
+\[
+\boxed{\;\mathrm{PDT} \;=\; \mathrm{EIM} \;=\; \Phi \;=\; \Sigma,\;}
+\]
+or in compact form $3=3=3=\Sigma$, where
+\begin{itemize}[leftmargin=*]
+\item $\mathrm{PDT} = \{P,D,T\}$ is the \emph{ontological} triad: what each Cardinal is;
+\item $\mathrm{EIM} = \{E,I,M\}$ is the \emph{phenomenological} triad: the Exception $E$ (grounded actuality), Incoherence $I$ (the coherence boundary as a structural fact), Mediation $M$ (the binding operation in action);
+\item $\Phi = \{\Phi_{E},\Phi_{I},\Phi_{M}\}$ is the \emph{impossibility} triad: $\Phi_{E} = $ \textit{cannot be otherwise}, $\Phi_{I} = $ \textit{cannot be traversed to}, $\Phi_{M} = $ \textit{cannot be absent}.
+\end{itemize}
+All three triads read the same structure from different angles. None is more fundamental than the others; each entails both of the others.
+\end{theorem}
+
+The correspondence between positions is summarised in Table~\ref{tab:triads}.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}l c c c@{}}
+\toprule
+Position & PDT (ontological) & EIM (phenomenological) & $\Phi$ (impossibilities)\\
+\midrule
+First & $P$ --- substrate, $\Omega$ & $E$ --- grounding & cannot be otherwise\\
+Second & $D$ --- constraint, $n$ & $I$ --- coherence boundary & cannot be traversed to\\
+Third & $T$ --- agency, $[0/0]$ & $M$ --- mediation & cannot be absent\\
+\addlinespace
+View & structural (outside) & experiential (inside) & boundary (forbidden)\\
+Answers & \textit{What is it?} & \textit{What does it give?} & \textit{What can never be?}\\
+\bottomrule
+\end{tabular}
+\caption{The triple identity $3=3=3=\Sigma$. Each row is a single structural fact read three ways. Cardinalities carry across readings: $|E|=\Omega$, $|I|=n$, $|M|=[0/0]$, because $E$ is what $P$ gives, $I$ is what $D$ enforces, $M$ is what $T$ is.}
+\label{tab:triads}
+\end{table}
+
+Derivation of any triad from any other proceeds directly from the table. From PDT alone: $P$ is substrate of cardinality $\Omega$ $\Rightarrow$ its contribution is grounding $E$ $\Rightarrow$ the ground cannot be otherwise ($\Phi_{E}$). Similarly $D \to I \to \Phi_{I}$ and $T \to M \to \Phi_{M}$.
+
+\subsection{The Subsumption Law}\label{subsec:subsumption}
+
+Theorem~\ref{thm:triads} gives three simultaneous readings. The operational criterion that validates the three Cardinals as complete --- and that excludes the possibility of a fourth primitive --- is the Subsumption Law.
+
+\begin{principle}[Subsumption Law]\label{princ:subsumption}
+A primitive Cardinal is complete and irreducible if and only if it satisfies all three of the following conditions:
+\begin{enumerate}[label=(\roman*),leftmargin=*]
+\item It cannot be subsumed by either of the other two Cardinals.
+\item Nothing external to the three Cardinals subsumes it.
+\item It subsumes everything within its own category without remainder.
+\end{enumerate}
+The system $\{P,D,T\}$ is complete if and only if every Cardinal in it passes all three conditions.
+\end{principle}
+
+The Subsumption Law is the primary completeness criterion of ET. It is an empirical-structural test rather than an additional postulate: the three Cardinals are declared complete because they pass the test, and a fourth primitive is ruled out because no candidate fourth can.
+
+\begin{proposition}[Irreducibility of $P$, $D$, $T$]\label{prop:irreducibility}
+The three Cardinals $P$, $D$, $T$ satisfy the Subsumption Law.
+\end{proposition}
+
+\begin{proof}[Argument]
+We verify condition (i) for each Cardinal; conditions (ii) and (iii) follow by the exhaustive trichotomy of modes of infinity.
+\begin{itemize}[leftmargin=*]
+\item $P$ cannot reduce to $D$ (a constraint requires something to constrain; substrate cannot be its own constraint) or to $T$ (substrate has no internal direction of choice).
+\item $D$ cannot reduce to $P$ (undifferentiated substrate supplies no structure) or to $T$ (constraints are deterministic; agency is indeterminate).
+\item $T$ cannot reduce to $P$ (substrate has no agency) or to $D$ (fixed rules cannot choose which rule to follow).
+\end{itemize}
+All three conditions are met for all three Cardinals. \qed
+\end{proof}
+
+\begin{corollary}[No fourth primitive]\label{cor:nofourth}
+No Cardinal $X$ outside $\{P,D,T\}$ is a primitive.
+\end{corollary}
+
+\begin{proof}[Argument]
+Any candidate $X$ falls into one of four cases: (a) $X$ has $\Omega$-type infinity, hence $X \subseteq P$; (b) $X$ is finitely constraining, hence $X \subseteq D$; (c) $X$ is agential-indeterminate, hence $X \subseteq T$; (d) $X$ lies outside all three categories. In case (d), by Subsumption Law condition (iii) applied to each of $P,D,T$, $X$ has no instance in $\Sigma$ and is therefore not a primitive. In cases (a)--(c), $X$ is subsumed by one of $P,D,T$ and so is not a new primitive. \qed
+\end{proof}
+
+The Subsumption Law will reappear in \S\ref{sec:applications} as the structural reason for the universality of the lattice: every positive-ratio quantity in every domain lies in $\Sigma$, and $\Sigma$ is exhausted by configurations of $P,D,T$, so every positive-ratio quantity admits a lattice projection.
+
+\subsection{Integrative levels}\label{subsec:levels}
+
+A remaining structural observation concerns the Cardinals' relation to the hierarchy of physical and mathematical phenomena.
+
+\begin{definition}[Integrative level]\label{def:levels}
+An \emph{integrative level} is a level of organisation at which a collection of Cardinal configurations constitutes a whole whose properties are not present or derivable at lower levels.
+\end{definition}
+
+The quantum, atomic, molecular, cellular, biological, cognitive, and civilisational levels are examples. At each, properties emerge (wavefunction superposition, chemical bonding, molecular reactivity, life, consciousness, language) that are not possessed by, and are not obtainable by summing, the Cardinals of the constituents below.
+
+\begin{proposition}[Governance at all integrative levels]\label{prop:governance}
+The Cardinals $P$, $D$, $T$ govern every integrative level without modification. Emergent properties at higher levels are new configurations of the same three Cardinals; no additional Cardinal is introduced by complexity.
+\end{proposition}
+
+The proof is by the Subsumption Law: any property emerging at a higher integrative level must be substrate-like ($P$-type), constraint-like ($D$-type), or agency-like ($T$-type). Nothing outside the three categories appears at higher levels. What changes across integrative levels is not the Cardinals but the identification depth at which the master equation is applied, and the number and complexity of Descriptors required.
+
+The mathematical content of wholeness is the set-of-all-sets structure of Definition~\ref{def:cardinal}: because each Cardinal is the totality of its kind, combining configurations into a whole contributes real mathematical content (the wholeness relation itself), producing properties that are not present at the level of constituents. Emergence, in this framework, is not an unexplained phenomenon but a direct consequence of the Cardinal structure.
+
+The ET lattice constructed below is blind to integrative level: a given ratio $r$ projects to the same lattice coordinate $(k,d,\varepsilon)$ whether it arises from atomic mass ratios, musical intervals, economic doublings, or civilisational cycles. The lattice is therefore a classifier that operates uniformly across all levels at which $\Sigma$ admits a quantitative description.
+
+% ===========================================================
+\section{The forced value \texorpdfstring{$N=12$}{N=12}}\label{sec:N12}
+% ===========================================================
+
+The content of Section~\ref{sec:primitives} is all of the machinery we shall use to derive $N=12$. We give three independent derivations; each fixes the same integer.
+
+\subsection{Derivation I: product of the two counts}
+
+The two finite cardinals available in Axiom~\ref{ax:cardinalities} and Definition~\ref{def:states} are
+\[
+|\Pi| \;=\; 3 \quad\text{(number of primitive categories)}, \qquad S \;=\; 4 \quad\text{(number of non-trivial manifold states)}.
+\]
+
+\begin{proposition}[Manifold symmetry]\label{prop:N12}
+The \emph{manifold symmetry} is
+\[
+N \;=\; |\Pi|\cdot S \;=\; 3\cdot 4 \;=\; 12.
+\]
+\end{proposition}
+
+The formula $N = |\Pi|\cdot S$ is the natural product of the independent counts: for each of the three primitive Cardinals, there are four structurally distinct manifold states to which a given element can contribute (Exception, Unsubstantiated, Mediation, or the forbidden Incoherence). The count is unique up to the ordering of the cardinalities fixed in Axiom~\ref{ax:cardinalities}.
+
+\subsection{Derivation II: least common multiple of the small sublattice orders}
+
+Suppose we seek the smallest positive integer $N$ such that $\{1,2,3,4\}$ all divide $N$; these are the integer orders obtainable from the $\binom{4}{k}$ counts on a set of cardinality $4$ (namely $\{1,4,6,4,1\}$ restricted to $\le 4$). The unique minimum is
+\[
+\lcm(1,2,3,4) \;=\; 12.
+\]
+Raising the requirement to $\{1,2,3,4,5\}$ gives $\lcm=60$; raising to $\{1,\ldots,7\}$ gives $420$; raising to $\{1,\ldots,11\}$ gives $27720$. The sequence $12,60,420,2520,27720$ will reappear in Section~\ref{sec:tower} as the LCM tower of the ET lattice. The base value $12$ is the smallest member of this tower: the minimal common multiple of the fundamental small divisors.
+
+\subsection{Derivation III: the stability window}
+
+Consider the discrete multiplicative group $\Z/N\Z$ generated by a unit $g$ coprime to $N$. A necessary condition for the generator $g$ to produce a complete cycle through $\Z/N\Z$ is $\gcd(g,N)=1$. A natural additional condition, which we shall call the \emph{stability window}, is that the multiplicative deviation accumulated per step on the corresponding logarithmic lattice $\{2^{k/N}\}_{k\in\Z}$ stay below an auditorily imperceptible threshold of $50$ cents (half a lattice step):
+\[
+N\cdot|\delta| \;<\; 50 \text{ cents}, \qquad \delta \;=\; \log_{2}(3/2) - \frac{7}{12} \;\approx\; 0.0019550.
+\]
+Here $\delta$ is the per-step discrepancy between the fifth generated by the circle-of-fifths walk $g=7$ on $\Z/12\Z$ and the just fifth $3/2$. With $N=12$ and $|\delta| = 0.0019550$ octaves, we have
+\[
+N\cdot|\delta| \;\approx\; 12\cdot 2.346\text{ cents} \;\approx\; 23.5 \text{ cents} \;<\; 50 \text{ cents}.
+\]
+For $N=11$ the stability window condition fails against the nearest available generator; for $N=13,14,\ldots$ the window is open, but the LCM-minimality condition of Derivation II forces $N=12$. The manifold symmetry value $N=12$ is the unique integer $\le 60$ that simultaneously satisfies:
+\begin{enumerate}[leftmargin=*,label=(\roman*)]
+\item the stability window $N\cdot|\delta|<50$ cents against the circle-of-fifths generator $g=7$;
+\item the LCM-minimality $N=\lcm(1,2,3,4)$;
+\item a maximal palindromic depth $\tau(12)=6$ (the number of divisors of $12$ is $6$; no smaller integer attains this count).
+\end{enumerate}
+
+\subsection{The three manifold constants}
+
+The following constants are direct consequences of Proposition~\ref{prop:N12} and Definition~\ref{def:states}:
+
+\begin{equation}\label{eq:constants}
+\boxed{\;N = 12, \qquad V \;=\; \frac{1}{N} \;=\; \frac{1}{12}, \qquad K \;=\; \frac{2}{3}.\;}
+\end{equation}
+
+Here $V$ is the \emph{base variance}: the irreducible quantum of resolution on the logarithmic lattice, equal to $1/N$ octaves. The value $K$ is derived from Definition~\ref{def:states}: of the four manifold states, three contain $P$ (Exception, Unsubstantiated, Incoherence) and two contain both $P$ and $D$ (Exception, Unsubstantiated); more tellingly,
+\[
+K \;=\; 1 - \frac{S}{N} \;=\; 1 - \frac{4}{12} \;=\; \frac{2}{3},
+\]
+which is the complement of the ratio of state count to manifold symmetry. The value $K=2/3$ will reappear as the Koide stability threshold.
+
+\subsection{A derived fine-structure constant}
+
+Two counts can be combined further. Define
+\begin{equation}\label{eq:A0}
+A_{0} \;=\; (N-1)^{2} + S^{2} \;=\; 11^{2} + 4^{2} \;=\; 121 + 16 \;=\; 137.
+\end{equation}
+The quantity $A_{0}$ is the sum of the squares of the two available independent-count residues: $(N-1)$ is the count of non-trivial logarithmic steps per octave (excluding the origin), and $S=4$ is the count of manifold states. The identity $A_{0}=137$ is exact, derived, and of direct physical interest: the measured fine-structure constant in the Lattice Compendium 2025 reference is $\alpha^{-1}=137.0359991...$, leaving a residual of $0.036$ to be accounted for by higher-order corrections (Section~\ref{subsec:alpha}).
+
+% ===========================================================
+\section{The lattice on the multiplicative manifold}\label{sec:lattice}
+% ===========================================================
+
+We now define the lattice and prove its convention-independence.
+
+\subsection{The projection formula}
+
+\begin{definition}[ET real-axis projection]\label{def:projection}
+Let $N$ be a positive integer (the \emph{lattice resolution}, taken to be $12$ unless otherwise stated), and let $r\in\R^{+}$ be a positive real. The \emph{ET projection} of $r$ at resolution $N$ is the triple $(k,d,\eps)\in\Z\times\N\times\R$ defined by
+\begin{align}
+k &\;=\; \round(N\log_{2}r),\label{eq:k}\\
+g &\;=\; \gcd(|k|,N),\\
+d &\;=\; N/g,\label{eq:d}\\
+\eps &\;=\; (N\log_{2}r - k)\cdot\frac{1200}{N}\ \ \text{cents},\label{eq:eps}
+\end{align}
+with the convention $g=N$ (hence $d=1$) when $k=0$. We write the projection as $\Pi_{N}(r) = (k,d,\eps)$.
+\end{definition}
+
+We call $k$ the \emph{lattice coordinate}, $d$ the \emph{sublattice family}, and $\eps$ the \emph{descriptor gap} (in cents, where one cent equals $1/100$ of a $12$-ET semitone; the choice of $1200/N$ as the multiplier ensures that $\eps$ has units of cents at any $N$).
+
+\subsection{Interpretation}
+
+The lattice is the set
+\[
+\mathcal{L}_{N} \;=\; \bigl\{\,2^{k/N} : k\in\Z\,\bigr\} \;\subset\; (\R^{+},\times).
+\]
+At $N=12$ this is exactly the set of frequency ratios accessible on a twelve-tone equal-tempered scale, but the derivation given above shows that $12$-division is not a cultural choice.
+
+The formula \eqref{eq:k} says: write $r$ as a real number of logarithmic steps, and round to the nearest integer number of steps. The formula \eqref{eq:d} says: classify the resulting integer $k$ by how deeply it sits in the divisor lattice of $N$; if $k$ is coprime to $N$, then $d=N$ (fine resolution); if $k$ divides $N$ heavily, then $d$ is small. The formula \eqref{eq:eps} records the residual, in cents, by which $r$ fails to land exactly on the lattice.
+
+Conceptually, the three formulas are the triptych of the binding operation $P\circ D\circ T$:
+\begin{itemize}[leftmargin=*]
+\item $r$ is the $P$-content (a featureless positive real);
+\item $N$ and the lattice structure are the $D$-content (finite constraints);
+\item $\round$ is the $T$-act (resolution of a continuous quantity to a discrete one).
+\end{itemize}
+
+\subsection{The annihilation boundary}
+
+\begin{proposition}[Exclusion of $r=0$]\label{prop:zero}
+The value $r=0$ is not in the domain of $\Pi_{N}$: $\log_{2}(0)=-\infty$, the formula \eqref{eq:k} diverges, and the division in \eqref{eq:d} is undefined. We call $r=0$ the \emph{annihilation boundary}: it is approached but never attained.
+\end{proposition}
+
+The proposition is elementary. It is included to emphasize that the lattice is a structure on the group $(\R^{+},\times)$, not on the semigroup $([0,\infty),\cdot)$; the zero element of the latter is excluded by construction.
+
+\subsection{Convention independence}
+
+\begin{theorem}[Convention independence]\label{thm:conv}
+Let $Q,R_{0}\in\R^{+}$ be two positive reals with identical physical dimension, and let $u\in\R^{+}$ be any positive unit-conversion factor. Let $r = Q/R_{0}$ and $r' = (uQ)/(uR_{0})$. Then
+\[
+\Pi_{N}(r) \;=\; \Pi_{N}(r').
+\]
+\end{theorem}
+
+\begin{proof}
+We have
+\[
+r' \;=\; \frac{uQ}{uR_{0}} \;=\; \frac{Q}{R_{0}} \;=\; r.
+\]
+By \eqref{eq:k}, $k' = \round(N\log_{2}r') = \round(N\log_{2}r) = k$. By \eqref{eq:d}, $d'=N/\gcd(|k'|,N) = N/\gcd(|k|,N) = d$. By \eqref{eq:eps}, $\eps' = (N\log_{2}r'-k')\cdot(1200/N) = \eps$. \qed
+\end{proof}
+
+\begin{remark}
+Theorem~\ref{thm:conv} is the crucial legitimacy condition for the lattice as a structural classifier. Any projection whose result \emph{depends} on a choice of units exposes a failure to form a genuine dimensionless ratio: a $Q$ and an $R_{0}$ that do not share dimension produce a result that floats with the unit system. The convention-independence of $\Pi_{N}$ on genuine ratios is the mathematical content behind the informal slogan that \emph{the lattice is not numerology}: no nontrivial $\Pi_{N}$ result can arise from a mere choice of units.
+\end{remark}
+
+\subsection{Three canonical projections}
+
+\begin{proposition}[Three canonical projections at $N=12$]\label{prop:canonical}
+The following projections are elementary consequences of Definition~\ref{def:projection}:
+\[
+\Pi_{12}(1) = (0,1,0), \qquad \Pi_{12}(2) = (12,1,0), \qquad \Pi_{12}(\sqrt{2}) = (6,2,0).
+\]
+Each has $\eps=0$: the corresponding ratios lie exactly on the lattice.
+\end{proposition}
+
+\begin{proof}
+For $r=1$: $\log_{2}1 = 0$, $k=0$, $g=\gcd(0,12)=12$ (by convention), $d=1$, $\eps=0$. For $r=2$: $\log_{2}2 = 1$, $k=12$, $g=\gcd(12,12)=12$, $d=1$, $\eps=0$. For $r=\sqrt{2}$: $\log_{2}\sqrt{2}=1/2$, $k=6$, $g=\gcd(6,12)=6$, $d=2$, $\eps=0$. \qed
+\end{proof}
+
+\begin{proposition}[The perfect fifth]\label{prop:fifth}
+At $N=12$,
+\[
+\Pi_{12}(3/2) \;=\; \bigl(+7,\,12,\,+1.955\ \text{cents}\bigr).
+\]
+In particular, the descriptor gap of $3/2$ at the base lattice is the Pythagorean comma.
+\end{proposition}
+
+\begin{proof}
+$\log_{2}(3/2) = \log_{2}3 - 1 \approx 0.5849625$, so $12\log_{2}(3/2) \approx 7.01955$, giving $k=7$. Since $\gcd(7,12)=1$, $d=12/1=12$. The residual is $(7.01955 - 7)\cdot 100 \approx +1.955$ cents. \qed
+\end{proof}
+
+The $+1.955$-cent residual is the \emph{Pythagorean comma} of music theory: the amount by which twelve ascending just fifths $(3/2)^{12}$ exceed seven octaves $2^{7}$, divided by $12$. Historically the comma has been treated as an unfortunate fact of temperament; here it is the descriptor gap of a particular sublattice, derived from the manifold constants.
+
+\begin{proposition}[The Koide ratio]\label{prop:koide}
+At $N=12$,
+\[
+\Pi_{12}(2/3) \;=\; \bigl(-7,\,12,\,-1.955\ \text{cents}\bigr).
+\]
+\end{proposition}
+
+The proof is the same as that of Proposition~\ref{prop:fifth} with the sign of $\log_{2}$ reversed. The Koide ratio and the perfect fifth sit at mirror points on the same sublattice.
+
+% ===========================================================
+\section{Sublattice family structure}\label{sec:sublattice}
+% ===========================================================
+
+\subsection{The divisor classification}
+
+\begin{proposition}[Sublattice families are divisors of $N$]\label{prop:divisors}
+Let $N$ be a positive integer and let $d$ denote the sublattice family of a lattice coordinate $k\in\Z$ under the formula $d=N/\gcd(|k|,N)$. Then $d$ is a positive divisor of $N$.
+\end{proposition}
+
+\begin{proof}
+Set $g=\gcd(|k|,N)$. Then $g\mid N$, so $d = N/g$ is a positive integer. Moreover $d$ divides $N$ iff $g\mid N$, which holds by definition. \qed
+\end{proof}
+
+\begin{corollary}[Six simple families at $N=12$]\label{cor:six}
+At $N=12$, the sublattice families are exactly
+\[
+\bigl\{d : d\text{ divides }12\bigr\} \;=\; \{1,2,3,4,6,12\}.
+\]
+\end{corollary}
+
+\subsection{The totient multiplicity}
+
+The count of residues $k$ modulo $N$ that produce each sublattice family $d$ has a closed form.
+
+\begin{proposition}[Totient multiplicity]\label{prop:totient}
+For each positive divisor $d$ of $N$, the number of residues $k\in\{0,1,\ldots,N-1\}$ with $d_{k}=d$ equals $\varphi(d)$, where $\varphi$ is the Euler totient function.
+\end{proposition}
+
+\begin{proof}
+By \eqref{eq:d}, $d_{k}=d$ iff $\gcd(|k|,N)=N/d$. The condition $\gcd(k,N)=N/d$ is equivalent to $k$ being a multiple of $N/d$ but not of any larger divisor of $N$; the count of such $k$ in $\{0,\ldots,N-1\}$ is exactly $\varphi(d)$, by the standard Euler-totient counting theorem. \qed
+\end{proof}
+
+\begin{corollary}[The $\varphi$-partition of $N$]\label{cor:totientpartition}
+For any positive integer $N$,
+\[
+N \;=\; \sum_{d\mid N}\varphi(d).
+\]
+At $N=12$ this gives $1+1+2+2+2+4=12$.
+\end{corollary}
+
+This is a classical identity (a special case of the Gauss totient-sum formula). It says that every lattice coordinate belongs to exactly one sublattice family, and the families partition the residues with multiplicities exactly given by $\varphi(d)$. The six-family structure at $N=12$ therefore has multiplicities $1,1,2,2,2,4$.
+
+\subsection{Physical reading of the six families}
+
+The six simple sublattice families at $N=12$ carry characteristic structural signatures which recur across domains. We summarise them in Table~\ref{tab:families}.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}c c c c l@{}}
+\toprule
+$d$ & $\varphi(d)$ & Residues $|k|\bmod 12$ & Generator & Characteristic structural role\\
+\midrule
+$1$ & $1$ & $0$ & $2^{1}$ & Period closure; octave; universal binding\\
+$2$ & $1$ & $6$ & $2^{1/2}$ & Binary opposition; half-period pivot\\
+$3$ & $2$ & $4,8$ & $2^{1/3}$ & Three-fold symmetry; cubic (volumetric)\\
+$4$ & $2$ & $3,9$ & $2^{1/4}$ & Four-fold symmetry; quartic (quaternionic)\\
+$6$ & $2$ & $2,10$ & $2^{1/6}$ & Hexagonal; composite two-and-three\\
+$12$ & $4$ & $1,5,7,11$ & $2^{1/12}$ & Full resolution; coprime to $N$\\
+\bottomrule
+\end{tabular}
+\caption{The six simple sublattice families at $N=12$. The column $\varphi(d)$ gives the number of residues $|k|\bmod 12$ that produce each family (Proposition~\ref{prop:totient}); the residues sum to $12$ (Corollary~\ref{cor:totientpartition}). The $d=1$ family contains the octave and its powers; the $d=2$ family contains the tritone $\sqrt{2}$; the $d=12$ family contains the ratios coprime to $12$ including $3/2$ and $4/3$.}
+\label{tab:families}
+\end{table}
+
+\subsection{Classification theorem}
+
+\begin{proposition}[First-order classification]\label{prop:classification}
+For every $r\in\R^{+}$, exactly one triple $(k,d,\eps)$ is produced by $\Pi_{12}(r)$, with $d\in\{1,2,3,4,6,12\}$ and $|\eps|\le 50$ cents.
+\end{proposition}
+
+\begin{proof}
+Uniqueness and determinism follow from Definition~\ref{def:projection}: the operations $\log_{2}$, multiplication by $N$, rounding, absolute value, $\gcd$, and integer division are all deterministic. The range of $d$ is given by Corollary~\ref{cor:six}. The bound $|\eps|\le 50$ cents follows from the rounding operation: $|N\log_{2}r - k|\le 1/2$ step, and multiplying by $1200/N$ gives $|\eps|\le 600/N=50$ cents at $N=12$. \qed
+\end{proof}
+
+% ===========================================================
+\section{The LCM tower of refinements}\label{sec:tower}
+% ===========================================================
+
+\subsection{When $N=12$ is insufficient}
+
+The sublattice families at $N=12$ are the divisors of $12$, namely $\{1,2,3,4,6,12\}$. Phenomena whose structural symmetries lie outside this set cannot be resolved at the base lattice: five-fold symmetry (pentagonal, icosahedral, golden-ratio), seven-fold symmetry (heptagonal, certain capsid symmetries), eleven-fold symmetry (undecimal), eight-fold (octet, gluon), nine-fold (nonic), ten-fold (decic). To host these one must refine the lattice to a higher $N$.
+
+\subsection{Canonical refinements}
+
+The minimal $N$ supporting a required family $d$ is any multiple of $d$ that is also a multiple of $12$ (so as to preserve the base families). The smallest such $N$ is $\lcm(12,d)$.
+
+\begin{proposition}[Canonical LCM landmarks]\label{prop:tower}
+The sequence
+\[
+\lcm(1,\ldots,k) \;\text{for}\; k=4,5,7,9,11
+\]
+is $12,60,420,2520,27720$ respectively. Each is a multiple of $12$; each introduces one or more new primes as native divisors:
+\begin{itemize}[leftmargin=*]
+\item $12$ hosts $\{1,2,3,4,6,12\}$;
+\item $60 = 2^{2}\cdot 3\cdot 5$ adds $d=5$ (and composites $10,15,20,30$);
+\item $420 = 2^{2}\cdot 3\cdot 5\cdot 7$ adds $d=7$ and the biological cross-product $d=35=5\cdot 7$;
+\item $2520 = 2^{3}\cdot 3^{2}\cdot 5\cdot 7$ completes $d\le 9$;
+\item $27720 = 2^{3}\cdot 3^{2}\cdot 5\cdot 7\cdot 11$ completes $d\le 11$ and makes all twelve families $d\in\{1,2,\ldots,12\}$ simultaneously native.
+\end{itemize}
+\end{proposition}
+
+\begin{proof}
+Direct calculation:
+\[
+\lcm(1,2,3,4)=12,\quad \lcm(1,\ldots,5)=60,\quad \lcm(1,\ldots,7)=420,
+\]
+\[
+\lcm(1,\ldots,9)=2520,\quad \lcm(1,\ldots,11)=27720.
+\]
+Each is a multiple of $12$ because $\{2,3,4\}\subset\{1,\ldots,k\}$ for $k\ge 4$. The prime factorisations follow immediately. \qed
+\end{proof}
+
+\subsection{Unification of the two readings}
+
+\begin{proposition}[Multiplicative and LCM readings]\label{prop:unification}
+The sequence of multiplicative refinements of the base lattice is $12,24,36,48,60,72,\ldots$ (the positive multiples of $12$). The LCM reading $12,60,420,2520,27720,\ldots$ is a sparse subsequence of this multiplicative reading.
+\end{proposition}
+
+The proof is Proposition~\ref{prop:tower}: each LCM landmark is a multiple of $12$. The multiplicative reading is for uniform refinement of resolution (e.g., refining precision in the same family structure); the LCM reading is for introducing a new prime as a native divisor.
+
+\subsection{The continuous limit}
+
+\begin{proposition}[Asymptotic limit]\label{prop:limit}
+As $N\to\infty$ through either reading of the tower,
+\[
+\mathcal{L}_{N} \;\longrightarrow\; (\R^{+},\times),
+\]
+with the descriptor gap bounded by $|\eps|\le 600/N$ cents, which tends to $0$.
+\end{proposition}
+
+\begin{proof}
+The set $\mathcal{L}_{N}=\{2^{k/N}\}$ is dense in $\R^{+}$ under the multiplicative metric as $N$ grows, since the steps $2^{1/N}$ tend to $1$. The gap bound follows from the rounding bound in the proof of Proposition~\ref{prop:classification}. \qed
+\end{proof}
+
+% ===========================================================
+\section{The complex lattice}\label{sec:complex}
+% ===========================================================
+
+Many phenomena have both a magnitude and a phase character. The lattice extends from the multiplicative group $(\R^{+},\times)$ to the multiplicative group $(\C^{\times},\times)$ by projecting the phase to a second axis.
+
+\subsection{Imaginary-axis projection}
+
+\begin{definition}[Phase projection]\label{def:phase}
+Let $\theta\in[0,2\pi)$ be an angle. The \emph{phase projection} at resolution $N$ is
+\[
+k_{\theta} \;=\; \round\!\left(\frac{N\theta}{2\pi}\right)\bmod N, \qquad d_{\theta} \;=\; \frac{N}{\gcd(|k_{\theta}|,N)},
+\]
+\[
+\eps_{\theta} \;=\; \left(\frac{N\theta}{2\pi}-k_{\theta}\right)\cdot\frac{1200}{N}\ \text{cents}.
+\]
+\end{definition}
+
+The phase axis classifies rotational structure in exactly the same divisor-lattice way that the magnitude axis classifies scaling structure. The cyclic group $U(1) = \R/2\pi\Z$ is discretised into $N$ equal sectors.
+
+\subsection{Complex projection and the Gaussian integer lattice}
+
+\begin{definition}[Complex projection]\label{def:complex}
+For $z = r e^{i\theta}\in\C^{\times}$, the \emph{complex projection} is
+\[
+w \;=\; k_{r}+i k_{\theta} \;\in\; \Z[i],
+\]
+with the real-axis and imaginary-axis projections defined by Definitions~\ref{def:projection} and~\ref{def:phase} respectively. The \emph{combined sublattice family} is
+\[
+d_{\mathrm{c}} \;=\; \lcm(d_{r},d_{\theta}).
+\]
+\end{definition}
+
+\begin{proposition}[LCM amplification]\label{prop:lcm}
+The combined family $d_{\mathrm{c}}=\lcm(d_{r},d_{\theta})$ is always at least as large as the larger of $d_{r}$ and $d_{\theta}$.
+\end{proposition}
+
+The proof is elementary: $\lcm(a,b)\ge \max(a,b)$ with equality iff one divides the other. Structurally, off-axis (complex) positions have richer sublattice structure than either axis alone. At $N=12$ the $6\times 6$ grid of $(d_{r},d_{\theta})$ pairs produces combined families taking values in $\{1,2,3,4,6,12\}$ with the distribution shown in Table~\ref{tab:complex12}.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}c c c c c c c@{}}
+\toprule
+$d_{r}\backslash d_{\theta}$ & $1$ & $2$ & $3$ & $4$ & $6$ & $12$\\
+\midrule
+$1$ & $1$ & $2$ & $3$ & $4$ & $6$ & $12$\\
+$2$ & $2$ & $2$ & $6$ & $4$ & $6$ & $12$\\
+$3$ & $3$ & $6$ & $3$ & $12$ & $6$ & $12$\\
+$4$ & $4$ & $4$ & $12$ & $4$ & $12$ & $12$\\
+$6$ & $6$ & $6$ & $6$ & $12$ & $6$ & $12$\\
+$12$ & $12$ & $12$ & $12$ & $12$ & $12$ & $12$\\
+\bottomrule
+\end{tabular}
+\caption{The $6\times 6$ table of combined sublattice families $d_{\mathrm{c}}=\lcm(d_{r},d_{\theta})$ at the base lattice $N=12$. Off the diagonal the LCM amplification typically drives $d_{\mathrm{c}}$ towards $12$ (full resolution); of the $36$ entries, $15$ equal $12$. This explains why most physical observables, which carry both magnitude and phase character, project to $d=12$ at the base lattice.}
+\label{tab:complex12}
+\end{table}
+
+\subsection{The D--T gradient}
+
+Let $\alpha = \arctan(k_{\theta}/k_{r})$ be the angle of the complex-lattice coordinate from the real axis. Define
+\[
+\text{(magnitude fraction)} \;=\; \cos^{2}\alpha, \qquad \text{(phase fraction)} \;=\; \sin^{2}\alpha.
+\]
+At $\alpha=0$ (pure real) the coordinate is fully magnitudinal; at $\alpha=\pi/2$ (pure imaginary) it is fully phase; in between it interpolates smoothly. The transition from deterministic to probabilistic behaviour (the familiar classical-to-quantum transition) is, in this picture, not a sharp boundary but a continuous function of $\alpha$.
+
+\subsection{The Gaussian-prime correspondence}
+
+The sublattice families have a clean number-theoretic pedigree in the Gaussian integers $\Z[i]$.
+
+\begin{proposition}[Gaussian prime correspondence]\label{prop:gaussian}
+The sublattice families at $N=12$ and its LCM extensions correspond to the three Gaussian prime classes as follows:
+\begin{itemize}[leftmargin=*]
+\item $p=2$ (ramified: $2=-i(1+i)^{2}$) generates the binary sublattices $d\in\{2,4,8\}$;
+\item $p\equiv 3\pmod 4$ (inert: remain prime in $\Z[i]$) generate the sublattices $d\in\{3,7,11\}$ and their squares;
+\item $p\equiv 1\pmod 4$ (split: $p=\pi\bar\pi$ in $\Z[i]$) generate the sublattices $d\in\{5,13,\ldots\}$ of mixed magnitude/phase character.
+\end{itemize}
+\end{proposition}
+
+The correspondence is elementary but structurally informative: the three Gaussian prime classes exactly parallel the three Cardinals $P$, $D$, $T$. Ramified primes (which ``double'' in $\Z[i]$) are $P$-class; inert primes (which remain on the real axis) are $D$-class; split primes (which factor across the real-imaginary split) are mixed $D{+}T$-class.
+
+% ===========================================================
+\section{Cascade dynamics and stability}\label{sec:cascade}
+% ===========================================================
+
+\subsection{Cascade generators}
+
+The rounding operation of Definition~\ref{def:projection} is, for most inputs, an exact map in the sense that iterating it returns to the starting lattice point. For specific inputs, however, the rounding accumulates a residual that grows linearly with the number of iterations. This produces the \emph{cascade dynamics} of the lattice.
+
+\begin{proposition}[Real-axis cascade residual]\label{prop:cascader}
+Let $g_{r} = \round(N\log_{2}N)\bmod N$. At $N=12$,
+\[
+g_{r} \;=\; \round(12\log_{2}12)\bmod 12 \;=\; \round(43.0195)\bmod 12 \;=\; 43\bmod 12 \;=\; 7.
+\]
+The residual of the rounding is
+\[
+|\delta_{r}| \;=\; |12\log_{2}12 - 43| \;=\; 0.01955\ldots,
+\]
+which is numerically identical (to all digits shown) to the Pythagorean comma in octave units.
+\end{proposition}
+
+The generator $g_{r}=7$ is the interval of seven semitones: the perfect fifth. The residual $|\delta_{r}|$ is the per-step error of the circle-of-fifths cascade. Iterating the fifth twelve times ascends seven octaves plus a Pythagorean comma:
+\[
+(3/2)^{12} \;=\; 129.7463\ldots, \qquad 2^{7} \;=\; 128, \qquad \text{ratio} \;=\; 1.01364\ldots \;=\; 2^{12|\delta_{r}|}.
+\]
+
+\begin{proposition}[Phase-axis cascade residual]\label{prop:cascadetheta}
+Let $g_{\theta} = \round(N\cdot 2\pi/\ln 2)\bmod N$. At $N=12$,
+\[
+g_{\theta} \;=\; \round(12\cdot 2\pi/\ln 2)\bmod 12 \;=\; 109\bmod 12 \;=\; 1.
+\]
+The phase residual is
+\[
+|\delta_{\theta}| \;=\; \bigl|12\cdot 2\pi/\ln 2 - 109\bigr| \;=\; 0.22336\ldots.
+\]
+\end{proposition}
+
+\begin{proposition}[Stability limits]\label{prop:stability}
+Requiring the accumulated residual to remain below half a lattice step ($0.5$), the maximum numbers of cascade steps before loss of coherence are
+\[
+n_{\max,r} \;=\; \left\lfloor\frac{0.5}{|\delta_{r}|}\right\rfloor \;=\; 25, \qquad
+n_{\max,\theta} \;=\; \left\lfloor\frac{0.5}{|\delta_{\theta}|}\right\rfloor \;=\; 2.
+\]
+\end{proposition}
+
+The factor of roughly $12$ between the two residuals $(|\delta_{\theta}|/|\delta_{r}| \approx 11.42)$ is close to the manifold symmetry $N=12$. The small deficit is, at higher lattice resolutions, the shadow of a specific combined sublattice cell (not pursued here; see \cite{Guide}).
+
+\subsection{The palindromic cascade}
+
+\begin{definition}[Palindromic cascade]\label{def:palindrome}
+The \emph{palindromic cascade} at $N=12$ is the length-$N$ sequence $(d_{n})_{n=1}^{N}$ with
+\[
+\mathbf{d}_{\mathrm{pal}} \;=\; (d_{1},d_{2},\ldots,d_{12}) \;=\; (12,\,6,\,4,\,3,\,12,\,2,\,12,\,3,\,4,\,6,\,12,\,1),
+\]
+indexed from $n=1$. The corresponding exponent sequence is $p_{n}=12/d_{n}$,
+\[
+\mathbf{p}_{\mathrm{pal}} \;=\; (1,\,2,\,3,\,4,\,1,\,6,\,1,\,4,\,3,\,2,\,1,\,12),
+\]
+with mean
+\[
+p_{\mathrm{eff}} \;=\; \frac{1}{12}\sum_{n=1}^{12}p_{n} \;=\; \frac{40}{12} \;=\; \frac{10}{3}.
+\]
+\end{definition}
+
+The sequence $\mathbf{d}_{\mathrm{pal}}$ is produced by iterating the unit generator $g=7$ through the residues of $\Z/12\Z$ and reading off $d = 12/\gcd(|k|,12)$ at each step. It visits every divisor of $12$ and satisfies the palindromic symmetry
+\begin{equation}\label{eq:palindrome}
+d_{n} \;=\; d_{N-n} \qquad\text{for every } n = 1,2,\ldots,N-1,
+\end{equation}
+with the pivot $d_{N/2}=d_{6}=2$ self-paired (the tritone at the half-period) and the boundary value $d_{N}=d_{12}=1$ standing alone (the octave identity at the cycle endpoint).
+
+\subsection{Use of the palindromic cascade}
+
+When iteration reaches the stability limit of Proposition~\ref{prop:stability}, the orbit's sublattice classification becomes ambiguous (the descriptor gap approaches $50$ cents, half a lattice step). In dynamical applications the ambiguity is resolved by substituting the palindromic cascade for the orbit-derived sublattice: at step $n$, use $d_{\mathrm{pal}}[n\bmod 12]$ rather than the computed $d(z_{n})$. Over a full $12$-step cycle, every divisor of $12$ is visited exactly with the multiplicity required to maintain CPT-symmetric coverage of the simple families. The mean exponent $p_{\mathrm{eff}}=10/3$ appears as a normalisation constant in smooth-iteration-count formulas.
+
+% ===========================================================
+\section{Self-consistency: the Koide attractor}\label{sec:selfcons}
+% ===========================================================
+
+We now establish the main structural theorem of this paper: the lattice's four defining constants, when projected onto the lattice they define, land on a single point.
+
+\begin{theorem}[Self-projection identity]\label{thm:self}
+At the base lattice $N=12$, the four constants $\{N,\,1/N,\,K,\,1/K\}=\{12,\,1/12,\,2/3,\,3/2\}$ project to
+\begin{align*}
+\Pi_{12}(12) &\;=\; (+43,\,12,\,+1.955\ \mathrm{cents}),\\
+\Pi_{12}(1/12) &\;=\; (-43,\,12,\,-1.955\ \mathrm{cents}),\\
+\Pi_{12}(3/2) &\;=\; (+7,\,12,\,+1.955\ \mathrm{cents}),\\
+\Pi_{12}(2/3) &\;=\; (-7,\,12,\,-1.955\ \mathrm{cents}).
+\end{align*}
+All four share the same sublattice family $d=12$ and the same descriptor-gap magnitude $|\eps|=1.955$ cents. We call this shared position the \emph{Koide attractor}.
+\end{theorem}
+
+\begin{proof}
+For $r=12$: $\log_{2}12 = 2 + \log_{2}3 \approx 3.58496$, so $12\log_{2}12 \approx 43.0195$, giving $k=43$, $\gcd(43,12)=1$, $d=12$, $\eps = 0.0195\cdot 100 = +1.955$ cents. For $r=1/12$: $\log_{2}(1/12) = -\log_{2}12$, so $k=-43$, $d=12$, $\eps = -1.955$ cents. For $r=3/2$: Proposition~\ref{prop:fifth} gives $(+7,12,+1.955)$. For $r=2/3$: Proposition~\ref{prop:koide} gives $(-7,12,-1.955)$. All four have $d=12$ and $|\eps| = |12\log_{2}12 - 43|\cdot 100 = 1.955$ cents. \qed
+\end{proof}
+
+\begin{remark}
+The theorem is a self-consistency check. A classifier that classifies its own constants onto a single point of its own structure is in some formal sense ``self-calibrated'': it uses the same rules on itself that it uses on external inputs, and the result is concordant. The specific point is identified by $k=\pm 7$ or $k=\pm 43$ and $d=12$; the former pair is the circle-of-fifths cascade generator modulo the base symmetry, and the latter the generator lifted by one full octave. Both pairs share the magnitude $|\eps| = 12|\delta_{r}|$ cents, where $|\delta_{r}|$ is the per-step residual of Proposition~\ref{prop:cascader}.
+\end{remark}
+
+\begin{corollary}[Value of the Pythagorean comma]\label{cor:comma}
+The descriptor gap $|\eps|=1.955$ cents at the Koide attractor is numerically equal to the Pythagorean comma of twelve-tone equal temperament.
+\end{corollary}
+
+The identification is simultaneous with the formula: $|\eps| = |12\log_{2}12 - 43| \cdot 100\ \text{cents} = |12\log_{2}3 - 19|\cdot 100\ \text{cents} = 1.955$ cents, and $(3/2)^{12}/2^{7} = 2^{12\cdot(12\log_{2}(3/2)-7)/12}$ with a numerical coincidence placing all these quantities at the same $1.955$-cent position on the lattice.
+
+% ===========================================================
+\section{Empirical confrontation}\label{sec:applications}
+% ===========================================================
+
+We now confront the lattice with empirical data from five disciplines. Each subsection identifies the substrate, the reference period, and the resulting lattice projection, and compares the lattice-derived structural reading with the discipline-internal description.
+
+\subsection{Twelve-tone equal temperament}\label{subsec:temperament}
+
+The twelve-tone equal-tempered scale is the lattice $\mathcal{L}_{12}$ restricted to one octave: the frequency ratios $\{2^{k/12} : k=0,1,\ldots,12\}$. Each of the twelve ratios is a canonical projection; six of them lie exactly on the lattice ($d=1,2$) and the remaining six lie at tight descriptor gaps that identify their sublattice character (Table~\ref{tab:intervals}).
+
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}l c c c c c@{}}
+\toprule
+Interval & Just ratio $r$ & $12\log_{2}r$ & $k$ & $d$ & $\eps$ (cents)\\
+\midrule
+Unison & $1/1$ & $0.000$ & $0$ & $1$ & $0.00$\\
+Major second & $9/8$ & $2.039$ & $2$ & $6$ & $+3.91$\\
+Minor third & $6/5$ & $3.156$ & $3$ & $4$ & $+15.64$\\
+Major third & $5/4$ & $3.863$ & $4$ & $3$ & $-13.69$\\
+Perfect fourth & $4/3$ & $4.980$ & $5$ & $12$ & $-1.96$\\
+Tritone & $\sqrt{2}$ & $6.000$ & $6$ & $2$ & $0.00$\\
+Perfect fifth & $3/2$ & $7.020$ & $7$ & $12$ & $+1.96$\\
+Minor sixth & $8/5$ & $8.137$ & $8$ & $3$ & $+13.69$\\
+Major sixth & $5/3$ & $8.844$ & $9$ & $4$ & $-15.64$\\
+Minor seventh & $16/9$ & $9.961$ & $10$ & $6$ & $-3.91$\\
+Major seventh & $15/8$ & $10.883$ & $11$ & $12$ & $-11.73$\\
+Octave & $2/1$ & $12.000$ & $12$ & $1$ & $0.00$\\
+\bottomrule
+\end{tabular}
+\caption{The twelve just-intoned intervals and their projections at $N=12$. The perfect fifth and perfect fourth sit at $d=12$ with descriptor gap $\pm 1.955$ cents, the Pythagorean comma. The thirds sit at $d=3$ (major) and $d=4$ (minor). The tritone sits exactly on the lattice at $d=2$.}
+\label{tab:intervals}
+\end{table}
+
+The conventional view of twelve-tone equal temperament as a historical compromise is replaced by a derivation: the $12$-division is forced by $N=|\Pi|\cdot S=12$, and the characteristic cent residuals of the just intervals are the descriptor gaps of the respective sublattices.
+
+\subsection{The fine-structure constant}\label{subsec:alpha}
+
+The fine-structure constant $\alpha$ satisfies $\alpha^{-1}\approx 137.0359991\ldots$ in modern measurement. The leading-order lattice-derived value is
+\[
+A_{0} \;=\; (N-1)^{2}+S^{2} \;=\; 137
+\]
+(Equation~\ref{eq:A0}). The residual $\alpha^{-1}-A_{0} \approx 0.036$ admits a closed-form decomposition in terms of the manifold constants,
+\begin{equation}\label{eq:alpha}
+\alpha^{-1}(\mathrm{ET}) \;=\; 137 \;+\; \frac{\sqrt{3}}{48} \;-\; \frac{\sqrt{3}}{93312\,\pi^{2}} \;-\; \frac{1}{216\bigl(18\pi - 1\bigr)},
+\end{equation}
+whose component terms have structural readings as follows:
+\begin{itemize}[leftmargin=*]
+\item The leading correction $\sqrt{3}/48 = \sigma/K_{\mathrm{EM}}$ with $\sigma = \sqrt{1/12}$ and $K_{\mathrm{EM}} = 8$ is an open shimmer over electromagnetic channels.
+\item The cross term $\sqrt{3}/(93312\pi^{2}) = (2/\pi)\cdot(\sqrt{3}/48)\cdot(4/9)/(144\cdot\pi)$ is the product interference of the shimmer with the closed bilateral-mediation loop, with the geometric factor $2/\pi$ arising from the bilateral-to-circumferential phase conversion.
+\item The geometric series $1/(216(18\pi-1)) = \sum_{k\ge 2}\kappa^{k}/(N^{k+1}\pi^{k-1})$ is the closed-form summation of the higher mediation loops.
+\end{itemize}
+
+Numerical evaluation to $50$ decimal digits yields
+\[
+\alpha^{-1}(\mathrm{ET}) \;=\; 137.03599916744133748324548\ldots,
+\]
+which agrees with the modern reference value of $\alpha^{-1}$~\cite{LatComp2025} to within one part in $10^{10}$, with no free parameters. At the universal lattice $N=27720$, the projection of this value lands at $(k,d)=(196768,\,315)$ with $|\eps|\approx 0.002$ cents; the sublattice family $d=315 = 3^{2}\cdot 5\cdot 7$ carries simultaneous cubic-squared, quintic, and septic structural character, which is physically appropriate for a coupling constant governing electromagnetic interaction with the three-generation lepton spectrum.
+
+\subsection{The Koide ratio}\label{subsec:koide}
+
+The Koide formula evaluated at modern lepton masses $(m_{e},m_{\mu},m_{\tau}) = (0.51099895, 105.6583755, 1776.86)$~\cite{CODATA2022} gives
+\[
+Q \;=\; 0.6666605\pm 0.000002.
+\]
+The ET-derived value is $K = 2/3 = 0.666666\overline{6}$ (Equation~\ref{eq:constants}), with residual of approximately $6$ parts per million. Both $2/3$ and $3/2$ project to the Koide attractor at $d=12$, $|\eps|=1.955$ cents (Theorem~\ref{thm:self}).
+
+\subsection{Geometric ratios}\label{subsec:geometry}
+
+The classical $3{:}4{:}5$ right triangle has three internal ratios whose projections are shown in Table~\ref{tab:pyth}.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}l c c c c c@{}}
+\toprule
+Ratio & Value & $12\log_{2}r$ & $k$ & $d$ & $\eps$ (cents)\\
+\midrule
+$3/4$ (short leg : long leg) & $0.750$ & $-4.980$ & $-5$ & $12$ & $+1.96$\\
+$4/5$ (long leg : hypotenuse) & $0.800$ & $-3.863$ & $-4$ & $3$ & $+13.69$\\
+$3/5$ (short leg : hypotenuse) & $0.600$ & $-8.844$ & $-9$ & $4$ & $+15.64$\\
+\bottomrule
+\end{tabular}
+\caption{Projections of the internal ratios of the $3{:}4{:}5$ triangle. The three ratios populate sublattices $d=12$, $d=3$, $d=4$ respectively. These are the three non-trivial simple sublattice families at $N=12$.}
+\label{tab:pyth}
+\end{table}
+
+The Pythagorean triangle thus occupies exactly three different sublattice families at the base lattice, one of each non-trivial simple family besides $d=2$ and $d=6$.
+
+Bond angles in chemistry carry similar signatures: the tetrahedral angle $109.47^{\circ}$ (in ratio against the straight angle $180^{\circ}$, $r = 0.608$) projects to $d=4$; the trigonal-planar $120^{\circ}$ ($r = 2/3$) projects to the Koide attractor; the right angle $90^{\circ}$ ($r = 1/2$) sits at the octave reflection, $k=-12$, $d=1$.
+
+\subsection{Celestial mechanics}\label{subsec:celestial}
+
+The principal mean-motion resonances of the Solar System project cleanly onto low-$d$ lattice attractors:
+\begin{itemize}[leftmargin=*]
+\item Neptune--Pluto $3{:}2$: $\Pi_{12}(3/2) = (+7, 12, +1.96)$ --- the Koide attractor.
+\item Io--Europa $2{:}1$: $\Pi_{12}(2) = (+12, 1, 0)$ --- the octave.
+\item Galilean moons, Europa--Ganymede $2{:}1$: same as Io--Europa.
+\item Saturn--Jupiter period ratio $\approx 2.48$, near $5/2$: $\Pi_{12}(5/2) = (+16, 3, -13.69)$ --- $d=3$ cubic with the major-third descriptor gap.
+\end{itemize}
+
+Gravitational binding, which selects minimum-variance configurations, systematically targets low-$d$ sublattices; the lattice structure is consistent with the empirical distribution of resonances.
+
+\subsection{Biochemistry}\label{subsec:biology}
+
+The step counts of major metabolic cycles are direct positive integers (denominator $=1$ step):
+\begin{itemize}[leftmargin=*]
+\item Citric acid (Krebs) cycle: $8$ steps. $\Pi_{12}(8) = (+36, 1, 0)$ --- exact $d=1$ octave class. The step count is $2^{3}$.
+\item Urea cycle: $4$ core steps. $\Pi_{12}(4) = (+24, 1, 0)$ --- exact $d=1$.
+\item Glycolysis: $10$ steps. $\Pi_{12}(10) = (+40, 3, -13.69)$ --- $d=3$ cubic.
+\item ATP synthase rotational ring: typically $10$ $c$-subunits. Same projection as glycolysis.
+\item Cell cycle: $4$ phases (G1, S, G2, M). $\Pi_{12}(4) = (+24, 1, 0)$.
+\end{itemize}
+
+The ``closure'' cycles (Krebs, urea) project to $d=1$ with $\eps=0$; their step counts are powers of $2$. The ``linear pathways'' (glycolysis, purine synthesis) project to $d=3$ with the major-third gap; their step counts are multiples of $2$ and $5$. The distinction between closure and linear pathway is reflected in distinct sublattice family assignments.
+
+\subsection{Summary of the empirical confrontation}
+
+Across the five disciplines surveyed, the same six simple sublattice families recur, and a handful of attractor positions are shared across domains: the Koide attractor $(+7,12,+1.955)$ appears in particle physics, celestial mechanics, and musical intonation; the octave $(+12,1,0)$ appears in acoustics, biochemistry, and mass hierarchies; the tritone $(+6,2,0)$ appears in geometry and palindromic symmetries. Table~\ref{tab:cross} summarises selected cross-domain coincidences.
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{@{}l l l c l@{}}
+\toprule
+Domain & Quantity & Ratio $r$ & $(k,d)$ & Family\\
+\midrule
+Music & Perfect fifth & $3/2$ & $(+7, 12)$ & Koide\\
+Particles & Koide ratio $K$ & $2/3$ & $(-7, 12)$ & Koide\\
+Celestial & Neptune--Pluto resonance & $3/2$ & $(+7, 12)$ & Koide\\
+Chemistry & Trigonal-planar bond $120^{\circ}/180^{\circ}$ & $2/3$ & $(-7, 12)$ & Koide\\
+Manifold & Manifold symmetry $N$ & $12$ & $(+43, 12)$ & Koide\\
+Manifold & Base variance $V$ & $1/12$ & $(-43, 12)$ & Koide\\
+\addlinespace
+Music & Octave & $2/1$ & $(+12, 1)$ & Octave\\
+Biology & Krebs cycle step count & $8$ & $(+36, 1)$ & Octave\\
+Biology & Cell-cycle phases & $4$ & $(+24, 1)$ & Octave\\
+Markets & Doubling & $2/1$ & $(+12, 1)$ & Octave\\
+Celestial & Io--Europa resonance & $2/1$ & $(+12, 1)$ & Octave\\
+\addlinespace
+Music & Major third & $5/4$ & $(+4, 3)$ & Cubic\\
+Geometry & Pythagorean ratio $4/5$ & $4/5$ & $(-4, 3)$ & Cubic\\
+Biology & Glycolysis, ATP ring & $10$ & $(+40, 3)$ & Cubic\\
+Celestial & Saturn--Jupiter period & $5/2$ & $(+16, 3)$ & Cubic\\
+\bottomrule
+\end{tabular}
+\caption{Cross-domain coincidences: distinct physical quantities from different disciplines projecting to the same sublattice family, often to the same lattice point. The clustering is the quantitative content of the regularity noted in \S1.1.}
+\label{tab:cross}
+\end{table}
+
+% ===========================================================
+\section{Relationship to Fourier analysis and differential geometry}\label{sec:comparison}
+% ===========================================================
+
+\subsection{Fourier analysis}
+
+Fourier analysis decomposes a signal into a continuous family of frequencies $\{e^{i\omega t}\}_{\omega\in\R}$; the ET lattice classifies an individual frequency \emph{ratio} $\omega_{1}/\omega_{2}$ into one of a finite set of sublattice families. The two analyses answer different questions:
+\begin{itemize}[leftmargin=*]
+\item Fourier: ``What frequencies are present in this signal?''
+\item ET: ``Given two frequencies, what is the structural class of their ratio?''
+\end{itemize}
+
+A Fourier spectrum is a continuous function of frequency; an ET projection is a discrete triple $(k,d,\eps)$. Both arise naturally on the multiplicative manifold, but at different levels of abstraction: Fourier at the level of the signal itself, ET at the level of the signal's ratio structure. The two are orthogonal, not competing.
+
+\subsection{Riemannian curvature}
+
+\begin{proposition}[Riemann component count]\label{prop:riemann}
+The Riemann curvature tensor $R^{i}{}_{jkl}$ on an $n$-dimensional pseudo-Riemannian manifold has exactly
+\[
+C(n) \;=\; \frac{n^{2}(n^{2}-1)}{12}
+\]
+independent components.
+\end{proposition}
+
+This is a classical result of differential geometry (see e.g.~\cite{MTW}): it follows from the antisymmetries $R_{ijkl} = -R_{jikl} = -R_{ijlk}$, the pair-exchange symmetry $R_{ijkl} = R_{klij}$, and the first Bianchi identity $R_{i[jkl]} = 0$. The denominator of $12$ is a combinatorial count from the Young-symmetry decomposition, and coincides numerically with the manifold symmetry constant $N=12$ of this paper.
+
+\begin{corollary}\label{cor:1716}
+For $n=12$,
+\[
+C(12) \;=\; \frac{144\cdot 143}{12} \;=\; 1716 \;=\; 12\cdot 11\cdot 13 \;=\; N(N-1)(N+1).
+\]
+\end{corollary}
+
+The identity $C(N) = N(N-1)(N+1)$ at $n=N$ is a numerical coincidence at the present level of the construction; we make no claim that it signifies a deeper relationship between the ET lattice and general Riemannian manifolds of dimension $12$. We note only that the denominator of the curvature component count is $12$, the manifold symmetry, and that at dimension $12$ the count factors cleanly as three consecutive integers centred on $12$.
+
+\subsection{Gauss--Bonnet and topological invariants}
+
+The Gauss--Bonnet theorem $\int_{M}K\,dA = 2\pi\chi(M)$ relates total curvature of a closed $2$-manifold to its Euler characteristic. For a sphere ($\chi=2$), total curvature is $4\pi$; for a torus ($\chi=0$), it is $0$; for a surface of genus $g$, it is $2\pi(2-2g)$. The ratio of total curvature to a suitable reference (e.g. $\pi$) projects to definite sublattice positions: sphere at $d=3$, torus at $d=1$, higher genera at various families. In this fashion, topological invariants of surfaces inherit lattice classifications through their curvature totals.
+
+% ===========================================================
+\section{Falsifiable predictions}\label{sec:predictions}
+% ===========================================================
+
+Any framework of structural significance must admit predictions that can, in principle, fail. The ET lattice admits at least the following.
+
+\subsection{The closure-versus-linear distinction in biochemistry}
+
+\begin{quote}\itshape
+Any true biochemical closure cycle (one in which the product is identical to the starting substrate up to the catalytic turnover) has a step count $n$ satisfying $n\in\{1,2,4,8,16,\ldots\}$, that is, $n$ is a power of $2$. Any linear biochemical pathway (no closure) has step count $n$ not a power of $2$.
+\end{quote}
+
+The prediction is testable against every metabolic pathway that has been completely characterised biochemically. A closure cycle with step count $n\in\{3,5,6,7,9,10,11,\ldots\}$ would falsify the prediction as stated.
+
+\subsection{Orbital resonances on low-$d$ attractors}
+
+\begin{quote}\itshape
+Stable mean-motion resonances in gravitational systems preferentially occupy sublattice families $d\in\{1,2,3,4,6\}$; the $d=12$ family hosts only transient or unstable resonances.
+\end{quote}
+
+The prediction is testable against the ensemble of known mean-motion resonances in the Solar System and in extrasolar multi-planet systems. A stable long-lived resonance at $d=12$ would require explanation.
+
+\subsection{Fine-structure constant lattice identity}
+
+\begin{quote}\itshape
+The lattice coordinates of $\alpha^{-1}$ at $N=27720$ are $(k,d)=(196768,315)$ independent of the precise measured value of $\alpha^{-1}$ within the Parker--Morel experimental window.
+\end{quote}
+
+The prediction is that measurements of $\alpha^{-1}$ whose central values differ by up to several parts per billion all project to the same integer lattice coordinates at the universal lattice $N=27720$. The coordinates change only at a precision of order $|\eps|\cdot N/1200 = 0.002\cdot 27720/1200 \approx 0.046$ parts per billion in $\alpha^{-1}$ --- below current experimental resolution.
+
+\subsection{New sublattice identification}
+
+The prediction of a \emph{new} sublattice attractor is the strongest form of test. The lattice predicts, for instance, that the $d=35 = 5\cdot 7$ composite family at the universal lattice $N=420$ corresponds to phenomena that simultaneously require five-fold and seven-fold symmetry. One realisation is the icosahedral viral capsid of triangulation number $T=7$, which has $60\cdot 7 = 420$ protein subunits~\cite{CasparKlug}. A second test would be a prediction of the minimum viable genome size at approximately $420$ genes; observed values for minimal genomes (\emph{Mycoplasma genitalium} at $\sim 470$, \emph{JCVI-syn3.0} at $\sim 473$~\cite{Hutchison2016}) lie slightly above this threshold, consistent with the prediction.
+
+% ===========================================================
+\section{Conclusion}\label{sec:conclusion}
+% ===========================================================
+
+We have constructed a discrete lattice on the multiplicative group $(\R^{+},\times)$ from a minimal three-category framework. The resolution $N=12$ is forced by three independent derivations; the six simple sublattice families follow from the divisor structure of $N=12$; the multiplicities are the Euler totients; the complex extension follows the Gaussian-integer analogue; the refinements are an LCM tower with canonical landmarks $12, 60, 420, 2520, 27720$.
+
+The construction is self-consistent in the specific sense of Theorem~\ref{thm:self}: the lattice's own four defining constants, projected onto the lattice, land at a single sublattice position with a single descriptor-gap magnitude. This position is the \emph{Koide attractor}, which is shared by empirical ratios across particle physics, music, celestial mechanics, and chemistry, including the charged-lepton mass combination $Q\approx 2/3$, the perfect fifth $3/2$, the Neptune--Pluto mean-motion resonance, and the trigonal-planar bond-angle ratio.
+
+The lattice is complementary to Fourier analysis (which acts on signals) and to Riemannian geometry (which acts on manifolds). The denominator $12$ in the Riemann component count $n^{2}(n^{2}-1)/12$ coincides numerically with the manifold symmetry $N=12$ of the present construction. We have not claimed that this coincidence entails a deeper relationship, but we have noted that at $n=N=12$ the Riemann count factors as $N(N-1)(N+1)=1716$.
+
+The empirical regularities noted in \S1.1 are, in light of the construction, first-order classification facts. The clustering of structural ratios on small rationals is not a chance coincidence but the natural consequence of a discrete structure that has a finite set of low-$d$ attractors. The predictions of \S\ref{sec:predictions} are testable and, in principle, falsifiable.
+
+What remains outside the scope of the present paper includes the dynamical extension to active systems (in which an orbit's position on the lattice at time $n$ determines the iteration rule at time $n+1$), the cascade-failing cells of the complex $12\times 12$ grid of combined sublattice families, and the connection to the Gauss--Bonnet theorem as a PDT decomposition. These are pursued in the companion documents of the project and summarised in~\cite{Guide}.
+
+% ===========================================================
+\begin{thebibliography}{99}
+% ===========================================================
+
+\bibitem{Koide1982}
+Y.~Koide,
+\emph{Fermion--boson two-body model of quarks and leptons and Cabibbo mixing},
+Lett. Nuovo Cimento {\bf 34} (1982) 201--205.
+
+\bibitem{CohenHubbard1965}
+C.~J. Cohen and E.~C. Hubbard,
+\emph{Libration of the close approaches of Pluto to Neptune},
+Astron. J. {\bf 70} (1965) 10--13.
+
+\bibitem{Alberts}
+B. Alberts \emph{et al.},
+\emph{Molecular Biology of the Cell}, 6th ed., Garland Science, New York, 2014.
+
+\bibitem{MTW}
+C.~W. Misner, K.~S. Thorne, and J.~A. Wheeler,
+\emph{Gravitation}, W.~H. Freeman, San Francisco, 1973, \S 13.
+
+\bibitem{CODATA2022}
+E. Tiesinga, P.~J. Mohr, D.~B. Newell, and B.~N. Taylor,
+\emph{CODATA recommended values of the fundamental physical constants: 2022},
+Rev. Mod. Phys. {\bf 97} (2025) 025002.
+
+\bibitem{LatComp2025}
+\emph{Lattice Compendium 2025 reference value for $\alpha^{-1}$}, in: M.~J. Muller, \emph{Exception Theory Lattice Compendium}, manuscript, 2025.
+
+\bibitem{CasparKlug}
+D.~L.~D. Caspar and A. Klug,
+\emph{Physical principles in the construction of regular viruses},
+Cold Spring Harbor Symp. Quant. Biol. {\bf 27} (1962) 1--24.
+
+\bibitem{Hutchison2016}
+C.~A. Hutchison \emph{et al.},
+\emph{Design and synthesis of a minimal bacterial genome},
+Science {\bf 351} (2016) aad6253.
+
+\bibitem{Guide}
+M.~J. Muller,
+\emph{The ET Universal Projection Guide --- How to Project Anything onto the ET Lattice, Across Every Domain, Statically and Actively}, manuscript, version~2.2, 2026.
+
+\bibitem{ThreeTools}
+M.~J. Muller,
+\emph{Exception Theory: The Three Operational Tools}, manuscript, 2026.
+
+\bibitem{Webb1935}
+D.~L. Webb,
+\emph{Generation of any $n$-valued logic by one binary operation},
+Proc. Nat. Acad. Sci. USA {\bf 21} (1935) 252--254.
+
+\bibitem{Sheffer1913}
+H.~M. Sheffer,
+\emph{A set of five independent postulates for Boolean algebras, with application to logical constants},
+Trans. Amer. Math. Soc. {\bf 14} (1913) 481--488.
+
+\end{thebibliography}
+
+\end{document}

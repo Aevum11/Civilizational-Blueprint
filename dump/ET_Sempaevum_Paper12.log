@@ -1,0 +1,3440 @@
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025) (preloaded format=pdflatex 2026.2.6)  25 APR 2026 10:43
+entering extended mode
+ restricted \write18 enabled.
+ %&-line parsing enabled.
+**ET_Sempaevum_Paper12.tex
+(./ET_Sempaevum_Paper12.tex
+LaTeX2e <2025-11-01>
+L3 programming layer <2026-01-19>
+(c:/texlive/2025/texmf-dist/tex/latex/base/article.cls
+Document Class: article 2025/01/22 v1.4n Standard LaTeX document class
+(c:/texlive/2025/texmf-dist/tex/latex/base/size11.clo
+File: size11.clo 2025/01/22 v1.4n Standard LaTeX file (size option)
+)
+\c@part=\count275
+\c@section=\count276
+\c@subsection=\count277
+\c@subsubsection=\count278
+\c@paragraph=\count279
+\c@subparagraph=\count280
+\c@figure=\count281
+\c@table=\count282
+\abovecaptionskip=\skip49
+\belowcaptionskip=\skip50
+\bibindent=\dimen148
+)
+(c:/texlive/2025/texmf-dist/tex/latex/geometry/geometry.sty
+Package: geometry 2020/01/02 v5.9 Page Geometry
+
+(c:/texlive/2025/texmf-dist/tex/latex/graphics/keyval.sty
+Package: keyval 2022/05/29 v1.15 key=value parser (DPC)
+\KV@toks@=\toks17
+)
+(c:/texlive/2025/texmf-dist/tex/generic/iftex/ifvtex.sty
+Package: ifvtex 2019/10/25 v1.7 ifvtex legacy package. Use iftex instead.
+
+(c:/texlive/2025/texmf-dist/tex/generic/iftex/iftex.sty
+Package: iftex 2024/12/12 v1.0g TeX engine tests
+))
+\Gm@cnth=\count283
+\Gm@cntv=\count284
+\c@Gm@tempcnt=\count285
+\Gm@bindingoffset=\dimen149
+\Gm@wd@mp=\dimen150
+\Gm@odd@mp=\dimen151
+\Gm@even@mp=\dimen152
+\Gm@layoutwidth=\dimen153
+\Gm@layoutheight=\dimen154
+\Gm@layouthoffset=\dimen155
+\Gm@layoutvoffset=\dimen156
+\Gm@dimlist=\toks18
+)
+(c:/texlive/2025/texmf-dist/tex/latex/amsmath/amsmath.sty
+Package: amsmath 2025/07/09 v2.17z AMS math features
+\@mathmargin=\skip51
+
+For additional information on amsmath, use the `?' option.
+(c:/texlive/2025/texmf-dist/tex/latex/amsmath/amstext.sty
+Package: amstext 2024/11/17 v2.01 AMS text
+
+(c:/texlive/2025/texmf-dist/tex/latex/amsmath/amsgen.sty
+File: amsgen.sty 1999/11/30 v2.0 generic functions
+\@emptytoks=\toks19
+\ex@=\dimen157
+))
+(c:/texlive/2025/texmf-dist/tex/latex/amsmath/amsbsy.sty
+Package: amsbsy 1999/11/29 v1.2d Bold Symbols
+\pmbraise@=\dimen158
+)
+(c:/texlive/2025/texmf-dist/tex/latex/amsmath/amsopn.sty
+Package: amsopn 2022/04/08 v2.04 operator names
+)
+\inf@bad=\count286
+LaTeX Info: Redefining \frac on input line 233.
+\uproot@=\count287
+\leftroot@=\count288
+LaTeX Info: Redefining \overline on input line 398.
+LaTeX Info: Redefining \colon on input line 409.
+\classnum@=\count289
+\DOTSCASE@=\count290
+LaTeX Info: Redefining \ldots on input line 495.
+LaTeX Info: Redefining \dots on input line 498.
+LaTeX Info: Redefining \cdots on input line 619.
+\Mathstrutbox@=\box53
+\strutbox@=\box54
+LaTeX Info: Redefining \big on input line 721.
+LaTeX Info: Redefining \Big on input line 722.
+LaTeX Info: Redefining \bigg on input line 723.
+LaTeX Info: Redefining \Bigg on input line 724.
+\big@size=\dimen159
+LaTeX Font Info:    Redeclaring font encoding OML on input line 742.
+LaTeX Font Info:    Redeclaring font encoding OMS on input line 743.
+\macc@depth=\count291
+LaTeX Info: Redefining \bmod on input line 904.
+LaTeX Info: Redefining \pmod on input line 909.
+LaTeX Info: Redefining \smash on input line 939.
+LaTeX Info: Redefining \relbar on input line 969.
+LaTeX Info: Redefining \Relbar on input line 970.
+\c@MaxMatrixCols=\count292
+\dotsspace@=\muskip17
+\c@parentequation=\count293
+\dspbrk@lvl=\count294
+\tag@help=\toks20
+\row@=\count295
+\column@=\count296
+\maxfields@=\count297
+\andhelp@=\toks21
+\eqnshift@=\dimen160
+\alignsep@=\dimen161
+\tagshift@=\dimen162
+\tagwidth@=\dimen163
+\totwidth@=\dimen164
+\lineht@=\dimen165
+\@envbody=\toks22
+\multlinegap=\skip52
+\multlinetaggap=\skip53
+\mathdisplay@stack=\toks23
+LaTeX Info: Redefining \[ on input line 2950.
+LaTeX Info: Redefining \] on input line 2951.
+)
+(c:/texlive/2025/texmf-dist/tex/latex/amsfonts/amssymb.sty
+Package: amssymb 2013/01/14 v3.01 AMS font symbols
+
+(c:/texlive/2025/texmf-dist/tex/latex/amsfonts/amsfonts.sty
+Package: amsfonts 2013/01/14 v3.01 Basic AMSFonts support
+\symAMSa=\mathgroup4
+\symAMSb=\mathgroup5
+LaTeX Font Info:    Redeclaring math symbol \hbar on input line 98.
+LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
+(Font)                  U/euf/m/n --> U/euf/b/n on input line 106.
+))
+(c:/texlive/2025/texmf-dist/tex/latex/amscls/amsthm.sty
+Package: amsthm 2020/05/29 v2.20.6
+\thm@style=\toks24
+\thm@bodyfont=\toks25
+\thm@headfont=\toks26
+\thm@notefont=\toks27
+\thm@headpunct=\toks28
+\thm@preskip=\skip54
+\thm@postskip=\skip55
+\thm@headsep=\skip56
+\dth@everypar=\toks29
+)
+(c:/texlive/2025/texmf-dist/tex/latex/mathtools/mathtools.sty
+Package: mathtools 2024/10/04 v1.31 mathematical typesetting tools
+
+(c:/texlive/2025/texmf-dist/tex/latex/tools/calc.sty
+Package: calc 2025/03/01 v4.3b Infix arithmetic (KKT,FJ)
+\calc@Acount=\count298
+\calc@Bcount=\count299
+\calc@Adimen=\dimen166
+\calc@Bdimen=\dimen167
+\calc@Askip=\skip57
+\calc@Bskip=\skip58
+LaTeX Info: Redefining \setlength on input line 86.
+LaTeX Info: Redefining \addtolength on input line 87.
+\calc@Ccount=\count300
+\calc@Cskip=\skip59
+)
+(c:/texlive/2025/texmf-dist/tex/latex/mathtools/mhsetup.sty
+Package: mhsetup 2021/03/18 v1.4 programming setup (MH)
+)
+\g_MT_multlinerow_int=\count301
+\l_MT_multwidth_dim=\dimen168
+\origjot=\skip60
+\l_MT_shortvdotswithinadjustabove_dim=\dimen169
+\l_MT_shortvdotswithinadjustbelow_dim=\dimen170
+\l_MT_above_intertext_sep=\dimen171
+\l_MT_below_intertext_sep=\dimen172
+\l_MT_above_shortintertext_sep=\dimen173
+\l_MT_below_shortintertext_sep=\dimen174
+\xmathstrut@box=\box55
+\xmathstrut@dim=\dimen175
+)
+(c:/texlive/2025/texmf-dist/tex/latex/booktabs/booktabs.sty
+Package: booktabs 2020/01/12 v1.61803398 Publication quality tables
+\heavyrulewidth=\dimen176
+\lightrulewidth=\dimen177
+\cmidrulewidth=\dimen178
+\belowrulesep=\dimen179
+\belowbottomsep=\dimen180
+\aboverulesep=\dimen181
+\abovetopsep=\dimen182
+\cmidrulesep=\dimen183
+\cmidrulekern=\dimen184
+\defaultaddspace=\dimen185
+\@cmidla=\count302
+\@cmidlb=\count303
+\@aboverulesep=\dimen186
+\@belowrulesep=\dimen187
+\@thisruleclass=\count304
+\@lastruleclass=\count305
+\@thisrulewidth=\dimen188
+)
+(c:/texlive/2025/texmf-dist/tex/latex/tools/array.sty
+Package: array 2025/09/25 v2.6n Tabular extension package (FMi)
+\col@sep=\dimen189
+\ar@mcellbox=\box56
+\extrarowheight=\dimen190
+\NC@list=\toks30
+\extratabsurround=\skip61
+\backup@length=\skip62
+\ar@cellbox=\box57
+)
+(c:/texlive/2025/texmf-dist/tex/latex/tools/tabularx.sty
+Package: tabularx 2023/12/11 v2.12a `tabularx' package (DPC)
+\TX@col@width=\dimen191
+\TX@old@table=\dimen192
+\TX@old@col=\dimen193
+\TX@target=\dimen194
+\TX@delta=\dimen195
+\TX@cols=\count306
+\TX@ftn=\toks31
+)
+(c:/texlive/2025/texmf-dist/tex/latex/enumitem/enumitem.sty
+Package: enumitem 2025/02/06 v3.11 Customized lists
+\labelindent=\skip63
+\enit@outerparindent=\dimen196
+\enit@toks=\toks32
+\enit@inbox=\box58
+\enit@count@id=\count307
+\enitdp@description=\count308
+)
+(c:/texlive/2025/texmf-dist/tex/latex/hyperref/hyperref.sty
+Package: hyperref 2026-01-29 v7.01p Hypertext links for LaTeX
+
+(c:/texlive/2025/texmf-dist/tex/latex/kvsetkeys/kvsetkeys.sty
+Package: kvsetkeys 2022-10-05 v1.19 Key value parser (HO)
+)
+(c:/texlive/2025/texmf-dist/tex/generic/kvdefinekeys/kvdefinekeys.sty
+Package: kvdefinekeys 2019-12-19 v1.6 Define keys (HO)
+)
+(c:/texlive/2025/texmf-dist/tex/generic/pdfescape/pdfescape.sty
+Package: pdfescape 2019/12/09 v1.15 Implements pdfTeX's escape features (HO)
+
+(c:/texlive/2025/texmf-dist/tex/generic/ltxcmds/ltxcmds.sty
+Package: ltxcmds 2023-12-04 v1.26 LaTeX kernel commands for general use (HO)
+)
+(c:/texlive/2025/texmf-dist/tex/generic/pdftexcmds/pdftexcmds.sty
+Package: pdftexcmds 2020-06-27 v0.33 Utility functions of pdfTeX for LuaTeX (HO
+)
+
+(c:/texlive/2025/texmf-dist/tex/generic/infwarerr/infwarerr.sty
+Package: infwarerr 2019/12/03 v1.5 Providing info/warning/error messages (HO)
+)
+Package pdftexcmds Info: \pdf@primitive is available.
+Package pdftexcmds Info: \pdf@ifprimitive is available.
+Package pdftexcmds Info: \pdfdraftmode found.
+))
+(c:/texlive/2025/texmf-dist/tex/latex/hycolor/hycolor.sty
+Package: hycolor 2020-01-27 v1.10 Color options for hyperref/bookmark (HO)
+)
+(c:/texlive/2025/texmf-dist/tex/latex/hyperref/nameref.sty
+Package: nameref 2026-01-29 v2.58 Cross-referencing by name of section
+
+(c:/texlive/2025/texmf-dist/tex/latex/refcount/refcount.sty
+Package: refcount 2019/12/15 v3.6 Data extraction from label references (HO)
+)
+(c:/texlive/2025/texmf-dist/tex/generic/gettitlestring/gettitlestring.sty
+Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
+
+(c:/texlive/2025/texmf-dist/tex/latex/kvoptions/kvoptions.sty
+Package: kvoptions 2022-06-15 v3.15 Key value format for package options (HO)
+))
+\c@section@level=\count309
+)
+(c:/texlive/2025/texmf-dist/tex/latex/etoolbox/etoolbox.sty
+Package: etoolbox 2025/10/02 v2.5m e-TeX tools for LaTeX (JAW)
+\etb@tempcnta=\count310
+)
+(c:/texlive/2025/texmf-dist/tex/generic/stringenc/stringenc.sty
+Package: stringenc 2019/11/29 v1.12 Convert strings between diff. encodings (HO
+)
+)
+\@linkdim=\dimen197
+\Hy@linkcounter=\count311
+\Hy@pagecounter=\count312
+
+(c:/texlive/2025/texmf-dist/tex/latex/hyperref/pd1enc.def
+File: pd1enc.def 2026-01-29 v7.01p Hyperref: PDFDocEncoding definition (HO)
+Now handling font encoding PD1 ...
+... no UTF-8 mapping file for font encoding PD1
+)
+(c:/texlive/2025/texmf-dist/tex/generic/intcalc/intcalc.sty
+Package: intcalc 2019/12/15 v1.3 Expandable calculations with integers (HO)
+)
+\Hy@SavedSpaceFactor=\count313
+
+(c:/texlive/2025/texmf-dist/tex/latex/hyperref/puenc.def
+File: puenc.def 2026-01-29 v7.01p Hyperref: PDF Unicode definition (HO)
+Now handling font encoding PU ...
+... no UTF-8 mapping file for font encoding PU
+)
+Package hyperref Info: Hyper figures OFF on input line 4201.
+Package hyperref Info: Link nesting OFF on input line 4206.
+Package hyperref Info: Hyper index ON on input line 4209.
+Package hyperref Info: Plain pages OFF on input line 4216.
+Package hyperref Info: Backreferencing OFF on input line 4221.
+Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
+Package hyperref Info: Bookmarks ON on input line 4468.
+\c@Hy@tempcnt=\count314
+
+(c:/texlive/2025/texmf-dist/tex/latex/url/url.sty
+\Urlmuskip=\muskip18
+Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
+)
+LaTeX Info: Redefining \url on input line 4807.
+\XeTeXLinkMargin=\dimen198
+
+(c:/texlive/2025/texmf-dist/tex/generic/bitset/bitset.sty
+Package: bitset 2019/12/09 v1.3 Handle bit-vector datatype (HO)
+
+(c:/texlive/2025/texmf-dist/tex/generic/bigintcalc/bigintcalc.sty
+Package: bigintcalc 2019/12/15 v1.5 Expandable calculations on big integers (HO
+)
+))
+\Fld@menulength=\count315
+\Field@Width=\dimen199
+\Fld@charsize=\dimen256
+Package hyperref Info: Hyper figures OFF on input line 6084.
+Package hyperref Info: Link nesting OFF on input line 6089.
+Package hyperref Info: Hyper index ON on input line 6092.
+Package hyperref Info: backreferencing OFF on input line 6099.
+Package hyperref Info: Link coloring OFF on input line 6104.
+Package hyperref Info: Link coloring with OCG OFF on input line 6109.
+Package hyperref Info: PDF/A mode OFF on input line 6114.
+\Hy@abspage=\count316
+\c@Item=\count317
+\c@Hfootnote=\count318
+)
+Package hyperref Info: Driver (autodetected): hpdftex.
+
+(c:/texlive/2025/texmf-dist/tex/latex/hyperref/hpdftex.def
+File: hpdftex.def 2026-01-29 v7.01p Hyperref driver for pdfTeX
+\Fld@listcount=\count319
+\c@bookmark@seq@number=\count320
+
+(c:/texlive/2025/texmf-dist/tex/latex/rerunfilecheck/rerunfilecheck.sty
+Package: rerunfilecheck 2025-06-21 v1.11 Rerun checks for auxiliary files (HO)
+
+(c:/texlive/2025/texmf-dist/tex/generic/uniquecounter/uniquecounter.sty
+Package: uniquecounter 2019/12/15 v1.4 Provide unlimited unique counter (HO)
+)
+Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
+84.
+)
+\Hy@SectionHShift=\skip64
+)
+(c:/texlive/2025/texmf-dist/tex/latex/tools/bm.sty
+Package: bm 2025/10/21 v1.2g Bold Symbol Support (DPC/FMi)
+\symboldoperators=\mathgroup6
+\symboldletters=\mathgroup7
+\symboldsymbols=\mathgroup8
+Package bm Info: No bold for \OMX/cmex/m/n, using \pmb.
+Package bm Info: No bold for \U/msa/m/n, using \pmb.
+Package bm Info: No bold for \U/msb/m/n, using \pmb.
+LaTeX Font Info:    Redeclaring math alphabet \mathbf on input line 149.
+)
+(c:/texlive/2025/texmf-dist/tex/latex/microtype/microtype.sty
+Package: microtype 2025/07/09 v3.2b Micro-typographical refinements (RS)
+\MT@toks=\toks33
+\MT@tempbox=\box59
+\MT@count=\count321
+LaTeX Info: Redefining \noprotrusionifhmode on input line 1087.
+LaTeX Info: Redefining \leftprotrusion on input line 1088.
+\MT@prot@toks=\toks34
+LaTeX Info: Redefining \rightprotrusion on input line 1107.
+LaTeX Info: Redefining \textls on input line 1449.
+\MT@outer@kern=\dimen257
+LaTeX Info: Redefining \microtypecontext on input line 2053.
+LaTeX Info: Redefining \textmicrotypecontext on input line 2070.
+\MT@listname@count=\count322
+
+(c:/texlive/2025/texmf-dist/tex/latex/microtype/microtype-pdftex.def
+File: microtype-pdftex.def 2025/07/09 v3.2b Definitions specific to pdftex (RS)
+
+LaTeX Info: Redefining \lsstyle on input line 944.
+LaTeX Info: Redefining \lslig on input line 944.
+\MT@outer@space=\skip65
+)
+Package microtype Info: Loading configuration file microtype.cfg.
+
+(c:/texlive/2025/texmf-dist/tex/latex/microtype/microtype.cfg
+File: microtype.cfg 2025/07/09 v3.2b microtype main configuration file (RS)
+)
+LaTeX Info: Redefining \microtypesetup on input line 3065.
+)
+\c@theorem=\count323
+
+(c:/texlive/2025/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
+File: l3backend-pdftex.def 2025-10-09 L3 backend support: PDF output (pdfTeX)
+\l__color_backend_stack_int=\count324
+)
+No file ET_Sempaevum_Paper12.aux.
+\openout1 = `ET_Sempaevum_Paper12.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+*geometry* driver: auto-detecting
+*geometry* detected driver: pdftex
+*geometry* verbose mode - [ preamble ] result:
+* driver: pdftex
+* paper: a4paper
+* layout: <same size as paper>
+* layoutoffset:(h,v)=(0.0pt,0.0pt)
+* modes: 
+* h-part:(L,W,R)=(72.26999pt, 452.9679pt, 72.26999pt)
+* v-part:(T,H,B)=(72.26999pt, 700.50687pt, 72.26999pt)
+* \paperwidth=597.50787pt
+* \paperheight=845.04684pt
+* \textwidth=452.9679pt
+* \textheight=700.50687pt
+* \oddsidemargin=0.0pt
+* \evensidemargin=0.0pt
+* \topmargin=-37.0pt
+* \headheight=12.0pt
+* \headsep=25.0pt
+* \topskip=11.0pt
+* \footskip=30.0pt
+* \marginparwidth=50.0pt
+* \marginparsep=10.0pt
+* \columnsep=10.0pt
+* \skip\footins=10.0pt plus 4.0pt minus 2.0pt
+* \hoffset=0.0pt
+* \voffset=0.0pt
+* \mag=1000
+* \@twocolumnfalse
+* \@twosidefalse
+* \@mparswitchfalse
+* \@reversemarginfalse
+* (1in=72.27pt=25.4mm, 1cm=28.453pt)
+
+(c:/texlive/2025/texmf-dist/tex/latex/graphics/graphicx.sty
+Package: graphicx 2024/12/31 v1.2e Enhanced LaTeX Graphics (DPC,SPQR)
+
+(c:/texlive/2025/texmf-dist/tex/latex/graphics/graphics.sty
+Package: graphics 2024/08/06 v1.4g Standard LaTeX Graphics (DPC,SPQR)
+
+(c:/texlive/2025/texmf-dist/tex/latex/graphics/trig.sty
+Package: trig 2023/12/02 v1.11 sin cos tan (DPC)
+)
+(c:/texlive/2025/texmf-dist/tex/latex/graphics-cfg/graphics.cfg
+File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
+)
+Package graphics Info: Driver file: pdftex.def on input line 106.
+
+(c:/texlive/2025/texmf-dist/tex/latex/graphics-def/pdftex.def
+File: pdftex.def 2025/09/29 v1.2d Graphics/color driver for pdftex
+
+(c:/texlive/2025/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count325
+\scratchdimen=\dimen258
+\scratchbox=\box60
+\nofMPsegments=\count326
+\nofMParguments=\count327
+\everyMPshowfont=\toks35
+\MPscratchCnt=\count328
+\MPscratchDim=\dimen259
+\MPnumerator=\count329
+\makeMPintoPDFobject=\count330
+\everyMPtoPDFconversion=\toks36
+))) (c:/texlive/2025/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty
+Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
+Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
+85.
+
+(c:/texlive/2025/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
+File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
+e
+))
+\Gin@req@height=\dimen260
+\Gin@req@width=\dimen261
+)
+Package hyperref Info: Link coloring OFF on input line 58.
+\@outlinefile=\write3
+\openout3 = `ET_Sempaevum_Paper12.out'.
+
+LaTeX Info: Redefining \microtypecontext on input line 58.
+Package microtype Info: Applying patch `item' on input line 58.
+Package microtype Info: Applying patch `toc' on input line 58.
+Package microtype Info: Applying patch `eqnum' on input line 58.
+
+
+Package microtype Warning: Unable to apply patch `footnote' on input line 58.
+
+Package microtype Info: Applying patch `verbatim' on input line 58.
+LaTeX Info: Redefining \microtypesetup on input line 58.
+Package microtype Info: Generating PDF output.
+Package microtype Info: Character protrusion enabled (level 2).
+Package microtype Info: Using default protrusion set `alltext'.
+Package microtype Info: No font expansion.
+Package microtype Info: No adjustment of tracking.
+Package microtype Info: No adjustment of interword spacing.
+Package microtype Info: No adjustment of character kerning.
+(c:/texlive/2025/texmf-dist/tex/latex/microtype/mt-cmr.cfg
+File: mt-cmr.cfg 2013/05/19 v2.2 microtype config. file: Computer Modern Roman 
+(RS)
+)
+LaTeX Font Info:    Trying to load font information for U+msa on input line 60.
+
+
+(c:/texlive/2025/texmf-dist/tex/latex/amsfonts/umsa.fd
+File: umsa.fd 2013/01/14 v3.01 AMS symbols A
+)
+(c:/texlive/2025/texmf-dist/tex/latex/microtype/mt-msa.cfg
+File: mt-msa.cfg 2006/02/04 v1.1 microtype config. file: AMS symbols (a) (RS)
+)
+LaTeX Font Info:    Trying to load font information for U+msb on input line 60.
+
+
+(c:/texlive/2025/texmf-dist/tex/latex/amsfonts/umsb.fd
+File: umsb.fd 2013/01/14 v3.01 AMS symbols B
+)
+(c:/texlive/2025/texmf-dist/tex/latex/microtype/mt-msb.cfg
+File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
+)
+No file ET_Sempaevum_Paper12.toc.
+\tf@toc=\write4
+\openout4 = `ET_Sempaevum_Paper12.toc'.
+
+[1
+
+{c:/texlive/2025/texmf-var/fonts/map/pdftex/updmap/pdftex.map}{c:/texlive/2025/
+texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc}]
+
+LaTeX Warning: Reference `subsec:descriptor-gap' on page 2 undefined on input l
+ine 78.
+
+
+LaTeX Warning: Reference `rem:godel-asymmetry' on page 2 undefined on input lin
+e 78.
+
+
+LaTeX Warning: Reference `thm:lossless' on page 2 undefined on input line 78.
+
+
+LaTeX Warning: Reference `prop:divisors' on page 2 undefined on input line 85.
+
+
+LaTeX Warning: Reference `def:harmonic-family' on page 2 undefined on input lin
+e 85.
+
+
+LaTeX Warning: Reference `tab:twelve-harmonic-families' on page 2 undefined on 
+input line 85.
+
+
+LaTeX Warning: Reference `thm:visitation' on page 2 undefined on input line 85.
+
+
+
+LaTeX Warning: Reference `thm:doubling' on page 2 undefined on input line 86.
+
+
+LaTeX Warning: Reference `thm:self' on page 2 undefined on input line 87.
+
+
+LaTeX Warning: Reference `sec:fractal' on page 2 undefined on input line 88.
+
+
+LaTeX Warning: Reference `sec:math-domain' on page 2 undefined on input line 89
+.
+
+[2]
+
+LaTeX Warning: Reference `subsec:subsumption' on page 3 undefined on input line
+ 91.
+
+
+LaTeX Warning: Reference `subsec:three-tools' on page 3 undefined on input line
+ 92.
+
+
+LaTeX Warning: Reference `subsec:subsumption' on page 3 undefined on input line
+ 95.
+
+
+LaTeX Warning: Reference `subsec:geometries' on page 3 undefined on input line 
+101.
+
+
+LaTeX Warning: Reference `cor:K-eff' on page 3 undefined on input line 101.
+
+
+LaTeX Warning: Reference `sec:tower' on page 3 undefined on input line 101.
+
+
+LaTeX Warning: Reference `sec:sublattice' on page 3 undefined on input line 101
+.
+
+
+LaTeX Warning: Citation `Koide1982' on page 3 undefined on input line 112.
+
+
+LaTeX Warning: Citation `CohenHubbard1965' on page 3 undefined on input line 11
+3.
+
+
+LaTeX Warning: Citation `Alberts' on page 3 undefined on input line 115.
+
+[3]
+
+LaTeX Warning: Reference `subsec:subsumption' on page 4 undefined on input line
+ 122.
+
+
+LaTeX Warning: Reference `sec:primitives' on page 4 undefined on input line 126
+.
+
+
+LaTeX Warning: Reference `sec:N12' on page 4 undefined on input line 128.
+
+
+LaTeX Warning: Reference `thm:conv' on page 4 undefined on input line 131.
+
+
+LaTeX Warning: Reference `thm:self' on page 4 undefined on input line 132.
+
+
+LaTeX Warning: Reference `prop:riemann' on page 4 undefined on input line 137.
+
+
+LaTeX Warning: Reference `sec:complex' on page 4 undefined on input line 137.
+
+[4]
+
+LaTeX Warning: Reference `sec:primitives' on page 5 undefined on input line 143
+.
+
+
+LaTeX Warning: Reference `sec:triads' on page 5 undefined on input line 143.
+
+
+LaTeX Warning: Reference `sec:temporal' on page 5 undefined on input line 143.
+
+
+LaTeX Warning: Reference `sec:N12' on page 5 undefined on input line 143.
+
+
+LaTeX Warning: Reference `sec:lattice' on page 5 undefined on input line 143.
+
+
+LaTeX Warning: Reference `sec:sublattice' on page 5 undefined on input line 143
+.
+
+
+LaTeX Warning: Reference `sec:tower' on page 5 undefined on input line 143.
+
+
+LaTeX Warning: Reference `sec:complex' on page 5 undefined on input line 143.
+
+
+LaTeX Warning: Reference `sec:catalog' on page 5 undefined on input line 143.
+
+
+LaTeX Warning: Reference `sec:cascade' on page 5 undefined on input line 143.
+
+
+LaTeX Warning: Reference `sec:fractal' on page 5 undefined on input line 143.
+
+
+LaTeX Warning: Reference `sec:backbones' on page 5 undefined on input line 143.
+
+
+
+LaTeX Warning: Reference `sec:paths' on page 5 undefined on input line 143.
+
+
+LaTeX Warning: Reference `sec:math-domain' on page 5 undefined on input line 14
+3.
+
+
+LaTeX Warning: Reference `sec:selfcons' on page 5 undefined on input line 143.
+
+
+LaTeX Warning: Reference `sec:gaze' on page 5 undefined on input line 143.
+
+
+LaTeX Warning: Reference `sec:applications' on page 5 undefined on input line 1
+43.
+
+
+LaTeX Warning: Reference `sec:comparison' on page 5 undefined on input line 143
+.
+
+
+LaTeX Warning: Reference `sec:secret26' on page 5 undefined on input line 143.
+
+
+LaTeX Warning: Reference `sec:predictions' on page 5 undefined on input line 14
+3.
+
+
+LaTeX Warning: Reference `sec:conclusion' on page 5 undefined on input line 143
+.
+
+[5]
+
+LaTeX Warning: Reference `prop:intrinsic' on page 6 undefined on input line 175
+.
+
+
+LaTeX Warning: Reference `def:cardinal' on page 6 undefined on input line 191.
+
+
+LaTeX Warning: Reference `subsec:Sigma' on page 6 undefined on input line 191.
+
+[6]
+
+LaTeX Warning: Reference `ax:cardinalities' on page 7 undefined on input line 2
+30.
+
+
+LaTeX Warning: Reference `ax:disjoint' on page 7 undefined on input line 230.
+
+[7]
+
+LaTeX Warning: Reference `prop:intrinsic' on page 8 undefined on input line 238
+.
+
+
+LaTeX Warning: Reference `ax:order' on page 8 undefined on input line 242.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 245.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\Sigma' on input line 245.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 245.
+
+
+LaTeX Warning: Reference `ax:order' on page 8 undefined on input line 266.
+
+
+LaTeX Warning: Reference `sec:lattice' on page 8 undefined on input line 266.
+
+[8]
+
+LaTeX Warning: Reference `sec:lattice' on page 9 undefined on input line 275.
+
+[9]
+
+LaTeX Warning: Reference `sec:fractal' on page 10 undefined on input line 325.
+
+
+LaTeX Warning: Reference `def:variance' on page 10 undefined on input line 340.
+
+
+
+LaTeX Warning: Reference `subsec:levels' on page 10 undefined on input line 340
+.
+
+
+LaTeX Warning: Reference `ax:founding' on page 10 undefined on input line 351.
+
+
+LaTeX Warning: Reference `ax:master' on page 10 undefined on input line 351.
+
+
+LaTeX Warning: Reference `def:states' on page 10 undefined on input line 353.
+
+
+LaTeX Warning: Reference `ax:founding' on page 10 undefined on input line 353.
+
+
+LaTeX Warning: Reference `prop:unique-E-tau' on page 10 undefined on input line
+ 353.
+
+
+LaTeX Warning: Reference `sec:temporal' on page 10 undefined on input line 353.
+
+
+[10]
+
+LaTeX Warning: Reference `prop:zero-variance' on page 11 undefined on input lin
+e 357.
+
+
+LaTeX Warning: Reference `def:variance' on page 11 undefined on input line 360.
+
+
+
+LaTeX Warning: Reference `eq:var-discrete' on page 11 undefined on input line 3
+69.
+
+
+LaTeX Warning: Reference `eq:var-discrete' on page 11 undefined on input line 3
+78.
+
+
+LaTeX Warning: Reference `eq:var-continuous' on page 11 undefined on input line
+ 378.
+
+
+LaTeX Warning: Reference `eq:var-continuous' on page 11 undefined on input line
+ 382.
+
+
+LaTeX Warning: Reference `eq:var-asymp' on page 11 undefined on input line 389.
+
+
+
+LaTeX Warning: Reference `prop:zero-variance' on page 11 undefined on input lin
+e 389.
+
+[11]
+
+LaTeX Warning: Reference `subsec:constants' on page 12 undefined on input line 
+392.
+
+
+LaTeX Warning: Reference `eq:constants' on page 12 undefined on input line 392.
+
+
+
+LaTeX Warning: Reference `sec:N12' on page 12 undefined on input line 396.
+
+
+LaTeX Warning: Reference `def:variance' on page 12 undefined on input line 399.
+
+
+
+LaTeX Warning: Reference `rem:V-levels' on page 12 undefined on input line 401.
+
+
+
+LaTeX Warning: Reference `eq:var-continuous' on page 12 undefined on input line
+ 401.
+
+
+LaTeX Warning: Reference `eq:var-asymp' on page 12 undefined on input line 404.
+
+
+
+LaTeX Warning: Reference `eq:var-norm' on page 12 undefined on input line 404.
+
+
+LaTeX Warning: Reference `subsec:alpha-rotation' on page 12 undefined on input 
+line 428.
+
+
+LaTeX Warning: Reference `prop:primitive-geometries' on page 12 undefined on in
+put line 428.
+
+[12]
+
+LaTeX Warning: Reference `cor:CMinus0' on page 13 undefined on input line 436.
+
+
+LaTeX Warning: Reference `subsec:alpha-rotation' on page 13 undefined on input 
+line 436.
+
+
+LaTeX Warning: Reference `sec:gaze' on page 13 undefined on input line 440.
+
+
+LaTeX Warning: Reference `prop:gaze-decoherence' on page 13 undefined on input 
+line 444.
+
+
+LaTeX Warning: Reference `sec:lattice' on page 13 undefined on input line 447.
+
+
+LaTeX Warning: Reference `sec:complex' on page 13 undefined on input line 447.
+
+
+LaTeX Warning: Reference `cor:K-eff' on page 13 undefined on input line 447.
+
+
+LaTeX Warning: Reference `sec:lattice' on page 13 undefined on input line 447.
+
+
+LaTeX Warning: Reference `sec:tower' on page 13 undefined on input line 447.
+
+
+LaTeX Warning: Reference `cor:K-eff' on page 13 undefined on input line 447.
+
+
+LaTeX Warning: Reference `sec:primitives' on page 13 undefined on input line 45
+5.
+
+[13]
+
+LaTeX Warning: Reference `tab:triads' on page 14 undefined on input line 471.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 493.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\Sigma' on input line 493.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 493.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 493.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\circ' on input line 493.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\circ' on input line 493.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 493.
+
+[14]
+
+LaTeX Warning: Reference `sec:lattice' on page 15 undefined on input line 517.
+
+
+LaTeX Warning: Reference `sec:complex' on page 15 undefined on input line 517.
+
+
+LaTeX Warning: Reference `subsec:subsumption' on page 15 undefined on input lin
+e 517.
+
+
+LaTeX Warning: Reference `sec:math-domain' on page 15 undefined on input line 5
+21.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/scit' undefined
+(Font)              using `OT1/cmr/m/sc' instead on input line 523.
+
+
+LaTeX Warning: Reference `sec:primitives' on page 15 undefined on input line 53
+1.
+
+
+LaTeX Warning: Citation `ThreeTools' on page 15 undefined on input line 531.
+
+
+LaTeX Warning: Reference `subsec:loop' on page 15 undefined on input line 539.
+
+
+LaTeX Warning: Reference `sec:N12' on page 15 undefined on input line 539.
+
+
+LaTeX Warning: Reference `sec:applications' on page 15 undefined on input line 
+539.
+
+[15]
+
+LaTeX Warning: Reference `ax:master' on page 16 undefined on input line 551.
+
+
+LaTeX Warning: Reference `def:states' on page 16 undefined on input line 551.
+
+
+LaTeX Warning: Reference `ax:order' on page 16 undefined on input line 554.
+
+
+LaTeX Warning: Reference `sec:N12' on page 16 undefined on input line 567.
+
+
+LaTeX Warning: Reference `sec:N12' on page 16 undefined on input line 567.
+
+
+LaTeX Warning: Reference `def:cardinal' on page 16 undefined on input line 583.
+
+
+
+LaTeX Warning: Reference `prop:irreducibility' on page 16 undefined on input li
+ne 583.
+
+[16]
+
+LaTeX Warning: Reference `subsec:alpha' on page 17 undefined on input line 600.
+
+
+
+LaTeX Warning: Reference `eq:alpha' on page 17 undefined on input line 600.
+
+[17]
+
+LaTeX Warning: Reference `sec:applications' on page 18 undefined on input line 
+641.
+
+
+LaTeX Warning: Reference `subsec:identification' on page 18 undefined on input 
+line 645.
+
+
+LaTeX Warning: Reference `subsec:subsumption' on page 18 undefined on input lin
+e 645.
+
+
+LaTeX Warning: Reference `princ:identification' on page 18 undefined on input l
+ine 655.
+
+
+LaTeX Warning: Reference `princ:descriptor-gap' on page 18 undefined on input l
+ine 655.
+
+
+LaTeX Warning: Reference `cor:verification' on page 18 undefined on input line 
+655.
+
+
+LaTeX Warning: Reference `princ:subsumption' on page 18 undefined on input line
+ 655.
+
+
+LaTeX Warning: Reference `def:Sigma' on page 18 undefined on input line 660.
+
+
+LaTeX Warning: Reference `sec:primitives' on page 18 undefined on input line 66
+3.
+
+
+LaTeX Warning: Reference `sec:lattice' on page 18 undefined on input line 667.
+
+
+LaTeX Warning: Reference `sec:applications' on page 18 undefined on input line 
+667.
+
+[18]
+
+LaTeX Warning: Reference `def:cardinal' on page 19 undefined on input line 686.
+
+
+
+LaTeX Warning: Reference `sec:tower' on page 19 undefined on input line 688.
+
+
+LaTeX Warning: Reference `prop:int-resolution' on page 19 undefined on input li
+ne 688.
+
+
+LaTeX Warning: Reference `tab:int-resolution' on page 19 undefined on input lin
+e 688.
+
+
+LaTeX Warning: Reference `thm:doubling' on page 19 undefined on input line 688.
+
+
+
+LaTeX Warning: Reference `subsec:identification' on page 19 undefined on input 
+line 696.
+
+[19]
+Underfull \hbox (badness 2529) in paragraph at lines 715--715
+[]|\OT1/cmr/m/n/10.95 finite or-der-ing de-scrip-tor; im-
+ []
+
+
+LaTeX Warning: Reference `subsec:three-infinities' on page 20 undefined on inpu
+t line 721.
+
+
+LaTeX Warning: Reference `rem:mediation-symmetry' on page 20 undefined on input
+ line 721.
+
+
+LaTeX Warning: Reference `ax:master' on page 20 undefined on input line 731.
+
+
+LaTeX Warning: Reference `prop:zero-variance' on page 20 undefined on input lin
+e 731.
+
+
+LaTeX Warning: Reference `ax:founding' on page 20 undefined on input line 744.
+
+
+LaTeX Warning: Reference `prop:unique-E-tau' on page 20 undefined on input line
+ 747.
+
+
+LaTeX Warning: Reference `prop:zero-variance' on page 20 undefined on input lin
+e 747.
+
+
+LaTeX Warning: Reference `subsec:variance' on page 20 undefined on input line 7
+47.
+
+[20]
+
+LaTeX Warning: Reference `prop:minkowski' on page 21 undefined on input line 77
+3.
+
+
+LaTeX Warning: Reference `def:temporal-aspects' on page 21 undefined on input l
+ine 786.
+
+
+LaTeX Warning: Reference `def:temporal-aspects' on page 21 undefined on input l
+ine 791.
+
+
+LaTeX Warning: Reference `eq:schwarzschild-ratio' on page 21 undefined on input
+ line 795.
+
+[21]
+
+LaTeX Warning: Reference `def:temporal-aspects' on page 22 undefined on input l
+ine 803.
+
+
+LaTeX Warning: Reference `ax:temporal-master' on page 22 undefined on input lin
+e 803.
+
+
+LaTeX Warning: Reference `prop:horizon' on page 22 undefined on input line 807.
+
+
+
+LaTeX Warning: Reference `prop:horizon' on page 22 undefined on input line 807.
+
+
+
+LaTeX Warning: Reference `sec:horizon' on page 22 undefined on input line 812.
+
+
+LaTeX Warning: Reference `subsec:minkowski' on page 22 undefined on input line 
+812.
+
+
+LaTeX Warning: Reference `subsec:horizon' on page 22 undefined on input line 81
+2.
+
+
+LaTeX Warning: Reference `sec:horizon' on page 22 undefined on input line 812.
+
+
+LaTeX Warning: Reference `sec:temporal' on page 22 undefined on input line 818.
+
+
+
+LaTeX Warning: Reference `prop:horizon' on page 22 undefined on input line 818.
+
+
+
+LaTeX Warning: Reference `prop:horizon' on page 22 undefined on input line 818.
+
+
+
+LaTeX Warning: Reference `subsec:temporal-scope' on page 22 undefined on input 
+line 818.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 820.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 820.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 820.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 820.
+
+[22]
+
+LaTeX Warning: Reference `def:temporal-aspects' on page 23 undefined on input l
+ine 829.
+
+
+LaTeX Warning: Reference `eq:kappa-GR' on page 23 undefined on input line 829.
+
+
+LaTeX Warning: Reference `eq:schwarzschild-ratio' on page 23 undefined on input
+ line 833.
+
+
+LaTeX Warning: Reference `cor:asymptotic-approach' on page 23 undefined on inpu
+t line 837.
+
+
+LaTeX Warning: Reference `eq:kappa-GR' on page 23 undefined on input line 846.
+
+
+LaTeX Warning: Reference `prop:kappa-gradient' on page 23 undefined on input li
+ne 850.
+
+
+LaTeX Warning: Reference `subsec:identification' on page 23 undefined on input 
+line 850.
+
+
+LaTeX Warning: Reference `prop:horizon' on page 23 undefined on input line 850.
+
+
+
+LaTeX Warning: Reference `prop:kappa-gradient' on page 23 undefined on input li
+ne 854.
+
+
+LaTeX Warning: Reference `subsec:subsumption' on page 23 undefined on input lin
+e 854.
+
+
+LaTeX Warning: Reference `cor:asymptotic-approach' on page 23 undefined on inpu
+t line 858.
+
+[23]
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 865.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 865.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 865.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 865.
+
+
+LaTeX Warning: Reference `subsec:kappa-gradient' on page 24 undefined on input 
+line 871.
+
+
+LaTeX Warning: Reference `ax:cardinalities' on page 24 undefined on input line 
+874.
+
+
+LaTeX Warning: Reference `subsec:three-infinities' on page 24 undefined on inpu
+t line 878.
+
+
+LaTeX Warning: Reference `ax:founding' on page 24 undefined on input line 880.
+
+
+LaTeX Warning: Reference `eq:T_H' on page 24 undefined on input line 884.
+
+
+LaTeX Warning: Reference `prop:kappa-gradient' on page 24 undefined on input li
+ne 888.
+
+
+LaTeX Warning: Reference `prop:U1-period' on page 24 undefined on input line 88
+8.
+
+[24]
+
+LaTeX Warning: Reference `eq:T_H' on page 25 undefined on input line 892.
+
+
+LaTeX Warning: Reference `subsec:bogoliubov' on page 25 undefined on input line
+ 892.
+
+
+LaTeX Warning: Reference `subsec:planck-spectrum' on page 25 undefined on input
+ line 892.
+
+
+LaTeX Warning: Reference `cor:asymptotic-approach' on page 25 undefined on inpu
+t line 909.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 917--918
+[]\OT1/cmr/m/it/10.95 T2 (In-verse con-ver-gents). \OT1/cmr/m/n/10.95 The conti
+nued-fraction ex-pan-sion $24\OML/cmm/m/it/10.95 ^^Y= [] \OT1/cmr/m/n/10.95 2 =
+
+ []
+
+
+LaTeX Warning: Reference `sec:sublattice' on page 25 undefined on input line 92
+0.
+
+[25]
+
+LaTeX Warning: Reference `cor:asymptotic-approach' on page 26 undefined on inpu
+t line 937.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 940.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 940.
+
+
+LaTeX Warning: Citation `Hawking1975' on page 26 undefined on input line 942.
+
+
+LaTeX Warning: Reference `eq:T_H' on page 26 undefined on input line 942.
+
+
+LaTeX Warning: Reference `eq:bogoliubov-ratio' on page 26 undefined on input li
+ne 946.
+
+
+LaTeX Warning: Reference `eq:T_H' on page 26 undefined on input line 946.
+
+
+LaTeX Warning: Reference `eq:bogoliubov-ratio' on page 26 undefined on input li
+ne 948.
+
+
+LaTeX Warning: Reference `eq:bogoliubov-ratio' on page 26 undefined on input li
+ne 951.
+
+
+LaTeX Warning: Reference `prop:U1-period' on page 26 undefined on input line 95
+5.
+
+
+LaTeX Warning: Reference `prop:U1-period' on page 26 undefined on input line 95
+7.
+
+
+LaTeX Warning: Reference `eq:bogoliubov-ratio' on page 26 undefined on input li
+ne 957.
+
+
+LaTeX Warning: Reference `prop:kappa-gradient' on page 26 undefined on input li
+ne 961.
+
+[26]
+
+LaTeX Warning: Reference `eq:bogoliubov-ratio' on page 27 undefined on input li
+ne 973.
+
+
+LaTeX Warning: Reference `eq:T_H' on page 27 undefined on input line 973.
+
+
+LaTeX Warning: Reference `prop:bogoliubov-half-U1' on page 27 undefined on inpu
+t line 977.
+
+
+LaTeX Warning: Reference `subsec:subsumption' on page 27 undefined on input lin
+e 977.
+
+
+LaTeX Warning: Reference `eq:bogoliubov-ratio' on page 27 undefined on input li
+ne 981.
+
+
+LaTeX Warning: Reference `cor:asymptotic-approach' on page 27 undefined on inpu
+t line 985.
+
+
+LaTeX Warning: Reference `eq:bogoliubov-ratio' on page 27 undefined on input li
+ne 990.
+
+
+LaTeX Warning: Reference `eq:T_H' on page 27 undefined on input line 994.
+
+
+LaTeX Warning: Reference `eq:planck-occupation' on page 27 undefined on input l
+ine 996.
+
+
+LaTeX Warning: Reference `subsec:states' on page 27 undefined on input line 996
+.
+
+
+LaTeX Warning: Reference `subsec:states' on page 27 undefined on input line 999
+.
+
+
+LaTeX Warning: Reference `subsec:variance' on page 27 undefined on input line 9
+99.
+
+[27]
+
+LaTeX Warning: Reference `subsec:states' on page 28 undefined on input line 100
+9.
+
+
+LaTeX Warning: Reference `eq:T_H' on page 28 undefined on input line 1020.
+
+
+LaTeX Warning: Reference `eq:planck-occupation' on page 28 undefined on input l
+ine 1024.
+
+
+LaTeX Warning: Reference `prop:U1-period' on page 28 undefined on input line 10
+28.
+
+
+LaTeX Warning: Reference `prop:kappa-gradient' on page 28 undefined on input li
+ne 1028.
+
+
+LaTeX Warning: Reference `prop:planck-derived' on page 28 undefined on input li
+ne 1032.
+
+
+LaTeX Warning: Reference `subsec:subsumption' on page 28 undefined on input lin
+e 1032.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 1035.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 1035.
+
+
+LaTeX Warning: Reference `eq:planck-occupation' on page 28 undefined on input l
+ine 1037.
+
+[28]
+
+LaTeX Warning: Reference `subsec:states' on page 29 undefined on input line 103
+9.
+
+
+LaTeX Warning: Reference `def:states' on page 29 undefined on input line 1039.
+
+
+LaTeX Warning: Reference `def:states' on page 29 undefined on input line 1042.
+
+
+LaTeX Warning: Reference `subsec:states' on page 29 undefined on input line 105
+0.
+
+
+LaTeX Warning: Reference `prop:fermion-PT' on page 29 undefined on input line 1
+054.
+
+
+LaTeX Warning: Reference `subsec:subsumption' on page 29 undefined on input lin
+e 1054.
+
+
+LaTeX Warning: Reference `sec:temporal' on page 29 undefined on input line 1059
+.
+
+
+Underfull \hbox (badness 1297) in paragraph at lines 1062--1063
+[]\OT1/cmr/bx/n/10.95 Definition 5.17 \OT1/cmr/m/n/10.95 (Mul-ti-fold birth tri
+ad)\OT1/cmr/bx/n/10.95 . \OT1/cmr/m/n/10.95 A \OT1/cmr/m/it/10.95 tower birth t
+riad \OT1/cmr/m/n/10.95 is the struc-tural triple
+ []
+
+[29]
+
+LaTeX Warning: Citation `Multifold' on page 30 undefined on input line 1068.
+
+
+LaTeX Warning: Reference `def:temporal-aspects' on page 30 undefined on input l
+ine 1072.
+
+
+LaTeX Warning: Reference `def:birth-triad' on page 30 undefined on input line 1
+072.
+
+
+LaTeX Warning: Reference `prop:planck-derived' on page 30 undefined on input li
+ne 1075.
+
+
+LaTeX Warning: Reference `prop:unique-E-tau' on page 30 undefined on input line
+ 1075.
+
+
+LaTeX Warning: Reference `def:birth-triad' on page 30 undefined on input line 1
+081.
+
+
+LaTeX Warning: Reference `prop:kappa-gradient' on page 30 undefined on input li
+ne 1083.
+
+
+LaTeX Warning: Reference `prop:horizon' on page 30 undefined on input line 1083
+.
+
+
+LaTeX Warning: Reference `prop:planck-derived' on page 30 undefined on input li
+ne 1083.
+
+
+LaTeX Warning: Reference `prop:unique-E-tau' on page 30 undefined on input line
+ 1083.
+
+
+LaTeX Warning: Reference `ax:order' on page 30 undefined on input line 1085.
+
+
+LaTeX Warning: Reference `prop:info-preserve' on page 30 undefined on input lin
+e 1089.
+
+
+LaTeX Warning: Reference `subsec:identification' on page 30 undefined on input 
+line 1089.
+
+[30]
+
+LaTeX Warning: Reference `prop:info-preserve' on page 31 undefined on input lin
+e 1093.
+
+
+LaTeX Warning: Reference `subsec:subsumption' on page 31 undefined on input lin
+e 1093.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 1096.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `subscript' on input line 1096.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 1096.
+
+
+LaTeX Warning: Reference `eq:T_H' on page 31 undefined on input line 1102.
+
+
+LaTeX Warning: Reference `def:birth-triad' on page 31 undefined on input line 1
+112.
+
+
+LaTeX Warning: Reference `eq:TH-over-TP' on page 31 undefined on input line 111
+6.
+
+
+LaTeX Warning: Reference `def:birth-triad' on page 31 undefined on input line 1
+120.
+
+
+LaTeX Warning: Reference `sec:sublattice' on page 31 undefined on input line 11
+22.
+
+
+LaTeX Warning: Reference `cor:asymptotic-approach' on page 31 undefined on inpu
+t line 1130.
+
+[31]
+
+LaTeX Warning: Reference `eq:TH-over-TP' on page 32 undefined on input line 113
+4.
+
+
+LaTeX Warning: Reference `subsec:Mcrit' on page 32 undefined on input line 1139
+.
+
+
+LaTeX Warning: Reference `eq:TH-over-TP' on page 32 undefined on input line 115
+2.
+
+
+LaTeX Warning: Reference `cor:asymptotic-approach' on page 32 undefined on inpu
+t line 1168.
+
+[32]
+
+LaTeX Warning: Reference `rem:U1-triangulation' on page 33 undefined on input l
+ine 1186.
+
+
+LaTeX Warning: Reference `prop:Mcrit-fixed-point' on page 33 undefined on input
+ line 1191.
+
+
+LaTeX Warning: Reference `prop:canonical-mass' on page 33 undefined on input li
+ne 1191.
+
+
+LaTeX Warning: Reference `prop:canonical-mass' on page 33 undefined on input li
+ne 1196.
+
+
+LaTeX Warning: Reference `cor:asymptotic-approach' on page 33 undefined on inpu
+t line 1197.
+
+[33]
+
+LaTeX Warning: Reference `cor:asymptotic-approach' on page 34 undefined on inpu
+t line 1206.
+
+
+LaTeX Warning: Reference `subsec:canonical-mass' on page 34 undefined on input 
+line 1210.
+
+
+Underfull \hbox (badness 2103) in paragraph at lines 1210--1211
+[]\OT1/cmr/m/it/10.95 Remark \OT1/cmr/m/n/10.95 5.29 (Unit-residue sub-class)\O
+T1/cmr/m/it/10.95 . \OT1/cmr/m/n/10.95 Within the $12$-locked class, the in-te-
+ger residue
+ []
+
+
+LaTeX Warning: Reference `prop:BH-dichotomy' on page 34 undefined on input line
+ 1214.
+
+
+LaTeX Warning: Reference `rem:unit-residue-subclass' on page 34 undefined on in
+put line 1214.
+
+
+LaTeX Warning: Reference `subsec:Mcrit' on page 34 undefined on input line 1219
+.
+
+
+LaTeX Warning: Reference `subsec:BH-dichotomy' on page 34 undefined on input li
+ne 1219.
+
+
+LaTeX Warning: Reference `eq:TH-over-TP' on page 34 undefined on input line 122
+2.
+
+
+LaTeX Warning: Reference `prop:limit' on page 34 undefined on input line 1222.
+
+
+LaTeX Warning: Reference `eq:TH-over-TP' on page 34 undefined on input line 122
+6.
+
+
+LaTeX Warning: Reference `sec:lattice' on page 34 undefined on input line 1226.
+
+
+
+LaTeX Warning: Reference `prop:limit' on page 34 undefined on input line 1226.
+
+[34]
+
+LaTeX Warning: Reference `rem:subplanck-table' on page 35 undefined on input li
+ne 1246.
+
+
+LaTeX Warning: Reference `sec:tower' on page 35 undefined on input line 1246.
+
+
+LaTeX Warning: Reference `tab:int-resolution' on page 35 undefined on input lin
+e 1246.
+
+
+LaTeX Warning: Reference `sec:catalog' on page 35 undefined on input line 1251.
+
+
+
+LaTeX Warning: Reference `subsec:BH-dichotomy' on page 35 undefined on input li
+ne 1251.
+
+
+LaTeX Warning: Reference `subsec:FQG' on page 35 undefined on input line 1254.
+
+
+LaTeX Warning: Reference `prop:U1-period' on page 35 undefined on input line 12
+58.
+
+
+LaTeX Warning: Reference `eq:imag-period' on page 35 undefined on input line 12
+58.
+
+
+LaTeX Warning: Reference `sec:sublattice' on page 35 undefined on input line 12
+58.
+
+
+LaTeX Warning: Reference `subsec:FQG' on page 35 undefined on input line 1262.
+
+
+LaTeX Warning: Reference `prop:BH-dichotomy' on page 35 undefined on input line
+ 1262.
+
+[35]
+
+LaTeX Warning: Reference `prop:coherence-boundary' on page 36 undefined on inpu
+t line 1274.
+
+
+LaTeX Warning: Reference `eq:TH-over-TP' on page 36 undefined on input line 127
+4.
+
+
+LaTeX Warning: Reference `eq:transition-masses' on page 36 undefined on input l
+ine 1274.
+
+
+LaTeX Warning: Reference `def:projection' on page 36 undefined on input line 12
+74.
+
+
+LaTeX Warning: Reference `eq:transition-masses' on page 36 undefined on input l
+ine 1278.
+
+
+LaTeX Warning: Reference `subsec:shadow-forces' on page 36 undefined on input l
+ine 1292.
+
+
+LaTeX Warning: Reference `def:shadow-force' on page 36 undefined on input line 
+1296.
+
+
+LaTeX Warning: Reference `thm:general-cascade' on page 36 undefined on input li
+ne 1296.
+
+
+LaTeX Warning: Reference `eq:TH-over-TP' on page 36 undefined on input line 129
+6.
+
+[36]
+
+LaTeX Warning: Reference `subsec:Mcrit' on page 37 undefined on input line 1316
+.
+
+
+LaTeX Warning: Reference `subsec:hawking-FQG-predictions' on page 37 undefined 
+on input line 1316.
+
+
+LaTeX Warning: Reference `prop:subplanck-lossless' on page 37 undefined on inpu
+t line 1316.
+
+
+LaTeX Warning: Reference `prop:tower' on page 37 undefined on input line 1316.
+
+
+LaTeX Warning: Reference `sec:primitives' on page 37 undefined on input line 13
+23.
+
+
+LaTeX Warning: Reference `ax:cardinalities' on page 37 undefined on input line 
+1327.
+
+
+LaTeX Warning: Reference `def:states' on page 37 undefined on input line 1327.
+
+
+LaTeX Warning: Reference `ax:cardinalities' on page 37 undefined on input line 
+1342.
+
+
+LaTeX Warning: Reference `sec:tower' on page 37 undefined on input line 1350.
+
+[37]
+
+LaTeX Warning: Reference `prop:N12' on page 38 undefined on input line 1371.
+
+
+LaTeX Warning: Reference `def:states' on page 38 undefined on input line 1371.
+
+
+LaTeX Warning: Reference `def:variance' on page 38 undefined on input line 1377
+.
+
+
+LaTeX Warning: Reference `rem:V-base' on page 38 undefined on input line 1377.
+
+
+LaTeX Warning: Reference `rem:subbase-open' on page 38 undefined on input line 
+1377.
+
+
+LaTeX Warning: Reference `prop:N12' on page 38 undefined on input line 1377.
+
+
+LaTeX Warning: Reference `def:states' on page 38 undefined on input line 1377.
+
+
+LaTeX Warning: Reference `subsec:alpha' on page 38 undefined on input line 1389
+.
+
+[38]
+
+LaTeX Warning: Reference `eq:k' on page 39 undefined on input line 1420.
+
+
+LaTeX Warning: Reference `eq:d' on page 39 undefined on input line 1420.
+
+
+LaTeX Warning: Reference `eq:eps' on page 39 undefined on input line 1420.
+
+
+LaTeX Warning: Reference `subsec:modes' on page 39 undefined on input line 1430
+.
+
+[39]
+
+LaTeX Warning: Reference `sec:primitives' on page 40 undefined on input line 14
+34.
+
+
+LaTeX Warning: Reference `thm:conv' on page 40 undefined on input line 1434.
+
+
+LaTeX Warning: Reference `eq:k' on page 40 undefined on input line 1440.
+
+
+LaTeX Warning: Reference `eq:d' on page 40 undefined on input line 1440.
+
+
+LaTeX Warning: Reference `sec:sublattice' on page 40 undefined on input line 14
+46.
+
+
+LaTeX Warning: Reference `subsec:harmonic-families' on page 40 undefined on inp
+ut line 1446.
+
+
+LaTeX Warning: Reference `def:Sigma' on page 40 undefined on input line 1446.
+
+
+LaTeX Warning: Reference `subsec:harmonic-families' on page 40 undefined on inp
+ut line 1446.
+
+
+LaTeX Warning: Reference `tab:twelve-harmonic-families' on page 40 undefined on
+ input line 1446.
+
+
+LaTeX Warning: Reference `eq:k' on page 40 undefined on input line 1463.
+
+
+LaTeX Warning: Reference `eq:d' on page 40 undefined on input line 1463.
+
+
+LaTeX Warning: Reference `eq:eps' on page 40 undefined on input line 1463.
+
+
+LaTeX Warning: Reference `thm:conv' on page 40 undefined on input line 1467.
+
+[40]
+
+LaTeX Warning: Reference `def:projection' on page 41 undefined on input line 14
+73.
+
+
+LaTeX Warning: Reference `prop:fifth' on page 41 undefined on input line 1505.
+
+
+LaTeX Warning: Reference `thm:conv' on page 41 undefined on input line 1509.
+
+
+LaTeX Warning: Reference `subsec:identification' on page 41 undefined on input 
+line 1509.
+
+[41]
+
+LaTeX Warning: Reference `thm:conv' on page 42 undefined on input line 1529.
+
+
+LaTeX Warning: Reference `subsec:three-tools' on page 42 undefined on input lin
+e 1532.
+
+[42]
+
+LaTeX Warning: Reference `eq:d' on page 43 undefined on input line 1567.
+
+
+LaTeX Warning: Reference `tab:families' on page 43 undefined on input line 1582
+.
+
+
+LaTeX Warning: Reference `prop:totient' on page 43 undefined on input line 1598
+.
+
+
+LaTeX Warning: Reference `cor:totientpartition' on page 43 undefined on input l
+ine 1598.
+
+
+LaTeX Warning: Reference `subsec:harmonic-families' on page 43 undefined on inp
+ut line 1598.
+
+
+LaTeX Warning: Reference `thm:visitation' on page 43 undefined on input line 15
+98.
+
+
+LaTeX Warning: Reference `prop:totient' on page 43 undefined on input line 1598
+.
+
+
+LaTeX Warning: Reference `cor:totientpartition' on page 43 undefined on input l
+ine 1598.
+
+
+LaTeX Warning: Reference `subsec:harmonic-families' on page 43 undefined on inp
+ut line 1598.
+
+
+LaTeX Warning: Reference `thm:visitation' on page 43 undefined on input line 15
+98.
+
+
+LaTeX Warning: Reference `def:projection' on page 43 undefined on input line 16
+09.
+
+
+LaTeX Warning: Reference `cor:six' on page 43 undefined on input line 1609.
+
+
+LaTeX Warning: Reference `eq:A0' on page 43 undefined on input line 1614.
+
+[43]
+
+LaTeX Warning: Reference `tab:impedance' on page 44 undefined on input line 163
+5.
+
+
+LaTeX Warning: Reference `prop:divisors' on page 44 undefined on input line 166
+6.
+
+
+LaTeX Warning: Reference `cor:six' on page 44 undefined on input line 1666.
+
+[44]
+
+LaTeX Warning: Reference `def:shadow-force' on page 45 undefined on input line 
+1669.
+
+
+LaTeX Warning: Reference `sec:cascade' on page 45 undefined on input line 1673.
+
+
+
+LaTeX Warning: Reference `def:palindrome' on page 45 undefined on input line 16
+73.
+
+
+LaTeX Warning: Reference `subsec:visitation' on page 45 undefined on input line
+ 1673.
+
+
+LaTeX Warning: Reference `sec:catalog' on page 45 undefined on input line 1682.
+
+
+
+LaTeX Warning: Reference `rem:24-is-hf' on page 45 undefined on input line 1682
+.
+
+
+LaTeX Warning: Reference `subsec:24-families' on page 45 undefined on input lin
+e 1682.
+
+
+LaTeX Warning: Reference `sec:catalog' on page 45 undefined on input line 1687.
+
+
+
+LaTeX Warning: Reference `sec:catalog' on page 45 undefined on input line 1687.
+
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+LaTeX Warning: Reference `thm:general-cascade' on page 45 undefined on input li
+ne 1711.
+
+[45]
+
+LaTeX Warning: Reference `thm:general-cascade' on page 46 undefined on input li
+ne 1726.
+
+
+LaTeX Warning: Reference `cor:totientpartition' on page 46 undefined on input l
+ine 1726.
+
+
+LaTeX Warning: Reference `def:shadow-force' on page 46 undefined on input line 
+1730.
+
+
+LaTeX Warning: Reference `def:harmonic-family' on page 46 undefined on input li
+ne 1730.
+
+
+LaTeX Warning: Reference `tab:twelve-harmonic-families' on page 46 undefined on
+ input line 1730.
+
+
+LaTeX Warning: Reference `def:harmonic-family' on page 46 undefined on input li
+ne 1734.
+
+
+LaTeX Warning: Reference `thm:visitation' on page 46 undefined on input line 17
+34.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 1737.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 1737.
+
+[46]
+
+LaTeX Warning: Reference `tab:shadow-forces' on page 47 undefined on input line
+ 1742.
+
+
+LaTeX Warning: Reference `prop:int-resolution' on page 47 undefined on input li
+ne 1765.
+
+
+LaTeX Warning: Reference `tab:shadow-forces' on page 47 undefined on input line
+ 1769.
+
+
+LaTeX Warning: Reference `subsec:identification' on page 47 undefined on input 
+line 1769.
+
+
+LaTeX Warning: Reference `subsec:general-cascade-rule' on page 47 undefined on 
+input line 1773.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 1780.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 1780.
+
+[47]
+
+LaTeX Warning: Reference `prop:tower' on page 48 undefined on input line 1820.
+
+
+LaTeX Warning: Reference `prop:classification' on page 48 undefined on input li
+ne 1833.
+
+[48]
+
+LaTeX Warning: Reference `prop:limit' on page 49 undefined on input line 1845.
+
+
+LaTeX Warning: Reference `cor:asymptotic-approach' on page 49 undefined on inpu
+t line 1849.
+
+
+LaTeX Warning: Reference `subsec:levels' on page 49 undefined on input line 185
+4.
+
+
+LaTeX Warning: Reference `sec:sublattice' on page 49 undefined on input line 18
+64.
+
+[49]
+
+LaTeX Warning: Reference `prop:N12' on page 50 undefined on input line 1889.
+
+
+LaTeX Warning: Reference `princ:descriptor-gap' on page 50 undefined on input l
+ine 1895.
+
+
+LaTeX Warning: Reference `eq:doubling' on page 50 undefined on input line 1911.
+
+
+
+LaTeX Warning: Reference `eq:doubling' on page 50 undefined on input line 1915.
+
+
+[50]
+
+LaTeX Warning: Reference `princ:descriptor-gap' on page 51 undefined on input l
+ine 1921.
+
+
+LaTeX Warning: Reference `tab:int-resolution' on page 51 undefined on input lin
+e 1932.
+
+
+LaTeX Warning: Reference `sec:applications' on page 51 undefined on input line 
+1932.
+
+
+LaTeX Warning: Reference `thm:doubling' on page 51 undefined on input line 1932
+.
+
+
+Underfull \hbox (badness 2229) in paragraph at lines 1952--1952
+[]|\OT1/cmr/m/n/10.95 Pentagonal sym-me-try; Caspar--Klug $\OML/cmm/m/it/10.95 
+T[]\OT1/cmr/m/n/10.95 5$
+ []
+
+
+Underfull \hbox (badness 1603) in paragraph at lines 1952--1952
+[]|\OT1/cmr/m/n/10.95 Enneagonal ($9$-fold) bi-o-log-i-cal sym-me-tries;
+ []
+
+
+LaTeX Warning: Citation `BlueBrain2017' on page 51 undefined on input line 1952
+.
+
+
+Underfull \hbox (badness 4303) in paragraph at lines 1952--1952
+[]|\OT1/cmr/m/n/10.95 Universal ref-er-ence: all sim-ple di-vi-sors
+ []
+
+
+Underfull \hbox (badness 1762) in paragraph at lines 1952--1952
+\OT1/cmr/m/n/10.95 dimensional clique dy-nam-ics [[]]; $\OML/cmm/m/it/10.95 []
+$ \OT1/cmr/m/n/10.95 at
+ []
+
+
+LaTeX Warning: Reference `thm:doubling' on page 51 undefined on input line 1953
+.
+
+
+LaTeX Warning: Reference `prop:int-resolution' on page 51 undefined on input li
+ne 1953.
+
+
+LaTeX Warning: Reference `cor:level-log' on page 51 undefined on input line 195
+3.
+
+
+LaTeX Warning: Reference `thm:doubling' on page 51 undefined on input line 1953
+.
+
+
+LaTeX Warning: Reference `prop:int-resolution' on page 51 undefined on input li
+ne 1953.
+
+
+LaTeX Warning: Reference `cor:level-log' on page 51 undefined on input line 195
+3.
+
+
+LaTeX Warning: Reference `thm:doubling' on page 51 undefined on input line 1958
+.
+
+
+LaTeX Warning: Reference `prop:limit' on page 51 undefined on input line 1958.
+
+[51]
+
+LaTeX Warning: Reference `sec:N12' on page 52 undefined on input line 1962.
+
+
+LaTeX Warning: Reference `sec:tower' on page 52 undefined on input line 1962.
+
+
+LaTeX Warning: Citation `Ramanujan1915' on page 52 undefined on input line 1962
+.
+
+
+LaTeX Warning: Reference `thm:doubling' on page 52 undefined on input line 1962
+.
+
+
+LaTeX Warning: Reference `subsec:identification' on page 52 undefined on input 
+line 1965.
+
+
+LaTeX Warning: Reference `subsec:subsumption' on page 52 undefined on input lin
+e 1965.
+
+
+LaTeX Warning: Citation `BlueBrain2017' on page 52 undefined on input line 1965
+.
+
+
+LaTeX Warning: Reference `prop:int-resolution' on page 52 undefined on input li
+ne 1967.
+
+
+LaTeX Warning: Reference `tab:int-resolution' on page 52 undefined on input lin
+e 1967.
+
+[52]
+
+LaTeX Warning: Reference `subsec:descriptor-gap' on page 53 undefined on input 
+line 1969.
+
+
+LaTeX Warning: Reference `prop:riemann' on page 53 undefined on input line 1969
+.
+
+
+LaTeX Warning: Citation `Sizemore2018' on page 53 undefined on input line 1969.
+
+
+
+LaTeX Warning: Reference `def:projection' on page 53 undefined on input line 19
+99.
+
+
+LaTeX Warning: Reference `def:phase' on page 53 undefined on input line 1999.
+
+[53]
+
+LaTeX Warning: Reference `tab:complex12' on page 54 undefined on input line 200
+9.
+
+
+LaTeX Warning: Reference `sec:sublattice' on page 54 undefined on input line 20
+56.
+
+
+LaTeX Warning: Reference `prop:primitive-geometries' on page 54 undefined on in
+put line 2056.
+
+[54]
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 2058.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 2058.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 2058.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 2058.
+
+
+LaTeX Warning: Reference `def:harmonic-family' on page 55 undefined on input li
+ne 2061.
+
+
+LaTeX Warning: Reference `tab:twelve-harmonic-families' on page 55 undefined on
+ input line 2061.
+
+
+LaTeX Warning: Reference `subsec:harmonic-families' on page 55 undefined on inp
+ut line 2061.
+
+
+LaTeX Warning: Reference `rem:hf-vs-sf' on page 55 undefined on input line 2061
+.
+
+
+LaTeX Warning: Reference `subsec:harmonic-families' on page 55 undefined on inp
+ut line 2061.
+
+
+LaTeX Warning: Reference `rem:cascade-discovery' on page 55 undefined on input 
+line 2061.
+
+
+LaTeX Warning: Reference `subsec:visitation' on page 55 undefined on input line
+ 2061.
+
+
+LaTeX Warning: Reference `thm:visitation' on page 55 undefined on input line 20
+61.
+
+
+LaTeX Warning: Reference `subsec:cascade-stability-asymmetry' on page 55 undefi
+ned on input line 2061.
+
+
+LaTeX Warning: Reference `rem:cascade-asymmetry-CI' on page 55 undefined on inp
+ut line 2061.
+
+
+LaTeX Warning: Reference `def:projection' on page 55 undefined on input line 20
+67.
+
+
+LaTeX Warning: Reference `tab:force-phase' on page 55 undefined on input line 2
+070.
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 2100.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 2100.
+
+[55]
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 2136.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 2136.
+
+
+Underfull \hbox (badness 1521) in paragraph at lines 2141--2142
+[]\OT1/cmr/bx/n/10.95 Definition 11.7 \OT1/cmr/m/n/10.95 (Sim-ple vs com-plex f
+am-ily)\OT1/cmr/bx/n/10.95 . \OT1/cmr/m/n/10.95 A fam-ily $\OML/cmm/m/it/10.95 
+d$ \OT1/cmr/m/n/10.95 is \OT1/cmr/m/it/10.95 sim-ple \OT1/cmr/m/n/10.95 if $\OM
+L/cmm/m/it/10.95 d \OMS/cmsy/m/n/10.95 j \OML/cmm/m/it/10.95 N$ \OT1/cmr/m/n/10
+.95 (i.e.
+ []
+
+[56]
+
+LaTeX Warning: Reference `subsec:three-infinities' on page 57 undefined on inpu
+t line 2163.
+
+
+LaTeX Warning: Reference `sec:cascade' on page 57 undefined on input line 2168.
+
+
+
+LaTeX Warning: Reference `thm:pdt-bisection' on page 57 undefined on input line
+ 2171.
+
+
+LaTeX Warning: Reference `sec:cascade' on page 57 undefined on input line 2171.
+
+
+
+LaTeX Warning: Reference `def:projection' on page 57 undefined on input line 21
+79.
+
+[57]
+
+LaTeX Warning: Citation `Guide' on page 58 undefined on input line 2217.
+
+
+LaTeX Warning: Reference `prop:cascader' on page 58 undefined on input line 222
+2.
+
+
+LaTeX Warning: Reference `prop:cascadetheta' on page 58 undefined on input line
+ 2222.
+
+
+LaTeX Warning: Reference `prop:stability' on page 58 undefined on input line 22
+22.
+
+
+LaTeX Warning: Reference `subsec:harmonic-families' on page 58 undefined on inp
+ut line 2222.
+
+
+LaTeX Warning: Reference `rem:cascade-discovery' on page 58 undefined on input 
+line 2222.
+
+
+LaTeX Warning: Reference `subsec:visitation' on page 58 undefined on input line
+ 2222.
+
+
+LaTeX Warning: Reference `thm:visitation' on page 58 undefined on input line 22
+22.
+
+
+LaTeX Warning: Reference `def:harmonic-family' on page 58 undefined on input li
+ne 2222.
+
+
+LaTeX Warning: Reference `tab:twelve-harmonic-families' on page 58 undefined on
+ input line 2222.
+
+[58]
+
+LaTeX Warning: Reference `subsec:harmonic-families' on page 59 undefined on inp
+ut line 2249.
+
+
+LaTeX Warning: Reference `def:harmonic-family' on page 59 undefined on input li
+ne 2249.
+
+
+LaTeX Warning: Reference `thm:visitation' on page 59 undefined on input line 22
+49.
+
+
+LaTeX Warning: Reference `def:shadow-force' on page 59 undefined on input line 
+2249.
+
+
+LaTeX Warning: Reference `subsec:harmonic-families' on page 59 undefined on inp
+ut line 2249.
+
+
+LaTeX Warning: Reference `rem:cascade-discovery' on page 59 undefined on input 
+line 2249.
+
+
+LaTeX Warning: Reference `prop:stability' on page 59 undefined on input line 22
+54.
+
+
+LaTeX Warning: Reference `def:palindrome' on page 59 undefined on input line 22
+58.
+
+[59]
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 2298.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 2298.
+
+
+LaTeX Warning: Reference `thm:general-cascade' on page 60 undefined on input li
+ne 2300.
+
+
+LaTeX Warning: Reference `thm:general-cascade' on page 60 undefined on input li
+ne 2301.
+
+
+LaTeX Warning: Reference `def:harmonic-family' on page 60 undefined on input li
+ne 2301.
+
+
+LaTeX Warning: Reference `subsec:harmonic-families' on page 60 undefined on inp
+ut line 2301.
+
+
+LaTeX Warning: Reference `thm:visitation' on page 60 undefined on input line 23
+01.
+
+
+LaTeX Warning: Reference `cor:six-plus-six' on page 60 undefined on input line 
+2301.
+
+
+LaTeX Warning: Reference `def:shadow-force' on page 60 undefined on input line 
+2301.
+
+
+LaTeX Warning: Reference `tab:twelve-harmonic-families' on page 60 undefined on
+ input line 2301.
+
+
+LaTeX Warning: Reference `thm:general-cascade' on page 60 undefined on input li
+ne 2305.
+
+
+LaTeX Warning: Reference `thm:general-cascade' on page 60 undefined on input li
+ne 2313.
+
+
+LaTeX Warning: Reference `def:palindrome' on page 60 undefined on input line 23
+13.
+
+
+LaTeX Warning: Reference `cor:unit-equivalence' on page 60 undefined on input l
+ine 2317.
+
+
+LaTeX Warning: Reference `thm:general-cascade' on page 60 undefined on input li
+ne 2317.
+
+
+LaTeX Warning: Reference `def:harmonic-family' on page 60 undefined on input li
+ne 2317.
+
+
+LaTeX Warning: Reference `tab:twelve-harmonic-families' on page 60 undefined on
+ input line 2317.
+
+[60]
+
+LaTeX Warning: Reference `cor:unit-equivalence' on page 61 undefined on input l
+ine 2321.
+
+
+Underfull \hbox (badness 2318) in paragraph at lines 2321--2322
+[]\OT1/cmr/m/it/10.95 Remark \OT1/cmr/m/n/10.95 12.11 (Group-the-o-retic ori-gi
+n of unit--gen-er-a-tor equiv-a-lence)\OT1/cmr/m/it/10.95 . \OT1/cmr/m/n/10.95 
+The unit group
+ []
+
+
+LaTeX Warning: Reference `thm:general-cascade' on page 61 undefined on input li
+ne 2326.
+
+
+LaTeX Warning: Reference `subsec:info-birthtriad' on page 61 undefined on input
+ line 2326.
+
+
+LaTeX Warning: Reference `subsec:Mcrit' on page 61 undefined on input line 2333
+.
+
+
+LaTeX Warning: Reference `thm:general-cascade' on page 61 undefined on input li
+ne 2337.
+
+
+LaTeX Warning: Reference `thm:general-cascade' on page 61 undefined on input li
+ne 2337.
+
+
+LaTeX Warning: Reference `sec:sublattice' on page 61 undefined on input line 23
+37.
+
+
+LaTeX Warning: Reference `prop:Mcrit-fixed-point' on page 61 undefined on input
+ line 2337.
+
+
+LaTeX Warning: Reference `thm:multifold-closure' on page 61 undefined on input 
+line 2341.
+
+
+LaTeX Warning: Reference `subsec:info-birthtriad' on page 61 undefined on input
+ line 2341.
+
+
+LaTeX Warning: Reference `prop:U1-period' on page 61 undefined on input line 23
+41.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 2345.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\partial' on input line 2345.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 2345.
+
+
+LaTeX Warning: Reference `def:dI' on page 61 undefined on input line 2348.
+
+
+LaTeX Warning: Reference `sec:complex' on page 61 undefined on input line 2348.
+
+
+
+LaTeX Warning: Reference `sec:cascade' on page 61 undefined on input line 2348.
+
+
+[61]
+
+LaTeX Warning: Reference `subsec:dI-exponent' on page 62 undefined on input lin
+e 2365.
+
+
+LaTeX Warning: Reference `subsec:dI-shimmer' on page 62 undefined on input line
+ 2366.
+
+
+LaTeX Warning: Reference `subsec:dI-perturb' on page 62 undefined on input line
+ 2367.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 2373.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `subscript' on input line 2373.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 2373.
+
+
+LaTeX Warning: Reference `sec:complex' on page 62 undefined on input line 2375.
+
+
+
+LaTeX Warning: Reference `sec:sublattice' on page 62 undefined on input line 23
+97.
+
+
+LaTeX Warning: Reference `def:palindrome' on page 62 undefined on input line 23
+97.
+
+
+LaTeX Warning: Reference `eq:dI-tightness' on page 62 undefined on input line 2
+404.
+
+
+LaTeX Warning: Reference `eq:constants' on page 62 undefined on input line 2404
+.
+
+
+LaTeX Warning: Reference `sec:selfcons' on page 62 undefined on input line 2404
+.
+
+[62]
+
+LaTeX Warning: Reference `def:palindrome' on page 63 undefined on input line 24
+10.
+
+
+LaTeX Warning: Reference `def:palindrome' on page 63 undefined on input line 24
+13.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 2416.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\Psi' on input line 2416.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `subscript' on input line 2416.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 2416.
+
+
+LaTeX Warning: Reference `eq:constants' on page 63 undefined on input line 2439
+.
+
+
+LaTeX Warning: Reference `eq:alpha' on page 63 undefined on input line 2443.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 2450.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\varepsilon' on input line 2450.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `subscript' on input line 2450.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 2450.
+
+[63]
+
+LaTeX Warning: Reference `def:dI-eps' on page 64 undefined on input line 2460.
+
+
+LaTeX Warning: Reference `def:dI-iteration' on page 64 undefined on input line 
+2474.
+
+
+LaTeX Warning: Reference `eq:dI-jacobian' on page 64 undefined on input line 24
+88.
+
+[64]
+
+LaTeX Warning: Reference `def:dI-iteration' on page 65 undefined on input line 
+2504.
+
+
+LaTeX Warning: Reference `tab:fractal-constants' on page 65 undefined on input 
+line 2504.
+
+
+LaTeX Warning: Reference `sec:tower' on page 65 undefined on input line 2512.
+
+
+LaTeX Warning: Reference `sec:sublattice' on page 65 undefined on input line 25
+13.
+
+
+LaTeX Warning: Reference `eq:constants' on page 65 undefined on input line 2515
+.
+
+
+LaTeX Warning: Reference `prop:shimmer-V' on page 65 undefined on input line 25
+17.
+
+
+LaTeX Warning: Reference `eq:constants' on page 65 undefined on input line 2519
+.
+
+
+LaTeX Warning: Reference `def:palindrome' on page 65 undefined on input line 25
+20.
+
+
+LaTeX Warning: Reference `prop:dI-peff' on page 65 undefined on input line 2521
+.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 2531.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 2531.
+
+
+LaTeX Warning: Reference `sec:lattice' on page 65 undefined on input line 2538.
+
+
+[65]
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 2550.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 2550.
+
+
+LaTeX Warning: Citation `Odrzywolek2026' on page 66 undefined on input line 255
+2.
+
+
+LaTeX Warning: Citation `Odrzywolek2026' on page 66 undefined on input line 256
+4.
+
+
+LaTeX Warning: Reference `thm:eml-complete' on page 66 undefined on input line 
+2567.
+
+
+LaTeX Warning: Reference `subsec:subsumption' on page 66 undefined on input lin
+e 2570.
+
+
+LaTeX Warning: Citation `Odrzywolek2026' on page 66 undefined on input line 257
+0.
+
+
+LaTeX Warning: Reference `thm:eml-complete' on page 66 undefined on input line 
+2570.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 2576.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 2576.
+
+
+LaTeX Warning: Citation `Webb1935' on page 66 undefined on input line 2578.
+
+[66]
+
+LaTeX Warning: Citation `Webb1935' on page 67 undefined on input line 2589.
+
+
+LaTeX Warning: Citation `Sheffer1913' on page 67 undefined on input line 2589.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 2611.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\mid' on input line 2611.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 2611.
+
+
+LaTeX Warning: Reference `sec:cascade' on page 67 undefined on input line 2613.
+
+
+
+LaTeX Warning: Reference `prop:divisors' on page 67 undefined on input line 261
+7.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 2643--2643
+[]|\OT1/cmr/m/it/10.95 Subsumption
+ []
+
+
+LaTeX Warning: Reference `cor:webb-minimal' on page 67 undefined on input line 
+2643.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 2643--2643
+[]|\OT1/cmr/m/it/10.95 Minimal in
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 2643--2643
+[]|\OT1/cmr/m/it/10.95 Palindromic
+ []
+
+
+LaTeX Warning: Reference `thm:palindromic-minimal' on page 67 undefined on inpu
+t line 2643.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 2643--2643
+\OT1/cmr/m/it/10.95 symmetric
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 2643--2643
+\OT1/cmr/m/it/10.95 traver-sal
+ []
+
+
+LaTeX Warning: Reference `thm:eml-minimal' on page 67 undefined on input line 2
+643.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 2643--2643
+[]|\OT1/cmr/m/it/10.95 Minimal
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 2643--2643
+\OT1/cmr/m/it/10.95 un-der Sub-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 2643--2643
+\OT1/cmr/m/it/10.95 sump-tion
+ []
+
+[67]
+
+LaTeX Warning: Reference `thm:triple-backbone' on page 68 undefined on input li
+ne 2649.
+
+
+LaTeX Warning: Reference `thm:pdt-decomp' on page 68 undefined on input line 26
+49.
+
+
+LaTeX Warning: Reference `sec:lattice' on page 68 undefined on input line 2656.
+
+
+
+LaTeX Warning: Reference `sec:lattice' on page 68 undefined on input line 2663.
+
+
+[68] [69]
+
+LaTeX Warning: Reference `sec:primitives' on page 70 undefined on input line 27
+24.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 2726.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 2726.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 2726.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 2726.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 2726.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 2726.
+
+[70]
+
+LaTeX Warning: Reference `thm:axiom-addresses' on page 71 undefined on input li
+ne 2767.
+
+
+LaTeX Warning: Reference `thm:axiom-addresses' on page 71 undefined on input li
+ne 2770.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 2781.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\Omega' on input line 2781.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 2781.
+
+[71]
+
+LaTeX Warning: Reference `ax:anchor' on page 72 undefined on input line 2845.
+
+
+LaTeX Warning: Reference `thm:four-path-subsumption' on page 72 undefined on in
+put line 2845.
+
+
+LaTeX Warning: Reference `prop:fifth' on page 72 undefined on input line 2867.
+
+
+LaTeX Warning: Reference `prop:koide' on page 72 undefined on input line 2867.
+
+[72]
+
+LaTeX Warning: Reference `prop:cascader' on page 73 undefined on input line 287
+1.
+
+
+LaTeX Warning: Reference `sec:complex' on page 73 undefined on input line 2895.
+
+
+[73]
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 2908.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `subscript' on input line 2908.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 2908.
+
+
+LaTeX Warning: Reference `def:binding-pressure' on page 74 undefined on input l
+ine 2932.
+
+
+LaTeX Warning: Reference `def:detection-prob' on page 74 undefined on input lin
+e 2932.
+
+[74]
+
+LaTeX Warning: Reference `thm:self' on page 75 undefined on input line 2980.
+
+
+LaTeX Warning: Reference `sec:gaze' on page 75 undefined on input line 2995.
+
+
+LaTeX Warning: Reference `sec:complex' on page 75 undefined on input line 2995.
+
+
+
+LaTeX Warning: Reference `sec:cascade' on page 75 undefined on input line 2995.
+
+
+
+LaTeX Warning: Reference `subsec:identification' on page 75 undefined on input 
+line 2997.
+
+
+LaTeX Warning: Reference `subsec:decoherence-states' on page 75 undefined on in
+put line 2997.
+
+
+LaTeX Warning: Reference `subsec:decoherence-rate' on page 75 undefined on inpu
+t line 2997.
+
+
+LaTeX Warning: Reference `subsec:alpha-rotation' on page 75 undefined on input 
+line 2997.
+
+
+LaTeX Warning: Reference `subsec:pointer-states' on page 75 undefined on input 
+line 2997.
+
+
+LaTeX Warning: Reference `subsec:gaze-decoherence-stages' on page 75 undefined 
+on input line 2997.
+
+
+LaTeX Warning: Reference `subsec:coherence-boundary' on page 75 undefined on in
+put line 2997.
+
+
+LaTeX Warning: Reference `subsec:decoherence-info' on page 75 undefined on inpu
+t line 2997.
+
+
+LaTeX Warning: Reference `subsec:M-state-budget' on page 75 undefined on input 
+line 2997.
+
+
+LaTeX Warning: Reference `def:states' on page 75 undefined on input line 3006.
+
+
+LaTeX Warning: Reference `def:states' on page 75 undefined on input line 3010.
+
+
+LaTeX Warning: Reference `prop:zero-variance' on page 75 undefined on input lin
+e 3010.
+
+[75]
+
+LaTeX Warning: Reference `subsec:subsumption' on page 76 undefined on input lin
+e 3014.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `superscript' on input line 3017.
+
+
+LaTeX Warning: Reference `prop:U1-period' on page 76 undefined on input line 30
+24.
+
+
+LaTeX Warning: Reference `sec:complex' on page 76 undefined on input line 3028.
+
+
+
+LaTeX Warning: Reference `prop:U1-period' on page 76 undefined on input line 30
+28.
+
+
+LaTeX Warning: Reference `eq:decoherence-rate' on page 76 undefined on input li
+ne 3028.
+
+
+LaTeX Warning: Reference `eq:decoherence-rate' on page 76 undefined on input li
+ne 3032.
+
+
+LaTeX Warning: Reference `sec:complex' on page 76 undefined on input line 3037.
+
+
+
+Underfull \hbox (badness 2717) in paragraph at lines 3037--3038
+\OT1/cmr/m/n/10.95 The com-plex lat-tice of \TS1/cmr/m/n/10.95 §[] \OT1/cmr/m/n
+/10.95 pa-ram-e-terises con-fig-u-ra-tions by $(\OML/cmm/m/it/10.95 k[]; k[]\OT
+1/cmr/m/n/10.95 )$ with the an-gle
+ []
+
+[76]
+
+LaTeX Warning: Reference `prop:cascader' on page 77 undefined on input line 304
+4.
+
+
+LaTeX Warning: Reference `prop:cascadetheta' on page 77 undefined on input line
+ 3044.
+
+
+LaTeX Warning: Reference `eq:eff-descriptor-gap' on page 77 undefined on input 
+line 3048.
+
+
+LaTeX Warning: Reference `prop:cascader' on page 77 undefined on input line 305
+2.
+
+
+LaTeX Warning: Reference `prop:cascadetheta' on page 77 undefined on input line
+ 3052.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3066--3066
+[]|\OT1/cmr/m/n/10.95 Pure clas-si-cal (real-axis
+ []
+
+
+LaTeX Warning: Reference `rem:alpha-trajectory' on page 77 undefined on input l
+ine 3068.
+
+
+LaTeX Warning: Reference `sec:complex' on page 77 undefined on input line 3068.
+
+
+
+LaTeX Warning: Reference `subsec:Mcrit' on page 77 undefined on input line 3072
+.
+
+[77]
+
+LaTeX Warning: Reference `thm:lossless' on page 78 undefined on input line 3084
+.
+
+
+LaTeX Warning: Reference `prop:BH-dichotomy' on page 78 undefined on input line
+ 3084.
+
+
+LaTeX Warning: Reference `subsec:hawking-FQG-predictions' on page 78 undefined 
+on input line 3084.
+
+
+LaTeX Warning: Reference `thm:general-cascade' on page 78 undefined on input li
+ne 3084.
+
+
+LaTeX Warning: Reference `subsec:coherence-boundary' on page 78 undefined on in
+put line 3094.
+
+
+LaTeX Warning: Reference `subsec:Mcrit' on page 78 undefined on input line 3098
+.
+
+
+LaTeX Warning: Reference `sec:gaze' on page 78 undefined on input line 3103.
+
+
+LaTeX Warning: Reference `subsec:alpha-rotation' on page 78 undefined on input 
+line 3103.
+
+
+LaTeX Warning: Reference `sec:gaze' on page 78 undefined on input line 3106.
+
+
+LaTeX Warning: Reference `prop:alpha-rotation' on page 78 undefined on input li
+ne 3106.
+
+[78]
+
+LaTeX Warning: Reference `sec:gaze' on page 79 undefined on input line 3120.
+
+
+LaTeX Warning: Reference `sec:gaze' on page 79 undefined on input line 3126.
+
+
+LaTeX Warning: Reference `subsec:identification' on page 79 undefined on input 
+line 3130.
+
+
+LaTeX Warning: Reference `subsec:24-families' on page 79 undefined on input lin
+e 3130.
+
+
+LaTeX Warning: Reference `def:projection' on page 79 undefined on input line 31
+40.
+
+
+LaTeX Warning: Reference `prop:limit' on page 79 undefined on input line 3140.
+
+[79]
+
+LaTeX Warning: Reference `subsec:info-birthtriad' on page 80 undefined on input
+ line 3149.
+
+
+LaTeX Warning: Reference `def:birth-triad' on page 80 undefined on input line 3
+152.
+
+
+LaTeX Warning: Reference `prop:info-preserve' on page 80 undefined on input lin
+e 3152.
+
+
+LaTeX Warning: Reference `def:birth-triad' on page 80 undefined on input line 3
+156.
+
+
+LaTeX Warning: Reference `ax:order' on page 80 undefined on input line 3156.
+
+[80]
+
+LaTeX Warning: Reference `tab:intervals' on page 81 undefined on input line 317
+5.
+
+
+LaTeX Warning: Reference `eq:A0' on page 81 undefined on input line 3209.
+
+
+LaTeX Warning: Reference `def:dI' on page 81 undefined on input line 3215.
+
+[81]
+
+LaTeX Warning: Citation `CODATA2022' on page 82 undefined on input line 3228.
+
+
+LaTeX Warning: Citation `Parker2018' on page 82 undefined on input line 3228.
+
+
+LaTeX Warning: Citation `Morel2020' on page 82 undefined on input line 3228.
+
+
+LaTeX Warning: Citation `CODATA2018' on page 82 undefined on input line 3228.
+
+
+LaTeX Warning: Reference `eq:alpha' on page 82 undefined on input line 3228.
+
+
+LaTeX Warning: Reference `eq:alpha' on page 82 undefined on input line 3231.
+
+
+LaTeX Warning: Citation `Morel2020' on page 82 undefined on input line 3235.
+
+
+LaTeX Warning: Citation `Parker2018' on page 82 undefined on input line 3235.
+
+
+LaTeX Warning: Reference `eq:alpha' on page 82 undefined on input line 3235.
+
+
+LaTeX Warning: Citation `CODATA2022' on page 82 undefined on input line 3241.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3241--3242
+\OT1/cmr/m/n/10.95 The Koide for-mula eval-u-ated at mod-ern lep-ton masses $(\
+OML/cmm/m/it/10.95 m[]; m[]; m[]\OT1/cmr/m/n/10.95 )$ $=$
+ []
+
+[82]
+
+LaTeX Warning: Reference `eq:constants' on page 83 undefined on input line 3246
+.
+
+
+LaTeX Warning: Reference `thm:self' on page 83 undefined on input line 3246.
+
+
+LaTeX Warning: Reference `tab:pyth' on page 83 undefined on input line 3250.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3282--3282
+[]|$\OT1/cmr/m/n/10.95 (\OMS/cmsy/m/n/10.95 ^^@\OT1/cmr/m/n/10.95 7\OML/cmm/m/i
+t/10.95 ; \OT1/cmr/m/n/10.95 12\OML/cmm/m/it/10.95 ; \OMS/cmsy/m/n/10.95 ^^@\OT
+1/cmr/m/n/10.95 1\OML/cmm/m/it/10.95 :\OT1/cmr/m/n/10.95 96$\TS1/cmr/m/n/10.95 
+¢$\OT1/cmr/m/n/10.95 )$
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3282--3282
+[]|$\OT1/cmr/m/n/10.95 (\OMS/cmsy/m/n/10.95 ^^@\OT1/cmr/m/n/10.95 19\OML/cmm/m/
+it/10.95 ; \OT1/cmr/m/n/10.95 12\OML/cmm/m/it/10.95 ; \OMS/cmsy/m/n/10.95 ^^@\O
+T1/cmr/m/n/10.95 1\OML/cmm/m/it/10.95 :\OT1/cmr/m/n/10.95 96$\TS1/cmr/m/n/10.95
+ ¢$\OT1/cmr/m/n/10.95 )$
+ []
+
+
+LaTeX Warning: Reference `thm:self' on page 83 undefined on input line 3287.
+
+[83]
+
+LaTeX Warning: Reference `tab:cross' on page 84 undefined on input line 3316.
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+[84]
+
+LaTeX Warning: Citation `MTW' on page 85 undefined on input line 3372.
+
+[85]
+
+LaTeX Warning: Reference `sec:comparison' on page 86 undefined on input line 34
+02.
+
+
+LaTeX Warning: Reference `sec:paths' on page 86 undefined on input line 3403.
+
+[86]
+
+LaTeX Warning: Reference `sec:paths' on page 87 undefined on input line 3421.
+
+
+LaTeX Warning: Reference `sec:gaze' on page 87 undefined on input line 3421.
+
+
+LaTeX Warning: Reference `sec:fractal' on page 87 undefined on input line 3421.
+
+
+
+LaTeX Warning: Reference `subsec:subsumption' on page 87 undefined on input lin
+e 3421.
+
+
+LaTeX Warning: Reference `thm:four-path-subsumption' on page 87 undefined on in
+put line 3421.
+
+
+LaTeX Warning: Reference `subsec:Sigma' on page 87 undefined on input line 3430
+.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 3447.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 3447.
+
+[87]
+
+LaTeX Warning: Citation `CasparKlug' on page 88 undefined on input line 3465.
+
+
+LaTeX Warning: Citation `Hutchison2016' on page 88 undefined on input line 3465
+.
+
+
+LaTeX Warning: Reference `thm:identification-Sigma' on page 88 undefined on inp
+ut line 3471.
+
+
+LaTeX Warning: Reference `sec:N12' on page 88 undefined on input line 3473.
+
+
+LaTeX Warning: Reference `thm:triple-backbone' on page 88 undefined on input li
+ne 3473.
+
+
+LaTeX Warning: Reference `thm:pdt-decomp' on page 88 undefined on input line 34
+73.
+
+
+LaTeX Warning: Reference `thm:d-no-limits' on page 88 undefined on input line 3
+475.
+
+
+LaTeX Warning: Reference `thm:chaitin' on page 88 undefined on input line 3475.
+
+
+
+LaTeX Warning: Reference `cor:zf-tight' on page 88 undefined on input line 3475
+.
+
+
+LaTeX Warning: Reference `thm:godel' on page 88 undefined on input line 3475.
+
+
+LaTeX Warning: Reference `thm:large-cardinals' on page 88 undefined on input li
+ne 3475.
+
+
+LaTeX Warning: Reference `thm:self' on page 88 undefined on input line 3477.
+
+
+LaTeX Warning: Reference `thm:complete-gaze' on page 88 undefined on input line
+ 3477.
+
+
+LaTeX Warning: Reference `cor:locked-is-self' on page 88 undefined on input lin
+e 3477.
+
+
+LaTeX Warning: Reference `thm:lossless' on page 88 undefined on input line 3477
+.
+
+[88]
+
+LaTeX Warning: Reference `sec:applications' on page 89 undefined on input line 
+3479.
+
+
+LaTeX Warning: Reference `sec:predictions' on page 89 undefined on input line 3
+483.
+
+[89]
+
+LaTeX Warning: Citation `Parker2018' on page 90 undefined on input line 3548.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3578--3583
+\OT1/cmr/m/n/10.95 [cs.SC], April 2026. Archival DOI: 10.5281/zen-odo.19183008.
+ Code:
+ []
+
+[90] (./ET_Sempaevum_Paper12.aux)
+ ***********
+LaTeX2e <2025-11-01>
+L3 programming layer <2026-01-19>
+ ***********
+
+
+LaTeX Warning: There were undefined references.
+
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
+
+Package rerunfilecheck Warning: File `ET_Sempaevum_Paper12.out' has changed.
+(rerunfilecheck)                Rerun to get outlines right
+(rerunfilecheck)                or use package `bookmark'.
+
+Package rerunfilecheck Info: Checksums for `ET_Sempaevum_Paper12.out':
+(rerunfilecheck)             Before: <no file>
+(rerunfilecheck)             After:  B9A29785614A1CA0D6AE172DBBEEFC96;36600.
+ ) 
+Here is how much of TeX's memory you used:
+ 14648 strings out of 467532
+ 226716 string characters out of 5423648
+ 679404 words of memory out of 5000000
+ 42761 multiletter control sequences out of 15000+600000
+ 654191 words of font info for 135 fonts, out of 8000000 for 9000
+ 1141 hyphenation exceptions out of 8191
+ 75i,14n,79p,3507b,771s stack positions out of 10000i,1000n,20000p,200000b,200000s
+<c:/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb><c:/tex
+live/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb><c:/texlive/2025
+/texmf-dist/fonts/type1/public/amsfonts/cm/cmbxti10.pfb><c:/texlive/2025/texmf-
+dist/fonts/type1/public/amsfonts/cm/cmcsc10.pfb><c:/texlive/2025/texmf-dist/fon
+ts/type1/public/amsfonts/cm/cmex10.pfb><c:/texlive/2025/texmf-dist/fonts/type1/
+public/amsfonts/cm/cmmi10.pfb><c:/texlive/2025/texmf-dist/fonts/type1/public/am
+sfonts/cm/cmmi12.pfb><c:/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm
+/cmmi6.pfb><c:/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb
+><c:/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb><c:/texli
+ve/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb><c:/texlive/2025/te
+xmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb><c:/texlive/2025/texmf-dist/f
+onts/type1/public/amsfonts/cm/cmr17.pfb><c:/texlive/2025/texmf-dist/fonts/type1
+/public/amsfonts/cm/cmr6.pfb><c:/texlive/2025/texmf-dist/fonts/type1/public/ams
+fonts/cm/cmr7.pfb><c:/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cm
+r8.pfb><c:/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb><c:/
+texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb><c:/texlive/2
+025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb><c:/texlive/2025/texmf-
+dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb><c:/texlive/2025/texmf-dist/fonts
+/type1/public/amsfonts/cm/cmsy8.pfb><c:/texlive/2025/texmf-dist/fonts/type1/pub
+lic/amsfonts/cm/cmti10.pfb><c:/texlive/2025/texmf-dist/fonts/type1/public/amsfo
+nts/cm/cmti7.pfb><c:/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmt
+i8.pfb><c:/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb><c
+:/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt9.pfb><c:/texlive/
+2025/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb><c:/texlive/2025
+/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm7.pfb><c:/texlive/2025/texm
+f-dist/fonts/type1/public/cm-super/sfbi1095.pfb><c:/texlive/2025/texmf-dist/fon
+ts/type1/public/cm-super/sfrm1000.pfb><c:/texlive/2025/texmf-dist/fonts/type1/p
+ublic/cm-super/sfrm1095.pfb><c:/texlive/2025/texmf-dist/fonts/type1/public/cm-s
+uper/sfti1095.pfb>
+Output written on ET_Sempaevum_Paper12.pdf (90 pages, 752292 bytes).
+PDF statistics:
+ 1207 PDF objects out of 1440 (max. 8388607)
+ 1040 compressed objects within 11 object streams
+ 615 named destinations out of 1000 (max. 500000)
+ 17921 words of extra memory for PDF output out of 20736 (max. 10000000)
+

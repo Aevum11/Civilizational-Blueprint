@@ -1,0 +1,132 @@
+package com.et.omnimeasure
+
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Bundle
+import android.view.WindowManager
+import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import com.et.omnimeasure.core.OmniTraverserEngine
+import com.et.omnimeasure.core.PhysicsUiModel
+import com.et.omnimeasure.core.OmniTraverserEngine.TraverserListener
+
+/**
+ * =========================================================================================
+ * MAIN ACTIVITY (THE SUBSTANTIATION PLANE)
+ * Purpose: Bind the Logic Engine to the User's Perception (UI).
+ * =========================================================================================
+ */
+class MainActivity : AppCompatActivity(), TraverserListener {
+
+    private lateinit var engine: OmniTraverserEngine
+    
+    // UI Descriptors (Views)
+    private var txtTilt: TextView? = null
+    private var txtVib: TextView? = null
+    private var txtLux: TextView? = null
+    private var txtSound: TextView? = null
+    private var txtStatus: TextView? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        
+        // 1. Manifold Setup (Fullscreen, Keep Screen On)
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        
+        // 2. Set Content View (Pseudo-layout reference)
+        setContentView(R.layout.activity_main) 
+        bindViews()
+
+        // 3. Initialize Traverser Engine
+        engine = OmniTraverserEngine(this, this)
+
+        // 4. Request Permissions (Acoustic Traverser needs MIC)
+        checkPermissions()
+    }
+
+    private fun bindViews() {
+        txtTilt = findViewById(R.id.txt_tilt_value)
+        txtVib = findViewById(R.id.txt_vib_value)
+        txtLux = findViewById(R.id.txt_lux_value)
+        txtSound = findViewById(R.id.txt_sound_value)
+        txtStatus = findViewById(R.id.txt_status_bar)
+        
+        findViewById<android.view.View>(R.id.btn_calibrate).setOnClickListener {
+            engine.startCalibration()
+            Toast.makeText(this, "Calibrating... Keep Still.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun checkPermissions() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) 
+            != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.RECORD_AUDIO), 101)
+        } else {
+            engine.engage()
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 101 && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            engine.engage()
+        } else {
+            Toast.makeText(this, "Audio Disabled (Privacy Mode)", Toast.LENGTH_SHORT).show()
+            // Engine can still run without Audio
+            engine.engage()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
+            engine.engage()
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        engine.disengage() // Save Battery (Lazy Traversal)
+    }
+
+    // --- ENGINE CALLBACKS ---
+
+    override fun onPhysicsUpdate(model: PhysicsUiModel) {
+        runOnUiThread {
+            // 1. Update Tilt
+            // Visual logic: Green if < 1.0 deg, else Cyan
+            txtTilt?.text = "%.1f°".format(model.tiltDegrees)
+            txtTilt?.setTextColor(if (model.tiltDegrees < 1.0) 0xFF00FF00.toInt() else 0xFF00FFFF.toInt())
+
+            // 2. Update Vibration
+            txtVib?.text = "${model.vibrationLabel}\n(RMS: %.3f)".format(model.vibrationRms)
+
+            // 3. Update Light
+            txtLux?.text = "${model.luxValue.toInt()} lx\n${model.luxLabel}"
+
+            // 4. Update Sound
+            // Offset ~ +60dB to look like SPL (approx) since raw PCM is relative
+            val displayDb = (model.dbValue + 90).coerceAtLeast(0.0)
+            txtSound?.text = "%.0f dB\nSrc: ${model.noiseSource}".format(displayDb)
+        }
+    }
+
+    override fun onCalibrationState(isCalibrating: Boolean, progress: Int) {
+        runOnUiThread {
+            if (isCalibrating) {
+                txtStatus?.text = "CALIBRATING: $progress%"
+            } else {
+                txtStatus?.text = "Active Traversal"
+            }
+        }
+    }
+
+    override fun onError(message: String) {
+        runOnUiThread {
+            Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+        }
+    }
+}

@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout 
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:gravity="center_horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ET Physics Toolbox"
+                android:textColor="#FFFFFF"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="5dp"/>
+                
+            <TextView
+                android:id="@+id/txtOffline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="OFFLINE MODE - QUEUING"
+                android:textColor="#FF5555"
+                android:textStyle="bold"
+                android:visibility="gone"
+                android:layout_marginBottom="5dp"/>
+                
+            <TextView
+                android:id="@+id/txtStats"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Stats: --"
+                android:textColor="#888888"
+                android:textSize="12sp"
+                android:gravity="center"
+                android:fontFamily="monospace"
+                android:layout_marginBottom="10dp"/>
+
+            <!-- Visualizer Canvas -->
+            <com.et.physics.toolbox.VisualizerView
+                android:id="@+id/visualizer"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:background="#111111"
+                android:layout_marginBottom="10dp"/>
+                
+            <!-- Camera UI -->
+            <FrameLayout
+                android:id="@+id/cameraContainer"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:visibility="gone"
+                android:layout_marginBottom="10dp">
+                <androidx.camera.view.PreviewView
+                    android:id="@+id/viewFinder"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+                <Button
+                    android:id="@+id/btnCapture"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Capture"
+                    android:layout_gravity="bottom|center"
+                    android:layout_marginBottom="10dp"/>
+            </FrameLayout>
+
+            <Spinner
+                android:id="@+id/spinnerMode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#222222"
+                android:padding="5dp"
+                android:layout_marginBottom="5dp"/>
+                
+            <TextView
+                android:id="@+id/txtModeHelp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Select a mode..."
+                android:textColor="#AAAAAA"
+                android:textSize="11sp"
+                android:gravity="center"
+                android:layout_marginBottom="10dp"/>
+
+            <TextView
+                android:id="@+id/txtValues"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Ready..."
+                android:textColor="#00FF00"
+                android:fontFamily="monospace"
+                android:textSize="16sp"
+                android:layout_marginBottom="5dp"/>
+                
+            <TextView
+                android:id="@+id/txtBattery"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Drain: --"
+                android:textColor="#AAAAAA"
+                android:textSize="12sp"
+                android:gravity="center"
+                android:layout_marginBottom="10dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_marginBottom="10dp">
+                
+                <Button
+                    android:id="@+id/btnStart"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="START"
+                    android:backgroundTint="#00AA00"/>
+                    
+                <Space android:layout_width="10dp" android:layout_height="wrap_content"/>
+                
+                <Button
+                    android:id="@+id/btnStop"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="STOP"
+                    android:backgroundTint="#AA0000"/>
+                    
+                <Space android:layout_width="10dp" android:layout_height="wrap_content"/>
+                
+                <Button
+                    android:id="@+id/btnCameraToggle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Camera"
+                    android:backgroundTint="#0000AA"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_marginBottom="10dp">
+                
+                <ToggleButton
+                    android:id="@+id/btnGpsToggle"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:textOn="GPS"
+                    android:textOff="GPS"
+                    android:textSize="10sp"
+                    android:backgroundTint="#444444"/>
+                    
+                <ToggleButton
+                    android:id="@+id/btnRecToggle"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:textOn="REC"
+                    android:textOff="REC"
+                    android:textSize="10sp"
+                    android:backgroundTint="#444444"/>
+                    
+                <ToggleButton
+                    android:id="@+id/btnGraphToggle"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:textOn="TREND"
+                    android:textOff="LIVE"
+                    android:textSize="10sp"
+                    android:backgroundTint="#444444"/>
+                    
+                <ToggleButton
+                    android:id="@+id/btnSpectrogram"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:textOn="SPEC"
+                    android:textOff="SPEC"
+                    android:textSize="10sp"
+                    android:backgroundTint="#444444"/>
+            </LinearLayout>
+            
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_marginBottom="10dp">
+                
+                <Button
+                    android:id="@+id/btnBaseline"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="Set Base"
+                    android:textSize="11sp"/>
+                    
+                <Button
+                    android:id="@+id/btnAlarms"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="Alarms"
+                    android:textSize="11sp"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center">
+                
+                <Button
+                    android:id="@+id/btnCalibrate"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="Calib"
+                    android:textSize="12sp"/>
+                    
+                <Button
+                    android:id="@+id/btnReport"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="Export"
+                    android:textSize="12sp"/>
+                    
+                <Button
+                    android:id="@+id/btnAbout"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="About"
+                    android:textSize="12sp"/>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        android:indeterminateTint="#00FF00"/>
+
+</FrameLayout>

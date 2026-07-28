@@ -1,0 +1,296 @@
+import tkinter as tk
+from tkinter import filedialog, messagebox
+import threading
+import sys
+import random
+import math
+
+try:
+    from PIL import Image, ImageTk, ImageDraw
+except ImportError:
+    messagebox.showerror("Error", "Pillow is missing. Run: pip install pillow")
+    sys.exit(1)
+
+# ==============================================================================
+# ET KERNEL: STRATIFIED MANIFOLD LOGIC
+# ==============================================================================
+
+class ET_Stratified_Math:
+    """
+    Implements Descriptor Stratification.
+    We distinguish between 'Foreground Exceptions' (High Variance) and 
+    'Background Manifold' (Low Variance).
+    """
+    
+    @staticmethod
+    def calculate_patch_variance(pixels, x, y, size):
+        """
+        Calculates the internal energy (Variance) of a patch.
+        High Variance = Complex Object (Railing, Eyes, Text).
+        Low Variance = Manifold Texture (Skin, Wall, Sky).
+        """
+        # We calculate the mean color first
+        sum_r, sum_g, sum_b = 0, 0, 0
+        count = 0
+        
+        # Sample points for speed (Pure Python optimization)
+        step = 2
+        for py in range(0, size, step):
+            for px in range(0, size, step):
+                try:
+                    p = pixels[x+px, y+py]
+                    sum_r += p[0]
+                    sum_g += p[1]
+                    sum_b += p[2]
+                    count += 1
+                except: pass
+                
+        if count == 0: return float('inf')
+        
+        avg_r = sum_r / count
+        avg_g = sum_g / count
+        avg_b = sum_b / count
+        
+        # Calculate Variance (Deviation from Mean)
+        variance = 0
+        for py in range(0, size, step):
+            for px in range(0, size, step):
+                try:
+                    p = pixels[x+px, y+py]
+                    dist = abs(p[0]-avg_r) + abs(p[1]-avg_g) + abs(p[2]-avg_b)
+                    variance += dist
+                except: pass
+                
+        return variance / count
+
+class ET_Stratified_Engine:
+    def synthesize_layer(self, img_pil, mask_pil, patch_size, variance_limit, status_cb):
+        width, height = img_pil.size
+        pixels = img_pil.load()
+        mask = mask_pil.load()
+        
+        # 1. HARVEST SOURCE MATERIAL (THE FILTER)
+        # We scan the image for patches, but we REJECT anything with High Variance.
+        
+        valid_sources = []
+        step = max(5, patch_size // 2)
+        
+        status_cb("Stratifying Manifold (Filtering High Variance)...")
+        
+        scan_count = 0
+        reject_count = 0
+        
+        for y in range(0, height - patch_size, step):
+            for x in range(0, width - patch_size, step):
+                # Must be PURE (No Mask)
+                is_pure = True
+                if mask[x, y] > 0 or mask[x+patch_size-1, y+patch_size-1] > 0:
+                    is_pure = False
+                
+                if is_pure:
+                    scan_count += 1
+                    # CHECK VARIANCE (The Stratification)
+                    var = ET_Stratified_Math.calculate_patch_variance(pixels, x, y, patch_size)
+                    
+                    # If Variance is too high (it's a complex object), REJECT IT.
+                    # We want the 'Background', which is lower entropy.
+                    if var < variance_limit:
+                        valid_sources.append((x, y))
+                    else:
+                        reject_count += 1
+                        
+        status_cb(f"Sources Found: {len(valid_sources)} | Rejected (Objects): {reject_count}")
+        
+        if not valid_sources:
+            status_cb("CRITICAL: Variance Limit too strict. No sources found.")
+            return img_pil
+
+        # 2. SYNTHESIS LOOP (Crystallization)
+        # Same as V9, but now we pull from the CLEANED source list.
+        
+        max_iter = 3000
+        iter_count = 0
+        
+        while iter_count < max_iter:
+            if iter_count % 50 == 0:
+                status_cb(f"Synthesizing Layer: Cycle {iter_count} (Sources: {len(valid_sources)})")
+            
+            # Find a target pixel on the edge of the void
+            target_x, target_y = -1, -1
+            found = False
+            
+            # Random hunt
+            for _ in range(50):
+                rx = random.randint(0, width - patch_size)
+                ry = random.randint(0, height - patch_size)
+                if mask[rx, ry] > 0: # It's void
+                     # Check if it touches reality
+                     if mask[max(0, rx-1), ry] == 0 or mask[rx, max(0, ry-1)] == 0:
+                         target_x, target_y = rx, ry
+                         found = True
+                         break
+            
+            if not found:
+                break # Potentially done
+                
+            # MATCHING
+            # We look for a source patch that matches the VALID neighbor of the target
+            # AND is from our Low-Variance list.
+            
+            # Find a reference neighbor (Anchor)
+            ref_x, ref_y = max(0, target_x - 1), target_y
+            if mask[ref_x, ref_y] > 0: ref_x, ref_y = target_x, max(0, target_y - 1)
+            
+            try:
+                ref_color = pixels[ref_x, ref_y]
+            except: continue
+            
+            best_src = None
+            min_diff = float('inf')
+            
+            # Optimization: Check 20 random valid sources
+            check_list = random.sample(valid_sources, min(20, len(valid_sources)))
+            
+            for sx, sy in check_list:
+                # Compare the corresponding anchor pixel
+                # Anchor relative to target
+                rel_x = ref_x - target_x
+                rel_y = ref_y - target_y
+                
+                try:
+                    sp = pixels[sx + rel_x, sy + rel_y]
+                    diff = abs(sp[0]-ref_color[0]) + abs(sp[1]-ref_color[1]) + abs(sp[2]-ref_color[2])
+                    if diff < min_diff:
+                        min_diff = diff
+                        best_src = (sx, sy)
+                except: pass
+            
+            # PASTE
+            if best_src:
+                bsx, bsy = best_src
+                for py in range(patch_size):
+                    for px in range(patch_size):
+                        tx, ty = target_x + px, target_y + py
+                        if 0 <= tx < width and 0 <= ty < height:
+                            if mask[tx, ty] > 0:
+                                pixels[tx, ty] = pixels[bsx + px, bsy + py]
+                                mask[tx, ty] = 0
+            
+            iter_count += 1
+            
+        return img_pil
+
+# ==============================================================================
+# GUI
+# ==============================================================================
+
+class ET_V10_GUI:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("ET-V10: STRATIFIED MANIFOLD (FILTERED SYNTHESIS)")
+        self.root.geometry("1200x900")
+        self.root.configure(bg="#050505")
+        
+        self.engine = ET_Stratified_Engine()
+        self.pil_img = None
+        self.mask_img = None
+        
+        self._layout()
+
+    def _layout(self):
+        t = tk.Frame(self.root, bg="#101010", pady=5)
+        t.pack(fill=tk.X)
+        
+        self.btn(t, "LOAD IMAGE", self.load, "#004488")
+        self.btn(t, "RESET", self.reset, "#882200")
+        self.btn(t, "SYNTHESIZE (NO OBJECTS)", self.run, "#228822")
+        
+        # VARIANCE CONTROL (The Stratification Level)
+        # Lower = Stricter (Only smooth skin/sky)
+        # Higher = Looser (Allows some texture/noise)
+        tk.Label(t, text="VARIANCE LIMIT:", fg="white", bg="#101010").pack(side=tk.LEFT, padx=5)
+        self.var_scale = tk.Scale(t, from_=5, to=100, orient=tk.HORIZONTAL, bg="#101010", fg="#0f0")
+        self.var_scale.set(30) # Default strictness
+        self.var_scale.pack(side=tk.LEFT)
+        
+        self.stat = tk.Label(t, text="Ready.", fg="#888", bg="#101010")
+        self.stat.pack(side=tk.RIGHT, padx=20)
+        
+        container = tk.Frame(self.root)
+        container.pack(fill=tk.BOTH, expand=True)
+        self.cv = tk.Canvas(container, bg="#080808", cursor="crosshair")
+        vs = tk.Scrollbar(container, orient="vertical", command=self.cv.yview)
+        hs = tk.Scrollbar(container, orient="horizontal", command=self.cv.xview)
+        self.cv.config(yscrollcommand=vs.set, xscrollcommand=hs.set)
+        
+        vs.pack(side=tk.RIGHT, fill=tk.Y)
+        hs.pack(side=tk.BOTTOM, fill=tk.X)
+        self.cv.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        
+        self.cv.bind("<Button-1>", self.down)
+        self.cv.bind("<B1-Motion>", self.drag)
+        self.cv.bind("<ButtonRelease-1>", self.up)
+        
+        self.drawing=False; self.brush=30
+
+    def btn(self, p, t, c, b):
+        tk.Button(p, text=t, command=c, bg=b, fg="white", relief="flat", padx=10).pack(side=tk.LEFT, padx=5)
+
+    def load(self):
+        path = filedialog.askopenfilename()
+        if not path: return
+        try:
+            self.pil_img = Image.open(path).convert("RGB")
+            self.mask_img = Image.new("L", self.pil_img.size, 0)
+            self.cv.config(scrollregion=(0,0,self.pil_img.width,self.pil_img.height))
+            self.update_view()
+            self.stat.config(text=f"Loaded: {self.pil_img.size}")
+        except: pass
+
+    def update_view(self):
+        if not self.pil_img: return
+        d = self.pil_img.copy()
+        if self.mask_img.getbbox():
+            r = Image.new("RGB", self.pil_img.size, (255,0,0))
+            d = Image.composite(r, d, self.mask_img)
+        self.tk = ImageTk.PhotoImage(d)
+        self.cv.create_image(0,0, image=self.tk, anchor=tk.NW)
+
+    def down(self,e): 
+        x=self.cv.canvasx(e.x); y=self.cv.canvasy(e.y)
+        self.drawing=True; self.lp=(x,y)
+        
+    def drag(self,e):
+        if self.drawing and self.mask_img:
+            x=self.cv.canvasx(e.x); y=self.cv.canvasy(e.y)
+            d = ImageDraw.Draw(self.mask_img)
+            d.line([self.lp, (x,y)], fill=255, width=self.brush)
+            d.ellipse([x-15,y-15,x+15,y+15], fill=255)
+            self.lp=(x,y); 
+            self.cv.create_line(self.lp[0],self.lp[1],x,y,fill="red",width=self.brush,tags="t")
+
+    def up(self,e): self.drawing=False; self.cv.delete("t"); self.update_view()
+    
+    def reset(self):
+        if self.mask_img: self.mask_img.paste(0,[0,0,self.mask_img.width,self.mask_img.height]); self.update_view()
+
+    def run(self):
+        if not self.pil_img: return
+        self.stat.config(text="Stratifying & Synthesizing...")
+        var = self.var_scale.get()
+        threading.Thread(target=self._w, args=(var,)).start()
+
+    def _w(self, var):
+        # Patch size 20 is a good standard for texture
+        res = self.engine.synthesize_layer(self.pil_img, self.mask_img, 20, var, self.log)
+        self.pil_img = res
+        self.mask_img.paste(0,[0,0,self.mask_img.width,self.mask_img.height])
+        self.root.after(0, self.update_view)
+        self.root.after(0, lambda: self.stat.config(text="Layer Revealed."))
+
+    def log(self, m): self.stat.config(text=m)
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = ET_V10_GUI(root)
+    root.mainloop()
