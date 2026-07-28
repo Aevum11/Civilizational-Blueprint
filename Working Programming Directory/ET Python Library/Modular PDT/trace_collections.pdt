@@ -1,0 +1,1147 @@
+// @ETPL:trace-stdlib __init__.py  // module=collections
+// This module implements specialized container datatypes providing alternatives to Python's general purpose built-in conta
+P __all__ = manifold ["ChainMap", "Counter", "OrderedDict", "UserDict", "UserList", "UserString", "defaultdict", "deque", "namedtuple"]
+// @ETPL:preload _collections_abc _collections_abc
+// Import _collections_abc — resolved at translate-time
+// @ETPL:preload Awaitable _collections_abc.Awaitable
+P Awaitable = P  // [ET:callable:_collections_abc.Awaitable]
+// @ETPL:preload Coroutine _collections_abc.Coroutine
+P Coroutine = P  // [ET:callable:_collections_abc.Coroutine]
+// @ETPL:preload AsyncIterable _collections_abc.AsyncIterable
+P AsyncIterable = P  // [ET:callable:_collections_abc.AsyncIterable]
+// @ETPL:preload AsyncIterator _collections_abc.AsyncIterator
+P AsyncIterator = P  // [ET:callable:_collections_abc.AsyncIterator]
+// @ETPL:preload AsyncGenerator _collections_abc.AsyncGenerator
+P AsyncGenerator = P  // [ET:callable:_collections_abc.AsyncGenerator]
+// @ETPL:preload Hashable _collections_abc.Hashable
+P Hashable = P  // [ET:callable:_collections_abc.Hashable]
+// @ETPL:preload Iterable _collections_abc.Iterable
+P Iterable = P  // [ET:callable:_collections_abc.Iterable]
+// @ETPL:preload Iterator _collections_abc.Iterator
+P Iterator = P  // [ET:callable:_collections_abc.Iterator]
+// @ETPL:preload Generator _collections_abc.Generator
+P Generator = P  // [ET:callable:_collections_abc.Generator]
+// @ETPL:preload Reversible _collections_abc.Reversible
+P Reversible = P  // [ET:callable:_collections_abc.Reversible]
+// @ETPL:preload Sized _collections_abc.Sized
+P Sized = P  // [ET:callable:_collections_abc.Sized]
+// @ETPL:preload Container _collections_abc.Container
+P Container = P  // [ET:callable:_collections_abc.Container]
+// @ETPL:preload Callable _collections_abc.Callable
+P Callable = P  // [ET:callable:_collections_abc.Callable]
+// @ETPL:preload Collection _collections_abc.Collection
+P Collection = P  // [ET:callable:_collections_abc.Collection]
+// @ETPL:preload Set _collections_abc.Set
+P Set = P  // [ET:callable:_collections_abc.Set]
+// @ETPL:preload MutableSet _collections_abc.MutableSet
+P MutableSet = P  // [ET:callable:_collections_abc.MutableSet]
+// @ETPL:preload Mapping _collections_abc.Mapping
+P Mapping = P  // [ET:callable:_collections_abc.Mapping]
+// @ETPL:preload MutableMapping _collections_abc.MutableMapping
+P MutableMapping = P  // [ET:callable:_collections_abc.MutableMapping]
+// @ETPL:preload MappingView _collections_abc.MappingView
+P MappingView = P  // [ET:callable:_collections_abc.MappingView]
+// @ETPL:preload KeysView _collections_abc.KeysView
+P KeysView = P  // [ET:callable:_collections_abc.KeysView]
+// @ETPL:preload ItemsView _collections_abc.ItemsView
+P ItemsView = P  // [ET:callable:_collections_abc.ItemsView]
+// @ETPL:preload ValuesView _collections_abc.ValuesView
+P ValuesView = P  // [ET:callable:_collections_abc.ValuesView]
+// @ETPL:preload Sequence _collections_abc.Sequence
+P Sequence = P  // [ET:callable:_collections_abc.Sequence]
+// @ETPL:preload MutableSequence _collections_abc.MutableSequence
+P MutableSequence = P  // [ET:callable:_collections_abc.MutableSequence]
+// @ETPL:preload ByteString _collections_abc.ByteString
+P ByteString = P  // [ET:callable:_collections_abc.ByteString]
+// @ETPL:preload Buffer _collections_abc.Buffer
+P Buffer = P  // [ET:callable:_collections_abc.Buffer]
+// @ETPL:preload _sys sys
+// Import sys — resolved at translate-time
+// @ETPL:preload activate_stack_trampoline sys.activate_stack_trampoline
+P activate_stack_trampoline = P  // [ET:callable:sys.activate_stack_trampoline]
+// @ETPL:preload addaudithook sys.addaudithook
+P addaudithook = P  // [ET:callable:sys.addaudithook]
+P api_version = 1013
+P argv = manifold ["ETPL.py", "translate", "ETPL.py", "--lang", "python", "--output", "ETPL_self.pdt"]
+// @ETPL:preload audit sys.audit
+P audit = P  // [ET:callable:sys.audit]
+P base_exec_prefix = "C:\\Program Files\\Python313"
+P base_prefix = "C:\\Program Files\\Python313"
+// @ETPL:preload breakpointhook sys.breakpointhook
+P breakpointhook = P  // [ET:callable:sys.breakpointhook]
+P builtin_module_names = manifold ["_abc", "_ast", "_bisect", "_blake2", "_codecs", "_codecs_cn", "_codecs_hk", "_codecs_iso2022", "_codecs_jp", "_codecs_kr", "_codecs_tw", "_collections", "_contextvars", "_csv", "_datetime", "_functools", "_heapq", "_imp", "_interpchannels", "_interpqueues", "_interpreters", "_io", "_json", "_locale", "_lsprof", "_md5", "_multibytecodec", "_opcode", "_operator", "_pickle", "_random", "_sha1", "_sha2", "_sha3", "_signal", "_sre", "_stat", "_statistics", "_string", "_struct", "_suggestions", "_symtable", "_sysconfig", "_thread", "_tokenize", "_tracemalloc", "_typing", "_warnings", "_weakref", "_winapi"]
+P byteorder = "little"
+// @ETPL:preload call_tracing sys.call_tracing
+P call_tracing = P  // [ET:callable:sys.call_tracing]
+P copyright = "Copyright (c) 2001-2024 Python Software Foundation.\nAll Rights Reserved.\n\nCopyright (c) 2000 BeOpen.com.\nAll Rights Reserved.\n\nCopyright (c) 1995-2001 Corporation for National Research Initiatives.\nAll Rights Reserved.\n\nCopyright (c) 1991-1995 Stichting Mathematisch Centrum, Amsterdam.\nAll Rights Reserved."
+// @ETPL:preload deactivate_stack_trampoline sys.deactivate_stack_trampoline
+P deactivate_stack_trampoline = P  // [ET:callable:sys.deactivate_stack_trampoline]
+// @ETPL:preload displayhook sys.displayhook
+P displayhook = P  // [ET:callable:sys.displayhook]
+P dllhandle = 140730231881728
+P dont_write_bytecode = 0
+// @ETPL:preload exc_info sys.exc_info
+P exc_info = P  // [ET:callable:sys.exc_info]
+// @ETPL:preload excepthook sys.excepthook
+P excepthook = P  // [ET:callable:sys.excepthook]
+// @ETPL:preload exception sys.exception
+P exception = P  // [ET:callable:sys.exception]
+P exec_prefix = "C:\\Program Files\\Python313"
+P executable = "C:\\Program Files\\Python313\\python.exe"
+// @ETPL:preload exit sys.exit
+P exit = P  // [ET:callable:sys.exit]
+P flags = manifold [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 4300]
+P float_info = manifold [1.7976931348623157e+308, 1024, 308, 2.2250738585072014e-308, -1021, -307, 15, 53, 2.220446049250313e-16, 2, 1]
+P float_repr_style = "short"
+// @ETPL:preload get_asyncgen_hooks sys.get_asyncgen_hooks
+P get_asyncgen_hooks = P  // [ET:callable:sys.get_asyncgen_hooks]
+// @ETPL:preload get_coroutine_origin_tracking_depth sys.get_coroutine_origin_tracking_depth
+P get_coroutine_origin_tracking_depth = P  // [ET:callable:sys.get_coroutine_origin_tracking_depth]
+// @ETPL:preload get_int_max_str_digits sys.get_int_max_str_digits
+P get_int_max_str_digits = P  // [ET:callable:sys.get_int_max_str_digits]
+// @ETPL:preload getallocatedblocks sys.getallocatedblocks
+P getallocatedblocks = P  // [ET:callable:sys.getallocatedblocks]
+// @ETPL:preload getdefaultencoding sys.getdefaultencoding
+P getdefaultencoding = P  // [ET:callable:sys.getdefaultencoding]
+// @ETPL:preload getfilesystemencodeerrors sys.getfilesystemencodeerrors
+P getfilesystemencodeerrors = P  // [ET:callable:sys.getfilesystemencodeerrors]
+// @ETPL:preload getfilesystemencoding sys.getfilesystemencoding
+P getfilesystemencoding = P  // [ET:callable:sys.getfilesystemencoding]
+// @ETPL:preload getprofile sys.getprofile
+P getprofile = P  // [ET:callable:sys.getprofile]
+// @ETPL:preload getrecursionlimit sys.getrecursionlimit
+P getrecursionlimit = P  // [ET:callable:sys.getrecursionlimit]
+// @ETPL:preload getrefcount sys.getrefcount
+P getrefcount = P  // [ET:callable:sys.getrefcount]
+// @ETPL:preload getsizeof sys.getsizeof
+P getsizeof = P  // [ET:callable:sys.getsizeof]
+// @ETPL:preload getswitchinterval sys.getswitchinterval
+P getswitchinterval = P  // [ET:callable:sys.getswitchinterval]
+// @ETPL:preload gettrace sys.gettrace
+P gettrace = P  // [ET:callable:sys.gettrace]
+// @ETPL:preload getunicodeinternedsize sys.getunicodeinternedsize
+P getunicodeinternedsize = P  // [ET:callable:sys.getunicodeinternedsize]
+// @ETPL:preload getwindowsversion sys.getwindowsversion
+P getwindowsversion = P  // [ET:callable:sys.getwindowsversion]
+P hash_info = manifold [64, 2305843009213693951, 314159, 0, 1000003, "siphash13", 64, 128, 0]
+P hexversion = 51186672
+P implementation = P  // [ET:unrepresentable:SimpleNamespace]
+P int_info = manifold [30, 4, 4300, 640]
+// @ETPL:preload intern sys.intern
+P intern = P  // [ET:callable:sys.intern]
+// @ETPL:preload is_finalizing sys.is_finalizing
+P is_finalizing = P  // [ET:callable:sys.is_finalizing]
+// @ETPL:preload is_stack_trampoline_active sys.is_stack_trampoline_active
+P is_stack_trampoline_active = P  // [ET:callable:sys.is_stack_trampoline_active]
+P maxsize = 9223372036854775807
+P maxunicode = 1114111
+P meta_path = manifold [P, P, P, P]
+// @ETPL:preload modules sys.modules
+// [ET:complex-dict:modules]
+// @ETPL:preload monitoring sys.monitoring
+P orig_argv = manifold ["python", "ETPL.py", "translate", "ETPL.py", "--lang", "python", "--output", "ETPL_self.pdt"]
+P path = manifold ["C:\\Users\\aevum\\Desktop\\Civilizational Blueprint\\Working Programming Directory\\ET Python Library", "C:\\Program Files\\Python313\\python313.zip", "C:\\Program Files\\Python313\\DLLs", "C:\\Program Files\\Python313\\Lib", "C:\\Program Files\\Python313", "C:\\Users\\aevum\\AppData\\Roaming\\Python\\Python313\\site-packages", "__editable__.exception_theory-3.0.0.finder.__path_hook__", "C:\\Program Files\\Python313\\Lib\\site-packages"]
+P path_hooks = manifold [P, P, P]
+// @ETPL:preload path_importer_cache sys.path_importer_cache
+// [ET:complex-dict:path_importer_cache]
+P platform = "win32"
+P platlibdir = "DLLs"
+P prefix = "C:\\Program Files\\Python313"
+P pycache_prefix = P
+// @ETPL:preload set_asyncgen_hooks sys.set_asyncgen_hooks
+P set_asyncgen_hooks = P  // [ET:callable:sys.set_asyncgen_hooks]
+// @ETPL:preload set_coroutine_origin_tracking_depth sys.set_coroutine_origin_tracking_depth
+P set_coroutine_origin_tracking_depth = P  // [ET:callable:sys.set_coroutine_origin_tracking_depth]
+// @ETPL:preload set_int_max_str_digits sys.set_int_max_str_digits
+P set_int_max_str_digits = P  // [ET:callable:sys.set_int_max_str_digits]
+// @ETPL:preload setprofile sys.setprofile
+P setprofile = P  // [ET:callable:sys.setprofile]
+// @ETPL:preload setrecursionlimit sys.setrecursionlimit
+P setrecursionlimit = P  // [ET:callable:sys.setrecursionlimit]
+// @ETPL:preload setswitchinterval sys.setswitchinterval
+P setswitchinterval = P  // [ET:callable:sys.setswitchinterval]
+// @ETPL:preload settrace sys.settrace
+P settrace = P  // [ET:callable:sys.settrace]
+P stderr = P  // [ET:unrepresentable:TextIOWrapper]
+P stdin = P  // [ET:unrepresentable:TextIOWrapper]
+P stdlib_module_names = manifold ["__future__", "_abc", "_aix_support", "_android_support", "_apple_support", "_ast", "_asyncio", "_bisect", "_blake2", "_bz2", "_codecs", "_codecs_cn", "_codecs_hk", "_codecs_iso2022", "_codecs_jp", "_codecs_kr", "_codecs_tw", "_collections", "_collections_abc", "_colorize", "_compat_pickle", "_compression", "_contextvars", "_csv", "_ctypes", "_curses", "_curses_panel", "_datetime", "_dbm", "_decimal", "_elementtree", "_frozen_importlib", "_frozen_importlib_external", "_functools", "_gdbm", "_hashlib", "_heapq", "_imp", "_interpchannels", "_interpqueues", "_interpreters", "_io", "_ios_support", "_json", "_locale", "_lsprof", "_lzma", "_markupbase", "_md5", "_multibytecodec"]  // frozenset
+P stdout = P  // [ET:unrepresentable:TextIOWrapper]
+P thread_info = manifold ["nt", P, P]
+// @ETPL:preload unraisablehook sys.unraisablehook
+P unraisablehook = P  // [ET:callable:sys.unraisablehook]
+P version = "3.13.11 (tags/v3.13.11:6278944, Dec  5 2025, 16:26:58) [MSC v.1944 64 bit (AMD64)]"
+P version_info = manifold [3, 13, 11, "final", 0]
+P warnoptions = manifold []
+P winver = "3.13"
+// _sys D modules["collections.abc"] := _collections_abc
+P abc = _collections_abc
+// @ETPL:preload _chain itertools.chain
+P _chain = P  // [ET:callable:itertools.chain]
+// @ETPL:preload _repeat itertools.repeat
+P _repeat = P  // [ET:callable:itertools.repeat]
+// @ETPL:preload _starmap itertools.starmap
+P _starmap = P  // [ET:callable:itertools.starmap]
+// @ETPL:preload _iskeyword keyword.iskeyword
+P _iskeyword = P  // [ET:callable:keyword.iskeyword]
+// @ETPL:preload _eq operator.eq
+P _eq = P  // [ET:callable:operator.eq]
+// @ETPL:preload _itemgetter operator.itemgetter
+P _itemgetter = P  // [ET:callable:operator.itemgetter]
+// @ETPL:preload _recursive_repr reprlib.recursive_repr
+P _recursive_repr = P  // [ET:callable:reprlib.recursive_repr]
+// @ETPL:preload _proxy _weakref.proxy
+P _proxy = P  // [ET:callable:_weakref.proxy]
+T attempt = → P  // try
+    // @ETPL:preload deque _collections.deque
+    P deque = P  // [ET:callable:_collections.deque]
+→ E ImportError (_)
+    // pass
+T attempt = → P  // try
+    // @ETPL:preload _deque_iterator _collections._deque_iterator
+    P _deque_iterator = P  // [ET:callable:_collections._deque_iterator]
+→ E ImportError (_)
+    // pass
+T attempt = → P  // try
+    // @ETPL:preload defaultdict _collections.defaultdict
+    P defaultdict = P  // [ET:callable:_collections.defaultdict]
+→ E ImportError (_)
+    // pass
+D OrderedDictKeysView = λ . P  // class(_collections_abc D KeysView)
+    D OrderedDictKeysView____reversed = λ self . P  // empty body
+D OrderedDictItemsView = λ . P  // class(_collections_abc D ItemsView)
+    D OrderedDictItemsView____reversed = λ self . {
+        T loop = ∞ (
+            P key = reversed(self D _mapping)[_loop_index]
+            → manifold [key, self D _mapping[key]]
+        ) (D |reversed(self D _mapping)|)
+    }
+D OrderedDictValuesView = λ . P  // class(_collections_abc D ValuesView)
+    D OrderedDictValuesView____reversed = λ self . {
+        T loop = ∞ (
+            P key = reversed(self D _mapping)[_loop_index]
+            → self D _mapping[key]
+        ) (D |reversed(self D _mapping)|)
+    }
+D Link = λ . P  // class(object)
+    P __slots__ = manifold ["prev", "next", "key", "__weakref__"]
+D OrderedDict = λ . P  // class(dict)
+    // Dictionary that remembers insertion order
+    D OrderedDict____new = λ  . {
+        // Create the ordered dict object and set up the underlying structures.
+        P self = dict D __new__(cls)
+        D self_D___hardroot = _Link(P)  // self D __hardroot := _Link(P)
+        D self_D___root = _proxy(self D __hardroot)  // self D __root := _proxy(self D __hardroot)
+        P root = _proxy(self D __hardroot)
+        D root_D_prev = root  // root D prev := root
+        D root_D_next = root  // root D next := root
+        D self_D___map = manifold []  // self D __map := manifold []
+        → self
+    }
+    D OrderedDict____init = λ  . {
+        // Initialize an ordered dictionary.  The signature is the same as         regular dictionaries.  Keyword argument order is
+        self D __update(other, kwds)
+    }
+    D OrderedDict____setitem = λ self, key, value, dict_setitem, proxy, Link . {
+        // od.__setitem__(i, y) <==> od[i]=y
+        T cond = → if key ≠ self → P
+            // self D __map[key] := Link(P)
+            P link = Link(P)
+            P root = self D __root
+            P last = root D prev
+            P manifold__link_D_prev__link_D_next__link_D_key = manifold [last, root, key]  // manifold [link D prev, link D next, link D key] := manifold [last, root, key]
+            D last_D_next = link  // last D next := link
+            D root_D_prev = proxy(link)  // root D prev := proxy(link)
+        dict_setitem(self, key, value)
+    }
+    D OrderedDict____delitem = λ self, key, dict_delitem . {
+        // od.__delitem__(y) <==> del od[y]
+        dict_delitem(self, key)
+        P link = self D __map D pop(key)
+        P link_prev = link D prev
+        P link_next = link D next
+        D link_prev_D_next = link_next  // link_prev D next := link_next
+        D link_next_D_prev = link_prev  // link_next D prev := link_prev
+        D link_D_prev = P  // link D prev := P
+        D link_D_next = P  // link D next := P
+    }
+    D OrderedDict____iter = λ self . {
+        // od.__iter__() <==> iter(od)
+        P root = self D __root
+        P curr = root D next
+        T while_loop = ∞ (
+            T check = → if curr ≠ root → P  // while body follows
+                → curr D key
+                P curr = curr D next
+        ) (D WHILE_LOOP_FINITE_BOUND)  // bounded by condition; max=144
+    }
+    D OrderedDict____reversed = λ self . {
+        // od.__reversed__() <==> reversed(od)
+        P root = self D __root
+        P curr = root D prev
+        T while_loop = ∞ (
+            T check = → if curr ≠ root → P  // while body follows
+                → curr D key
+                P curr = curr D prev
+        ) (D WHILE_LOOP_FINITE_BOUND)  // bounded by condition; max=144
+    }
+    D OrderedDict__clear = λ self . {
+        // od.clear() -> None.  Remove all items from od.
+        P root = self D __root
+        D root_D_prev = root  // root D prev := root
+        D root_D_next = root  // root D next := root
+        self D __map D clear(P)
+        dict D clear(self)
+    }
+    D OrderedDict__popitem = λ self, last . {
+        // Remove and return a (key, value) pair from the dictionary.          Pairs are returned in LIFO order if last is true or 
+        T cond = → if (!self) → → E KeyError("dictionary is empty")
+        P root = self D __root
+        T cond = → if last → P
+            P link = root D prev
+            P link_prev = link D prev
+            D link_prev_D_next = root  // link_prev D next := root
+            D root_D_prev = link_prev  // root D prev := link_prev
+        → E P
+            P link = root D next
+            P link_next = link D next
+            D root_D_next = link_next  // root D next := link_next
+            D link_next_D_prev = root  // link_next D prev := root
+        P key = link D key
+        // del self.__map[key]
+        P value = dict D pop(self, key)
+        → manifold [key, value]
+    }
+    D OrderedDict__move_to_end = λ self, key, last . {
+        // Move an existing element to the end (or beginning if last is false).          Raise KeyError if the element does not exi
+        P link = self D __map[key]
+        P link_prev = link D prev
+        P link_next = link D next
+        P soft_link = link_next D prev
+        D link_prev_D_next = link_next  // link_prev D next := link_next
+        D link_next_D_prev = link_prev  // link_next D prev := link_prev
+        P root = self D __root
+        T cond = → if last → P
+            P last = root D prev
+            D link_D_prev = last  // link D prev := last
+            D link_D_next = root  // link D next := root
+            D root_D_prev = soft_link  // root D prev := soft_link
+            D last_D_next = link  // last D next := link
+        → E P
+            P first = root D next
+            D link_D_prev = root  // link D prev := root
+            D link_D_next = first  // link D next := first
+            D first_D_prev = soft_link  // first D prev := soft_link
+            D root_D_next = link  // root D next := link
+    }
+    D OrderedDict____sizeof = λ self . {
+        P sizeof = _sys D getsizeof
+        P n = (len(self) + 1)
+        P size = sizeof(self D __dict__)
+        P size = size + (sizeof(self D __map) * 2)
+        P size = size + (sizeof(self D __hardroot) * n)
+        P size = size + (sizeof(self D __root) * n)
+        → size
+    }
+    P update = _collections_abc D MutableMapping D update
+    P __update = _collections_abc D MutableMapping D update
+    D OrderedDict__keys = λ self . {
+        // D.keys() -> a set-like object providing a view on D's keys
+        → _OrderedDictKeysView(self)
+    }
+    D OrderedDict__items = λ self . {
+        // D.items() -> a set-like object providing a view on D's items
+        → _OrderedDictItemsView(self)
+    }
+    D OrderedDict__values = λ self . {
+        // D.values() -> an object providing a view on D's values
+        → _OrderedDictValuesView(self)
+    }
+    P __ne__ = _collections_abc D MutableMapping D __ne__
+    P __marker = object(P)
+    D OrderedDict__pop = λ self, key, default . {
+        // od.pop(k[,d]) -> v, remove specified key and return the corresponding         value.  If key is not found, d is returned
+        P marker = self D __marker
+        P result = dict D pop(self, key, marker)
+        T cond = → if result ≠ marker → P
+            P link = self D __map D pop(key)
+            P link_prev = link D prev
+            P link_next = link D next
+            D link_prev_D_next = link_next  // link_prev D next := link_next
+            D link_next_D_prev = link_prev  // link_next D prev := link_prev
+            D link_D_prev = P  // link D prev := P
+            D link_D_next = P  // link D next := P
+            → result
+        T cond = → if default == marker → → E KeyError(key)
+        → default
+    }
+    D OrderedDict__setdefault = λ self, key, default . {
+        // Insert key with a value of default if key is not in the dictionary.          Return the value for key if key is in the d
+        T cond = → if key == self → → self[key]
+        // self[key] := default
+        → default
+    }
+    D OrderedDict____repr = λ self . {
+        // od.__repr__() <==> repr(od)
+        T cond = → if (!self) → → ("%s()" % manifold [self D __class__ D __name__])
+        → ("%s(%r)" % manifold [self D __class__ D __name__, dict(self D items(P))])
+    }
+    D OrderedDict____reduce = λ self . {
+        // Return state information for pickling
+        P state = self D __getstate__(P)
+        T cond = → if state → P
+            T cond = → if isinstance(state, tuple) → P manifold__state__slots = state  // manifold [state, slots] := state
+            → E P slots = manifold []
+            P state = state D copy(P)
+            P slots = slots D copy(P)
+            T loop = ∞ (
+                P k = vars(OrderedDict(P))[_loop_index]
+                state D pop(k, P)
+                slots D pop(k, P)
+            ) (D |vars(OrderedDict(P))|)
+            T cond = → if slots → P state = manifold [state, slots]
+            → E P state = (state || P)
+        → manifold [self D __class__, manifold [], state, P, iter(self D items(P))]
+    }
+    D OrderedDict__copy = λ self . {
+        // od.copy() -> a shallow copy of od
+        → self D __class__(self)
+    }
+    D OrderedDict__fromkeys = λ cls, iterable, value . {
+        // Create a new ordered dictionary with keys from iterable and values set to value.
+        P self = cls(P)
+        T loop = ∞ (
+            P key = iterable[_loop_index]
+            // self[key] := value
+        ) (D |iterable|)
+        → self
+    }
+    D OrderedDict____eq = λ self, other . {
+        // od.__eq__(y) <==> od==y.  Comparison to another OD is order-sensitive         while comparison to a regular mapping is o
+        T cond = → if isinstance(other, OrderedDict) → → (dict D __eq__(self, other) && all(_et_map(_eq, self, other)))
+        → dict D __eq__(self, other)
+    }
+    D OrderedDict____ior = λ self, other . {
+        self D update(other)
+        → self
+    }
+    D OrderedDict____or = λ self, other . {
+        T cond = → if (!isinstance(other, dict)) → → NotImplemented
+        P new = self D __class__(self)
+        new D update(other)
+        → new
+    }
+    D OrderedDict____ror = λ self, other . {
+        T cond = → if (!isinstance(other, dict)) → → NotImplemented
+        P new = self D __class__(other)
+        new D update(self)
+        → new
+    }
+T attempt = → P  // try
+    // @ETPL:preload OrderedDict _collections.OrderedDict
+    P OrderedDict = P  // [ET:callable:_collections.OrderedDict]
+→ E ImportError (_)
+    // pass
+T attempt = → P  // try
+    // @ETPL:preload _tuplegetter _collections._tuplegetter
+    P _tuplegetter = P  // [ET:callable:_collections._tuplegetter]
+→ E ImportError (_)
+    P _tuplegetter = λ index, doc . property(_itemgetter(index), manifold ["doc", doc])
+D namedtuple = λ typename, field_names . {
+    // Returns a new subclass of tuple with named fields.      >>> Point = namedtuple('Point', ['x', 'y'])     >>> Point.__doc_
+    T cond = → if isinstance(field_names, str) → P field_names = field_names D replace(",", " ") D split(P)
+    P field_names = list(_et_map(str, field_names))
+    P typename = _sys D intern(str(typename))
+    T cond = → if rename → P
+        P seen = set(P)
+        T loop = ∞ (
+            P manifold__index__name = enumerate(field_names)[_loop_index]  // manifold [index, name]
+            T cond = → if ((!name D isidentifier(P)) || _iskeyword(name) || name D startswith("_") || name == seen) → P  // pass
+            seen D add(name)
+        ) (D |enumerate(field_names)|)
+    T loop = ∞ (
+        P name = (manifold [typename] + field_names)[_loop_index]
+        T cond = → if type(name) ≠ str → → E TypeError("Type names and field names must be strings")
+        T cond = → if (!name D isidentifier(P)) → → E ValueError("Type names and field names must be valid identifiers: " + name)
+        T cond = → if _iskeyword(name) → → E ValueError("Type names and field names cannot be a keyword: " + name)
+    ) (D |(manifold [typename] + field_names)|)
+    P seen = set(P)
+    T loop = ∞ (
+        P name = field_names[_loop_index]
+        T cond = → if (name D startswith("_") && (!rename)) → → E ValueError("Field names cannot start with an underscore: " + name)
+        T cond = → if name == seen → → E ValueError("Encountered duplicate field name: " + name)
+        seen D add(name)
+    ) (D |field_names|)
+    P field_defaults = manifold []
+    T cond = → if defaults ≠ P → P
+        P defaults = tuple(defaults)
+        T cond = → if len(defaults) > len(field_names) → → E TypeError("Got more default values than field names")
+        P field_defaults = dict(reversed(list(zip(reversed(field_names), reversed(defaults)))))
+    P field_names = tuple(_et_map(_sys D intern, field_names))
+    P num_fields = len(field_names)
+    P arg_list = ", " D join(field_names)
+    T cond = → if num_fields == 1 → P arg_list = arg_list + ","
+    P repr_fmt = (("(" + ", " D join({ T loop = ∞ (name + "=%r") (D |field_names|) })) + ")")
+    P tuple_new = tuple D __new__
+    P manifold___dict___tuple___len___map___zip = manifold [dict, tuple, len, _et_map, zip]  // manifold [_dict, _tuple, _len, _map, _zip] := manifold [dict, tuple, len, _et_map, zip]
+    P namespace = manifold [manifold ["_tuple_new", tuple_new], manifold ["__builtins__", manifold []], manifold ["__name__", "namedtuple_" + typename]]
+    P code = "lambda _cls, " + arg_list + ": _tuple_new(_cls, (" + arg_list + "))"
+    P __new__ = eval(code, namespace)
+    D new___D___name = "__new__"  // __new__ D __name__ := "__new__"
+    D new___D___doc = "Create new instance of " + typename + "(" + arg_list + ")"  // __new__ D __doc__ := "Create new instance of " + typename + "(" + arg_list + ")"
+    T cond = → if defaults ≠ P → D new___D___defaults = defaults  // __new__ D __defaults__ := defaults
+    D make = λ cls, iterable . {
+        P result = tuple_new(cls, iterable)
+        T cond = → if _len(result) ≠ num_fields → → E TypeError("Expected " + num_fields + " arguments, got " + len(result))
+        → result
+    }
+    D make_D___func___D___doc = "Make a new " + typename + " object from a sequence or iterable"  // _make D __func__ D __doc__ := "Make a new " + typename + " object from a sequence or iterable"
+    D replace = λ  . {
+        P result = self D _make(_map(kwds D pop, field_names, self))
+        T cond = → if kwds → → E TypeError("Got unexpected field names: " + list(kwds))
+        → result
+    }
+    D replace_D___doc = "Return a new " + typename + " object replacing specified fields with new values"  // _replace D __doc__ := "Return a new " + typename + " object replacing specified fields with new values"
+    D repr = λ self . {
+        // Return a nicely formatted representation string
+        → (self D __class__ D __name__ + (repr_fmt % self))
+    }
+    D asdict = λ self . {
+        // Return a new dict which maps field names to their values.
+        → _dict(_zip(self D _fields, self))
+    }
+    D getnewargs = λ self . {
+        // Return self as a plain tuple.  Used by copy and pickle.
+        → _tuple(self)
+    }
+    T loop = ∞ (
+        P method = manifold [__new__, _make D __func__, _replace, __repr__, _asdict, __getnewargs__][_loop_index]
+        D method_D___qualname = typename + "." + method D __name__  // method D __qualname__ := typename + "." + method D __name__
+    ) (D |manifold [__new__, _make D __func__, _replace, __repr__, _asdict, __getnewargs__]|)
+    P class_namespace = manifold [manifold ["__doc__", typename + "(" + arg_list + ")"], manifold ["__slots__", manifold []], manifold ["_fields", field_names], manifold ["_field_defaults", field_defaults], manifold ["__new__", __new__], manifold ["_make", _make], manifold ["__replace__", _replace], manifold ["_replace", _replace], manifold ["__repr__", __repr__], manifold ["_asdict", _asdict], manifold ["__getnewargs__", __getnewargs__], manifold ["__match_args__", field_names]]
+    T loop = ∞ (
+        P manifold__index__name = enumerate(field_names)[_loop_index]  // manifold [index, name]
+        P doc = _sys D intern("Alias for field number " + index)
+        // class_namespace[name] := _tuplegetter(index, doc)
+    ) (D |enumerate(field_names)|)
+    P result = type(typename, manifold [tuple], class_namespace)
+    T cond = → if module == P → P
+        T attempt = → P  // try
+            P module = (_sys D _getframemodulename(1) || "__main__")
+        → E AttributeError (_)
+            T attempt = → P  // try
+                P module = _sys D _getframe(1) D f_globals D get("__name__", "__main__")
+            → E manifold [AttributeError, ValueError] (_)
+                // pass
+    T cond = → if module ≠ P → D result_D___module = module  // result D __module__ := module
+    → result
+}
+D count_elements = λ mapping, iterable . {
+    // Tally elements from the iterable.
+    P mapping_get = mapping D get
+    T loop = ∞ (
+        P elem = iterable[_loop_index]
+        // mapping[elem] := (mapping_get(elem, 0) + 1)
+    ) (D |iterable|)
+}
+T attempt = → P  // try
+    // @ETPL:preload _count_elements _collections._count_elements
+    P _count_elements = P  // [ET:callable:_collections._count_elements]
+→ E ImportError (_)
+    // pass
+D Counter = λ . P  // class(dict)
+    // Dict subclass for counting hashable items.  Sometimes called a bag     or multiset.  Elements are stored as dictionary k
+    D Counter____init = λ  . {
+        // Create a new, empty Counter object.  And if given, count elements         from an input iterable.  Or, initialize the co
+        super(P) D __init__(P)
+        self D update(iterable, kwds)
+    }
+    D Counter____missing = λ self, key . {
+        // The count of elements not in the Counter is zero.
+        → 0
+    }
+    D Counter__total = λ self . {
+        // Sum of the counts
+        → _et_sum(self D values(P))
+    }
+    D Counter__most_common = λ self, n . {
+        // List the n most common elements and their counts from the most         common to the least.  If n is None, then list all
+        T cond = → if n == P → → sorted(self D items(P), manifold ["key", _itemgetter(1)], manifold ["reverse", 1])
+        // @ETPL:preload heapq heapq
+        // Import heapq — resolved at translate-time
+        // @ETPL:preload heappush heapq.heappush
+        P heappush = P  // [ET:callable:heapq.heappush]
+        // @ETPL:preload heappop heapq.heappop
+        P heappop = P  // [ET:callable:heapq.heappop]
+        // @ETPL:preload heapify heapq.heapify
+        P heapify = P  // [ET:callable:heapq.heapify]
+        // @ETPL:preload heapreplace heapq.heapreplace
+        P heapreplace = P  // [ET:callable:heapq.heapreplace]
+        // @ETPL:preload merge heapq.merge
+        P merge = P  // [ET:callable:heapq.merge]
+        // @ETPL:preload nlargest heapq.nlargest
+        P nlargest = P  // [ET:callable:heapq.nlargest]
+        // @ETPL:preload nsmallest heapq.nsmallest
+        P nsmallest = P  // [ET:callable:heapq.nsmallest]
+        // @ETPL:preload heappushpop heapq.heappushpop
+        P heappushpop = P  // [ET:callable:heapq.heappushpop]
+        → heapq D nlargest(n, self D items(P), manifold ["key", _itemgetter(1)])
+    }
+    D Counter__elements = λ self . {
+        // Iterator over elements repeating each as many times as its count.          >>> c = Counter('ABCABC')         >>> sorted(
+        → _chain D from_iterable(_starmap(_repeat, self D items(P)))
+    }
+    D Counter__fromkeys = λ cls, iterable, v . → E NotImplementedError("Counter.fromkeys() is undefined.  Use Counter(iterable) instead.")
+    D Counter__update = λ  . {
+        // Like dict.update() but add counts instead of replacing them.          Source can be an iterable, a dictionary, or anothe
+        T cond = → if iterable ≠ P → P
+            T cond = → if isinstance(iterable, _collections_abc D Mapping) → P
+                T cond = → if self → P
+                    P self_get = self D get
+                    T loop = ∞ (
+                        P manifold__elem__count = iterable D items(P)[_loop_index]  // manifold [elem, count]
+                        // self[elem] := (count + self_get(elem, 0))
+                    ) (D |iterable D items(P)|)
+                → E super(P) D update(iterable)
+            → E _count_elements(self, iterable)
+        T cond = → if kwds → self D update(kwds)
+    }
+    D Counter__subtract = λ  . {
+        // Like dict.update() but subtracts counts instead of replacing them.         Counts can be reduced below zero.  Both the i
+        T cond = → if iterable ≠ P → P
+            P self_get = self D get
+            T cond = → if isinstance(iterable, _collections_abc D Mapping) → P
+                T loop = ∞ (
+                    P manifold__elem__count = iterable D items(P)[_loop_index]  // manifold [elem, count]
+                    // self[elem] := (self_get(elem, 0) - count)
+                ) (D |iterable D items(P)|)
+            → E P
+                T loop = ∞ (
+                    P elem = iterable[_loop_index]
+                    // self[elem] := (self_get(elem, 0) - 1)
+                ) (D |iterable|)
+        T cond = → if kwds → self D subtract(kwds)
+    }
+    D Counter__copy = λ self . {
+        // Return a shallow copy.
+        → self D __class__(self)
+    }
+    D Counter____reduce = λ self . → manifold [self D __class__, manifold [dict(self)]]
+    D Counter____delitem = λ self, elem . {
+        // Like dict.__delitem__() but does not raise KeyError for missing values.
+        T cond = → if elem == self → super(P) D __delitem__(elem)
+    }
+    D Counter____repr = λ self . {
+        T cond = → if (!self) → → self D __class__ D __name__ + "()"
+        T attempt = → P  // try
+            P d = dict(self D most_common(P))
+        → E TypeError (_)
+            P d = dict(self)
+        → self D __class__ D __name__ + "(" + d + ")"
+    }
+    D Counter____eq = λ self, other . {
+        // True if all counts agree. Missing counts are treated as zero.
+        T cond = → if (!isinstance(other, Counter)) → → NotImplemented
+        → all({ T loop = ∞ (self[e] == other[e]) (D |manifold [self, other]|) })
+    }
+    D Counter____ne = λ self, other . {
+        // True if any counts disagree. Missing counts are treated as zero.
+        T cond = → if (!isinstance(other, Counter)) → → NotImplemented
+        → (!self == other)
+    }
+    D Counter____le = λ self, other . {
+        // True if all counts in self are a subset of those in other.
+        T cond = → if (!isinstance(other, Counter)) → → NotImplemented
+        → all({ T loop = ∞ (self[e] ≤ other[e]) (D |manifold [self, other]|) })
+    }
+    D Counter____lt = λ self, other . {
+        // True if all counts in self are a proper subset of those in other.
+        T cond = → if (!isinstance(other, Counter)) → → NotImplemented
+        → (self ≤ other && self ≠ other)
+    }
+    D Counter____ge = λ self, other . {
+        // True if all counts in self are a superset of those in other.
+        T cond = → if (!isinstance(other, Counter)) → → NotImplemented
+        → all({ T loop = ∞ (self[e] ≥ other[e]) (D |manifold [self, other]|) })
+    }
+    D Counter____gt = λ self, other . {
+        // True if all counts in self are a proper superset of those in other.
+        T cond = → if (!isinstance(other, Counter)) → → NotImplemented
+        → (self ≥ other && self ≠ other)
+    }
+    D Counter____add = λ self, other . {
+        // Add counts from two counters.          >>> Counter('abbb') + Counter('bcc')         Counter({'b': 4, 'c': 2, 'a': 1})
+        T cond = → if (!isinstance(other, Counter)) → → NotImplemented
+        P result = Counter(P)
+        T loop = ∞ (
+            P manifold__elem__count = self D items(P)[_loop_index]  // manifold [elem, count]
+            P newcount = (count + other[elem])
+            T cond = → if newcount > 0 → P  // pass
+        ) (D |self D items(P)|)
+        T loop = ∞ (
+            P manifold__elem__count = other D items(P)[_loop_index]  // manifold [elem, count]
+            T cond = → if (elem ≠ self && count > 0) → P  // pass
+        ) (D |other D items(P)|)
+        → result
+    }
+    D Counter____sub = λ self, other . {
+        // Subtract count, but keep only results with positive counts.          >>> Counter('abbbc') - Counter('bccd')         Coun
+        T cond = → if (!isinstance(other, Counter)) → → NotImplemented
+        P result = Counter(P)
+        T loop = ∞ (
+            P manifold__elem__count = self D items(P)[_loop_index]  // manifold [elem, count]
+            P newcount = (count - other[elem])
+            T cond = → if newcount > 0 → P  // pass
+        ) (D |self D items(P)|)
+        T loop = ∞ (
+            P manifold__elem__count = other D items(P)[_loop_index]  // manifold [elem, count]
+            T cond = → if (elem ≠ self && count < 0) → P  // pass
+        ) (D |other D items(P)|)
+        → result
+    }
+    D Counter____or = λ self, other . {
+        // Union is the maximum of value in either of the input counters.          >>> Counter('abbb') | Counter('bcc')         Cou
+        T cond = → if (!isinstance(other, Counter)) → → NotImplemented
+        P result = Counter(P)
+        T loop = ∞ (
+            P manifold__elem__count = self D items(P)[_loop_index]  // manifold [elem, count]
+            P other_count = other[elem]
+            P newcount = if count < other_count → other_count → E count
+            T cond = → if newcount > 0 → P  // pass
+        ) (D |self D items(P)|)
+        T loop = ∞ (
+            P manifold__elem__count = other D items(P)[_loop_index]  // manifold [elem, count]
+            T cond = → if (elem ≠ self && count > 0) → P  // pass
+        ) (D |other D items(P)|)
+        → result
+    }
+    D Counter____and = λ self, other . {
+        // Intersection is the minimum of corresponding counts.          >>> Counter('abbb') & Counter('bcc')         Counter({'b':
+        T cond = → if (!isinstance(other, Counter)) → → NotImplemented
+        P result = Counter(P)
+        T loop = ∞ (
+            P manifold__elem__count = self D items(P)[_loop_index]  // manifold [elem, count]
+            P other_count = other[elem]
+            P newcount = if count < other_count → count → E other_count
+            T cond = → if newcount > 0 → P  // pass
+        ) (D |self D items(P)|)
+        → result
+    }
+    D Counter____pos = λ self . {
+        // Adds an empty counter, effectively stripping negative and zero counts
+        P result = Counter(P)
+        T loop = ∞ (
+            P manifold__elem__count = self D items(P)[_loop_index]  // manifold [elem, count]
+            T cond = → if count > 0 → P  // pass
+        ) (D |self D items(P)|)
+        → result
+    }
+    D Counter____neg = λ self . {
+        // Subtracts from an empty counter.  Strips positive and zero counts,         and flips the sign on negative counts.
+        P result = Counter(P)
+        T loop = ∞ (
+            P manifold__elem__count = self D items(P)[_loop_index]  // manifold [elem, count]
+            T cond = → if count < 0 → P  // pass
+        ) (D |self D items(P)|)
+        → result
+    }
+    D Counter___keep_positive = λ self . {
+        // Internal method to strip elements with a negative or zero count
+        P nonpositive = { T loop = ∞ (elem → E (!count > 0)) (D |self D items(P)|) }
+        T loop = ∞ (
+            P elem = nonpositive[_loop_index]
+            // del self[elem]
+        ) (D |nonpositive|)
+        → self
+    }
+    D Counter____iadd = λ self, other . {
+        // Inplace add from another counter, keeping only positive counts.          >>> c = Counter('abbb')         >>> c += Counte
+        T loop = ∞ (
+            P manifold__elem__count = other D items(P)[_loop_index]  // manifold [elem, count]
+            // self[elem] += count
+        ) (D |other D items(P)|)
+        → self D _keep_positive(P)
+    }
+    D Counter____isub = λ self, other . {
+        // Inplace subtract counter, but keep only results with positive counts.          >>> c = Counter('abbbc')         >>> c -=
+        T loop = ∞ (
+            P manifold__elem__count = other D items(P)[_loop_index]  // manifold [elem, count]
+            // self[elem] -= count
+        ) (D |other D items(P)|)
+        → self D _keep_positive(P)
+    }
+    D Counter____ior = λ self, other . {
+        // Inplace union is the maximum of value from either counter.          >>> c = Counter('abbb')         >>> c |= Counter('bc
+        T loop = ∞ (
+            P manifold__elem__other_count = other D items(P)[_loop_index]  // manifold [elem, other_count]
+            P count = self[elem]
+            T cond = → if other_count > count → P  // pass
+        ) (D |other D items(P)|)
+        → self D _keep_positive(P)
+    }
+    D Counter____iand = λ self, other . {
+        // Inplace intersection is the minimum of corresponding counts.          >>> c = Counter('abbb')         >>> c &= Counter('
+        T loop = ∞ (
+            P manifold__elem__count = self D items(P)[_loop_index]  // manifold [elem, count]
+            P other_count = other[elem]
+            T cond = → if other_count < count → P  // pass
+        ) (D |self D items(P)|)
+        → self D _keep_positive(P)
+    }
+D ChainMap = λ . P  // class(_collections_abc D MutableMapping)
+    // A ChainMap groups multiple dicts (or other mappings) together     to create a single, updateable view.      The underlyi
+    D ChainMap____init = λ self . {
+        // Initialize a ChainMap by setting *maps* to the given mappings.         If no mappings are provided, a single empty dicti
+        D self_D_maps = (list(maps) || manifold [manifold []])  // self D maps := (list(maps) || manifold [manifold []])
+    }
+    D ChainMap____missing = λ self, key . → E KeyError(key)
+    D ChainMap____getitem = λ self, key . {
+        T loop = ∞ (
+            P mapping = self D maps[_loop_index]
+            T attempt = → P  // try
+                → mapping[key]
+            → E KeyError (_)
+                // pass
+        ) (D |self D maps|)
+        → self D __missing__(key)
+    }
+    D ChainMap__get = λ self, key, default . → if key == self → self[key] → E default
+    D ChainMap____len = λ self . → len(set(P) D union(self D maps))
+    D ChainMap____iter = λ self . {
+        P d = manifold []
+        T loop = ∞ (
+            P mapping = _et_map(dict D fromkeys, reversed(self D maps))[_loop_index]
+            P d = d | mapping
+        ) (D |_et_map(dict D fromkeys, reversed(self D maps))|)
+        → iter(d)
+    }
+    D ChainMap____contains = λ self, key . → any({ T loop = ∞ (key == m) (D |self D maps|) })
+    D ChainMap____bool = λ self . → any(self D maps)
+    D ChainMap____repr = λ self . → self D __class__ D __name__ + "(" + ", " D join(_et_map(repr, self D maps)) + ")"
+    D ChainMap__fromkeys = λ  . {
+        // Create a new ChainMap with keys from iterable and values set to value.
+        → cls(dict D fromkeys(iterable, value))
+    }
+    D ChainMap__copy = λ self . {
+        // New ChainMap or subclass with a new copy of maps[0] and refs to maps[1:]
+        → self D __class__(self D maps[0] D copy(P), self D maps[1:Ω])
+    }
+    P __copy__ = copy
+    D ChainMap__new_child = λ self, m . {
+        // New ChainMap with a new map followed by all previous maps.         If no map is provided, an empty dict is used.        
+        T cond = → if m == P → P m = kwargs
+        → E T cond = → if kwargs → m D update(kwargs)
+        → self D __class__(m, self D maps)
+    }
+    D ChainMap__parents = λ self . {
+        // New ChainMap from maps[1:].
+        → self D __class__(self D maps[1:Ω])
+    }
+    D ChainMap____setitem = λ self, key, value . P  // empty body
+    D ChainMap____delitem = λ self, key . {
+        T attempt = → P  // try
+            // del self.maps[0][key]
+        → E KeyError (_)
+            → E KeyError("Key not found in the first mapping: " + key)
+    }
+    D ChainMap__popitem = λ self . {
+        // Remove and return an item pair from maps[0]. Raise KeyError is maps[0] is empty.
+        T attempt = → P  // try
+            → self D maps[0] D popitem(P)
+        → E KeyError (_)
+            → E KeyError("No keys found in the first mapping.")
+    }
+    D ChainMap__pop = λ self, key . {
+        // Remove *key* from maps[0] and return its value. Raise KeyError if *key* not in maps[0].
+        T attempt = → P  // try
+            → self D maps[0] D pop(key, args)
+        → E KeyError (_)
+            → E KeyError("Key not found in the first mapping: " + key)
+    }
+    D ChainMap__clear = λ self . {
+        // Clear maps[0], leaving maps[1:] intact.
+        self D maps[0] D clear(P)
+    }
+    D ChainMap____ior = λ self, other . {
+        self D maps[0] D update(other)
+        → self
+    }
+    D ChainMap____or = λ self, other . {
+        T cond = → if (!isinstance(other, _collections_abc D Mapping)) → → NotImplemented
+        P m = self D copy(P)
+        m D maps[0] D update(other)
+        → m
+    }
+    D ChainMap____ror = λ self, other . {
+        T cond = → if (!isinstance(other, _collections_abc D Mapping)) → → NotImplemented
+        P m = dict(other)
+        T loop = ∞ (
+            P child = reversed(self D maps)[_loop_index]
+            m D update(child)
+        ) (D |reversed(self D maps)|)
+        → self D __class__(m)
+    }
+D UserDict = λ . P  // class(_collections_abc D MutableMapping)
+    D UserDict____init = λ  . {
+        D self_D_data = manifold []  // self D data := manifold []
+        T cond = → if dict ≠ P → self D update(dict)
+        T cond = → if kwargs → self D update(kwargs)
+    }
+    D UserDict____len = λ self . → len(self D data)
+    D UserDict____getitem = λ self, key . {
+        T cond = → if key == self D data → → self D data[key]
+        T cond = → if hasattr(self D __class__, "__missing__") → → self D __class__ D __missing__(self, key)
+        → E KeyError(key)
+    }
+    D UserDict____setitem = λ self, key, item . P  // empty body
+    D UserDict____delitem = λ self, key . P  // empty body
+    D UserDict____iter = λ self . → iter(self D data)
+    D UserDict____contains = λ self, key . → key == self D data
+    D UserDict__get = λ self, key, default . {
+        T cond = → if key == self → → self[key]
+        → default
+    }
+    D UserDict____repr = λ self . → repr(self D data)
+    D UserDict____or = λ self, other . {
+        T cond = → if isinstance(other, UserDict) → → self D __class__((self D data | other D data))
+        T cond = → if isinstance(other, dict) → → self D __class__((self D data | other))
+        → NotImplemented
+    }
+    D UserDict____ror = λ self, other . {
+        T cond = → if isinstance(other, UserDict) → → self D __class__((other D data | self D data))
+        T cond = → if isinstance(other, dict) → → self D __class__((other | self D data))
+        → NotImplemented
+    }
+    D UserDict____ior = λ self, other . {
+        T cond = → if isinstance(other, UserDict) → D self_D_data = self_D_data | other D data  // self D data |= other D data
+        → E D self_D_data = self_D_data | other  // self D data |= other
+        → self
+    }
+    D UserDict____copy = λ self . {
+        P inst = self D __class__ D __new__(self D __class__)
+        inst D __dict__ D update(self D __dict__)
+        // inst D __dict__["data"] := self D __dict__["data"] D copy(P)
+        → inst
+    }
+    D UserDict__copy = λ self . {
+        T cond = → if self D __class__ == UserDict → → UserDict(self D data D copy(P))
+        // @ETPL:preload copy copy
+        // Import copy — resolved at translate-time
+        // @ETPL:preload Error copy.Error
+        P Error = P  // [ET:callable:copy.Error]
+        // @ETPL:preload copy copy.copy
+        P copy = P  // [ET:callable:copy.copy]
+        // @ETPL:preload deepcopy copy.deepcopy
+        P deepcopy = P  // [ET:callable:copy.deepcopy]
+        // @ETPL:preload replace copy.replace
+        P replace = P  // [ET:callable:copy.replace]
+        P data = self D data
+        T attempt = → P  // try
+            D self_D_data = manifold []  // self D data := manifold []
+            P c = copy D copy(self)
+        // finally:
+            D self_D_data = data  // self D data := data
+        c D update(self)
+        → c
+    }
+    D UserDict__fromkeys = λ cls, iterable, value . {
+        P d = cls(P)
+        T loop = ∞ (
+            P key = iterable[_loop_index]
+            // d[key] := value
+        ) (D |iterable|)
+        → d
+    }
+D UserList = λ . P  // class(_collections_abc D MutableSequence)
+    // A more or less complete user-defined wrapper around list objects.
+    D UserList____init = λ self, initlist . {
+        D self_D_data = manifold []  // self D data := manifold []
+        T cond = → if initlist ≠ P → T cond = → if type(initlist) == type(self D data) → P  // pass
+    }
+    D UserList____repr = λ self . → repr(self D data)
+    D UserList____lt = λ self, other . → self D data < self D __cast(other)
+    D UserList____le = λ self, other . → self D data ≤ self D __cast(other)
+    D UserList____eq = λ self, other . → self D data == self D __cast(other)
+    D UserList____gt = λ self, other . → self D data > self D __cast(other)
+    D UserList____ge = λ self, other . → self D data ≥ self D __cast(other)
+    D UserList____cast = λ self, other . → if isinstance(other, UserList) → other D data → E other
+    D UserList____contains = λ self, item . → item == self D data
+    D UserList____len = λ self . → len(self D data)
+    D UserList____getitem = λ self, i . {
+        T cond = → if isinstance(i, slice) → → self D __class__(self D data[i])
+        → E → self D data[i]
+    }
+    D UserList____setitem = λ self, i, item . P  // empty body
+    D UserList____delitem = λ self, i . P  // empty body
+    D UserList____add = λ self, other . {
+        T cond = → if isinstance(other, UserList) → → self D __class__((self D data + other D data))
+        → E T cond = → if isinstance(other, type(self D data)) → → self D __class__((self D data + other))
+        → self D __class__((self D data + list(other)))
+    }
+    D UserList____radd = λ self, other . {
+        T cond = → if isinstance(other, UserList) → → self D __class__((other D data + self D data))
+        → E T cond = → if isinstance(other, type(self D data)) → → self D __class__((other + self D data))
+        → self D __class__((list(other) + self D data))
+    }
+    D UserList____iadd = λ self, other . {
+        T cond = → if isinstance(other, UserList) → D self_D_data = self_D_data + other D data  // self D data += other D data
+        → E P
+            T cond = → if isinstance(other, type(self D data)) → D self_D_data = self_D_data + other  // self D data += other
+            → E D self_D_data = self_D_data + list(other)  // self D data += list(other)
+        → self
+    }
+    D UserList____mul = λ self, n . → self D __class__((self D data * n))
+    P __rmul__ = __mul__
+    D UserList____imul = λ self, n . {
+        D self_D_data = self_D_data * n  // self D data *= n
+        → self
+    }
+    D UserList____copy = λ self . {
+        P inst = self D __class__ D __new__(self D __class__)
+        inst D __dict__ D update(self D __dict__)
+        // inst D __dict__["data"] := self D __dict__["data"][0:Ω]
+        → inst
+    }
+    D UserList__append = λ self, item . self D data D append(item)
+    D UserList__insert = λ self, i, item . self D data D insert(i, item)
+    D UserList__pop = λ self, i . → self D data D pop(i)
+    D UserList__remove = λ self, item . self D data D remove(item)
+    D UserList__clear = λ self . self D data D clear(P)
+    D UserList__copy = λ self . → self D __class__(self)
+    D UserList__count = λ self, item . → self D data D count(item)
+    D UserList__index = λ self, item . → self D data D index(item, args)
+    D UserList__reverse = λ self . self D data D reverse(P)
+    D UserList__sort = λ  . self D data D sort(args, kwds)
+    D UserList__extend = λ self, other . {
+        T cond = → if isinstance(other, UserList) → self D data D extend(other D data)
+        → E self D data D extend(other)
+    }
+D UserString = λ . P  // class(_collections_abc D Sequence)
+    D UserString____init = λ self, seq . {
+        T cond = → if isinstance(seq, str) → D self_D_data = seq  // self D data := seq
+        → E P
+            T cond = → if isinstance(seq, UserString) → D self_D_data = seq D data[0:Ω]  // self D data := seq D data[0:Ω]
+            → E D self_D_data = str(seq)  // self D data := str(seq)
+    }
+    D UserString____str = λ self . → str(self D data)
+    D UserString____repr = λ self . → repr(self D data)
+    D UserString____int = λ self . → int(self D data)
+    D UserString____float = λ self . → float(self D data)
+    D UserString____complex = λ self . → complex(self D data)
+    D UserString____hash = λ self . → hash(self D data)
+    D UserString____getnewargs = λ self . → manifold [self D data[0:Ω]]
+    D UserString____eq = λ self, string . {
+        T cond = → if isinstance(string, UserString) → → self D data == string D data
+        → self D data == string
+    }
+    D UserString____lt = λ self, string . {
+        T cond = → if isinstance(string, UserString) → → self D data < string D data
+        → self D data < string
+    }
+    D UserString____le = λ self, string . {
+        T cond = → if isinstance(string, UserString) → → self D data ≤ string D data
+        → self D data ≤ string
+    }
+    D UserString____gt = λ self, string . {
+        T cond = → if isinstance(string, UserString) → → self D data > string D data
+        → self D data > string
+    }
+    D UserString____ge = λ self, string . {
+        T cond = → if isinstance(string, UserString) → → self D data ≥ string D data
+        → self D data ≥ string
+    }
+    D UserString____contains = λ self, char . {
+        T cond = → if isinstance(char, UserString) → P char = char D data
+        → char == self D data
+    }
+    D UserString____len = λ self . → len(self D data)
+    D UserString____getitem = λ self, index . → self D __class__(self D data[index])
+    D UserString____add = λ self, other . {
+        T cond = → if isinstance(other, UserString) → → self D __class__((self D data + other D data))
+        → E T cond = → if isinstance(other, str) → → self D __class__((self D data + other))
+        → self D __class__((self D data + str(other)))
+    }
+    D UserString____radd = λ self, other . {
+        T cond = → if isinstance(other, str) → → self D __class__((other + self D data))
+        → self D __class__((str(other) + self D data))
+    }
+    D UserString____mul = λ self, n . → self D __class__((self D data * n))
+    P __rmul__ = __mul__
+    D UserString____mod = λ self, args . → self D __class__((self D data % args))
+    D UserString____rmod = λ self, template . → self D __class__((str(template) % self))
+    D UserString__capitalize = λ self . → self D __class__(self D data D capitalize(P))
+    D UserString__casefold = λ self . → self D __class__(self D data D casefold(P))
+    D UserString__center = λ self, width . → self D __class__(self D data D center(width, args))
+    D UserString__count = λ self, sub, start, end . {
+        T cond = → if isinstance(sub, UserString) → P sub = sub D data
+        → self D data D count(sub, start, end)
+    }
+    D UserString__removeprefix = λ  . {
+        T cond = → if isinstance(prefix, UserString) → P prefix = prefix D data
+        → self D __class__(self D data D removeprefix(prefix))
+    }
+    D UserString__removesuffix = λ  . {
+        T cond = → if isinstance(suffix, UserString) → P suffix = suffix D data
+        → self D __class__(self D data D removesuffix(suffix))
+    }
+    D UserString__encode = λ self, encoding, errors . {
+        P encoding = if encoding == P → "utf-8" → E encoding
+        P errors = if errors == P → "strict" → E errors
+        → self D data D encode(encoding, errors)
+    }
+    D UserString__endswith = λ self, suffix, start, end . → self D data D endswith(suffix, start, end)
+    D UserString__expandtabs = λ self, tabsize . → self D __class__(self D data D expandtabs(tabsize))
+    D UserString__find = λ self, sub, start, end . {
+        T cond = → if isinstance(sub, UserString) → P sub = sub D data
+        → self D data D find(sub, start, end)
+    }
+    D UserString__format = λ  . → self D data D format(args, kwds)
+    D UserString__format_map = λ self, mapping . → self D data D format_map(mapping)
+    D UserString__index = λ self, sub, start, end . {
+        T cond = → if isinstance(sub, UserString) → P sub = sub D data
+        → self D data D index(sub, start, end)
+    }
+    D UserString__isalpha = λ self . → self D data D isalpha(P)
+    D UserString__isalnum = λ self . → self D data D isalnum(P)
+    D UserString__isascii = λ self . → self D data D isascii(P)
+    D UserString__isdecimal = λ self . → self D data D isdecimal(P)
+    D UserString__isdigit = λ self . → self D data D isdigit(P)
+    D UserString__isidentifier = λ self . → self D data D isidentifier(P)
+    D UserString__islower = λ self . → self D data D islower(P)
+    D UserString__isnumeric = λ self . → self D data D isnumeric(P)
+    D UserString__isprintable = λ self . → self D data D isprintable(P)
+    D UserString__isspace = λ self . → self D data D isspace(P)
+    D UserString__istitle = λ self . → self D data D istitle(P)
+    D UserString__isupper = λ self . → self D data D isupper(P)
+    D UserString__join = λ self, seq . → self D data D join(seq)
+    D UserString__ljust = λ self, width . → self D __class__(self D data D ljust(width, args))
+    D UserString__lower = λ self . → self D __class__(self D data D lower(P))
+    D UserString__lstrip = λ self, chars . → self D __class__(self D data D lstrip(chars))
+    P maketrans = str D maketrans
+    D UserString__partition = λ self, sep . → self D data D partition(sep)
+    D UserString__replace = λ self, old, new, maxsplit . {
+        T cond = → if isinstance(old, UserString) → P old = old D data
+        T cond = → if isinstance(new, UserString) → P new = new D data
+        → self D __class__(self D data D replace(old, new, maxsplit))
+    }
+    D UserString__rfind = λ self, sub, start, end . {
+        T cond = → if isinstance(sub, UserString) → P sub = sub D data
+        → self D data D rfind(sub, start, end)
+    }
+    D UserString__rindex = λ self, sub, start, end . {
+        T cond = → if isinstance(sub, UserString) → P sub = sub D data
+        → self D data D rindex(sub, start, end)
+    }
+    D UserString__rjust = λ self, width . → self D __class__(self D data D rjust(width, args))
+    D UserString__rpartition = λ self, sep . → self D data D rpartition(sep)
+    D UserString__rstrip = λ self, chars . → self D __class__(self D data D rstrip(chars))
+    D UserString__split = λ self, sep, maxsplit . → self D data D split(sep, maxsplit)
+    D UserString__rsplit = λ self, sep, maxsplit . → self D data D rsplit(sep, maxsplit)
+    D UserString__splitlines = λ self, keepends . → self D data D splitlines(keepends)
+    D UserString__startswith = λ self, prefix, start, end . → self D data D startswith(prefix, start, end)
+    D UserString__strip = λ self, chars . → self D __class__(self D data D strip(chars))
+    D UserString__swapcase = λ self . → self D __class__(self D data D swapcase(P))
+    D UserString__title = λ self . → self D __class__(self D data D title(P))
+    D UserString__translate = λ self . → self D __class__(self D data D translate(args))
+    D UserString__upper = λ self . → self D __class__(self D data D upper(P))
+    D UserString__zfill = λ self, width . → self D __class__(self D data D zfill(width))
+

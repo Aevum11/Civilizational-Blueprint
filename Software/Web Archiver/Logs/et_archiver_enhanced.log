@@ -1,0 +1,12 @@
+2026-02-03 21:54:57,746 - INFO - ================================================================================
+2026-02-03 21:54:57,746 - INFO - ET Web Archiver v4.5 ENHANCED - Advanced ET Features
+2026-02-03 21:54:57,746 - INFO - ================================================================================
+2026-02-03 21:54:57,746 - INFO - Working directory: C:\Users\aevum\Desktop\Exception Theory\ET Python Library\ET Python Library
+2026-02-03 21:54:57,758 - INFO - Tkinter imported.
+2026-02-03 21:54:57,850 - WARNING - Installing beautifulsoup4...
+2026-02-03 21:54:58,699 - INFO - External libraries imported.
+2026-02-03 21:54:59,010 - INFO - ET components imported.
+2026-02-03 21:54:59,010 - INFO - ET mathematics instantiated - ENHANCED version.
+2026-02-03 21:54:59,010 - INFO - Advanced ET methods available: Bloom=True, Merkle=True, Entropy=True
+2026-02-03 21:55:54,505 - INFO - Initialized ENHANCED ETWebArchiver for https://bluemoonfalls.com/pages/tools/distribution-station
+2026-02-03 21:55:54,507 - INFO - Initialized ET Bloom Filter: size=20000, hashes=3

@@ -1,0 +1,1472 @@
+// @ETPL:trace-stdlib traceback.py  // module=traceback
+// Extract, format and print information about Python stack traces.
+// @ETPL:preload collections_abc collections.abc
+// Import collections.abc — resolved at translate-time
+// @ETPL:preload Awaitable collections.abc.Awaitable
+P Awaitable = P  // [ET:callable:collections.abc.Awaitable]
+// @ETPL:preload Coroutine collections.abc.Coroutine
+P Coroutine = P  // [ET:callable:collections.abc.Coroutine]
+// @ETPL:preload AsyncIterable collections.abc.AsyncIterable
+P AsyncIterable = P  // [ET:callable:collections.abc.AsyncIterable]
+// @ETPL:preload AsyncIterator collections.abc.AsyncIterator
+P AsyncIterator = P  // [ET:callable:collections.abc.AsyncIterator]
+// @ETPL:preload AsyncGenerator collections.abc.AsyncGenerator
+P AsyncGenerator = P  // [ET:callable:collections.abc.AsyncGenerator]
+// @ETPL:preload Hashable collections.abc.Hashable
+P Hashable = P  // [ET:callable:collections.abc.Hashable]
+// @ETPL:preload Iterable collections.abc.Iterable
+P Iterable = P  // [ET:callable:collections.abc.Iterable]
+// @ETPL:preload Iterator collections.abc.Iterator
+P Iterator = P  // [ET:callable:collections.abc.Iterator]
+// @ETPL:preload Generator collections.abc.Generator
+P Generator = P  // [ET:callable:collections.abc.Generator]
+// @ETPL:preload Reversible collections.abc.Reversible
+P Reversible = P  // [ET:callable:collections.abc.Reversible]
+// @ETPL:preload Sized collections.abc.Sized
+P Sized = P  // [ET:callable:collections.abc.Sized]
+// @ETPL:preload Container collections.abc.Container
+P Container = P  // [ET:callable:collections.abc.Container]
+// @ETPL:preload Callable collections.abc.Callable
+P Callable = P  // [ET:callable:collections.abc.Callable]
+// @ETPL:preload Collection collections.abc.Collection
+P Collection = P  // [ET:callable:collections.abc.Collection]
+// @ETPL:preload Set collections.abc.Set
+P Set = P  // [ET:callable:collections.abc.Set]
+// @ETPL:preload MutableSet collections.abc.MutableSet
+P MutableSet = P  // [ET:callable:collections.abc.MutableSet]
+// @ETPL:preload Mapping collections.abc.Mapping
+P Mapping = P  // [ET:callable:collections.abc.Mapping]
+// @ETPL:preload MutableMapping collections.abc.MutableMapping
+P MutableMapping = P  // [ET:callable:collections.abc.MutableMapping]
+// @ETPL:preload MappingView collections.abc.MappingView
+P MappingView = P  // [ET:callable:collections.abc.MappingView]
+// @ETPL:preload KeysView collections.abc.KeysView
+P KeysView = P  // [ET:callable:collections.abc.KeysView]
+// @ETPL:preload ItemsView collections.abc.ItemsView
+P ItemsView = P  // [ET:callable:collections.abc.ItemsView]
+// @ETPL:preload ValuesView collections.abc.ValuesView
+P ValuesView = P  // [ET:callable:collections.abc.ValuesView]
+// @ETPL:preload Sequence collections.abc.Sequence
+P Sequence = P  // [ET:callable:collections.abc.Sequence]
+// @ETPL:preload MutableSequence collections.abc.MutableSequence
+P MutableSequence = P  // [ET:callable:collections.abc.MutableSequence]
+// @ETPL:preload ByteString collections.abc.ByteString
+P ByteString = P  // [ET:callable:collections.abc.ByteString]
+// @ETPL:preload Buffer collections.abc.Buffer
+P Buffer = P  // [ET:callable:collections.abc.Buffer]
+// @ETPL:preload itertools itertools
+// Import itertools — resolved at translate-time
+// @ETPL:preload accumulate itertools.accumulate
+P accumulate = P  // [ET:callable:itertools.accumulate]
+// @ETPL:preload batched itertools.batched
+P batched = P  // [ET:callable:itertools.batched]
+// @ETPL:preload chain itertools.chain
+P chain = P  // [ET:callable:itertools.chain]
+// @ETPL:preload combinations itertools.combinations
+P combinations = P  // [ET:callable:itertools.combinations]
+// @ETPL:preload combinations_with_replacement itertools.combinations_with_replacement
+P combinations_with_replacement = P  // [ET:callable:itertools.combinations_with_replacement]
+// @ETPL:preload compress itertools.compress
+P compress = P  // [ET:callable:itertools.compress]
+// @ETPL:preload count itertools.count
+P count = P  // [ET:callable:itertools.count]
+// @ETPL:preload cycle itertools.cycle
+P cycle = P  // [ET:callable:itertools.cycle]
+// @ETPL:preload dropwhile itertools.dropwhile
+P dropwhile = P  // [ET:callable:itertools.dropwhile]
+// @ETPL:preload filterfalse itertools.filterfalse
+P filterfalse = P  // [ET:callable:itertools.filterfalse]
+// @ETPL:preload groupby itertools.groupby
+P groupby = P  // [ET:callable:itertools.groupby]
+// @ETPL:preload islice itertools.islice
+P islice = P  // [ET:callable:itertools.islice]
+// @ETPL:preload pairwise itertools.pairwise
+P pairwise = P  // [ET:callable:itertools.pairwise]
+// @ETPL:preload permutations itertools.permutations
+P permutations = P  // [ET:callable:itertools.permutations]
+// @ETPL:preload product itertools.product
+P product = P  // [ET:callable:itertools.product]
+// @ETPL:preload repeat itertools.repeat
+P repeat = P  // [ET:callable:itertools.repeat]
+// @ETPL:preload starmap itertools.starmap
+P starmap = P  // [ET:callable:itertools.starmap]
+// @ETPL:preload takewhile itertools.takewhile
+P takewhile = P  // [ET:callable:itertools.takewhile]
+// @ETPL:preload tee itertools.tee
+P tee = P  // [ET:callable:itertools.tee]
+// @ETPL:preload zip_longest itertools.zip_longest
+P zip_longest = P  // [ET:callable:itertools.zip_longest]
+// @ETPL:preload linecache linecache
+// Import linecache — resolved at translate-time
+// @ETPL:preload getline linecache.getline
+P getline = P  // [ET:callable:linecache.getline]
+// @ETPL:preload clearcache linecache.clearcache
+P clearcache = P  // [ET:callable:linecache.clearcache]
+// @ETPL:preload checkcache linecache.checkcache
+P checkcache = P  // [ET:callable:linecache.checkcache]
+// @ETPL:preload lazycache linecache.lazycache
+P lazycache = P  // [ET:callable:linecache.lazycache]
+// @ETPL:preload sys sys
+// Import sys — resolved at translate-time
+// @ETPL:preload activate_stack_trampoline sys.activate_stack_trampoline
+P activate_stack_trampoline = P  // [ET:callable:sys.activate_stack_trampoline]
+// @ETPL:preload addaudithook sys.addaudithook
+P addaudithook = P  // [ET:callable:sys.addaudithook]
+P api_version = 1013
+P argv = manifold ["ETPL.py", "translate", "ETPL.py", "--lang", "python", "--output", "ETPL_self.pdt"]
+// @ETPL:preload audit sys.audit
+P audit = P  // [ET:callable:sys.audit]
+P base_exec_prefix = "C:\\Program Files\\Python313"
+P base_prefix = "C:\\Program Files\\Python313"
+// @ETPL:preload breakpointhook sys.breakpointhook
+P breakpointhook = P  // [ET:callable:sys.breakpointhook]
+P builtin_module_names = manifold ["_abc", "_ast", "_bisect", "_blake2", "_codecs", "_codecs_cn", "_codecs_hk", "_codecs_iso2022", "_codecs_jp", "_codecs_kr", "_codecs_tw", "_collections", "_contextvars", "_csv", "_datetime", "_functools", "_heapq", "_imp", "_interpchannels", "_interpqueues", "_interpreters", "_io", "_json", "_locale", "_lsprof", "_md5", "_multibytecodec", "_opcode", "_operator", "_pickle", "_random", "_sha1", "_sha2", "_sha3", "_signal", "_sre", "_stat", "_statistics", "_string", "_struct", "_suggestions", "_symtable", "_sysconfig", "_thread", "_tokenize", "_tracemalloc", "_typing", "_warnings", "_weakref", "_winapi"]
+P byteorder = "little"
+// @ETPL:preload call_tracing sys.call_tracing
+P call_tracing = P  // [ET:callable:sys.call_tracing]
+P copyright = "Copyright (c) 2001-2024 Python Software Foundation.\nAll Rights Reserved.\n\nCopyright (c) 2000 BeOpen.com.\nAll Rights Reserved.\n\nCopyright (c) 1995-2001 Corporation for National Research Initiatives.\nAll Rights Reserved.\n\nCopyright (c) 1991-1995 Stichting Mathematisch Centrum, Amsterdam.\nAll Rights Reserved."
+// @ETPL:preload deactivate_stack_trampoline sys.deactivate_stack_trampoline
+P deactivate_stack_trampoline = P  // [ET:callable:sys.deactivate_stack_trampoline]
+// @ETPL:preload displayhook sys.displayhook
+P displayhook = P  // [ET:callable:sys.displayhook]
+P dllhandle = 140730231881728
+P dont_write_bytecode = 0
+// @ETPL:preload exc_info sys.exc_info
+P exc_info = P  // [ET:callable:sys.exc_info]
+// @ETPL:preload excepthook sys.excepthook
+P excepthook = P  // [ET:callable:sys.excepthook]
+// @ETPL:preload exception sys.exception
+P exception = P  // [ET:callable:sys.exception]
+P exec_prefix = "C:\\Program Files\\Python313"
+P executable = "C:\\Program Files\\Python313\\python.exe"
+// @ETPL:preload exit sys.exit
+P exit = P  // [ET:callable:sys.exit]
+P flags = manifold [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 4300]
+P float_info = manifold [1.7976931348623157e+308, 1024, 308, 2.2250738585072014e-308, -1021, -307, 15, 53, 2.220446049250313e-16, 2, 1]
+P float_repr_style = "short"
+// @ETPL:preload get_asyncgen_hooks sys.get_asyncgen_hooks
+P get_asyncgen_hooks = P  // [ET:callable:sys.get_asyncgen_hooks]
+// @ETPL:preload get_coroutine_origin_tracking_depth sys.get_coroutine_origin_tracking_depth
+P get_coroutine_origin_tracking_depth = P  // [ET:callable:sys.get_coroutine_origin_tracking_depth]
+// @ETPL:preload get_int_max_str_digits sys.get_int_max_str_digits
+P get_int_max_str_digits = P  // [ET:callable:sys.get_int_max_str_digits]
+// @ETPL:preload getallocatedblocks sys.getallocatedblocks
+P getallocatedblocks = P  // [ET:callable:sys.getallocatedblocks]
+// @ETPL:preload getdefaultencoding sys.getdefaultencoding
+P getdefaultencoding = P  // [ET:callable:sys.getdefaultencoding]
+// @ETPL:preload getfilesystemencodeerrors sys.getfilesystemencodeerrors
+P getfilesystemencodeerrors = P  // [ET:callable:sys.getfilesystemencodeerrors]
+// @ETPL:preload getfilesystemencoding sys.getfilesystemencoding
+P getfilesystemencoding = P  // [ET:callable:sys.getfilesystemencoding]
+// @ETPL:preload getprofile sys.getprofile
+P getprofile = P  // [ET:callable:sys.getprofile]
+// @ETPL:preload getrecursionlimit sys.getrecursionlimit
+P getrecursionlimit = P  // [ET:callable:sys.getrecursionlimit]
+// @ETPL:preload getrefcount sys.getrefcount
+P getrefcount = P  // [ET:callable:sys.getrefcount]
+// @ETPL:preload getsizeof sys.getsizeof
+P getsizeof = P  // [ET:callable:sys.getsizeof]
+// @ETPL:preload getswitchinterval sys.getswitchinterval
+P getswitchinterval = P  // [ET:callable:sys.getswitchinterval]
+// @ETPL:preload gettrace sys.gettrace
+P gettrace = P  // [ET:callable:sys.gettrace]
+// @ETPL:preload getunicodeinternedsize sys.getunicodeinternedsize
+P getunicodeinternedsize = P  // [ET:callable:sys.getunicodeinternedsize]
+// @ETPL:preload getwindowsversion sys.getwindowsversion
+P getwindowsversion = P  // [ET:callable:sys.getwindowsversion]
+P hash_info = manifold [64, 2305843009213693951, 314159, 0, 1000003, "siphash13", 64, 128, 0]
+P hexversion = 51186672
+P implementation = P  // [ET:unrepresentable:SimpleNamespace]
+P int_info = manifold [30, 4, 4300, 640]
+// @ETPL:preload intern sys.intern
+P intern = P  // [ET:callable:sys.intern]
+// @ETPL:preload is_finalizing sys.is_finalizing
+P is_finalizing = P  // [ET:callable:sys.is_finalizing]
+// @ETPL:preload is_stack_trampoline_active sys.is_stack_trampoline_active
+P is_stack_trampoline_active = P  // [ET:callable:sys.is_stack_trampoline_active]
+P maxsize = 9223372036854775807
+P maxunicode = 1114111
+P meta_path = manifold [P, P, P, P]
+// @ETPL:preload modules sys.modules
+// [ET:complex-dict:modules]
+// @ETPL:preload monitoring sys.monitoring
+P orig_argv = manifold ["python", "ETPL.py", "translate", "ETPL.py", "--lang", "python", "--output", "ETPL_self.pdt"]
+P path = manifold ["C:\\Users\\aevum\\Desktop\\Civilizational Blueprint\\Working Programming Directory\\ET Python Library", "C:\\Program Files\\Python313\\python313.zip", "C:\\Program Files\\Python313\\DLLs", "C:\\Program Files\\Python313\\Lib", "C:\\Program Files\\Python313", "C:\\Users\\aevum\\AppData\\Roaming\\Python\\Python313\\site-packages", "__editable__.exception_theory-3.0.0.finder.__path_hook__", "C:\\Program Files\\Python313\\Lib\\site-packages"]
+P path_hooks = manifold [P, P, P]
+// @ETPL:preload path_importer_cache sys.path_importer_cache
+// [ET:complex-dict:path_importer_cache]
+P platform = "win32"
+P platlibdir = "DLLs"
+P prefix = "C:\\Program Files\\Python313"
+P pycache_prefix = P
+// @ETPL:preload set_asyncgen_hooks sys.set_asyncgen_hooks
+P set_asyncgen_hooks = P  // [ET:callable:sys.set_asyncgen_hooks]
+// @ETPL:preload set_coroutine_origin_tracking_depth sys.set_coroutine_origin_tracking_depth
+P set_coroutine_origin_tracking_depth = P  // [ET:callable:sys.set_coroutine_origin_tracking_depth]
+// @ETPL:preload set_int_max_str_digits sys.set_int_max_str_digits
+P set_int_max_str_digits = P  // [ET:callable:sys.set_int_max_str_digits]
+// @ETPL:preload setprofile sys.setprofile
+P setprofile = P  // [ET:callable:sys.setprofile]
+// @ETPL:preload setrecursionlimit sys.setrecursionlimit
+P setrecursionlimit = P  // [ET:callable:sys.setrecursionlimit]
+// @ETPL:preload setswitchinterval sys.setswitchinterval
+P setswitchinterval = P  // [ET:callable:sys.setswitchinterval]
+// @ETPL:preload settrace sys.settrace
+P settrace = P  // [ET:callable:sys.settrace]
+P stderr = P  // [ET:unrepresentable:TextIOWrapper]
+P stdin = P  // [ET:unrepresentable:TextIOWrapper]
+P stdlib_module_names = manifold ["__future__", "_abc", "_aix_support", "_android_support", "_apple_support", "_ast", "_asyncio", "_bisect", "_blake2", "_bz2", "_codecs", "_codecs_cn", "_codecs_hk", "_codecs_iso2022", "_codecs_jp", "_codecs_kr", "_codecs_tw", "_collections", "_collections_abc", "_colorize", "_compat_pickle", "_compression", "_contextvars", "_csv", "_ctypes", "_curses", "_curses_panel", "_datetime", "_dbm", "_decimal", "_elementtree", "_frozen_importlib", "_frozen_importlib_external", "_functools", "_gdbm", "_hashlib", "_heapq", "_imp", "_interpchannels", "_interpqueues", "_interpreters", "_io", "_ios_support", "_json", "_locale", "_lsprof", "_lzma", "_markupbase", "_md5", "_multibytecodec"]  // frozenset
+P stdout = P  // [ET:unrepresentable:TextIOWrapper]
+P thread_info = manifold ["nt", P, P]
+// @ETPL:preload unraisablehook sys.unraisablehook
+P unraisablehook = P  // [ET:callable:sys.unraisablehook]
+P version = "3.13.11 (tags/v3.13.11:6278944, Dec  5 2025, 16:26:58) [MSC v.1944 64 bit (AMD64)]"
+P version_info = manifold [3, 13, 11, "final", 0]
+P warnoptions = manifold []
+P winver = "3.13"
+// @ETPL:preload textwrap textwrap
+// Import textwrap — resolved at translate-time
+// @ETPL:preload TextWrapper textwrap.TextWrapper
+P TextWrapper = P  // [ET:callable:textwrap.TextWrapper]
+// @ETPL:preload wrap textwrap.wrap
+P wrap = P  // [ET:callable:textwrap.wrap]
+// @ETPL:preload fill textwrap.fill
+P fill = P  // [ET:callable:textwrap.fill]
+// @ETPL:preload dedent textwrap.dedent
+P dedent = P  // [ET:callable:textwrap.dedent]
+// @ETPL:preload indent textwrap.indent
+P indent = P  // [ET:callable:textwrap.indent]
+// @ETPL:preload shorten textwrap.shorten
+P shorten = P  // [ET:callable:textwrap.shorten]
+// @ETPL:preload warnings warnings
+// Import warnings — resolved at translate-time
+// @ETPL:preload warn warnings.warn
+P warn = P  // [ET:callable:warnings.warn]
+// @ETPL:preload warn_explicit warnings.warn_explicit
+P warn_explicit = P  // [ET:callable:warnings.warn_explicit]
+// @ETPL:preload showwarning warnings.showwarning
+P showwarning = P  // [ET:callable:warnings.showwarning]
+// @ETPL:preload formatwarning warnings.formatwarning
+P formatwarning = P  // [ET:callable:warnings.formatwarning]
+// @ETPL:preload filterwarnings warnings.filterwarnings
+P filterwarnings = P  // [ET:callable:warnings.filterwarnings]
+// @ETPL:preload simplefilter warnings.simplefilter
+P simplefilter = P  // [ET:callable:warnings.simplefilter]
+// @ETPL:preload resetwarnings warnings.resetwarnings
+P resetwarnings = P  // [ET:callable:warnings.resetwarnings]
+// @ETPL:preload catch_warnings warnings.catch_warnings
+P catch_warnings = P  // [ET:callable:warnings.catch_warnings]
+// @ETPL:preload deprecated warnings.deprecated
+P deprecated = P  // [ET:callable:warnings.deprecated]
+// @ETPL:preload suppress contextlib.suppress
+P suppress = P  // [ET:callable:contextlib.suppress]
+// @ETPL:preload _colorize _colorize
+// Import _colorize — resolved at translate-time
+// @ETPL:preload ANSIColors _colorize.ANSIColors
+P ANSIColors = P  // [ET:callable:_colorize.ANSIColors]
+P COLORIZE = 1
+P NoColors = P  // [ET:unrepresentable:ANSIColors]
+P annotations = P  // [ET:unrepresentable:_Feature]
+P attr = "__weakref__"
+// @ETPL:preload can_colorize _colorize.can_colorize
+P can_colorize = P  // [ET:callable:_colorize.can_colorize]
+// @ETPL:preload get_colors _colorize.get_colors
+P get_colors = P  // [ET:callable:_colorize.get_colors]
+// @ETPL:preload os _colorize.os
+// @ETPL:preload sys _colorize.sys
+P __all__ = manifold ["extract_stack", "extract_tb", "format_exception", "format_exception_only", "format_list", "format_stack", "format_tb", "print_exc", "format_exc", "print_exception", "print_last", "print_stack", "print_tb", "clear_frames", "FrameSummary", "StackSummary", "TracebackException", "walk_stack", "walk_tb"]
+D print_list = λ extracted_list, file . {
+    // Print the list of tuples as returned by extract_tb() or     extract_stack() as a formatted stack trace to the given file
+    T cond = → if file == P → P file = sys D stderr
+    T loop = ∞ (
+        P item = StackSummary D from_list(extracted_list) D format(P)[_loop_index]
+        sovereign_print ∘ item
+    ) (D |StackSummary D from_list(extracted_list) D format(P)|)
+}
+D format_list = λ extracted_list . {
+    // Format a list of tuples or FrameSummary objects for printing.      Given a list of tuples or FrameSummary objects as ret
+    → StackSummary D from_list(extracted_list) D format(P)
+}
+D print_tb = λ tb, limit, file . {
+    // Print up to 'limit' stack trace entries from the traceback 'tb'.      If 'limit' is omitted or None, all entries are pri
+    print_list(extract_tb(tb, manifold ["limit", limit]), manifold ["file", file])
+}
+D format_tb = λ tb, limit . {
+    // A shorthand for 'format_list(extract_tb(tb, limit))'.
+    → extract_tb(tb, manifold ["limit", limit]) D format(P)
+}
+D extract_tb = λ tb, limit . {
+    // Return a StackSummary object representing a list of     pre-processed entries from traceback.      This is useful for al
+    → StackSummary D _extract_from_extended_frame_gen(_walk_tb_with_full_positions(tb), manifold ["limit", limit])
+}
+P _cause_message = "\nThe above exception was the direct cause of the following exception:\n\n"
+P _context_message = "\nDuring handling of the above exception, another exception occurred:\n\n"
+D Sentinel = λ . P  // class
+    D Sentinel____repr = λ self . → "<implicit>"
+P _sentinel = _Sentinel(P)
+D parse_value_tb = λ exc, value, tb . {
+    T cond = → if value == _sentinel ≠ tb == _sentinel → → E ValueError("Both or neither of value and tb must be given")
+    T cond = → if value == tb == _sentinel → P
+        T cond = → if exc ≠ P → P
+            T cond = → if isinstance(exc, BaseException) → → manifold [exc, exc D __traceback__]
+            → E TypeError("Exception expected for value, " + type(exc) D __name__ + " found")
+        → E → manifold [P, P]
+    → manifold [value, tb]
+}
+D print_exception = λ value, tb, limit, file, chain . {
+    // Print exception up to 'limit' stack trace entries from 'tb' to 'file'.      This differs from print_tb() in the followin
+    P colorize = kwargs D get("colorize", 0)
+    P manifold__value__tb = _parse_value_tb(exc, value, tb)  // manifold [value, tb] := _parse_value_tb(exc, value, tb)
+    P te = TracebackException(type(value), value, tb, manifold ["limit", limit], manifold ["compact", 1])
+    te D print(manifold ["file", file], manifold ["chain", chain], manifold ["colorize", colorize])
+}
+P BUILTIN_EXCEPTION_LIMIT = object(P)
+D print_exception_bltin = λ  . {
+    P file = if sys D stderr ≠ P → sys D stderr → E sys D __stderr__
+    P colorize = _colorize D can_colorize(manifold ["file", file])
+    → print_exception(exc, manifold ["limit", BUILTIN_EXCEPTION_LIMIT], manifold ["file", file], manifold ["colorize", colorize])
+}
+D format_exception = λ value, tb, limit, chain . {
+    // Format a stack trace and the exception information.      The arguments have the same meaning as the corresponding argume
+    P colorize = kwargs D get("colorize", 0)
+    P manifold__value__tb = _parse_value_tb(exc, value, tb)  // manifold [value, tb] := _parse_value_tb(exc, value, tb)
+    P te = TracebackException(type(value), value, tb, manifold ["limit", limit], manifold ["compact", 1])
+    → list(te D format(manifold ["chain", chain], manifold ["colorize", colorize]))
+}
+D format_exception_only = λ value . {
+    // Format the exception part of a traceback.      The return value is a list of strings, each ending in a newline.      The
+    P colorize = kwargs D get("colorize", 0)
+    T cond = → if value == _sentinel → P value = exc
+    P te = TracebackException(type(value), value, P, manifold ["compact", 1])
+    → list(te D format_exception_only(manifold ["show_group", show_group], manifold ["colorize", colorize]))
+}
+D format_final_exc_line = λ etype, value . {
+    P valuestr = _safe_string(value, "exception")
+    P end_char = if insert_final_newline → "\n" → E ""
+    T cond = → if colorize → P
+        T cond = → if (value == P || (!valuestr)) → P line = ANSIColors D BOLD_MAGENTA + etype + ANSIColors D RESET + end_char
+        → E P line = ANSIColors D BOLD_MAGENTA + etype + ANSIColors D RESET + ": " + ANSIColors D MAGENTA + valuestr + ANSIColors D RESET + end_char
+    → E P
+        T cond = → if (value == P || (!valuestr)) → P line = etype + end_char
+        → E P line = etype + ": " + valuestr + end_char
+    → line
+}
+D safe_string = λ value, what, func . {
+    T attempt = → P  // try
+        → func(value)
+    → E Exception (_)
+        → "<" + what + " " + func D __name__ + "() failed>"
+}
+D print_exc = λ limit, file, chain . {
+    // Shorthand for 'print_exception(sys.exception(), limit=limit, file=file, chain=chain)'.
+    print_exception(sys D exception(P), manifold ["limit", limit], manifold ["file", file], manifold ["chain", chain])
+}
+D format_exc = λ limit, chain . {
+    // Like print_exc() but return a string.
+    → "" D join(format_exception(sys D exception(P), manifold ["limit", limit], manifold ["chain", chain]))
+}
+D print_last = λ limit, file, chain . {
+    // This is a shorthand for 'print_exception(sys.last_exc, limit=limit, file=file, chain=chain)'.
+    T cond = → if ((!hasattr(sys, "last_exc")) && (!hasattr(sys, "last_type"))) → → E ValueError("no last exception")
+    T cond = → if hasattr(sys, "last_exc") → print_exception(sys D last_exc, manifold ["limit", limit], manifold ["file", file], manifold ["chain", chain])
+    → E print_exception(sys D last_type, sys D last_value, sys D last_traceback, manifold ["limit", limit], manifold ["file", file], manifold ["chain", chain])
+}
+D print_stack = λ f, limit, file . {
+    // Print a stack trace from its invocation point.      The optional 'f' argument can be used to specify an alternate     st
+    T cond = → if f == P → P f = sys D _getframe(P) D f_back
+    print_list(extract_stack(f, manifold ["limit", limit]), manifold ["file", file])
+}
+D format_stack = λ f, limit . {
+    // Shorthand for 'format_list(extract_stack(f, limit))'.
+    T cond = → if f == P → P f = sys D _getframe(P) D f_back
+    → format_list(extract_stack(f, manifold ["limit", limit]))
+}
+D extract_stack = λ f, limit . {
+    // Extract the raw traceback from the current stack frame.      The return value has the same format as for extract_tb().  
+    T cond = → if f == P → P f = sys D _getframe(P) D f_back
+    P stack = StackSummary D extract(walk_stack(f), manifold ["limit", limit])
+    stack D reverse(P)
+    → stack
+}
+D clear_frames = λ tb . {
+    // Clear all references to local variables in the frames of a traceback.
+    T while_loop = ∞ (
+        T check = → if tb ≠ P → P  // while body follows
+            T attempt = → P  // try
+                tb D tb_frame D clear(P)
+            → E RuntimeError (_)
+                // pass
+            P tb = tb D tb_next
+    ) (D WHILE_LOOP_FINITE_BOUND)  // bounded by condition; max=144
+}
+D FrameSummary = λ . P  // class
+    // Information about a single frame from a traceback.      - :attr:`filename` The filename for the frame.     - :attr:`line
+    P __slots__ = manifold ["filename", "lineno", "end_lineno", "colno", "end_colno", "name", "_lines", "_lines_dedented", "locals", "_code"]
+    D FrameSummary____init = λ self, filename, lineno, name . {
+        // Construct a FrameSummary.          :param lookup_line: If True, `linecache` is consulted for the source             code
+        D self_D_filename = filename  // self D filename := filename
+        D self_D_lineno = lineno  // self D lineno := lineno
+        D self_D_end_lineno = if end_lineno == P → lineno → E end_lineno  // self D end_lineno := if end_lineno == P → lineno → E end_lineno
+        D self_D_colno = colno  // self D colno := colno
+        D self_D_end_colno = end_colno  // self D end_colno := end_colno
+        D self_D_name = name  // self D name := name
+        D self_D__code = kwargs D get("_code")  // self D _code := kwargs D get("_code")
+        D self_D__lines = line  // self D _lines := line
+        D self_D__lines_dedented = P  // self D _lines_dedented := P
+        T cond = → if lookup_line → self D line
+        D self_D_locals = if locals → { T loop = ∞ (P item = locals D items(P)[_loop_index]) (D |locals D items(P)|) } → E P  // self D locals := if locals → { T loop = ∞ (P item = locals D items(P)[_loop_index]) (D |locals D items(P)|) } → E P
+    }
+    D FrameSummary____eq = λ self, other . {
+        T cond = → if isinstance(other, FrameSummary) → → (self D filename == other D filename && self D lineno == other D lineno && self D name == other D name && self D locals == other D locals)
+        T cond = → if isinstance(other, tuple) → → manifold [self D filename, self D lineno, self D name, self D line] == other
+        → NotImplemented
+    }
+    D FrameSummary____getitem = λ self, pos . → manifold [self D filename, self D lineno, self D name, self D line][pos]
+    D FrameSummary____iter = λ self . → iter(manifold [self D filename, self D lineno, self D name, self D line])
+    D FrameSummary____repr = λ self . → "<FrameSummary file {filename}, line {lineno} in {name}>" D format(manifold ["filename", self D filename], manifold ["lineno", self D lineno], manifold ["name", self D name])
+    D FrameSummary____len = λ self . → 4
+    D FrameSummary___set_lines = λ self . {
+        T cond = → if (self D _lines == P && self D lineno ≠ P && self D end_lineno ≠ P) → P
+            P lines = manifold []
+            T loop = ∞ (
+                P lineno = range(self D lineno, (self D end_lineno + 1))[_loop_index]
+                P line = linecache D getline(self D filename, lineno) D rstrip(P)
+                T cond = → if ((!line) && self D _code ≠ P && self D filename D startswith("<")) → P line = linecache D _getline_from_code(self D _code, lineno) D rstrip(P)
+                lines D append(line)
+            ) (D |range(self D lineno, (self D end_lineno + 1))|)
+            D self_D__lines = ("\n" D join(lines) + "\n")  // self D _lines := ("\n" D join(lines) + "\n")
+    }
+    D FrameSummary___original_lines = λ self . {
+        self D _set_lines(P)
+        → self D _lines
+    }
+    D FrameSummary___dedented_lines = λ self . {
+        self D _set_lines(P)
+        T cond = → if (self D _lines_dedented == P && self D _lines ≠ P) → D self_D__lines_dedented = textwrap D dedent(self D _lines)  // self D _lines_dedented := textwrap D dedent(self D _lines)
+        → self D _lines_dedented
+    }
+    D FrameSummary__line = λ self . {
+        self D _set_lines(P)
+        T cond = → if self D _lines == P → → P
+        → self D _lines D partition("\n")[0] D strip(P)
+    }
+D walk_stack = λ f . {
+    // Walk a stack yielding the frame and line number for each frame.      This will follow f.f_back from the given frame. If 
+    T cond = → if f == P → P f = sys D _getframe(P) D f_back D f_back D f_back D f_back
+    T while_loop = ∞ (
+        T check = → if f ≠ P → P  // while body follows
+            → manifold [f, f D f_lineno]
+            P f = f D f_back
+    ) (D WHILE_LOOP_FINITE_BOUND)  // bounded by condition; max=144
+}
+D walk_tb = λ tb . {
+    // Walk a traceback yielding the frame and line number for each frame.      This will follow tb.tb_next (and thus is in the
+    T while_loop = ∞ (
+        T check = → if tb ≠ P → P  // while body follows
+            → manifold [tb D tb_frame, tb D tb_lineno]
+            P tb = tb D tb_next
+    ) (D WHILE_LOOP_FINITE_BOUND)  // bounded by condition; max=144
+}
+D walk_tb_with_full_positions = λ tb . {
+    T while_loop = ∞ (
+        T check = → if tb ≠ P → P  // while body follows
+            P positions = _get_code_position(tb D tb_frame D f_code, tb D tb_lasti)
+            T cond = → if positions[0] == P → → manifold [tb D tb_frame, (manifold [tb D tb_lineno] + positions[1:Ω])]
+            → E → manifold [tb D tb_frame, positions]
+            P tb = tb D tb_next
+    ) (D WHILE_LOOP_FINITE_BOUND)  // bounded by condition; max=144
+}
+D get_code_position = λ code, instruction_index . {
+    T cond = → if instruction_index < 0 → → manifold [P, P, P, P]
+    P positions_gen = code D co_positions(P)
+    → next(itertools D islice(positions_gen, (instruction_index ÷ 2), P))
+}
+P _RECURSIVE_CUTOFF = 3
+D StackSummary = λ . P  // class(list)
+    // A list of FrameSummary objects, representing a stack of frames.
+    D StackSummary__extract = λ klass, frame_gen . {
+        // Create a StackSummary from a traceback or stack object.          :param frame_gen: A generator that yields (frame, linen
+        D StackSummary__extended_frame_gen = λ  . {
+            T loop = ∞ (
+                P manifold__f__lineno = frame_gen[_loop_index]  // manifold [f, lineno]
+                → manifold [f, manifold [lineno, P, P, P]]
+            ) (D |frame_gen|)
+        }
+        → klass D _extract_from_extended_frame_gen(extended_frame_gen(P), manifold ["limit", limit], manifold ["lookup_lines", lookup_lines], manifold ["capture_locals", capture_locals])
+    }
+    D StackSummary___extract_from_extended_frame_gen = λ klass, frame_gen . {
+        P builtin_limit = limit == BUILTIN_EXCEPTION_LIMIT
+        T cond = → if (limit == P || builtin_limit) → P
+            P limit = getattr(sys, "tracebacklimit", P)
+            T cond = → if (limit ≠ P && limit < 0) → P limit = 0
+        T cond = → if limit ≠ P → P
+            T cond = → if builtin_limit → P
+                P frame_gen = tuple(frame_gen)
+                P frame_gen = frame_gen[(len(frame_gen) - limit):Ω]
+            → E P
+                T cond = → if limit ≥ 0 → P frame_gen = itertools D islice(frame_gen, limit)
+                → E P frame_gen = collections D deque(frame_gen, manifold ["maxlen", (-limit)])
+        P result = klass(P)
+        P fnames = set(P)
+        T loop = ∞ (
+            P manifold__f__manifold__lineno__end_lineno__colno__end_colno = frame_gen[_loop_index]  // manifold [f, manifold [lineno, end_lineno, colno, end_colno]]
+            P co = f D f_code
+            P filename = co D co_filename
+            P name = co D co_name
+            fnames D add(filename)
+            linecache D lazycache(filename, f D f_globals)
+            T cond = → if capture_locals → P f_locals = f D f_locals
+            → E P f_locals = P
+            result D append(FrameSummary(filename, lineno, name, manifold ["lookup_line", 0], manifold ["locals", f_locals], manifold ["end_lineno", end_lineno], manifold ["colno", colno], manifold ["end_colno", end_colno], manifold ["_code", f D f_code]))
+        ) (D |frame_gen|)
+        T loop = ∞ (
+            P filename = fnames[_loop_index]
+            linecache D checkcache(filename)
+        ) (D |fnames|)
+        T cond = → if lookup_lines → P
+            T loop = ∞ (
+                P f = result[_loop_index]
+                f D line
+            ) (D |result|)
+        → result
+    }
+    D StackSummary__from_list = λ klass, a_list . {
+        // Create a StackSummary object from a supplied list of         FrameSummary objects or old-style list of tuples.
+        P result = StackSummary(P)
+        T loop = ∞ (
+            P frame = a_list[_loop_index]
+            T cond = → if isinstance(frame, FrameSummary) → result D append(frame)
+            → E P
+                P manifold__filename__lineno__name__line = frame  // manifold [filename, lineno, name, line] := frame
+                result D append(FrameSummary(filename, lineno, name, manifold ["line", line]))
+        ) (D |a_list|)
+        → result
+    }
+    D StackSummary__format_frame_summary = λ self, frame_summary . {
+        // Format the lines for a single FrameSummary.          Returns a string representing one frame involved in the stack. This
+        P colorize = kwargs D get("colorize", 0)
+        P row = manifold []
+        P filename = frame_summary D filename
+        T cond = → if (frame_summary D filename D startswith("<stdin-") && frame_summary D filename D endswith(">")) → P filename = "<stdin>"
+        T cond = → if colorize → row D append("  File {}\"{}\"{}, line {}{}{}, in {}{}{}\n" D format(ANSIColors D MAGENTA, filename, ANSIColors D RESET, ANSIColors D MAGENTA, frame_summary D lineno, ANSIColors D RESET, ANSIColors D MAGENTA, frame_summary D name, ANSIColors D RESET))
+        → E row D append("  File \"{}\", line {}, in {}\n" D format(filename, frame_summary D lineno, frame_summary D name))
+        T cond = → if (frame_summary D _dedented_lines && frame_summary D _dedented_lines D strip(P)) → P
+            T cond = → if (frame_summary D colno == P || frame_summary D end_colno == P) → row D append((textwrap D indent(frame_summary D line, "    ") + "\n"))
+            → E P
+                P all_lines_original = frame_summary D _original_lines D splitlines(P)
+                P first_line = all_lines_original[0]
+                P last_line = all_lines_original[(frame_summary D end_lineno - frame_summary D lineno)]
+                P start_offset = _byte_offset_to_character_offset(first_line, frame_summary D colno)
+                P end_offset = _byte_offset_to_character_offset(last_line, frame_summary D end_colno)
+                P all_lines = frame_summary D _dedented_lines D splitlines(P)[0:((frame_summary D end_lineno - frame_summary D lineno) + 1)]
+                P dedent_characters = (len(first_line) - len(all_lines[0]))
+                P start_offset = max(0, (start_offset - dedent_characters))
+                P end_offset = max(0, (end_offset - dedent_characters))
+                P dp_start_offset = _display_width(all_lines[0], manifold ["offset", start_offset])
+                P dp_end_offset = _display_width(all_lines[(-1)], manifold ["offset", end_offset])
+                P segment = "\n" D join(all_lines)
+                P segment = segment[start_offset:(len(segment) - (len(all_lines[(-1)]) - end_offset))]
+                P anchors = P
+                P show_carets = 0
+                T scope_0 = → suppress(Exception)
+                    P anchors = _extract_caret_anchors_from_line_segment(segment)
+                P show_carets = self D _should_show_carets(start_offset, end_offset, all_lines, anchors)
+                P result = manifold []
+                P significant_lines = manifold [0, (len(all_lines) - 1)]
+                P anchors_left_end_offset = 0
+                P anchors_right_start_offset = 0
+                P primary_char = "^"
+                P secondary_char = "^"
+                T cond = → if anchors → P
+                    P anchors_left_end_offset = anchors D left_end_offset
+                    P anchors_right_start_offset = anchors D right_start_offset
+                    T cond = → if anchors D left_end_lineno == 0 → P anchors_left_end_offset = anchors_left_end_offset + start_offset
+                    T cond = → if anchors D right_start_lineno == 0 → P anchors_right_start_offset = anchors_right_start_offset + start_offset
+                    P anchors_left_end_offset = _display_width(all_lines[anchors D left_end_lineno], manifold ["offset", anchors_left_end_offset])
+                    P anchors_right_start_offset = _display_width(all_lines[anchors D right_start_lineno], manifold ["offset", anchors_right_start_offset])
+                    P primary_char = anchors D primary_char
+                    P secondary_char = anchors D secondary_char
+                    significant_lines D update(range((anchors D left_end_lineno - 1), (anchors D left_end_lineno + 2)))
+                    significant_lines D update(range((anchors D right_start_lineno - 1), (anchors D right_start_lineno + 2)))
+                significant_lines D discard((-1))
+                significant_lines D discard(len(all_lines))
+                D StackSummary__output_line = λ lineno . {
+                    // output all_lines[lineno] along with carets
+                    result D append((all_lines[lineno] + "\n"))
+                    T cond = → if (!show_carets) → → P
+                    P num_spaces = (len(all_lines[lineno]) - len(all_lines[lineno] D lstrip(P)))
+                    P carets = manifold []
+                    P num_carets = if lineno == (len(all_lines) - 1) → dp_end_offset → E _display_width(all_lines[lineno])
+                    T loop = ∞ (
+                        P col = range(num_carets)[_loop_index]
+                        T cond = → if (col < num_spaces || (lineno == 0 && col < dp_start_offset)) → carets D append(" ")
+                        → E P
+                            T cond = → if (anchors && (lineno > anchors D left_end_lineno || (lineno == anchors D left_end_lineno && col ≥ anchors_left_end_offset)) && (lineno < anchors D right_start_lineno || (lineno == anchors D right_start_lineno && col < anchors_right_start_offset))) → carets D append(secondary_char)
+                            → E carets D append(primary_char)
+                    ) (D |range(num_carets)|)
+                    T cond = → if colorize → P
+                        P line = result[(-1)]
+                        P colorized_line_parts = manifold []
+                        P colorized_carets_parts = manifold []
+                        T loop = ∞ (
+                            P manifold__color__group = itertools D groupby(itertools D zip_longest(line, carets, manifold ["fillvalue", ""]), manifold ["key", λ x . x[1]])[_loop_index]  // manifold [color, group]
+                            P caret_group = list(group)
+                            T cond = → if color == "^" → P
+                                colorized_line_parts D append(((ANSIColors D BOLD_RED + "" D join({ T loop = ∞ (char) (D |caret_group|) })) + ANSIColors D RESET))
+                                colorized_carets_parts D append(((ANSIColors D BOLD_RED + "" D join({ T loop = ∞ (caret) (D |caret_group|) })) + ANSIColors D RESET))
+                            → E P
+                                T cond = → if color == "~" → P
+                                    colorized_line_parts D append(((ANSIColors D RED + "" D join({ T loop = ∞ (char) (D |caret_group|) })) + ANSIColors D RESET))
+                                    colorized_carets_parts D append(((ANSIColors D RED + "" D join({ T loop = ∞ (caret) (D |caret_group|) })) + ANSIColors D RESET))
+                                → E P
+                                    colorized_line_parts D append("" D join({ T loop = ∞ (char) (D |caret_group|) }))
+                                    colorized_carets_parts D append("" D join({ T loop = ∞ (caret) (D |caret_group|) }))
+                        ) (D |itertools D groupby(itertools D zip_longest(line, carets, manifold ["fillvalue", ""]), manifold ["key", λ x . x[1]])|)
+                        P colorized_line = "" D join(colorized_line_parts)
+                        P colorized_carets = "" D join(colorized_carets_parts)
+                        // result[(-1)] := colorized_line
+                        result D append((colorized_carets + "\n"))
+                    → E result D append(("" D join(carets) + "\n"))
+                }
+                P sig_lines_list = sorted(significant_lines)
+                T loop = ∞ (
+                    P manifold__i__lineno = enumerate(sig_lines_list)[_loop_index]  // manifold [i, lineno]
+                    T cond = → if i → P
+                        P linediff = (lineno - sig_lines_list[(i - 1)])
+                        T cond = → if linediff == 2 → output_line((lineno - 1))
+                        → E T cond = → if linediff > 2 → result D append("...<" + (linediff - 1) + " lines>...\n")
+                    output_line(lineno)
+                ) (D |enumerate(sig_lines_list)|)
+                row D append(textwrap D indent(textwrap D dedent("" D join(result)), "    ", λ line . 1))
+        T cond = → if frame_summary D locals → P
+            T loop = ∞ (
+                P manifold__name__value = sorted(frame_summary D locals D items(P))[_loop_index]  // manifold [name, value]
+                row D append("    {name} = {value}\n" D format(manifold ["name", name], manifold ["value", value]))
+            ) (D |sorted(frame_summary D locals D items(P))|)
+        → "" D join(row)
+    }
+    D StackSummary___should_show_carets = λ self, start_offset, end_offset, all_lines, anchors . {
+        T scope_0 = → suppress(SyntaxError, ImportError)
+            // @ETPL:preload ast ast
+            // Import ast — resolved at translate-time
+            // @ETPL:preload AST ast.AST
+            P AST = P  // [ET:callable:ast.AST]
+            // @ETPL:preload Add ast.Add
+            P Add = P  // [ET:callable:ast.Add]
+            // @ETPL:preload And ast.And
+            P And = P  // [ET:callable:ast.And]
+            // @ETPL:preload AnnAssign ast.AnnAssign
+            P AnnAssign = P  // [ET:callable:ast.AnnAssign]
+            // @ETPL:preload Assert ast.Assert
+            P Assert = P  // [ET:callable:ast.Assert]
+            // @ETPL:preload Assign ast.Assign
+            P Assign = P  // [ET:callable:ast.Assign]
+            // @ETPL:preload AsyncFor ast.AsyncFor
+            P AsyncFor = P  // [ET:callable:ast.AsyncFor]
+            // @ETPL:preload AsyncFunctionDef ast.AsyncFunctionDef
+            P AsyncFunctionDef = P  // [ET:callable:ast.AsyncFunctionDef]
+            // @ETPL:preload AsyncWith ast.AsyncWith
+            P AsyncWith = P  // [ET:callable:ast.AsyncWith]
+            // @ETPL:preload Attribute ast.Attribute
+            P Attribute = P  // [ET:callable:ast.Attribute]
+            // @ETPL:preload AugAssign ast.AugAssign
+            P AugAssign = P  // [ET:callable:ast.AugAssign]
+            // @ETPL:preload AugLoad ast.AugLoad
+            P AugLoad = P  // [ET:callable:ast.AugLoad]
+            // @ETPL:preload AugStore ast.AugStore
+            P AugStore = P  // [ET:callable:ast.AugStore]
+            // @ETPL:preload Await ast.Await
+            P Await = P  // [ET:callable:ast.Await]
+            // @ETPL:preload BinOp ast.BinOp
+            P BinOp = P  // [ET:callable:ast.BinOp]
+            // @ETPL:preload BitAnd ast.BitAnd
+            P BitAnd = P  // [ET:callable:ast.BitAnd]
+            // @ETPL:preload BitOr ast.BitOr
+            P BitOr = P  // [ET:callable:ast.BitOr]
+            // @ETPL:preload BitXor ast.BitXor
+            P BitXor = P  // [ET:callable:ast.BitXor]
+            // @ETPL:preload BoolOp ast.BoolOp
+            P BoolOp = P  // [ET:callable:ast.BoolOp]
+            // @ETPL:preload Break ast.Break
+            P Break = P  // [ET:callable:ast.Break]
+            // @ETPL:preload Call ast.Call
+            P Call = P  // [ET:callable:ast.Call]
+            // @ETPL:preload ClassDef ast.ClassDef
+            P ClassDef = P  // [ET:callable:ast.ClassDef]
+            // @ETPL:preload Compare ast.Compare
+            P Compare = P  // [ET:callable:ast.Compare]
+            // @ETPL:preload Constant ast.Constant
+            P Constant = P  // [ET:callable:ast.Constant]
+            // @ETPL:preload Continue ast.Continue
+            P Continue = P  // [ET:callable:ast.Continue]
+            // @ETPL:preload Del ast.Del
+            P Del = P  // [ET:callable:ast.Del]
+            // @ETPL:preload Delete ast.Delete
+            P Delete = P  // [ET:callable:ast.Delete]
+            // @ETPL:preload Dict ast.Dict
+            P Dict = P  // [ET:callable:ast.Dict]
+            // @ETPL:preload DictComp ast.DictComp
+            P DictComp = P  // [ET:callable:ast.DictComp]
+            // @ETPL:preload Div ast.Div
+            P Div = P  // [ET:callable:ast.Div]
+            // @ETPL:preload Eq ast.Eq
+            P Eq = P  // [ET:callable:ast.Eq]
+            // @ETPL:preload ExceptHandler ast.ExceptHandler
+            P ExceptHandler = P  // [ET:callable:ast.ExceptHandler]
+            // @ETPL:preload Expr ast.Expr
+            P Expr = P  // [ET:callable:ast.Expr]
+            // @ETPL:preload Expression ast.Expression
+            P Expression = P  // [ET:callable:ast.Expression]
+            // @ETPL:preload ExtSlice ast.ExtSlice
+            P ExtSlice = P  // [ET:callable:ast.ExtSlice]
+            // @ETPL:preload FloorDiv ast.FloorDiv
+            P FloorDiv = P  // [ET:callable:ast.FloorDiv]
+            // @ETPL:preload For ast.For
+            P For = P  // [ET:callable:ast.For]
+            // @ETPL:preload FormattedValue ast.FormattedValue
+            P FormattedValue = P  // [ET:callable:ast.FormattedValue]
+            // @ETPL:preload FunctionDef ast.FunctionDef
+            P FunctionDef = P  // [ET:callable:ast.FunctionDef]
+            // @ETPL:preload FunctionType ast.FunctionType
+            P FunctionType = P  // [ET:callable:ast.FunctionType]
+            // @ETPL:preload GeneratorExp ast.GeneratorExp
+            P GeneratorExp = P  // [ET:callable:ast.GeneratorExp]
+            // @ETPL:preload Global ast.Global
+            P Global = P  // [ET:callable:ast.Global]
+            // @ETPL:preload Gt ast.Gt
+            P Gt = P  // [ET:callable:ast.Gt]
+            // @ETPL:preload GtE ast.GtE
+            P GtE = P  // [ET:callable:ast.GtE]
+            // @ETPL:preload If ast.If
+            P If = P  // [ET:callable:ast.If]
+            // @ETPL:preload IfExp ast.IfExp
+            P IfExp = P  // [ET:callable:ast.IfExp]
+            // @ETPL:preload Import ast.Import
+            P Import = P  // [ET:callable:ast.Import]
+            // @ETPL:preload ImportFrom ast.ImportFrom
+            P ImportFrom = P  // [ET:callable:ast.ImportFrom]
+            // @ETPL:preload In ast.In
+            P In = P  // [ET:callable:ast.In]
+            // @ETPL:preload Index ast.Index
+            P Index = P  // [ET:callable:ast.Index]
+            // @ETPL:preload IntEnum ast.IntEnum
+            P IntEnum = P  // [ET:callable:ast.IntEnum]
+            // @ETPL:preload Interactive ast.Interactive
+            P Interactive = P  // [ET:callable:ast.Interactive]
+            // @ETPL:preload Invert ast.Invert
+            P Invert = P  // [ET:callable:ast.Invert]
+            // @ETPL:preload Is ast.Is
+            P Is = P  // [ET:callable:ast.Is]
+            // @ETPL:preload IsNot ast.IsNot
+            P IsNot = P  // [ET:callable:ast.IsNot]
+            // @ETPL:preload JoinedStr ast.JoinedStr
+            P JoinedStr = P  // [ET:callable:ast.JoinedStr]
+            // @ETPL:preload LShift ast.LShift
+            P LShift = P  // [ET:callable:ast.LShift]
+            // @ETPL:preload Lambda ast.Lambda
+            P Lambda = P  // [ET:callable:ast.Lambda]
+            // @ETPL:preload List ast.List
+            P List = P  // [ET:callable:ast.List]
+            // @ETPL:preload ListComp ast.ListComp
+            P ListComp = P  // [ET:callable:ast.ListComp]
+            // @ETPL:preload Load ast.Load
+            P Load = P  // [ET:callable:ast.Load]
+            // @ETPL:preload Lt ast.Lt
+            P Lt = P  // [ET:callable:ast.Lt]
+            // @ETPL:preload LtE ast.LtE
+            P LtE = P  // [ET:callable:ast.LtE]
+            // @ETPL:preload MatMult ast.MatMult
+            P MatMult = P  // [ET:callable:ast.MatMult]
+            // @ETPL:preload Match ast.Match
+            P Match = P  // [ET:callable:ast.Match]
+            // @ETPL:preload MatchAs ast.MatchAs
+            P MatchAs = P  // [ET:callable:ast.MatchAs]
+            // @ETPL:preload MatchClass ast.MatchClass
+            P MatchClass = P  // [ET:callable:ast.MatchClass]
+            // @ETPL:preload MatchMapping ast.MatchMapping
+            P MatchMapping = P  // [ET:callable:ast.MatchMapping]
+            // @ETPL:preload MatchOr ast.MatchOr
+            P MatchOr = P  // [ET:callable:ast.MatchOr]
+            // @ETPL:preload MatchSequence ast.MatchSequence
+            P MatchSequence = P  // [ET:callable:ast.MatchSequence]
+            // @ETPL:preload MatchSingleton ast.MatchSingleton
+            P MatchSingleton = P  // [ET:callable:ast.MatchSingleton]
+            // @ETPL:preload MatchStar ast.MatchStar
+            P MatchStar = P  // [ET:callable:ast.MatchStar]
+            // @ETPL:preload MatchValue ast.MatchValue
+            P MatchValue = P  // [ET:callable:ast.MatchValue]
+            // @ETPL:preload Mod ast.Mod
+            P Mod = P  // [ET:callable:ast.Mod]
+            // @ETPL:preload Module ast.Module
+            P Module = P  // [ET:callable:ast.Module]
+            // @ETPL:preload Mult ast.Mult
+            P Mult = P  // [ET:callable:ast.Mult]
+            // @ETPL:preload Name ast.Name
+            P Name = P  // [ET:callable:ast.Name]
+            // @ETPL:preload NamedExpr ast.NamedExpr
+            P NamedExpr = P  // [ET:callable:ast.NamedExpr]
+            // @ETPL:preload NodeTransformer ast.NodeTransformer
+            P NodeTransformer = P  // [ET:callable:ast.NodeTransformer]
+            // @ETPL:preload NodeVisitor ast.NodeVisitor
+            P NodeVisitor = P  // [ET:callable:ast.NodeVisitor]
+            // @ETPL:preload Nonlocal ast.Nonlocal
+            P Nonlocal = P  // [ET:callable:ast.Nonlocal]
+            // @ETPL:preload Not ast.Not
+            P Not = P  // [ET:callable:ast.Not]
+            // @ETPL:preload NotEq ast.NotEq
+            P NotEq = P  // [ET:callable:ast.NotEq]
+            // @ETPL:preload NotIn ast.NotIn
+            P NotIn = P  // [ET:callable:ast.NotIn]
+            // @ETPL:preload Or ast.Or
+            P Or = P  // [ET:callable:ast.Or]
+            // @ETPL:preload Param ast.Param
+            P Param = P  // [ET:callable:ast.Param]
+            // @ETPL:preload ParamSpec ast.ParamSpec
+            P ParamSpec = P  // [ET:callable:ast.ParamSpec]
+            // @ETPL:preload Pass ast.Pass
+            P Pass = P  // [ET:callable:ast.Pass]
+            // @ETPL:preload Pow ast.Pow
+            P Pow = P  // [ET:callable:ast.Pow]
+            P PyCF_ALLOW_TOP_LEVEL_AWAIT = 8192
+            P PyCF_ONLY_AST = 1024
+            P PyCF_OPTIMIZED_AST = 33792
+            P PyCF_TYPE_COMMENTS = 4096
+            // @ETPL:preload RShift ast.RShift
+            P RShift = P  // [ET:callable:ast.RShift]
+            // @ETPL:preload Raise ast.Raise
+            P Raise = P  // [ET:callable:ast.Raise]
+            // @ETPL:preload Return ast.Return
+            P Return = P  // [ET:callable:ast.Return]
+            // @ETPL:preload SetComp ast.SetComp
+            P SetComp = P  // [ET:callable:ast.SetComp]
+            // @ETPL:preload Slice ast.Slice
+            P Slice = P  // [ET:callable:ast.Slice]
+            // @ETPL:preload Starred ast.Starred
+            P Starred = P  // [ET:callable:ast.Starred]
+            // @ETPL:preload Store ast.Store
+            P Store = P  // [ET:callable:ast.Store]
+            // @ETPL:preload Sub ast.Sub
+            P Sub = P  // [ET:callable:ast.Sub]
+            // @ETPL:preload Subscript ast.Subscript
+            P Subscript = P  // [ET:callable:ast.Subscript]
+            // @ETPL:preload Suite ast.Suite
+            P Suite = P  // [ET:callable:ast.Suite]
+            // @ETPL:preload Try ast.Try
+            P Try = P  // [ET:callable:ast.Try]
+            // @ETPL:preload TryStar ast.TryStar
+            P TryStar = P  // [ET:callable:ast.TryStar]
+            // @ETPL:preload Tuple ast.Tuple
+            P Tuple = P  // [ET:callable:ast.Tuple]
+            // @ETPL:preload TypeAlias ast.TypeAlias
+            P TypeAlias = P  // [ET:callable:ast.TypeAlias]
+            // @ETPL:preload TypeIgnore ast.TypeIgnore
+            P TypeIgnore = P  // [ET:callable:ast.TypeIgnore]
+            // @ETPL:preload TypeVar ast.TypeVar
+            P TypeVar = P  // [ET:callable:ast.TypeVar]
+            // @ETPL:preload TypeVarTuple ast.TypeVarTuple
+            P TypeVarTuple = P  // [ET:callable:ast.TypeVarTuple]
+            // @ETPL:preload UAdd ast.UAdd
+            P UAdd = P  // [ET:callable:ast.UAdd]
+            // @ETPL:preload USub ast.USub
+            P USub = P  // [ET:callable:ast.USub]
+            // @ETPL:preload UnaryOp ast.UnaryOp
+            P UnaryOp = P  // [ET:callable:ast.UnaryOp]
+            // @ETPL:preload While ast.While
+            P While = P  // [ET:callable:ast.While]
+            // @ETPL:preload With ast.With
+            P With = P  // [ET:callable:ast.With]
+            // @ETPL:preload Yield ast.Yield
+            P Yield = P  // [ET:callable:ast.Yield]
+            // @ETPL:preload YieldFrom ast.YieldFrom
+            P YieldFrom = P  // [ET:callable:ast.YieldFrom]
+            // @ETPL:preload alias ast.alias
+            P alias = P  // [ET:callable:ast.alias]
+            // @ETPL:preload arg ast.arg
+            P arg = P  // [ET:callable:ast.arg]
+            // @ETPL:preload arguments ast.arguments
+            P arguments = P  // [ET:callable:ast.arguments]
+            // @ETPL:preload auto ast.auto
+            P auto = P  // [ET:callable:ast.auto]
+            // @ETPL:preload boolop ast.boolop
+            P boolop = P  // [ET:callable:ast.boolop]
+            // @ETPL:preload cmpop ast.cmpop
+            P cmpop = P  // [ET:callable:ast.cmpop]
+            // @ETPL:preload comprehension ast.comprehension
+            P comprehension = P  // [ET:callable:ast.comprehension]
+            // @ETPL:preload contextmanager ast.contextmanager
+            P contextmanager = P  // [ET:callable:ast.contextmanager]
+            // @ETPL:preload copy_location ast.copy_location
+            P copy_location = P  // [ET:callable:ast.copy_location]
+            // @ETPL:preload dump ast.dump
+            P dump = P  // [ET:callable:ast.dump]
+            // @ETPL:preload excepthandler ast.excepthandler
+            P excepthandler = P  // [ET:callable:ast.excepthandler]
+            // @ETPL:preload expr ast.expr
+            P expr = P  // [ET:callable:ast.expr]
+            // @ETPL:preload expr_context ast.expr_context
+            P expr_context = P  // [ET:callable:ast.expr_context]
+            // @ETPL:preload fix_missing_locations ast.fix_missing_locations
+            P fix_missing_locations = P  // [ET:callable:ast.fix_missing_locations]
+            // @ETPL:preload get_docstring ast.get_docstring
+            P get_docstring = P  // [ET:callable:ast.get_docstring]
+            // @ETPL:preload get_source_segment ast.get_source_segment
+            P get_source_segment = P  // [ET:callable:ast.get_source_segment]
+            // @ETPL:preload increment_lineno ast.increment_lineno
+            P increment_lineno = P  // [ET:callable:ast.increment_lineno]
+            // @ETPL:preload iter_child_nodes ast.iter_child_nodes
+            P iter_child_nodes = P  // [ET:callable:ast.iter_child_nodes]
+            // @ETPL:preload iter_fields ast.iter_fields
+            P iter_fields = P  // [ET:callable:ast.iter_fields]
+            // @ETPL:preload keyword ast.keyword
+            P keyword = P  // [ET:callable:ast.keyword]
+            // @ETPL:preload literal_eval ast.literal_eval
+            P literal_eval = P  // [ET:callable:ast.literal_eval]
+            // @ETPL:preload main ast.main
+            P main = P  // [ET:callable:ast.main]
+            // @ETPL:preload match_case ast.match_case
+            P match_case = P  // [ET:callable:ast.match_case]
+            // @ETPL:preload mod ast.mod
+            P mod = P  // [ET:callable:ast.mod]
+            // @ETPL:preload nullcontext ast.nullcontext
+            P nullcontext = P  // [ET:callable:ast.nullcontext]
+            // @ETPL:preload operator ast.operator
+            P operator = P  // [ET:callable:ast.operator]
+            // @ETPL:preload parse ast.parse
+            P parse = P  // [ET:callable:ast.parse]
+            // @ETPL:preload pattern ast.pattern
+            P pattern = P  // [ET:callable:ast.pattern]
+            // @ETPL:preload re ast.re
+            // @ETPL:preload slice ast.slice
+            P slice = P  // [ET:callable:ast.slice]
+            // @ETPL:preload stmt ast.stmt
+            P stmt = P  // [ET:callable:ast.stmt]
+            // @ETPL:preload type_ignore ast.type_ignore
+            P type_ignore = P  // [ET:callable:ast.type_ignore]
+            // @ETPL:preload type_param ast.type_param
+            P type_param = P  // [ET:callable:ast.type_param]
+            // @ETPL:preload unaryop ast.unaryop
+            P unaryop = P  // [ET:callable:ast.unaryop]
+            // @ETPL:preload unparse ast.unparse
+            P unparse = P  // [ET:callable:ast.unparse]
+            // @ETPL:preload walk ast.walk
+            P walk = P  // [ET:callable:ast.walk]
+            // @ETPL:preload withitem ast.withitem
+            P withitem = P  // [ET:callable:ast.withitem]
+            P tree = ast D parse("\n" D join(all_lines))
+            T cond = → if (!tree D body) → → 0
+            P statement = tree D body[0]
+            P value = P
+            D StackSummary___spawns_full_line = λ value . → (value D lineno == 1 && value D end_lineno == len(all_lines) && value D col_offset == start_offset && value D end_col_offset == end_offset)
+            // match (structural pattern)
+            T case = [0/0] (ast_Return(value=ast_Call()))  // ast.Return(value=ast.Call())
+                    T cond = → if isinstance(statement D value D func, ast D Name) → P value = statement D value
+            T case = [0/0] (ast_Assign(value=ast_Call()))  // ast.Assign(value=ast.Call())
+                    T cond = → if (len(statement D targets) == 1 && isinstance(statement D targets[0], ast D Name)) → P value = statement D value
+            T cond = → if (value ≠ P && _spawns_full_line(value)) → → 0
+        T cond = → if anchors → → 1
+        T cond = → if (all_lines[0][0:start_offset] D lstrip(P) || all_lines[(-1)][end_offset:Ω] D rstrip(P)) → → 1
+        → 0
+    }
+    D StackSummary__format = λ self . {
+        // Format the stack ready for printing.          Returns a list of strings ready for printing.  Each string in the         
+        P colorize = kwargs D get("colorize", 0)
+        P result = manifold []
+        P last_file = P
+        P last_line = P
+        P last_name = P
+        P count = 0
+        T loop = ∞ (
+            P frame_summary = self[_loop_index]
+            P formatted_frame = self D format_frame_summary(frame_summary, manifold ["colorize", colorize])
+            T cond = → if formatted_frame == P → P  // pass
+            T cond = → if (last_file == P || last_file ≠ frame_summary D filename || last_line == P || last_line ≠ frame_summary D lineno || last_name == P || last_name ≠ frame_summary D name) → P
+                T cond = → if count > _RECURSIVE_CUTOFF → P
+                    P count = count - _RECURSIVE_CUTOFF
+                    result D append("  [Previous line repeated " + count + " more time" + if count > 1 → "s" → E "" + "]\n")
+                P last_file = frame_summary D filename
+                P last_line = frame_summary D lineno
+                P last_name = frame_summary D name
+                P count = 0
+            P count = count + 1
+            T cond = → if count > _RECURSIVE_CUTOFF → P  // pass
+            result D append(formatted_frame)
+        ) (D |self|)
+        T cond = → if count > _RECURSIVE_CUTOFF → P
+            P count = count - _RECURSIVE_CUTOFF
+            result D append("  [Previous line repeated " + count + " more time" + if count > 1 → "s" → E "" + "]\n")
+        → result
+    }
+D byte_offset_to_character_offset = λ str, offset . {
+    P as_utf8 = str D encode("utf-8")
+    → len(as_utf8[0:offset] D decode("utf-8", manifold ["errors", "replace"]))
+}
+P _Anchors = collections D namedtuple("_Anchors", manifold ["left_end_lineno", "left_end_offset", "right_start_lineno", "right_start_offset", "primary_char", "secondary_char"], manifold ["defaults", manifold ["~", "^"]])
+D extract_caret_anchors_from_line_segment = λ segment . {
+    // Given source code `segment` corresponding to a FrameSummary, determine:         - for binary ops, the location of the bi
+    // @ETPL:preload ast ast
+    // Import ast — resolved at translate-time
+    T attempt = → P  // try
+        P tree = ast D parse("(\n" + segment + "\n)")
+    → E SyntaxError (_)
+        → P
+    T cond = → if len(tree D body) ≠ 1 → → P
+    P lines = segment D splitlines(P)
+    D normalize = λ lineno, offset . {
+        // Get character index given byte offset
+        → _byte_offset_to_character_offset(lines[lineno], offset)
+    }
+    D next_valid_char = λ lineno, col . {
+        // Gets the next valid character index in `lines`, if         the current location is not valid. Handles empty lines.
+        T while_loop = ∞ (
+            T check = → if (lineno < len(lines) && col ≥ len(lines[lineno])) → P  // while body follows
+                P col = 0
+                P lineno = lineno + 1
+        ) (D WHILE_LOOP_FINITE_BOUND)  // bounded by condition; max=144
+        T assert = → if (lineno < len(lines) && col < len(lines[lineno])) → "ok" → E "Assertion failed"
+        → manifold [lineno, col]
+    }
+    D increment = λ lineno, col . {
+        // Get the next valid character index in `lines`.
+        P col = col + 1
+        P manifold__lineno__col = next_valid_char(lineno, col)  // manifold [lineno, col] := next_valid_char(lineno, col)
+        → manifold [lineno, col]
+    }
+    D nextline = λ lineno, col . {
+        // Get the next valid character at least on the next line
+        P col = 0
+        P lineno = lineno + 1
+        P manifold__lineno__col = next_valid_char(lineno, col)  // manifold [lineno, col] := next_valid_char(lineno, col)
+        → manifold [lineno, col]
+    }
+    D increment_until = λ lineno, col, stop . {
+        // Get the next valid non-"\#" character that satisfies the `stop` predicate
+        T while_loop = ∞ (
+            T check = → if 1 → P  // while body follows
+                P ch = lines[lineno][col]
+                T cond = → if ch == "\\#" → P manifold__lineno__col = nextline(lineno, col)  // manifold [lineno, col] := nextline(lineno, col)
+                → E P
+                    T cond = → if (!stop(ch)) → P manifold__lineno__col = increment(lineno, col)  // manifold [lineno, col] := increment(lineno, col)
+                    → E P  // else pass
+        ) (D WHILE_LOOP_FINITE_BOUND)  // bounded by condition; max=144
+        → manifold [lineno, col]
+    }
+    D setup_positions = λ expr, force_valid . {
+        // Get the lineno/col position of the end of `expr`. If `force_valid` is True,         forces the position to be a valid ch
+        P lineno = (expr D end_lineno - 2)
+        P col = normalize(lineno, expr D end_col_offset)
+        → if force_valid → next_valid_char(lineno, col) → E manifold [lineno, col]
+    }
+    P statement = tree D body[0]
+    // match (structural pattern)
+    T case = [0/0] (ast_Expr(expr))  // ast.Expr(expr)
+            // match (structural pattern)
+            T case = [0/0] (ast_BinOp())  // ast.BinOp()
+                    P manifold__lineno__col = setup_positions(expr D left)  // manifold [lineno, col] := setup_positions(expr D left)
+                    P manifold__lineno__col = increment_until(lineno, col, λ x . ((!x D isspace(P)) && x ≠ ")"))  // manifold [lineno, col] := increment_until(lineno, col, λ x . ((!x D isspace(P)) && x ≠ ")"))
+                    P right_col = (col + 1)
+                    T cond = → if (right_col < len(lines[lineno]) && ((expr D right D lineno - 2) > lineno || right_col < normalize((expr D right D lineno - 2), expr D right D col_offset)) && (!(λ ch . ch)(lines[lineno][right_col]) D isspace(P)) && ch ≠ "\\#") → P right_col = right_col + 1
+                    → _Anchors(lineno, col, lineno, right_col)
+            T case = [0/0] (ast_Subscript())  // ast.Subscript()
+                    P manifold__left_lineno__left_col = setup_positions(expr D value)  // manifold [left_lineno, left_col] := setup_positions(expr D value)
+                    P manifold__left_lineno__left_col = increment_until(left_lineno, left_col, λ x . x == "[")  // manifold [left_lineno, left_col] := increment_until(left_lineno, left_col, λ x . x == "[")
+                    P manifold__right_lineno__right_col = setup_positions(expr, manifold ["force_valid", 0])  // manifold [right_lineno, right_col] := setup_positions(expr, manifold ["force_valid", 0])
+                    → _Anchors(left_lineno, left_col, right_lineno, right_col)
+            T case = [0/0] (ast_Call())  // ast.Call()
+                    P manifold__left_lineno__left_col = setup_positions(expr D func)  // manifold [left_lineno, left_col] := setup_positions(expr D func)
+                    P manifold__left_lineno__left_col = increment_until(left_lineno, left_col, λ x . x == "(")  // manifold [left_lineno, left_col] := increment_until(left_lineno, left_col, λ x . x == "(")
+                    P manifold__right_lineno__right_col = setup_positions(expr, manifold ["force_valid", 0])  // manifold [right_lineno, right_col] := setup_positions(expr, manifold ["force_valid", 0])
+                    → _Anchors(left_lineno, left_col, right_lineno, right_col)
+    → P
+}
+P _WIDE_CHAR_SPECIFIERS = "WF"
+D display_width = λ line, offset . {
+    // Calculate the extra amount of width space the given source     code segment might take if it were to be displayed on a f
+    T cond = → if offset == P → P offset = len(line)
+    T cond = → if line D isascii(P) → → offset
+    // @ETPL:preload unicodedata unicodedata
+    // Import unicodedata — resolved at translate-time
+    // @ETPL:preload UCD unicodedata.UCD
+    P UCD = P  // [ET:callable:unicodedata.UCD]
+    // @ETPL:preload bidirectional unicodedata.bidirectional
+    P bidirectional = P  // [ET:callable:unicodedata.bidirectional]
+    // @ETPL:preload category unicodedata.category
+    P category = P  // [ET:callable:unicodedata.category]
+    // @ETPL:preload combining unicodedata.combining
+    P combining = P  // [ET:callable:unicodedata.combining]
+    // @ETPL:preload decimal unicodedata.decimal
+    P decimal = P  // [ET:callable:unicodedata.decimal]
+    // @ETPL:preload decomposition unicodedata.decomposition
+    P decomposition = P  // [ET:callable:unicodedata.decomposition]
+    // @ETPL:preload digit unicodedata.digit
+    P digit = P  // [ET:callable:unicodedata.digit]
+    // @ETPL:preload east_asian_width unicodedata.east_asian_width
+    P east_asian_width = P  // [ET:callable:unicodedata.east_asian_width]
+    // @ETPL:preload is_normalized unicodedata.is_normalized
+    P is_normalized = P  // [ET:callable:unicodedata.is_normalized]
+    // @ETPL:preload lookup unicodedata.lookup
+    P lookup = P  // [ET:callable:unicodedata.lookup]
+    // @ETPL:preload mirrored unicodedata.mirrored
+    P mirrored = P  // [ET:callable:unicodedata.mirrored]
+    // @ETPL:preload name unicodedata.name
+    P name = P  // [ET:callable:unicodedata.name]
+    // @ETPL:preload normalize unicodedata.normalize
+    P normalize = P  // [ET:callable:unicodedata.normalize]
+    // @ETPL:preload numeric unicodedata.numeric
+    P numeric = P  // [ET:callable:unicodedata.numeric]
+    P ucd_3_2_0 = P  // [ET:unrepresentable:UCD]
+    P unidata_version = "15.1.0"
+    → _et_sum({ T loop = ∞ (if unicodedata D east_asian_width(char) == _WIDE_CHAR_SPECIFIERS → 2 → E 1) (D |line[0:offset]|) })
+}
+D ExceptionPrintContext = λ . P  // class
+    D ExceptionPrintContext____init = λ self . {
+        D self_D_seen = set(P)  // self D seen := set(P)
+        D self_D_exception_group_depth = 0  // self D exception_group_depth := 0
+        D self_D_need_close = 0  // self D need_close := 0
+    }
+    D ExceptionPrintContext__indent = λ self . → (" " * (2 * self D exception_group_depth))
+    D ExceptionPrintContext__emit = λ self, text_gen, margin_char . {
+        T cond = → if margin_char == P → P margin_char = "|"
+        P indent_str = self D indent(P)
+        T cond = → if self D exception_group_depth → P indent_str = indent_str + (margin_char + " ")
+        T cond = → if isinstance(text_gen, str) → → textwrap D indent(text_gen, indent_str, λ line . 1)
+        → E P
+            T loop = ∞ (
+                P text = text_gen[_loop_index]
+                → textwrap D indent(text, indent_str, λ line . 1)
+            ) (D |text_gen|)
+    }
+D TracebackException = λ . P  // class
+    // An exception ready for rendering.      The traceback module captures enough attributes from the original exception     t
+    D TracebackException____init = λ self, exc_type, exc_value, exc_traceback . {
+        P is_recursive_call = _seen ≠ P
+        T cond = → if _seen == P → P _seen = set(P)
+        _seen D add(id(exc_value))
+        D self_D_max_group_width = max_group_width  // self D max_group_width := max_group_width
+        D self_D_max_group_depth = max_group_depth  // self D max_group_depth := max_group_depth
+        D self_D_stack = StackSummary D _extract_from_extended_frame_gen(_walk_tb_with_full_positions(exc_traceback), manifold ["limit", limit], manifold ["lookup_lines", lookup_lines], manifold ["capture_locals", capture_locals])  // self D stack := StackSummary D _extract_from_extended_frame_gen(_walk_tb_with_full_positions(exc_traceback), manifold ["limit", limit], manifold ["lookup_lines", lookup_lines], manifold ["capture_locals", capture_locals])
+        D self_D__exc_type = if save_exc_type → exc_type → E P  // self D _exc_type := if save_exc_type → exc_type → E P
+        D self_D__str = _safe_string(exc_value, "exception")  // self D _str := _safe_string(exc_value, "exception")
+        T attempt = → P  // try
+            D self_D___notes = getattr(exc_value, "__notes__", P)  // self D __notes__ := getattr(exc_value, "__notes__", P)
+        → E Exception (e)
+            D self_D___notes = manifold ["Ignored error getting __notes__: " + _safe_string(e, "__notes__", repr)]  // self D __notes__ := manifold ["Ignored error getting __notes__: " + _safe_string(e, "__notes__", repr)]
+        D self_D__is_syntax_error = 0  // self D _is_syntax_error := 0
+        D self_D__have_exc_type = exc_type ≠ P  // self D _have_exc_type := exc_type ≠ P
+        T cond = → if exc_type ≠ P → P
+            D self_D_exc_type_qualname = exc_type D __qualname__  // self D exc_type_qualname := exc_type D __qualname__
+            D self_D_exc_type_module = exc_type D __module__  // self D exc_type_module := exc_type D __module__
+        → E P
+            D self_D_exc_type_qualname = P  // self D exc_type_qualname := P
+            D self_D_exc_type_module = P  // self D exc_type_module := P
+        T cond = → if (exc_type && issubclass(exc_type, SyntaxError)) → P
+            D self_D_filename = exc_value D filename  // self D filename := exc_value D filename
+            P lno = exc_value D lineno
+            D self_D_lineno = if lno ≠ P → str(lno) → E P  // self D lineno := if lno ≠ P → str(lno) → E P
+            P end_lno = exc_value D end_lineno
+            D self_D_end_lineno = if end_lno ≠ P → str(end_lno) → E P  // self D end_lineno := if end_lno ≠ P → str(end_lno) → E P
+            D self_D_text = exc_value D text  // self D text := exc_value D text
+            D self_D_offset = exc_value D offset  // self D offset := exc_value D offset
+            D self_D_end_offset = exc_value D end_offset  // self D end_offset := exc_value D end_offset
+            D self_D_msg = exc_value D msg  // self D msg := exc_value D msg
+            D self_D__is_syntax_error = 1  // self D _is_syntax_error := 1
+        → E P
+            T cond = → if (exc_type && issubclass(exc_type, ImportError) && getattr(exc_value, "name_from", P) ≠ P) → P
+                P wrong_name = getattr(exc_value, "name_from", P)
+                P suggestion = _compute_suggestion_error(exc_value, exc_traceback, wrong_name)
+                T cond = → if suggestion → D self_D__str = self_D__str + ". Did you mean: '" + suggestion + "'?"  // self D _str += ". Did you mean: '" + suggestion + "'?"
+            → E P
+                T cond = → if (exc_type && issubclass(exc_type, manifold [NameError, AttributeError]) && getattr(exc_value, "name", P) ≠ P) → P
+                    P wrong_name = getattr(exc_value, "name", P)
+                    P suggestion = _compute_suggestion_error(exc_value, exc_traceback, wrong_name)
+                    T cond = → if suggestion → D self_D__str = self_D__str + ". Did you mean: '" + suggestion + "'?"  // self D _str += ". Did you mean: '" + suggestion + "'?"
+                    T cond = → if issubclass(exc_type, NameError) → P
+                        P wrong_name = getattr(exc_value, "name", P)
+                        T cond = → if (wrong_name ≠ P && wrong_name == sys D stdlib_module_names) → P
+                            T cond = → if suggestion → D self_D__str = self_D__str + " Or did you forget to import '" + wrong_name + "'?"  // self D _str += " Or did you forget to import '" + wrong_name + "'?"
+                            → E D self_D__str = self_D__str + ". Did you forget to import '" + wrong_name + "'?"  // self D _str += ". Did you forget to import '" + wrong_name + "'?"
+        T cond = → if lookup_lines → self D _load_lines(P)
+        D self_D___suppress_context = if exc_value ≠ P → exc_value D __suppress_context__ → E 0  // self D __suppress_context__ := if exc_value ≠ P → exc_value D __suppress_context__ → E 0
+        T cond = → if (!is_recursive_call) → P
+            P queue = manifold [manifold [self, exc_value]]
+            T while_loop = ∞ (
+                T check = → if queue → P  // while body follows
+                    P manifold__te__e = queue D pop(P)  // manifold [te, e] := queue D pop(P)
+                    T cond = → if (e ≠ P && e D __cause__ ≠ P && id(e D __cause__) ≠ _seen) → P cause = TracebackException(type(e D __cause__), e D __cause__, e D __cause__ D __traceback__, manifold ["limit", limit], manifold ["lookup_lines", lookup_lines], manifold ["capture_locals", capture_locals], manifold ["max_group_width", max_group_width], manifold ["max_group_depth", max_group_depth], manifold ["_seen", _seen])
+                    → E P cause = P
+                    T cond = → if compact → P need_context = (cause == P && e ≠ P && (!e D __suppress_context__))
+                    → E P need_context = 1
+                    T cond = → if (e ≠ P && e D __context__ ≠ P && need_context && id(e D __context__) ≠ _seen) → P context = TracebackException(type(e D __context__), e D __context__, e D __context__ D __traceback__, manifold ["limit", limit], manifold ["lookup_lines", lookup_lines], manifold ["capture_locals", capture_locals], manifold ["max_group_width", max_group_width], manifold ["max_group_depth", max_group_depth], manifold ["_seen", _seen])
+                    → E P context = P
+                    T cond = → if (e ≠ P && isinstance(e, BaseExceptionGroup)) → P
+                        P exceptions = manifold []
+                        T loop = ∞ (
+                            P exc = e D exceptions[_loop_index]
+                            P texc = TracebackException(type(exc), exc, exc D __traceback__, manifold ["limit", limit], manifold ["lookup_lines", lookup_lines], manifold ["capture_locals", capture_locals], manifold ["max_group_width", max_group_width], manifold ["max_group_depth", max_group_depth], manifold ["_seen", _seen])
+                            exceptions D append(texc)
+                        ) (D |e D exceptions|)
+                    → E P exceptions = P
+                    D te_D___cause = cause  // te D __cause__ := cause
+                    D te_D___context = context  // te D __context__ := context
+                    D te_D_exceptions = exceptions  // te D exceptions := exceptions
+                    T cond = → if cause → queue D append(manifold [te D __cause__, e D __cause__])
+                    T cond = → if context → queue D append(manifold [te D __context__, e D __context__])
+                    T cond = → if exceptions → queue D extend(zip(te D exceptions, e D exceptions))
+            ) (D WHILE_LOOP_FINITE_BOUND)  // bounded by condition; max=144
+    }
+    D TracebackException__from_exception = λ cls, exc . {
+        // Create a TracebackException from an exception.
+        → cls(type(exc), exc, exc D __traceback__, args, kwargs)
+    }
+    D TracebackException__exc_type = λ self . {
+        warnings D warn("Deprecated in 3.13. Use exc_type_str instead.", DeprecationWarning, manifold ["stacklevel", 2])
+        → self D _exc_type
+    }
+    D TracebackException__exc_type_str = λ self . {
+        T cond = → if (!self D _have_exc_type) → → P
+        P stype = self D exc_type_qualname
+        P smod = self D exc_type_module
+        T cond = → if smod ≠ manifold ["__main__", "builtins"] → P
+            T cond = → if (!isinstance(smod, str)) → P smod = "<unknown>"
+            P stype = ((smod + ".") + stype)
+        → stype
+    }
+    D TracebackException___load_lines = λ self . {
+        // Private API. force all lines in the stack to be loaded.
+        T loop = ∞ (
+            P frame = self D stack[_loop_index]
+            frame D line
+        ) (D |self D stack|)
+    }
+    D TracebackException____eq = λ self, other . {
+        T cond = → if isinstance(other, TracebackException) → → self D __dict__ == other D __dict__
+        → NotImplemented
+    }
+    D TracebackException____str = λ self . → self D _str
+    D TracebackException__format_exception_only = λ self . {
+        // Format the exception part of the traceback.          The return value is a generator of strings, each ending in a newlin
+        P colorize = kwargs D get("colorize", 0)
+        P indent = ((3 * _depth) * " ")
+        T cond = → if (!self D _have_exc_type) → P
+            → (indent + _format_final_exc_line(P, self D _str, manifold ["colorize", colorize]))
+            → P
+        P stype = self D exc_type_str
+        T cond = → if (!self D _is_syntax_error) → P
+            T cond = → if _depth > 0 → P formatted = _format_final_exc_line(stype, self D _str, manifold ["insert_final_newline", 0], manifold ["colorize", colorize]) D split("\n")
+            → E → _format_final_exc_line(stype, self D _str, manifold ["colorize", colorize])
+        → E P  // else pass
+        T cond = → if (isinstance(self D __notes__, collections D abc D Sequence) && (!isinstance(self D __notes__, manifold [str, bytes]))) → P
+            T loop = ∞ (
+                P note = self D __notes__[_loop_index]
+                P note = _safe_string(note, "note")
+                // (yield from [indent + l + '\n' for l in note.split('\n')])
+            ) (D |self D __notes__|)
+        → E T cond = → if self D __notes__ ≠ P → → (indent + "{}\n" D format(_safe_string(self D __notes__, "__notes__", manifold ["func", repr])))
+        T cond = → if (self D exceptions && show_group) → P
+            T loop = ∞ (
+                P ex = self D exceptions[_loop_index]
+                // (yield from ex.format_exception_only(show_group=show_group, _depth=_depth + 1, colorize=colorize))
+            ) (D |self D exceptions|)
+    }
+    D TracebackException___format_syntax_error = λ self, stype . {
+        // Format SyntaxError exceptions (internal helper).
+        P colorize = kwargs D get("colorize", 0)
+        P filename_suffix = ""
+        T cond = → if self D lineno ≠ P → P
+            T cond = → if colorize → → "  File {}\"{}\"{}, line {}{}{}\n" D format(ANSIColors D MAGENTA, (self D filename || "<string>"), ANSIColors D RESET, ANSIColors D MAGENTA, self D lineno, ANSIColors D RESET)
+            → E → "  File \"{}\", line {}\n" D format((self D filename || "<string>"), self D lineno)
+        → E T cond = → if self D filename ≠ P → P filename_suffix = " ({})" D format(self D filename)
+        P text = self D text
+        T cond = → if isinstance(text, str) → P
+            P rtext = text D rstrip("\n")
+            P ltext = rtext D lstrip(" \n")
+            P spaces = (len(rtext) - len(ltext))
+            T cond = → if self D offset == P → → "    {}\n" D format(ltext)
+            → E P
+                T cond = → if isinstance(self D offset, int) → P
+                    P offset = self D offset
+                    T cond = → if self D lineno == self D end_lineno → P end_offset = if (isinstance(self D end_offset, int) && self D end_offset ≠ 0) → self D end_offset → E offset
+                    → E P end_offset = (len(rtext) + 1)
+                    T cond = → if (self D text && offset > len(self D text)) → P offset = (len(rtext) + 1)
+                    T cond = → if (self D text && end_offset > len(self D text)) → P end_offset = (len(rtext) + 1)
+                    T cond = → if (offset ≥ end_offset || end_offset < 0) → P end_offset = (offset + 1)
+                    P colno = ((offset - 1) - spaces)
+                    P end_colno = ((end_offset - 1) - spaces)
+                    P caretspace = " "
+                    T cond = → if colno ≥ 0 → P
+                        P caretspace = { T loop = ∞ (if c D isspace(P) → c → E " ") (D |ltext[0:colno]|) }
+                        P start_color = ""
+                        P end_color = ""
+                        T cond = → if colorize → P
+                            P ltext = ((((ltext[0:colno] + ANSIColors D BOLD_RED) + ltext[colno:end_colno]) + ANSIColors D RESET) + ltext[end_colno:Ω])
+                            P start_color = ANSIColors D BOLD_RED
+                            P end_color = ANSIColors D RESET
+                        → "    {}\n" D format(ltext)
+                        → "    {}{}{}{}\n" D format("" D join(caretspace), start_color, ("^" * (end_colno - colno)), end_color)
+                    → E → "    {}\n" D format(ltext)
+        P msg = (self D msg || "<no detail available>")
+        T cond = → if colorize → → "{}{}{}: {}{}{}{}\n" D format(ANSIColors D BOLD_MAGENTA, stype, ANSIColors D RESET, ANSIColors D MAGENTA, msg, ANSIColors D RESET, filename_suffix)
+        → E → "{}: {}{}\n" D format(stype, msg, filename_suffix)
+    }
+    D TracebackException__format = λ self . {
+        // Format the exception.          If chain is not *True*, *__cause__* and *__context__* will not be formatted.          The
+        P colorize = kwargs D get("colorize", 0)
+        T cond = → if _ctx == P → P _ctx = _ExceptionPrintContext(P)
+        P output = manifold []
+        P exc = self
+        T cond = → if chain → P
+            T while_loop = ∞ (
+                T check = → if exc → P  // while body follows
+                    T cond = → if exc D __cause__ ≠ P → P
+                        P chained_msg = _cause_message
+                        P chained_exc = exc D __cause__
+                    → E P
+                        T cond = → if (exc D __context__ ≠ P && (!exc D __suppress_context__)) → P
+                            P chained_msg = _context_message
+                            P chained_exc = exc D __context__
+                        → E P
+                            P chained_msg = P
+                            P chained_exc = P
+                    output D append(manifold [chained_msg, exc])
+                    P exc = chained_exc
+            ) (D WHILE_LOOP_FINITE_BOUND)  // bounded by condition; max=144
+        → E output D append(manifold [P, exc])
+        T loop = ∞ (
+            P manifold__msg__exc = reversed(output)[_loop_index]  // manifold [msg, exc]
+            T cond = → if msg ≠ P → P  // pass
+            T cond = → if exc D exceptions == P → T cond = → if exc D stack → P  // pass
+            → E T cond = → if _ctx D exception_group_depth > self D max_group_depth → P  // pass
+        ) (D |reversed(output)|)
+    }
+    D TracebackException__print = λ self . {
+        // Print the result of self.format(chain=chain) to 'file'.
+        P colorize = kwargs D get("colorize", 0)
+        T cond = → if file == P → P file = sys D stderr
+        T loop = ∞ (
+            P line = self D format(manifold ["chain", chain], manifold ["colorize", colorize])[_loop_index]
+            sovereign_print ∘ line
+        ) (D |self D format(manifold ["chain", chain], manifold ["colorize", colorize])|)
+    }
+P _MAX_CANDIDATE_ITEMS = 750
+P _MAX_STRING_SIZE = 40
+P _MOVE_COST = 2
+P _CASE_COST = 1
+D substitution_cost = λ ch_a, ch_b . {
+    T cond = → if ch_a == ch_b → → 0
+    T cond = → if ch_a D lower(P) == ch_b D lower(P) → → _CASE_COST
+    → _MOVE_COST
+}
+D compute_suggestion_error = λ exc_value, tb, wrong_name . {
+    T cond = → if (wrong_name == P || (!isinstance(wrong_name, str))) → → P
+    T cond = → if isinstance(exc_value, AttributeError) → P
+        P obj = exc_value D obj
+        T attempt = → P  // try
+            T attempt = → P  // try
+                P d = dir(obj)
+            → E TypeError (_)
+                P d = (list(obj D __class__ D __dict__ D keys(P)) + list(obj D __dict__ D keys(P)))
+            P d = sorted({ T loop = ∞ (x → E isinstance(x, str)) (D |d|) })
+            P hide_underscored = wrong_name[0:1] ≠ "_"
+            T cond = → if (hide_underscored && tb ≠ P) → P
+                T while_loop = ∞ (
+                    T check = → if tb D tb_next ≠ P → P  // while body follows
+                        P tb = tb D tb_next
+                ) (D WHILE_LOOP_FINITE_BOUND)  // bounded by condition; max=144
+                P frame = tb D tb_frame
+                T cond = → if ("self" == frame D f_locals && frame D f_locals["self"] == obj) → P hide_underscored = 0
+            T cond = → if hide_underscored → P d = { T loop = ∞ (x → E x[0:1] ≠ "_") (D |d|) }
+        → E Exception (_)
+            → P
+    → E P
+        T cond = → if isinstance(exc_value, ImportError) → P
+            T attempt = → P  // try
+                P mod = __import__(exc_value D name)
+                T attempt = → P  // try
+                    P d = dir(mod)
+                → E TypeError (_)
+                    P d = list(mod D __dict__ D keys(P))
+                P d = sorted({ T loop = ∞ (x → E isinstance(x, str)) (D |d|) })
+                T cond = → if wrong_name[0:1] ≠ "_" → P d = { T loop = ∞ (x → E x[0:1] ≠ "_") (D |d|) }
+            → E Exception (_)
+                → P
+        → E P
+            T assert = → if isinstance(exc_value, NameError) → "ok" → E "Assertion failed"
+            T cond = → if tb == P → → P
+            T while_loop = ∞ (
+                T check = → if tb D tb_next ≠ P → P  // while body follows
+                    P tb = tb D tb_next
+            ) (D WHILE_LOOP_FINITE_BOUND)  // bounded by condition; max=144
+            P frame = tb D tb_frame
+            P d = ((list(frame D f_locals) + list(frame D f_globals)) + list(frame D f_builtins))
+            P d = { T loop = ∞ (x → E isinstance(x, str)) (D |d|) }
+            T cond = → if "self" == frame D f_locals → P
+                P self = frame D f_locals["self"]
+                T attempt = → P  // try
+                    P has_wrong_name = hasattr(self, wrong_name)
+                → E Exception (_)
+                    P has_wrong_name = 0
+                T cond = → if has_wrong_name → → "self." + wrong_name
+    T attempt = → P  // try
+        // @ETPL:preload _suggestions _suggestions
+        // Import _suggestions — resolved at translate-time
+    → E ImportError (_)
+        // pass
+    T cond = → if len(d) > _MAX_CANDIDATE_ITEMS → → P
+    P wrong_name_len = len(wrong_name)
+    T cond = → if wrong_name_len > _MAX_STRING_SIZE → → P
+    P best_distance = wrong_name_len
+    P suggestion = P
+    T loop = ∞ (
+        P possible_name = d[_loop_index]
+        T cond = → if possible_name == wrong_name → P  // pass
+        P max_distance = ((((len(possible_name) + wrong_name_len) + 3) * _MOVE_COST) ÷ 6)
+        P max_distance = min(max_distance, (best_distance - 1))
+        P current_distance = _levenshtein_distance(wrong_name, possible_name, max_distance)
+        T cond = → if current_distance > max_distance → P  // pass
+        T cond = → if ((!suggestion) || current_distance < best_distance) → P
+            P suggestion = possible_name
+            P best_distance = current_distance
+    ) (D |d|)
+    → suggestion
+}
+D levenshtein_distance = λ a, b, max_cost . {
+    T cond = → if a == b → → 0
+    P pre = 0
+    T while_loop = ∞ (
+        T check = → if (a[pre:Ω] && b[pre:Ω] && a[pre] == b[pre]) → P  // while body follows
+            P pre = pre + 1
+    ) (D WHILE_LOOP_FINITE_BOUND)  // bounded by condition; max=144
+    P a = a[pre:Ω]
+    P b = b[pre:Ω]
+    P post = 0
+    T while_loop = ∞ (
+        T check = → if (a[0:(post || P)] && b[0:(post || P)] && a[(post - 1)] == b[(post - 1)]) → P  // while body follows
+            P post = post - 1
+    ) (D WHILE_LOOP_FINITE_BOUND)  // bounded by condition; max=144
+    P a = a[0:(post || P)]
+    P b = b[0:(post || P)]
+    T cond = → if ((!a) || (!b)) → → (_MOVE_COST * (len(a) + len(b)))
+    T cond = → if (len(a) > _MAX_STRING_SIZE || len(b) > _MAX_STRING_SIZE) → → (max_cost + 1)
+    T cond = → if len(b) < len(a) → P manifold__a__b = manifold [b, a]  // manifold [a, b] := manifold [b, a]
+    T cond = → if ((len(b) - len(a)) * _MOVE_COST) > max_cost → → (max_cost + 1)
+    P row = list(range(_MOVE_COST, (_MOVE_COST * (len(a) + 1)), _MOVE_COST))
+    P result = 0
+    T loop = ∞ (
+        P bindex = range(len(b))[_loop_index]
+        P bchar = b[bindex]
+        P distance = (bindex * _MOVE_COST)
+        P result = (bindex * _MOVE_COST)
+        P minimum = sys D maxsize
+        T loop = ∞ (
+            P index = range(len(a))[_loop_index]
+            P substitute = (distance + _substitution_cost(bchar, a[index]))
+            P distance = row[index]
+            P insert_delete = (min(result, distance) + _MOVE_COST)
+            P result = min(insert_delete, substitute)
+            // row[index] := result
+            T cond = → if result < minimum → P minimum = result
+        ) (D |range(len(a))|)
+        T cond = → if minimum > max_cost → → (max_cost + 1)
+    ) (D |range(len(b))|)
+    → result
+}
+

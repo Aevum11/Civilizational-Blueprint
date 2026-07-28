@@ -1,0 +1,14 @@
+2026-02-03 17:25:59,212 - INFO - ================================================================================
+2026-02-03 17:25:59,212 - INFO - ET Web Archiver v4.0 FINAL COMPLETE - Starting
+2026-02-03 17:25:59,213 - INFO - ================================================================================
+2026-02-03 17:25:59,213 - INFO - Working directory: C:\Users\aevum\Desktop\Exception Theory\ET Python Library\ET Python Library
+2026-02-03 17:25:59,232 - INFO - Tkinter imported successfully.
+2026-02-03 17:25:59,330 - WARNING - Installing beautifulsoup4...
+2026-02-03 17:26:00,146 - INFO - Installed beautifulsoup4
+2026-02-03 17:26:00,201 - INFO - External libraries imported.
+2026-02-03 17:26:00,507 - INFO - ET components imported.
+2026-02-03 17:26:00,507 - INFO - ET mathematics instantiated.
+2026-02-03 17:26:31,543 - INFO - Archiving https://line-mode.cern.ch/www/hypertext/WWW/TheProject.html to C:/Users/aevum/Desktop/Exception Theory/ET Python Library/ET Python Library/Output
+2026-02-03 17:26:31,566 - INFO - Initialized ETWebArchiver for https://line-mode.cern.ch/www/hypertext/WWW/TheProject.html
+2026-02-03 17:26:31,569 - INFO - Archive directory: C:/Users/aevum/Desktop/Exception Theory/ET Python Library/ET Python Library/Output\line-mode.cern.ch_2026-02-03_172631
+2026-02-03 19:01:06,855 - INFO - Discovered 1048 resources

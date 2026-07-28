@@ -1,0 +1,1881 @@
+// @ETPL:trace-stdlib shutil.py  // module=shutil
+// Utility functions for copying and archiving files and directory trees.  XXX The functions here don't copy the resource f
+// @ETPL:preload os os
+// Import os — resolved at translate-time
+P altsep = "/"
+P curdir = "."
+P pardir = ".."
+P sep = "\\"
+P pathsep = ";"
+P linesep = "\r\n"
+P defpath = ".;C:\\bin"
+P name = "nt"
+// @ETPL:preload path os.path
+P devnull = "nul"
+P SEEK_SET = 0
+P SEEK_CUR = 1
+P SEEK_END = 2
+// @ETPL:preload fsencode os.fsencode
+P fsencode = P  // [ET:callable:os.fsencode]
+// @ETPL:preload fsdecode os.fsdecode
+P fsdecode = P  // [ET:callable:os.fsdecode]
+// @ETPL:preload get_exec_path os.get_exec_path
+P get_exec_path = P  // [ET:callable:os.get_exec_path]
+// @ETPL:preload fdopen os.fdopen
+P fdopen = P  // [ET:callable:os.fdopen]
+P extsep = "."
+// @ETPL:preload _exit os._exit
+P _exit = P  // [ET:callable:os._exit]
+// @ETPL:preload DirEntry os.DirEntry
+P DirEntry = P  // [ET:callable:os.DirEntry]
+P EX_OK = 0
+P F_OK = 0
+P O_APPEND = 8
+P O_BINARY = 32768
+P O_CREAT = 256
+P O_EXCL = 1024
+P O_NOINHERIT = 128
+P O_RANDOM = 16
+P O_RDONLY = 0
+P O_RDWR = 2
+P O_SEQUENTIAL = 32
+P O_SHORT_LIVED = 4096
+P O_TEMPORARY = 64
+P O_TEXT = 16384
+P O_TRUNC = 512
+P O_WRONLY = 1
+P P_DETACH = 4
+P P_NOWAIT = 1
+P P_NOWAITO = 3
+P P_OVERLAY = 2
+P P_WAIT = 0
+P R_OK = 4
+P TMP_MAX = 2147483647
+P W_OK = 2
+P X_OK = 1
+// @ETPL:preload abort os.abort
+P abort = P  // [ET:callable:os.abort]
+// @ETPL:preload access os.access
+P access = P  // [ET:callable:os.access]
+// @ETPL:preload chdir os.chdir
+P chdir = P  // [ET:callable:os.chdir]
+// @ETPL:preload chmod os.chmod
+P chmod = P  // [ET:callable:os.chmod]
+// @ETPL:preload close os.close
+P close = P  // [ET:callable:os.close]
+// @ETPL:preload closerange os.closerange
+P closerange = P  // [ET:callable:os.closerange]
+// @ETPL:preload cpu_count os.cpu_count
+P cpu_count = P  // [ET:callable:os.cpu_count]
+// @ETPL:preload device_encoding os.device_encoding
+P device_encoding = P  // [ET:callable:os.device_encoding]
+// @ETPL:preload dup os.dup
+P dup = P  // [ET:callable:os.dup]
+// @ETPL:preload dup2 os.dup2
+P dup2 = P  // [ET:callable:os.dup2]
+P environ = P  // [ET:unrepresentable:_Environ]
+// @ETPL:preload error os.error
+P error = P  // [ET:callable:os.error]
+// @ETPL:preload execv os.execv
+P execv = P  // [ET:callable:os.execv]
+// @ETPL:preload execve os.execve
+P execve = P  // [ET:callable:os.execve]
+// @ETPL:preload fchmod os.fchmod
+P fchmod = P  // [ET:callable:os.fchmod]
+// @ETPL:preload fspath os.fspath
+P fspath = P  // [ET:callable:os.fspath]
+// @ETPL:preload fstat os.fstat
+P fstat = P  // [ET:callable:os.fstat]
+// @ETPL:preload fsync os.fsync
+P fsync = P  // [ET:callable:os.fsync]
+// @ETPL:preload ftruncate os.ftruncate
+P ftruncate = P  // [ET:callable:os.ftruncate]
+// @ETPL:preload get_blocking os.get_blocking
+P get_blocking = P  // [ET:callable:os.get_blocking]
+// @ETPL:preload get_handle_inheritable os.get_handle_inheritable
+P get_handle_inheritable = P  // [ET:callable:os.get_handle_inheritable]
+// @ETPL:preload get_inheritable os.get_inheritable
+P get_inheritable = P  // [ET:callable:os.get_inheritable]
+// @ETPL:preload get_terminal_size os.get_terminal_size
+P get_terminal_size = P  // [ET:callable:os.get_terminal_size]
+// @ETPL:preload getcwd os.getcwd
+P getcwd = P  // [ET:callable:os.getcwd]
+// @ETPL:preload getcwdb os.getcwdb
+P getcwdb = P  // [ET:callable:os.getcwdb]
+// @ETPL:preload getlogin os.getlogin
+P getlogin = P  // [ET:callable:os.getlogin]
+// @ETPL:preload getpid os.getpid
+P getpid = P  // [ET:callable:os.getpid]
+// @ETPL:preload getppid os.getppid
+P getppid = P  // [ET:callable:os.getppid]
+// @ETPL:preload isatty os.isatty
+P isatty = P  // [ET:callable:os.isatty]
+// @ETPL:preload kill os.kill
+P kill = P  // [ET:callable:os.kill]
+// @ETPL:preload lchmod os.lchmod
+P lchmod = P  // [ET:callable:os.lchmod]
+// @ETPL:preload link os.link
+P link = P  // [ET:callable:os.link]
+// @ETPL:preload listdir os.listdir
+P listdir = P  // [ET:callable:os.listdir]
+// @ETPL:preload listdrives os.listdrives
+P listdrives = P  // [ET:callable:os.listdrives]
+// @ETPL:preload listmounts os.listmounts
+P listmounts = P  // [ET:callable:os.listmounts]
+// @ETPL:preload listvolumes os.listvolumes
+P listvolumes = P  // [ET:callable:os.listvolumes]
+// @ETPL:preload lseek os.lseek
+P lseek = P  // [ET:callable:os.lseek]
+// @ETPL:preload lstat os.lstat
+P lstat = P  // [ET:callable:os.lstat]
+// @ETPL:preload mkdir os.mkdir
+P mkdir = P  // [ET:callable:os.mkdir]
+// @ETPL:preload open os.open
+P open = P  // [ET:callable:os.open]
+// @ETPL:preload pipe os.pipe
+P pipe = P  // [ET:callable:os.pipe]
+// @ETPL:preload putenv os.putenv
+P putenv = P  // [ET:callable:os.putenv]
+// @ETPL:preload read os.read
+P read = P  // [ET:callable:os.read]
+// @ETPL:preload readlink os.readlink
+P readlink = P  // [ET:callable:os.readlink]
+// @ETPL:preload remove os.remove
+P remove = P  // [ET:callable:os.remove]
+// @ETPL:preload rename os.rename
+P rename = P  // [ET:callable:os.rename]
+// @ETPL:preload replace os.replace
+P replace = P  // [ET:callable:os.replace]
+// @ETPL:preload rmdir os.rmdir
+P rmdir = P  // [ET:callable:os.rmdir]
+// @ETPL:preload scandir os.scandir
+P scandir = P  // [ET:callable:os.scandir]
+// @ETPL:preload set_blocking os.set_blocking
+P set_blocking = P  // [ET:callable:os.set_blocking]
+// @ETPL:preload set_handle_inheritable os.set_handle_inheritable
+P set_handle_inheritable = P  // [ET:callable:os.set_handle_inheritable]
+// @ETPL:preload set_inheritable os.set_inheritable
+P set_inheritable = P  // [ET:callable:os.set_inheritable]
+// @ETPL:preload spawnv os.spawnv
+P spawnv = P  // [ET:callable:os.spawnv]
+// @ETPL:preload spawnve os.spawnve
+P spawnve = P  // [ET:callable:os.spawnve]
+// @ETPL:preload startfile os.startfile
+P startfile = P  // [ET:callable:os.startfile]
+// @ETPL:preload stat os.stat
+P stat = P  // [ET:callable:os.stat]
+// @ETPL:preload stat_result os.stat_result
+P stat_result = P  // [ET:callable:os.stat_result]
+// @ETPL:preload statvfs_result os.statvfs_result
+P statvfs_result = P  // [ET:callable:os.statvfs_result]
+// @ETPL:preload strerror os.strerror
+P strerror = P  // [ET:callable:os.strerror]
+// @ETPL:preload symlink os.symlink
+P symlink = P  // [ET:callable:os.symlink]
+// @ETPL:preload system os.system
+P system = P  // [ET:callable:os.system]
+// @ETPL:preload terminal_size os.terminal_size
+P terminal_size = P  // [ET:callable:os.terminal_size]
+// @ETPL:preload times os.times
+P times = P  // [ET:callable:os.times]
+// @ETPL:preload times_result os.times_result
+P times_result = P  // [ET:callable:os.times_result]
+// @ETPL:preload truncate os.truncate
+P truncate = P  // [ET:callable:os.truncate]
+// @ETPL:preload umask os.umask
+P umask = P  // [ET:callable:os.umask]
+// @ETPL:preload uname_result os.uname_result
+P uname_result = P  // [ET:callable:os.uname_result]
+// @ETPL:preload unlink os.unlink
+P unlink = P  // [ET:callable:os.unlink]
+// @ETPL:preload unsetenv os.unsetenv
+P unsetenv = P  // [ET:callable:os.unsetenv]
+// @ETPL:preload urandom os.urandom
+P urandom = P  // [ET:callable:os.urandom]
+// @ETPL:preload utime os.utime
+P utime = P  // [ET:callable:os.utime]
+// @ETPL:preload waitpid os.waitpid
+P waitpid = P  // [ET:callable:os.waitpid]
+// @ETPL:preload waitstatus_to_exitcode os.waitstatus_to_exitcode
+P waitstatus_to_exitcode = P  // [ET:callable:os.waitstatus_to_exitcode]
+// @ETPL:preload write os.write
+P write = P  // [ET:callable:os.write]
+// @ETPL:preload makedirs os.makedirs
+P makedirs = P  // [ET:callable:os.makedirs]
+// @ETPL:preload removedirs os.removedirs
+P removedirs = P  // [ET:callable:os.removedirs]
+// @ETPL:preload renames os.renames
+P renames = P  // [ET:callable:os.renames]
+// @ETPL:preload walk os.walk
+P walk = P  // [ET:callable:os.walk]
+// @ETPL:preload execl os.execl
+P execl = P  // [ET:callable:os.execl]
+// @ETPL:preload execle os.execle
+P execle = P  // [ET:callable:os.execle]
+// @ETPL:preload execlp os.execlp
+P execlp = P  // [ET:callable:os.execlp]
+// @ETPL:preload execlpe os.execlpe
+P execlpe = P  // [ET:callable:os.execlpe]
+// @ETPL:preload execvp os.execvp
+P execvp = P  // [ET:callable:os.execvp]
+// @ETPL:preload execvpe os.execvpe
+P execvpe = P  // [ET:callable:os.execvpe]
+// @ETPL:preload getenv os.getenv
+P getenv = P  // [ET:callable:os.getenv]
+P supports_bytes_environ = 0
+// @ETPL:preload spawnl os.spawnl
+P spawnl = P  // [ET:callable:os.spawnl]
+// @ETPL:preload spawnle os.spawnle
+P spawnle = P  // [ET:callable:os.spawnle]
+// @ETPL:preload popen os.popen
+P popen = P  // [ET:callable:os.popen]
+// @ETPL:preload sys sys
+// Import sys — resolved at translate-time
+// @ETPL:preload activate_stack_trampoline sys.activate_stack_trampoline
+P activate_stack_trampoline = P  // [ET:callable:sys.activate_stack_trampoline]
+// @ETPL:preload addaudithook sys.addaudithook
+P addaudithook = P  // [ET:callable:sys.addaudithook]
+P api_version = 1013
+P argv = manifold ["ETPL.py", "translate", "ETPL.py", "--lang", "python", "--output", "ETPL_self.pdt"]
+// @ETPL:preload audit sys.audit
+P audit = P  // [ET:callable:sys.audit]
+P base_exec_prefix = "C:\\Program Files\\Python313"
+P base_prefix = "C:\\Program Files\\Python313"
+// @ETPL:preload breakpointhook sys.breakpointhook
+P breakpointhook = P  // [ET:callable:sys.breakpointhook]
+P builtin_module_names = manifold ["_abc", "_ast", "_bisect", "_blake2", "_codecs", "_codecs_cn", "_codecs_hk", "_codecs_iso2022", "_codecs_jp", "_codecs_kr", "_codecs_tw", "_collections", "_contextvars", "_csv", "_datetime", "_functools", "_heapq", "_imp", "_interpchannels", "_interpqueues", "_interpreters", "_io", "_json", "_locale", "_lsprof", "_md5", "_multibytecodec", "_opcode", "_operator", "_pickle", "_random", "_sha1", "_sha2", "_sha3", "_signal", "_sre", "_stat", "_statistics", "_string", "_struct", "_suggestions", "_symtable", "_sysconfig", "_thread", "_tokenize", "_tracemalloc", "_typing", "_warnings", "_weakref", "_winapi"]
+P byteorder = "little"
+// @ETPL:preload call_tracing sys.call_tracing
+P call_tracing = P  // [ET:callable:sys.call_tracing]
+P copyright = "Copyright (c) 2001-2024 Python Software Foundation.\nAll Rights Reserved.\n\nCopyright (c) 2000 BeOpen.com.\nAll Rights Reserved.\n\nCopyright (c) 1995-2001 Corporation for National Research Initiatives.\nAll Rights Reserved.\n\nCopyright (c) 1991-1995 Stichting Mathematisch Centrum, Amsterdam.\nAll Rights Reserved."
+// @ETPL:preload deactivate_stack_trampoline sys.deactivate_stack_trampoline
+P deactivate_stack_trampoline = P  // [ET:callable:sys.deactivate_stack_trampoline]
+// @ETPL:preload displayhook sys.displayhook
+P displayhook = P  // [ET:callable:sys.displayhook]
+P dllhandle = 140730231881728
+P dont_write_bytecode = 0
+// @ETPL:preload exc_info sys.exc_info
+P exc_info = P  // [ET:callable:sys.exc_info]
+// @ETPL:preload excepthook sys.excepthook
+P excepthook = P  // [ET:callable:sys.excepthook]
+// @ETPL:preload exception sys.exception
+P exception = P  // [ET:callable:sys.exception]
+P exec_prefix = "C:\\Program Files\\Python313"
+P executable = "C:\\Program Files\\Python313\\python.exe"
+// @ETPL:preload exit sys.exit
+P exit = P  // [ET:callable:sys.exit]
+P flags = manifold [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 4300]
+P float_info = manifold [1.7976931348623157e+308, 1024, 308, 2.2250738585072014e-308, -1021, -307, 15, 53, 2.220446049250313e-16, 2, 1]
+P float_repr_style = "short"
+// @ETPL:preload get_asyncgen_hooks sys.get_asyncgen_hooks
+P get_asyncgen_hooks = P  // [ET:callable:sys.get_asyncgen_hooks]
+// @ETPL:preload get_coroutine_origin_tracking_depth sys.get_coroutine_origin_tracking_depth
+P get_coroutine_origin_tracking_depth = P  // [ET:callable:sys.get_coroutine_origin_tracking_depth]
+// @ETPL:preload get_int_max_str_digits sys.get_int_max_str_digits
+P get_int_max_str_digits = P  // [ET:callable:sys.get_int_max_str_digits]
+// @ETPL:preload getallocatedblocks sys.getallocatedblocks
+P getallocatedblocks = P  // [ET:callable:sys.getallocatedblocks]
+// @ETPL:preload getdefaultencoding sys.getdefaultencoding
+P getdefaultencoding = P  // [ET:callable:sys.getdefaultencoding]
+// @ETPL:preload getfilesystemencodeerrors sys.getfilesystemencodeerrors
+P getfilesystemencodeerrors = P  // [ET:callable:sys.getfilesystemencodeerrors]
+// @ETPL:preload getfilesystemencoding sys.getfilesystemencoding
+P getfilesystemencoding = P  // [ET:callable:sys.getfilesystemencoding]
+// @ETPL:preload getprofile sys.getprofile
+P getprofile = P  // [ET:callable:sys.getprofile]
+// @ETPL:preload getrecursionlimit sys.getrecursionlimit
+P getrecursionlimit = P  // [ET:callable:sys.getrecursionlimit]
+// @ETPL:preload getrefcount sys.getrefcount
+P getrefcount = P  // [ET:callable:sys.getrefcount]
+// @ETPL:preload getsizeof sys.getsizeof
+P getsizeof = P  // [ET:callable:sys.getsizeof]
+// @ETPL:preload getswitchinterval sys.getswitchinterval
+P getswitchinterval = P  // [ET:callable:sys.getswitchinterval]
+// @ETPL:preload gettrace sys.gettrace
+P gettrace = P  // [ET:callable:sys.gettrace]
+// @ETPL:preload getunicodeinternedsize sys.getunicodeinternedsize
+P getunicodeinternedsize = P  // [ET:callable:sys.getunicodeinternedsize]
+// @ETPL:preload getwindowsversion sys.getwindowsversion
+P getwindowsversion = P  // [ET:callable:sys.getwindowsversion]
+P hash_info = manifold [64, 2305843009213693951, 314159, 0, 1000003, "siphash13", 64, 128, 0]
+P hexversion = 51186672
+P implementation = P  // [ET:unrepresentable:SimpleNamespace]
+P int_info = manifold [30, 4, 4300, 640]
+// @ETPL:preload intern sys.intern
+P intern = P  // [ET:callable:sys.intern]
+// @ETPL:preload is_finalizing sys.is_finalizing
+P is_finalizing = P  // [ET:callable:sys.is_finalizing]
+// @ETPL:preload is_stack_trampoline_active sys.is_stack_trampoline_active
+P is_stack_trampoline_active = P  // [ET:callable:sys.is_stack_trampoline_active]
+P maxsize = 9223372036854775807
+P maxunicode = 1114111
+P meta_path = manifold [P, P, P, P]
+// @ETPL:preload modules sys.modules
+// [ET:complex-dict:modules]
+// @ETPL:preload monitoring sys.monitoring
+P orig_argv = manifold ["python", "ETPL.py", "translate", "ETPL.py", "--lang", "python", "--output", "ETPL_self.pdt"]
+P path_hooks = manifold [P, P, P]
+// @ETPL:preload path_importer_cache sys.path_importer_cache
+// [ET:complex-dict:path_importer_cache]
+P platform = "win32"
+P platlibdir = "DLLs"
+P prefix = "C:\\Program Files\\Python313"
+P pycache_prefix = P
+// @ETPL:preload set_asyncgen_hooks sys.set_asyncgen_hooks
+P set_asyncgen_hooks = P  // [ET:callable:sys.set_asyncgen_hooks]
+// @ETPL:preload set_coroutine_origin_tracking_depth sys.set_coroutine_origin_tracking_depth
+P set_coroutine_origin_tracking_depth = P  // [ET:callable:sys.set_coroutine_origin_tracking_depth]
+// @ETPL:preload set_int_max_str_digits sys.set_int_max_str_digits
+P set_int_max_str_digits = P  // [ET:callable:sys.set_int_max_str_digits]
+// @ETPL:preload setprofile sys.setprofile
+P setprofile = P  // [ET:callable:sys.setprofile]
+// @ETPL:preload setrecursionlimit sys.setrecursionlimit
+P setrecursionlimit = P  // [ET:callable:sys.setrecursionlimit]
+// @ETPL:preload setswitchinterval sys.setswitchinterval
+P setswitchinterval = P  // [ET:callable:sys.setswitchinterval]
+// @ETPL:preload settrace sys.settrace
+P settrace = P  // [ET:callable:sys.settrace]
+P stderr = P  // [ET:unrepresentable:TextIOWrapper]
+P stdin = P  // [ET:unrepresentable:TextIOWrapper]
+P stdlib_module_names = manifold ["__future__", "_abc", "_aix_support", "_android_support", "_apple_support", "_ast", "_asyncio", "_bisect", "_blake2", "_bz2", "_codecs", "_codecs_cn", "_codecs_hk", "_codecs_iso2022", "_codecs_jp", "_codecs_kr", "_codecs_tw", "_collections", "_collections_abc", "_colorize", "_compat_pickle", "_compression", "_contextvars", "_csv", "_ctypes", "_curses", "_curses_panel", "_datetime", "_dbm", "_decimal", "_elementtree", "_frozen_importlib", "_frozen_importlib_external", "_functools", "_gdbm", "_hashlib", "_heapq", "_imp", "_interpchannels", "_interpqueues", "_interpreters", "_io", "_ios_support", "_json", "_locale", "_lsprof", "_lzma", "_markupbase", "_md5", "_multibytecodec"]  // frozenset
+P stdout = P  // [ET:unrepresentable:TextIOWrapper]
+P thread_info = manifold ["nt", P, P]
+// @ETPL:preload unraisablehook sys.unraisablehook
+P unraisablehook = P  // [ET:callable:sys.unraisablehook]
+P version = "3.13.11 (tags/v3.13.11:6278944, Dec  5 2025, 16:26:58) [MSC v.1944 64 bit (AMD64)]"
+P version_info = manifold [3, 13, 11, "final", 0]
+P warnoptions = manifold []
+P winver = "3.13"
+// @ETPL:preload stat stat
+// Import stat — resolved at translate-time
+P FILE_ATTRIBUTE_ARCHIVE = 32
+P FILE_ATTRIBUTE_COMPRESSED = 2048
+P FILE_ATTRIBUTE_DEVICE = 64
+P FILE_ATTRIBUTE_DIRECTORY = 16
+P FILE_ATTRIBUTE_ENCRYPTED = 16384
+P FILE_ATTRIBUTE_HIDDEN = 2
+P FILE_ATTRIBUTE_INTEGRITY_STREAM = 32768
+P FILE_ATTRIBUTE_NORMAL = 128
+P FILE_ATTRIBUTE_NOT_CONTENT_INDEXED = 8192
+P FILE_ATTRIBUTE_NO_SCRUB_DATA = 131072
+P FILE_ATTRIBUTE_OFFLINE = 4096
+P FILE_ATTRIBUTE_READONLY = 1
+P FILE_ATTRIBUTE_REPARSE_POINT = 1024
+P FILE_ATTRIBUTE_SPARSE_FILE = 512
+P FILE_ATTRIBUTE_SYSTEM = 4
+P FILE_ATTRIBUTE_TEMPORARY = 256
+P FILE_ATTRIBUTE_VIRTUAL = 65536
+P IO_REPARSE_TAG_APPEXECLINK = 2147483675
+P IO_REPARSE_TAG_MOUNT_POINT = 2684354563
+P IO_REPARSE_TAG_SYMLINK = 2684354572
+P SF_APPEND = 262144
+P SF_ARCHIVED = 65536
+P SF_DATALESS = 1073741824
+P SF_FIRMLINK = 8388608
+P SF_IMMUTABLE = 131072
+P SF_NOUNLINK = 1048576
+P SF_RESTRICTED = 524288
+P SF_SETTABLE = -65536
+P SF_SNAPSHOT = 2097152
+P ST_ATIME = 7
+P ST_CTIME = 9
+P ST_DEV = 2
+P ST_GID = 5
+P ST_INO = 1
+P ST_MODE = 0
+P ST_MTIME = 8
+P ST_NLINK = 3
+P ST_SIZE = 6
+P ST_UID = 4
+P S_ENFMT = 1024
+P S_IEXEC = 64
+P S_IFBLK = 24576
+P S_IFCHR = 8192
+P S_IFDIR = 16384
+P S_IFDOOR = 0
+P S_IFIFO = 4096
+P S_IFLNK = 40960
+// @ETPL:preload S_IFMT stat.S_IFMT
+P S_IFMT = P  // [ET:callable:stat.S_IFMT]
+P S_IFPORT = 0
+P S_IFREG = 32768
+P S_IFSOCK = 49152
+P S_IFWHT = 0
+// @ETPL:preload S_IMODE stat.S_IMODE
+P S_IMODE = P  // [ET:callable:stat.S_IMODE]
+P S_IREAD = 256
+P S_IRGRP = 32
+P S_IROTH = 4
+P S_IRUSR = 256
+P S_IRWXG = 56
+P S_IRWXO = 7
+P S_IRWXU = 448
+// @ETPL:preload S_ISBLK stat.S_ISBLK
+P S_ISBLK = P  // [ET:callable:stat.S_ISBLK]
+// @ETPL:preload S_ISCHR stat.S_ISCHR
+P S_ISCHR = P  // [ET:callable:stat.S_ISCHR]
+// @ETPL:preload S_ISDIR stat.S_ISDIR
+P S_ISDIR = P  // [ET:callable:stat.S_ISDIR]
+// @ETPL:preload S_ISDOOR stat.S_ISDOOR
+P S_ISDOOR = P  // [ET:callable:stat.S_ISDOOR]
+// @ETPL:preload S_ISFIFO stat.S_ISFIFO
+P S_ISFIFO = P  // [ET:callable:stat.S_ISFIFO]
+P S_ISGID = 1024
+// @ETPL:preload S_ISLNK stat.S_ISLNK
+P S_ISLNK = P  // [ET:callable:stat.S_ISLNK]
+// @ETPL:preload S_ISPORT stat.S_ISPORT
+P S_ISPORT = P  // [ET:callable:stat.S_ISPORT]
+// @ETPL:preload S_ISREG stat.S_ISREG
+P S_ISREG = P  // [ET:callable:stat.S_ISREG]
+// @ETPL:preload S_ISSOCK stat.S_ISSOCK
+P S_ISSOCK = P  // [ET:callable:stat.S_ISSOCK]
+P S_ISUID = 2048
+P S_ISVTX = 512
+// @ETPL:preload S_ISWHT stat.S_ISWHT
+P S_ISWHT = P  // [ET:callable:stat.S_ISWHT]
+P S_IWGRP = 16
+P S_IWOTH = 2
+P S_IWRITE = 128
+P S_IWUSR = 128
+P S_IXGRP = 8
+P S_IXOTH = 1
+P S_IXUSR = 64
+P UF_APPEND = 4
+P UF_COMPRESSED = 32
+P UF_DATAVAULT = 128
+P UF_HIDDEN = 32768
+P UF_IMMUTABLE = 2
+P UF_NODUMP = 1
+P UF_NOUNLINK = 16
+P UF_OPAQUE = 8
+P UF_SETTABLE = 65535
+P UF_TRACKED = 64
+// @ETPL:preload filemode stat.filemode
+P filemode = P  // [ET:callable:stat.filemode]
+// @ETPL:preload fnmatch fnmatch
+// Import fnmatch — resolved at translate-time
+// [ET:reserved:filter]
+// @ETPL:preload fnmatch fnmatch.fnmatch
+P fnmatch = P  // [ET:callable:fnmatch.fnmatch]
+// @ETPL:preload fnmatchcase fnmatch.fnmatchcase
+P fnmatchcase = P  // [ET:callable:fnmatch.fnmatchcase]
+// @ETPL:preload translate fnmatch.translate
+P translate = P  // [ET:callable:fnmatch.translate]
+// @ETPL:preload collections collections
+// Import collections — resolved at translate-time
+// @ETPL:preload ChainMap collections.ChainMap
+P ChainMap = P  // [ET:callable:collections.ChainMap]
+// @ETPL:preload Counter collections.Counter
+P Counter = P  // [ET:callable:collections.Counter]
+// @ETPL:preload OrderedDict collections.OrderedDict
+P OrderedDict = P  // [ET:callable:collections.OrderedDict]
+// @ETPL:preload UserDict collections.UserDict
+P UserDict = P  // [ET:callable:collections.UserDict]
+// @ETPL:preload UserList collections.UserList
+P UserList = P  // [ET:callable:collections.UserList]
+// @ETPL:preload UserString collections.UserString
+P UserString = P  // [ET:callable:collections.UserString]
+// @ETPL:preload defaultdict collections.defaultdict
+P defaultdict = P  // [ET:callable:collections.defaultdict]
+// @ETPL:preload deque collections.deque
+P deque = P  // [ET:callable:collections.deque]
+// @ETPL:preload namedtuple collections.namedtuple
+P namedtuple = P  // [ET:callable:collections.namedtuple]
+// @ETPL:preload errno errno
+// Import errno — resolved at translate-time
+P E2BIG = 7
+P EACCES = 13
+P EADDRINUSE = 10048
+P EADDRNOTAVAIL = 10049
+P EAFNOSUPPORT = 10047
+P EAGAIN = 11
+P EALREADY = 10037
+P EBADF = 9
+P EBADMSG = 104
+P EBUSY = 16
+P ECANCELED = 105
+P ECHILD = 10
+P ECONNABORTED = 10053
+P ECONNREFUSED = 10061
+P ECONNRESET = 10054
+P EDEADLK = 36
+P EDEADLOCK = 36
+P EDESTADDRREQ = 10039
+P EDOM = 33
+P EDQUOT = 10069
+P EEXIST = 17
+P EFAULT = 14
+P EFBIG = 27
+P EHOSTDOWN = 10064
+P EHOSTUNREACH = 10065
+P EIDRM = 111
+P EILSEQ = 42
+P EINPROGRESS = 10036
+P EINTR = 4
+P EINVAL = 22
+P EIO = 5
+P EISCONN = 10056
+P EISDIR = 21
+P ELOOP = 10062
+P EMFILE = 24
+P EMLINK = 31
+P EMSGSIZE = 10040
+P ENAMETOOLONG = 38
+P ENETDOWN = 10050
+P ENETRESET = 10052
+P ENETUNREACH = 10051
+P ENFILE = 23
+P ENOBUFS = 10055
+P ENODATA = 120
+P ENODEV = 19
+P ENOENT = 2
+P ENOEXEC = 8
+P ENOLCK = 39
+P ENOLINK = 121
+P ENOMEM = 12
+P ENOMSG = 122
+P ENOPROTOOPT = 10042
+P ENOSPC = 28
+P ENOSR = 124
+P ENOSTR = 125
+P ENOSYS = 40
+P ENOTCONN = 10057
+P ENOTDIR = 20
+P ENOTEMPTY = 41
+P ENOTRECOVERABLE = 127
+P ENOTSOCK = 10038
+P ENOTSUP = 129
+P ENOTTY = 25
+P ENXIO = 6
+P EOPNOTSUPP = 10045
+P EOVERFLOW = 132
+P EOWNERDEAD = 133
+P EPERM = 1
+P EPFNOSUPPORT = 10046
+P EPIPE = 32
+P EPROTO = 134
+P EPROTONOSUPPORT = 10043
+P EPROTOTYPE = 10041
+P ERANGE = 34
+P EREMOTE = 10071
+P EROFS = 30
+P ESHUTDOWN = 10058
+P ESOCKTNOSUPPORT = 10044
+P ESPIPE = 29
+P ESRCH = 3
+P ESTALE = 10070
+P ETIME = 137
+P ETIMEDOUT = 10060
+P ETOOMANYREFS = 10059
+P ETXTBSY = 139
+P EUSERS = 10068
+P EWOULDBLOCK = 10035
+P EXDEV = 18
+P WSABASEERR = 10000
+P WSAEACCES = 10013
+P WSAEADDRINUSE = 10048
+P WSAEADDRNOTAVAIL = 10049
+P WSAEAFNOSUPPORT = 10047
+P WSAEALREADY = 10037
+P WSAEBADF = 10009
+P WSAECONNABORTED = 10053
+P WSAECONNREFUSED = 10061
+P WSAECONNRESET = 10054
+P WSAEDESTADDRREQ = 10039
+P WSAEDISCON = 10101
+P WSAEDQUOT = 10069
+P WSAEFAULT = 10014
+P WSAEHOSTDOWN = 10064
+P WSAEHOSTUNREACH = 10065
+P WSAEINPROGRESS = 10036
+P WSAEINTR = 10004
+P WSAEINVAL = 10022
+P WSAEISCONN = 10056
+P WSAELOOP = 10062
+P WSAEMFILE = 10024
+P WSAEMSGSIZE = 10040
+P WSAENAMETOOLONG = 10063
+P WSAENETDOWN = 10050
+P WSAENETRESET = 10052
+P WSAENETUNREACH = 10051
+P WSAENOBUFS = 10055
+P WSAENOPROTOOPT = 10042
+P WSAENOTCONN = 10057
+P WSAENOTEMPTY = 10066
+P WSAENOTSOCK = 10038
+P WSAEOPNOTSUPP = 10045
+P WSAEPFNOSUPPORT = 10046
+P WSAEPROCLIM = 10067
+P WSAEPROTONOSUPPORT = 10043
+P WSAEPROTOTYPE = 10041
+P WSAEREMOTE = 10071
+P WSAESHUTDOWN = 10058
+P WSAESOCKTNOSUPPORT = 10044
+P WSAESTALE = 10070
+P WSAETIMEDOUT = 10060
+P WSAETOOMANYREFS = 10059
+P WSAEUSERS = 10068
+P WSAEWOULDBLOCK = 10035
+P WSANOTINITIALISED = 10093
+P WSASYSNOTREADY = 10091
+P WSAVERNOTSUPPORTED = 10092
+// @ETPL:preload errorcode errno.errorcode
+// [ET:complex-dict:errorcode]
+T attempt = → P  // try
+    // @ETPL:preload zlib zlib
+    // Import zlib — resolved at translate-time
+    P DEFLATED = 8
+    P DEF_BUF_SIZE = 16384
+    P DEF_MEM_LEVEL = 8
+    P MAX_WBITS = 15
+    P ZLIB_RUNTIME_VERSION = "1.3.1"
+    P ZLIB_VERSION = "1.3.1"
+    P Z_BEST_COMPRESSION = 9
+    P Z_BEST_SPEED = 1
+    P Z_BLOCK = 5
+    P Z_DEFAULT_COMPRESSION = -1
+    P Z_DEFAULT_STRATEGY = 0
+    P Z_FILTERED = 1
+    P Z_FINISH = 4
+    P Z_FIXED = 4
+    P Z_FULL_FLUSH = 3
+    P Z_HUFFMAN_ONLY = 2
+    P Z_NO_COMPRESSION = 0
+    P Z_NO_FLUSH = 0
+    P Z_PARTIAL_FLUSH = 1
+    P Z_RLE = 3
+    P Z_SYNC_FLUSH = 2
+    P Z_TREES = 6
+    // @ETPL:preload adler32 zlib.adler32
+    P adler32 = P  // [ET:callable:zlib.adler32]
+    // @ETPL:preload compress zlib.compress
+    P compress = P  // [ET:callable:zlib.compress]
+    // @ETPL:preload compressobj zlib.compressobj
+    P compressobj = P  // [ET:callable:zlib.compressobj]
+    // @ETPL:preload crc32 zlib.crc32
+    P crc32 = P  // [ET:callable:zlib.crc32]
+    // @ETPL:preload decompress zlib.decompress
+    P decompress = P  // [ET:callable:zlib.decompress]
+    // @ETPL:preload decompressobj zlib.decompressobj
+    P decompressobj = P  // [ET:callable:zlib.decompressobj]
+    // del zlib
+    P _ZLIB_SUPPORTED = 1
+→ E ImportError (_)
+    P _ZLIB_SUPPORTED = 0
+T attempt = → P  // try
+    // @ETPL:preload bz2 bz2
+    // Import bz2 — resolved at translate-time
+    // @ETPL:preload BZ2File bz2.BZ2File
+    P BZ2File = P  // [ET:callable:bz2.BZ2File]
+    // @ETPL:preload BZ2Compressor bz2.BZ2Compressor
+    P BZ2Compressor = P  // [ET:callable:bz2.BZ2Compressor]
+    // @ETPL:preload BZ2Decompressor bz2.BZ2Decompressor
+    P BZ2Decompressor = P  // [ET:callable:bz2.BZ2Decompressor]
+    // del bz2
+    P _BZ2_SUPPORTED = 1
+→ E ImportError (_)
+    P _BZ2_SUPPORTED = 0
+T attempt = → P  // try
+    // @ETPL:preload lzma lzma
+    // Import lzma — resolved at translate-time
+    P CHECK_NONE = 0
+    P CHECK_CRC32 = 1
+    P CHECK_CRC64 = 4
+    P CHECK_SHA256 = 10
+    P CHECK_ID_MAX = 15
+    P CHECK_UNKNOWN = 16
+    P FILTER_LZMA1 = 4611686018427387905
+    P FILTER_LZMA2 = 33
+    P FILTER_DELTA = 3
+    P FILTER_X86 = 4
+    P FILTER_IA64 = 6
+    P FILTER_ARM = 7
+    P FILTER_ARMTHUMB = 8
+    P FILTER_POWERPC = 5
+    P FILTER_SPARC = 9
+    P FORMAT_AUTO = 0
+    P FORMAT_XZ = 1
+    P FORMAT_ALONE = 2
+    P FORMAT_RAW = 3
+    P MF_HC3 = 3
+    P MF_HC4 = 4
+    P MF_BT2 = 18
+    P MF_BT3 = 19
+    P MF_BT4 = 20
+    P MODE_FAST = 1
+    P MODE_NORMAL = 2
+    P PRESET_DEFAULT = 6
+    P PRESET_EXTREME = 2147483648
+    // @ETPL:preload LZMACompressor lzma.LZMACompressor
+    P LZMACompressor = P  // [ET:callable:lzma.LZMACompressor]
+    // @ETPL:preload LZMADecompressor lzma.LZMADecompressor
+    P LZMADecompressor = P  // [ET:callable:lzma.LZMADecompressor]
+    // @ETPL:preload LZMAFile lzma.LZMAFile
+    P LZMAFile = P  // [ET:callable:lzma.LZMAFile]
+    // @ETPL:preload LZMAError lzma.LZMAError
+    P LZMAError = P  // [ET:callable:lzma.LZMAError]
+    // @ETPL:preload is_check_supported lzma.is_check_supported
+    P is_check_supported = P  // [ET:callable:lzma.is_check_supported]
+    // del lzma
+    P _LZMA_SUPPORTED = 1
+→ E ImportError (_)
+    P _LZMA_SUPPORTED = 0
+P _WINDOWS = os D name == "nt"
+P posix = P
+P nt = P
+T cond = → if os D name == "posix" → P  // pass
+T cond = → if sys D platform == "win32" → P
+    // @ETPL:preload _winapi _winapi
+    // Import _winapi — resolved at translate-time
+    P ABOVE_NORMAL_PRIORITY_CLASS = 32768
+    P BELOW_NORMAL_PRIORITY_CLASS = 16384
+    // @ETPL:preload BatchedWaitForMultipleObjects _winapi.BatchedWaitForMultipleObjects
+    P BatchedWaitForMultipleObjects = P  // [ET:callable:_winapi.BatchedWaitForMultipleObjects]
+    P COPYFILE2_CALLBACK_CHUNK_FINISHED = 2
+    P COPYFILE2_CALLBACK_CHUNK_STARTED = 1
+    P COPYFILE2_CALLBACK_ERROR = 6
+    P COPYFILE2_CALLBACK_POLL_CONTINUE = 5
+    P COPYFILE2_CALLBACK_STREAM_FINISHED = 4
+    P COPYFILE2_CALLBACK_STREAM_STARTED = 3
+    P COPYFILE2_PROGRESS_CANCEL = 1
+    P COPYFILE2_PROGRESS_CONTINUE = 0
+    P COPYFILE2_PROGRESS_PAUSE = 4
+    P COPYFILE2_PROGRESS_QUIET = 3
+    P COPYFILE2_PROGRESS_STOP = 2
+    P COPY_FILE_ALLOW_DECRYPTED_DESTINATION = 8
+    P COPY_FILE_COPY_SYMLINK = 2048
+    P COPY_FILE_FAIL_IF_EXISTS = 1
+    P COPY_FILE_NO_BUFFERING = 4096
+    P COPY_FILE_NO_OFFLOAD = 262144
+    P COPY_FILE_OPEN_SOURCE_FOR_WRITE = 4
+    P COPY_FILE_REQUEST_COMPRESSED_TRAFFIC = 268435456
+    P COPY_FILE_REQUEST_SECURITY_PRIVILEGES = 8192
+    P COPY_FILE_RESTARTABLE = 2
+    P COPY_FILE_RESUME_FROM_PAUSE = 16384
+    P CREATE_BREAKAWAY_FROM_JOB = 16777216
+    P CREATE_DEFAULT_ERROR_MODE = 67108864
+    P CREATE_NEW_CONSOLE = 16
+    P CREATE_NEW_PROCESS_GROUP = 512
+    P CREATE_NO_WINDOW = 134217728
+    // @ETPL:preload CloseHandle _winapi.CloseHandle
+    P CloseHandle = P  // [ET:callable:_winapi.CloseHandle]
+    // @ETPL:preload ConnectNamedPipe _winapi.ConnectNamedPipe
+    P ConnectNamedPipe = P  // [ET:callable:_winapi.ConnectNamedPipe]
+    // @ETPL:preload CopyFile2 _winapi.CopyFile2
+    P CopyFile2 = P  // [ET:callable:_winapi.CopyFile2]
+    // @ETPL:preload CreateEventW _winapi.CreateEventW
+    P CreateEventW = P  // [ET:callable:_winapi.CreateEventW]
+    // @ETPL:preload CreateFile _winapi.CreateFile
+    P CreateFile = P  // [ET:callable:_winapi.CreateFile]
+    // @ETPL:preload CreateFileMapping _winapi.CreateFileMapping
+    P CreateFileMapping = P  // [ET:callable:_winapi.CreateFileMapping]
+    // @ETPL:preload CreateJunction _winapi.CreateJunction
+    P CreateJunction = P  // [ET:callable:_winapi.CreateJunction]
+    // @ETPL:preload CreateMutexW _winapi.CreateMutexW
+    P CreateMutexW = P  // [ET:callable:_winapi.CreateMutexW]
+    // @ETPL:preload CreateNamedPipe _winapi.CreateNamedPipe
+    P CreateNamedPipe = P  // [ET:callable:_winapi.CreateNamedPipe]
+    // @ETPL:preload CreatePipe _winapi.CreatePipe
+    P CreatePipe = P  // [ET:callable:_winapi.CreatePipe]
+    // @ETPL:preload CreateProcess _winapi.CreateProcess
+    P CreateProcess = P  // [ET:callable:_winapi.CreateProcess]
+    P DETACHED_PROCESS = 8
+    P DUPLICATE_CLOSE_SOURCE = 1
+    P DUPLICATE_SAME_ACCESS = 2
+    // @ETPL:preload DuplicateHandle _winapi.DuplicateHandle
+    P DuplicateHandle = P  // [ET:callable:_winapi.DuplicateHandle]
+    P ERROR_ACCESS_DENIED = 5
+    P ERROR_ALREADY_EXISTS = 183
+    P ERROR_BROKEN_PIPE = 109
+    P ERROR_IO_PENDING = 997
+    P ERROR_MORE_DATA = 234
+    P ERROR_NETNAME_DELETED = 64
+    P ERROR_NO_DATA = 232
+    P ERROR_NO_SYSTEM_RESOURCES = 1450
+    P ERROR_OPERATION_ABORTED = 995
+    P ERROR_PIPE_BUSY = 231
+    P ERROR_PIPE_CONNECTED = 535
+    P ERROR_PRIVILEGE_NOT_HELD = 1314
+    P ERROR_SEM_TIMEOUT = 121
+    // @ETPL:preload ExitProcess _winapi.ExitProcess
+    P ExitProcess = P  // [ET:callable:_winapi.ExitProcess]
+    P FILE_FLAG_FIRST_PIPE_INSTANCE = 524288
+    P FILE_FLAG_OVERLAPPED = 1073741824
+    P FILE_GENERIC_READ = 1179785
+    P FILE_GENERIC_WRITE = 1179926
+    P FILE_MAP_ALL_ACCESS = 983071
+    P FILE_MAP_COPY = 1
+    P FILE_MAP_EXECUTE = 32
+    P FILE_MAP_READ = 4
+    P FILE_MAP_WRITE = 2
+    P FILE_TYPE_CHAR = 2
+    P FILE_TYPE_DISK = 1
+    P FILE_TYPE_PIPE = 3
+    P FILE_TYPE_REMOTE = 32768
+    P FILE_TYPE_UNKNOWN = 0
+    P GENERIC_READ = 2147483648
+    P GENERIC_WRITE = 1073741824
+    // @ETPL:preload GetACP _winapi.GetACP
+    P GetACP = P  // [ET:callable:_winapi.GetACP]
+    // @ETPL:preload GetCurrentProcess _winapi.GetCurrentProcess
+    P GetCurrentProcess = P  // [ET:callable:_winapi.GetCurrentProcess]
+    // @ETPL:preload GetExitCodeProcess _winapi.GetExitCodeProcess
+    P GetExitCodeProcess = P  // [ET:callable:_winapi.GetExitCodeProcess]
+    // @ETPL:preload GetFileType _winapi.GetFileType
+    P GetFileType = P  // [ET:callable:_winapi.GetFileType]
+    // @ETPL:preload GetLastError _winapi.GetLastError
+    P GetLastError = P  // [ET:callable:_winapi.GetLastError]
+    // @ETPL:preload GetLongPathName _winapi.GetLongPathName
+    P GetLongPathName = P  // [ET:callable:_winapi.GetLongPathName]
+    // @ETPL:preload GetModuleFileName _winapi.GetModuleFileName
+    P GetModuleFileName = P  // [ET:callable:_winapi.GetModuleFileName]
+    // @ETPL:preload GetShortPathName _winapi.GetShortPathName
+    P GetShortPathName = P  // [ET:callable:_winapi.GetShortPathName]
+    // @ETPL:preload GetStdHandle _winapi.GetStdHandle
+    P GetStdHandle = P  // [ET:callable:_winapi.GetStdHandle]
+    // @ETPL:preload GetVersion _winapi.GetVersion
+    P GetVersion = P  // [ET:callable:_winapi.GetVersion]
+    P HIGH_PRIORITY_CLASS = 128
+    P IDLE_PRIORITY_CLASS = 64
+    P INFINITE = 4294967295
+    P INVALID_HANDLE_VALUE = 18446744073709551615
+    P LCMAP_FULLWIDTH = 8388608
+    P LCMAP_HALFWIDTH = 4194304
+    P LCMAP_HIRAGANA = 1048576
+    P LCMAP_KATAKANA = 2097152
+    P LCMAP_LINGUISTIC_CASING = 16777216
+    P LCMAP_LOWERCASE = 256
+    P LCMAP_SIMPLIFIED_CHINESE = 33554432
+    P LCMAP_TITLECASE = 768
+    P LCMAP_TRADITIONAL_CHINESE = 67108864
+    P LCMAP_UPPERCASE = 512
+    // @ETPL:preload LCMapStringEx _winapi.LCMapStringEx
+    P LCMapStringEx = P  // [ET:callable:_winapi.LCMapStringEx]
+    P LOCALE_NAME_INVARIANT = ""
+    P LOCALE_NAME_MAX_LENGTH = 85
+    P LOCALE_NAME_SYSTEM_DEFAULT = "!x-sys-default-locale"
+    P LOCALE_NAME_USER_DEFAULT = P
+    P MEM_COMMIT = 4096
+    P MEM_FREE = 65536
+    P MEM_IMAGE = 16777216
+    P MEM_MAPPED = 262144
+    P MEM_PRIVATE = 131072
+    P MEM_RESERVE = 8192
+    // @ETPL:preload MapViewOfFile _winapi.MapViewOfFile
+    P MapViewOfFile = P  // [ET:callable:_winapi.MapViewOfFile]
+    P NMPWAIT_WAIT_FOREVER = 4294967295
+    P NORMAL_PRIORITY_CLASS = 32
+    P NULL = 0
+    // @ETPL:preload NeedCurrentDirectoryForExePath _winapi.NeedCurrentDirectoryForExePath
+    P NeedCurrentDirectoryForExePath = P  // [ET:callable:_winapi.NeedCurrentDirectoryForExePath]
+    P OPEN_EXISTING = 3
+    // @ETPL:preload OpenEventW _winapi.OpenEventW
+    P OpenEventW = P  // [ET:callable:_winapi.OpenEventW]
+    // @ETPL:preload OpenFileMapping _winapi.OpenFileMapping
+    P OpenFileMapping = P  // [ET:callable:_winapi.OpenFileMapping]
+    // @ETPL:preload OpenMutexW _winapi.OpenMutexW
+    P OpenMutexW = P  // [ET:callable:_winapi.OpenMutexW]
+    // @ETPL:preload OpenProcess _winapi.OpenProcess
+    P OpenProcess = P  // [ET:callable:_winapi.OpenProcess]
+    // @ETPL:preload Overlapped _winapi.Overlapped
+    P Overlapped = P  // [ET:callable:_winapi.Overlapped]
+    P PAGE_EXECUTE = 16
+    P PAGE_EXECUTE_READ = 32
+    P PAGE_EXECUTE_READWRITE = 64
+    P PAGE_EXECUTE_WRITECOPY = 128
+    P PAGE_GUARD = 256
+    P PAGE_NOACCESS = 1
+    P PAGE_NOCACHE = 512
+    P PAGE_READONLY = 2
+    P PAGE_READWRITE = 4
+    P PAGE_WRITECOMBINE = 1024
+    P PAGE_WRITECOPY = 8
+    P PIPE_ACCESS_DUPLEX = 3
+    P PIPE_ACCESS_INBOUND = 1
+    P PIPE_READMODE_MESSAGE = 2
+    P PIPE_TYPE_MESSAGE = 4
+    P PIPE_UNLIMITED_INSTANCES = 255
+    P PIPE_WAIT = 0
+    P PROCESS_ALL_ACCESS = 2097151
+    P PROCESS_DUP_HANDLE = 64
+    // @ETPL:preload PeekNamedPipe _winapi.PeekNamedPipe
+    P PeekNamedPipe = P  // [ET:callable:_winapi.PeekNamedPipe]
+    P REALTIME_PRIORITY_CLASS = 256
+    // @ETPL:preload ReadFile _winapi.ReadFile
+    P ReadFile = P  // [ET:callable:_winapi.ReadFile]
+    // @ETPL:preload ReleaseMutex _winapi.ReleaseMutex
+    P ReleaseMutex = P  // [ET:callable:_winapi.ReleaseMutex]
+    // @ETPL:preload ResetEvent _winapi.ResetEvent
+    P ResetEvent = P  // [ET:callable:_winapi.ResetEvent]
+    P SEC_COMMIT = 134217728
+    P SEC_IMAGE = 16777216
+    P SEC_LARGE_PAGES = 2147483648
+    P SEC_NOCACHE = 268435456
+    P SEC_RESERVE = 67108864
+    P SEC_WRITECOMBINE = 1073741824
+    P STARTF_FORCEOFFFEEDBACK = 128
+    P STARTF_FORCEONFEEDBACK = 64
+    P STARTF_PREVENTPINNING = 8192
+    P STARTF_RUNFULLSCREEN = 32
+    P STARTF_TITLEISAPPID = 4096
+    P STARTF_TITLEISLINKNAME = 2048
+    P STARTF_UNTRUSTEDSOURCE = 32768
+    P STARTF_USECOUNTCHARS = 8
+    P STARTF_USEFILLATTRIBUTE = 16
+    P STARTF_USEHOTKEY = 512
+    P STARTF_USEPOSITION = 4
+    P STARTF_USESHOWWINDOW = 1
+    P STARTF_USESIZE = 2
+    P STARTF_USESTDHANDLES = 256
+    P STD_ERROR_HANDLE = 4294967284
+    P STD_INPUT_HANDLE = 4294967286
+    P STD_OUTPUT_HANDLE = 4294967285
+    P STILL_ACTIVE = 259
+    P SW_HIDE = 0
+    P SYNCHRONIZE = 1048576
+    // @ETPL:preload SetEvent _winapi.SetEvent
+    P SetEvent = P  // [ET:callable:_winapi.SetEvent]
+    // @ETPL:preload SetNamedPipeHandleState _winapi.SetNamedPipeHandleState
+    P SetNamedPipeHandleState = P  // [ET:callable:_winapi.SetNamedPipeHandleState]
+    // @ETPL:preload TerminateProcess _winapi.TerminateProcess
+    P TerminateProcess = P  // [ET:callable:_winapi.TerminateProcess]
+    // @ETPL:preload UnmapViewOfFile _winapi.UnmapViewOfFile
+    P UnmapViewOfFile = P  // [ET:callable:_winapi.UnmapViewOfFile]
+    // @ETPL:preload VirtualQuerySize _winapi.VirtualQuerySize
+    P VirtualQuerySize = P  // [ET:callable:_winapi.VirtualQuerySize]
+    P WAIT_ABANDONED_0 = 128
+    P WAIT_OBJECT_0 = 0
+    P WAIT_TIMEOUT = 258
+    // @ETPL:preload WaitForMultipleObjects _winapi.WaitForMultipleObjects
+    P WaitForMultipleObjects = P  // [ET:callable:_winapi.WaitForMultipleObjects]
+    // @ETPL:preload WaitForSingleObject _winapi.WaitForSingleObject
+    P WaitForSingleObject = P  // [ET:callable:_winapi.WaitForSingleObject]
+    // @ETPL:preload WaitNamedPipe _winapi.WaitNamedPipe
+    P WaitNamedPipe = P  // [ET:callable:_winapi.WaitNamedPipe]
+    // @ETPL:preload WriteFile _winapi.WriteFile
+    P WriteFile = P  // [ET:callable:_winapi.WriteFile]
+→ E P _winapi = P
+P COPY_BUFSIZE = if _WINDOWS → (1024 * 1024) → E (64 * 1024)
+P _USE_CP_SENDFILE = (hasattr(os, "sendfile") && sys D platform D startswith(manifold ["linux", "android"]))
+P _HAS_FCOPYFILE = (posix && hasattr(posix, "_fcopyfile"))
+P _WIN_DEFAULT_PATHEXT = ".COM;.EXE;.BAT;.CMD;.VBS;.JS;.WS;.MSC"
+P __all__ = manifold ["copyfileobj", "copyfile", "copymode", "copystat", "copy", "copy2", "copytree", "move", "rmtree", "Error", "SpecialFileError", "ExecError", "make_archive", "get_archive_formats", "register_archive_format", "unregister_archive_format", "get_unpack_formats", "register_unpack_format", "unregister_unpack_format", "unpack_archive", "ignore_patterns", "chown", "which", "get_terminal_size", "SameFileError"]
+D Error = λ . P  // class(OSError)
+    // pass
+D SameFileError = λ . P  // class(Error)
+    // Raised when source and destination are the same file.
+D SpecialFileError = λ . P  // class(OSError)
+    // Raised when trying to do a kind of operation (e.g. copying) which is     not supported on a special file (e.g. a named p
+D ExecError = λ . P  // class(OSError)
+    // Raised when a command could not be executed
+D ReadError = λ . P  // class(OSError)
+    // Raised when an archive cannot be read
+D RegistryError = λ . P  // class(Exception)
+    // Raised when a registry operation with the archiving     and unpacking registries fails
+D GiveupOnFastCopy = λ . P  // class(Exception)
+    // Raised as a signal to fallback on using raw read()/write()     file copy when fast-copy functions fail to do so.
+D fastcopy_fcopyfile = λ fsrc, fdst, flags . {
+    // Copy a regular file content or metadata by using high-performance     fcopyfile(3) syscall (macOS).
+    T attempt = → P  // try
+        P infd = fsrc D fileno(P)
+        P outfd = fdst D fileno(P)
+    → E Exception (err)
+        → E _GiveupOnFastCopy(err)
+    T attempt = → P  // try
+        posix D _fcopyfile(infd, outfd, flags)
+    → E OSError (err)
+        D err_D_filename = fsrc D name  // err D filename := fsrc D name
+        D err_D_filename2 = fdst D name  // err D filename2 := fdst D name
+        T cond = → if err D errno == manifold [errno D EINVAL, errno D ENOTSUP] → → E _GiveupOnFastCopy(err)
+        → E → E err
+}
+D fastcopy_sendfile = λ fsrc, fdst . {
+    // Copy data from one regular mmap-like fd to another by using     high-performance sendfile(2) syscall.     This should wo
+    // global _USE_CP_SENDFILE
+    T attempt = → P  // try
+        P infd = fsrc D fileno(P)
+        P outfd = fdst D fileno(P)
+    → E Exception (err)
+        → E _GiveupOnFastCopy(err)
+    T attempt = → P  // try
+        P blocksize = max(os D fstat(infd) D st_size, (2 ^ 23))
+    → E OSError (_)
+        P blocksize = (2 ^ 27)
+    T cond = → if sys D maxsize < (2 ^ 32) → P blocksize = min(blocksize, (2 ^ 30))
+    P offset = 0
+    T while_loop = ∞ (
+        T check = → if 1 → P  // while body follows
+            T attempt = → P  // try
+                P sent = os D sendfile(outfd, infd, offset, blocksize)
+            → E OSError (err)
+                D err_D_filename = fsrc D name  // err D filename := fsrc D name
+                D err_D_filename2 = fdst D name  // err D filename2 := fdst D name
+                T cond = → if err D errno == errno D ENOTSOCK → P
+                    P _USE_CP_SENDFILE = 0
+                    → E _GiveupOnFastCopy(err)
+                T cond = → if err D errno == errno D ENOSPC → → E err
+                T cond = → if (offset == 0 && os D lseek(outfd, 0, os D SEEK_CUR) == 0) → → E _GiveupOnFastCopy(err)
+                → E err
+    ) (D WHILE_LOOP_FINITE_BOUND)  // bounded by condition; max=144
+}
+D copyfileobj_readinto = λ fsrc, fdst, length . {
+    // readinto()/memoryview() based variant of copyfileobj().     *fsrc* must support readinto() method and both files must be
+    P fsrc_readinto = fsrc D readinto
+    P fdst_write = fdst D write
+    T scope_mv = → memoryview(bytearray(length))
+    P mv = scope_mv  // context var
+        T while_loop = ∞ (
+            T check = → if 1 → P  // while body follows
+                P n = fsrc_readinto(mv)
+                T cond = → if (!n) → P  // pass
+        ) (D WHILE_LOOP_FINITE_BOUND)  // bounded by condition; max=144
+}
+D copyfileobj = λ fsrc, fdst, length . {
+    // copy data from file-like object fsrc to file-like object fdst
+    T cond = → if (!length) → P length = COPY_BUFSIZE
+    P fsrc_read = fsrc D read
+    P fdst_write = fdst D write
+    T while_loop = ∞ (
+        T check = → if (λ buf . buf)(fsrc_read(length)) → P  // while body follows
+            fdst_write(buf)
+    ) (D WHILE_LOOP_FINITE_BOUND)  // bounded by condition; max=144
+}
+D samefile = λ src, dst . {
+    T cond = → if (isinstance(src, os D DirEntry) && hasattr(os D path, "samestat")) → P
+        T attempt = → P  // try
+            → os D path D samestat(src D stat(P), os D stat(dst))
+        → E OSError (_)
+            → 0
+    T cond = → if hasattr(os D path, "samefile") → P
+        T attempt = → P  // try
+            → os D path D samefile(src, dst)
+        → E OSError (_)
+            → 0
+    → os D path D normcase(os D path D abspath(src)) == os D path D normcase(os D path D abspath(dst))
+}
+D stat = λ fn . → if isinstance(fn, os D DirEntry) → fn D stat(P) → E os D stat(fn)
+D islink = λ fn . → if isinstance(fn, os D DirEntry) → fn D is_symlink(P) → E os D path D islink(fn)
+D copyfile = λ src, dst . {
+    // Copy data from src to dst in the most efficient way possible.      If follow_symlinks is not set and src is a symbolic l
+    sys D audit("shutil.copyfile", src, dst)
+    T cond = → if _samefile(src, dst) → → E SameFileError("{!r} and {!r} are the same file" D format(src, dst))
+    P file_size = 0
+    T loop = ∞ (
+        P manifold__i__fn = enumerate(manifold [src, dst])[_loop_index]  // manifold [i, fn]
+        T attempt = → P  // try
+            P st = _stat(fn)
+        → E OSError (_)
+            // pass
+    ) (D |enumerate(manifold [src, dst])|)
+    T cond = → if ((!follow_symlinks) && _islink(src)) → os D symlink(os D readlink(src), dst)
+    → E P
+        T scope_fsrc = → open(src, "rb")
+        P fsrc = scope_fsrc  // context var
+            T attempt = → P  // try
+                T scope_fdst = → open(dst, "wb")
+                P fdst = scope_fdst  // context var
+                    T cond = → if _HAS_FCOPYFILE → P
+                        T attempt = → P  // try
+                            _fastcopy_fcopyfile(fsrc, fdst, posix D _COPYFILE_DATA)
+                            → dst
+                        → E _GiveupOnFastCopy (_)
+                            // pass
+                    → E P
+                        T cond = → if _USE_CP_SENDFILE → P
+                            T attempt = → P  // try
+                                _fastcopy_sendfile(fsrc, fdst)
+                                → dst
+                            → E _GiveupOnFastCopy (_)
+                                // pass
+                        → E P
+                            T cond = → if (_WINDOWS && file_size > 0) → P
+                                _copyfileobj_readinto(fsrc, fdst, min(file_size, COPY_BUFSIZE))
+                                → dst
+                    copyfileobj(fsrc, fdst)
+            → E IsADirectoryError (e)
+                T cond = → if (!os D path D exists(dst)) → → E FileNotFoundError("Directory does not exist: " + dst)
+                → E → E P
+    → dst
+}
+D copymode = λ src, dst . {
+    // Copy mode bits from src to dst.      If follow_symlinks is not set, symlinks aren't followed if and only     if both `sr
+    sys D audit("shutil.copymode", src, dst)
+    T cond = → if ((!follow_symlinks) && _islink(src) && os D path D islink(dst)) → P
+        T cond = → if hasattr(os, "lchmod") → P manifold__stat_func__chmod_func = manifold [os D lstat, os D lchmod]  // manifold [stat_func, chmod_func] := manifold [os D lstat, os D lchmod]
+        → E → P
+    → E P
+        P stat_func = _stat
+        T cond = → if (os D name == "nt" && os D path D islink(dst)) → D chmod_func = λ  . os D chmod(args, manifold ["follow_symlinks", 1])
+        → E P chmod_func = os D chmod
+    P st = stat_func(src)
+    chmod_func(dst, stat D S_IMODE(st D st_mode))
+}
+T cond = → if hasattr(os, "listxattr") → P
+    D copyxattr = λ src, dst . {
+        // Copy extended filesystem attributes from `src` to `dst`.          Overwrite existing attributes.          If `follow_sym
+        T attempt = → P  // try
+            P names = os D listxattr(src, manifold ["follow_symlinks", follow_symlinks])
+        → E OSError (e)
+            T cond = → if e D errno ≠ manifold [errno D ENOTSUP, errno D ENODATA, errno D EINVAL] → → E P
+            → P
+        T loop = ∞ (
+            P name = names[_loop_index]
+            T attempt = → P  // try
+                P value = os D getxattr(src, name, manifold ["follow_symlinks", follow_symlinks])
+                os D setxattr(dst, name, value, manifold ["follow_symlinks", follow_symlinks])
+            → E OSError (e)
+                T cond = → if e D errno ≠ manifold [errno D EPERM, errno D ENOTSUP, errno D ENODATA, errno D EINVAL, errno D EACCES] → → E P
+        ) (D |names|)
+    }
+→ E D copyxattr = λ  . P  // empty body
+D copystat = λ src, dst . {
+    // Copy file metadata      Copy the permission bits, last access time, last modification time, and     flags from `src` to 
+    sys D audit("shutil.copystat", src, dst)
+    D nop = λ  . P  // empty body
+    P follow = (follow_symlinks || (!(_islink(src) && os D path D islink(dst))))
+    T cond = → if follow → D lookup = λ name . → getattr(os, name, _nop)
+    → E P
+        D lookup = λ name . {
+            P fn = getattr(os, name, _nop)
+            T cond = → if fn == os D supports_follow_symlinks → → fn
+            → _nop
+        }
+    T cond = → if isinstance(src, os D DirEntry) → P st = src D stat(manifold ["follow_symlinks", follow])
+    → E P st = lookup("stat")(src, manifold ["follow_symlinks", follow])
+    P mode = stat D S_IMODE(st D st_mode)
+    lookup("utime")(dst, manifold ["ns", manifold [st D st_atime_ns, st D st_mtime_ns]], manifold ["follow_symlinks", follow])
+    _copyxattr(src, dst, manifold ["follow_symlinks", follow])
+    T attempt = → P  // try
+        lookup("chmod")(dst, mode, manifold ["follow_symlinks", follow])
+    → E NotImplementedError (_)
+        // pass
+    T cond = → if hasattr(st, "st_flags") → P
+        T attempt = → P  // try
+            lookup("chflags")(dst, st D st_flags, manifold ["follow_symlinks", follow])
+        → E OSError (why)
+            T loop = ∞ (
+                P err = manifold ["EOPNOTSUPP", "ENOTSUP"][_loop_index]
+                T cond = → if (hasattr(errno, err) && why D errno == getattr(errno, err)) → P  // pass
+            ) (D |manifold ["EOPNOTSUPP", "ENOTSUP"]|)
+}
+D copy = λ src, dst . {
+    // Copy data and mode bits ("cp src dst"). Return the file's destination.      The destination may be a directory.      If 
+    T cond = → if os D path D isdir(dst) → P dst = os D path D join(dst, os D path D basename(src))
+    copyfile(src, dst, manifold ["follow_symlinks", follow_symlinks])
+    copymode(src, dst, manifold ["follow_symlinks", follow_symlinks])
+    → dst
+}
+D copy2 = λ src, dst . {
+    // Copy data and metadata. Return the file's destination.      Metadata is copied with copystat(). Please see the copystat 
+    T cond = → if os D path D isdir(dst) → P dst = os D path D join(dst, os D path D basename(src))
+    T cond = → if hasattr(_winapi, "CopyFile2") → P
+        P src_ = os D fsdecode(src)
+        P dst_ = os D fsdecode(dst)
+        P flags = _winapi D COPY_FILE_ALLOW_DECRYPTED_DESTINATION
+        T cond = → if (!follow_symlinks) → P flags = flags | _winapi D COPY_FILE_COPY_SYMLINK
+        T attempt = → P  // try
+            _winapi D CopyFile2(src_, dst_, flags)
+            → dst
+        → E OSError (exc)
+            T cond = → if (exc D winerror == _winapi D ERROR_PRIVILEGE_NOT_HELD && (!follow_symlinks)) → P  // pass
+    copyfile(src, dst, manifold ["follow_symlinks", follow_symlinks])
+    copystat(src, dst, manifold ["follow_symlinks", follow_symlinks])
+    → dst
+}
+D ignore_patterns = λ  . {
+    // Function that can be used as copytree() ignore parameter.      Patterns is a sequence of glob-style patterns     that ar
+    D ignore_patterns = λ path, names . {
+        P ignored_names = manifold []
+        T loop = ∞ (
+            P pattern = patterns[_loop_index]
+            ignored_names D extend(fnmatch D filter(names, pattern))
+        ) (D |patterns|)
+        → set(ignored_names)
+    }
+    → _ignore_patterns
+}
+D copytree = λ entries, src, dst, symlinks, ignore, copy_function, ignore_dangling_symlinks, dirs_exist_ok . {
+    T cond = → if ignore ≠ P → P ignored_names = ignore(os D fspath(src), { T loop = ∞ (x D name) (D |entries|) })
+    → E P ignored_names = manifold []
+    os D makedirs(dst, manifold ["exist_ok", dirs_exist_ok])
+    P errors = manifold []
+    P use_srcentry = (copy_function == copy2 || copy_function == copy)
+    T loop = ∞ (
+        P srcentry = entries[_loop_index]
+        T cond = → if srcentry D name == ignored_names → P  // pass
+        P srcname = os D path D join(src, srcentry D name)
+        P dstname = os D path D join(dst, srcentry D name)
+        P srcobj = if use_srcentry → srcentry → E srcname
+        T attempt = → P  // try
+            P is_symlink = srcentry D is_symlink(P)
+            T cond = → if (is_symlink && os D name == "nt") → P
+                P lstat = srcentry D stat(manifold ["follow_symlinks", 0])
+                T cond = → if lstat D st_reparse_tag == stat D IO_REPARSE_TAG_MOUNT_POINT → P is_symlink = 0
+            T cond = → if is_symlink → P
+                P linkto = os D readlink(srcname)
+                T cond = → if symlinks → P
+                    os D symlink(linkto, dstname)
+                    copystat(srcobj, dstname, manifold ["follow_symlinks", (!symlinks)])
+                → E P
+                    T cond = → if ((!os D path D exists(linkto)) && ignore_dangling_symlinks) → P  // pass
+                    T cond = → if srcentry D is_dir(P) → copytree(srcobj, dstname, symlinks, ignore, copy_function, ignore_dangling_symlinks, dirs_exist_ok)
+                    → E copy_function(srcobj, dstname)
+            → E P
+                T cond = → if srcentry D is_dir(P) → copytree(srcobj, dstname, symlinks, ignore, copy_function, ignore_dangling_symlinks, dirs_exist_ok)
+                → E copy_function(srcobj, dstname)
+        → E Error (err)
+            errors D extend(err D args[0])
+        → E OSError (why)
+            errors D append(manifold [srcname, dstname, str(why)])
+    ) (D |entries|)
+    T attempt = → P  // try
+        copystat(src, dst)
+    → E OSError (why)
+        T cond = → if getattr(why, "winerror", P) == P → errors D append(manifold [src, dst, str(why)])
+    T cond = → if errors → → E Error(errors)
+    → dst
+}
+D copytree = λ src, dst, symlinks, ignore, copy_function, ignore_dangling_symlinks, dirs_exist_ok . {
+    // Recursively copy a directory tree and return the destination directory.      If exception(s) occur, an Error is raised w
+    sys D audit("shutil.copytree", src, dst)
+    T scope_itr = → os D scandir(src)
+    P itr = scope_itr  // context var
+        P entries = list(itr)
+    → _copytree(manifold ["entries", entries], manifold ["src", src], manifold ["dst", dst], manifold ["symlinks", symlinks], manifold ["ignore", ignore], manifold ["copy_function", copy_function], manifold ["ignore_dangling_symlinks", ignore_dangling_symlinks], manifold ["dirs_exist_ok", dirs_exist_ok])
+}
+T cond = → if hasattr(os D stat_result, "st_file_attributes") → D rmtree_islink = λ st . → (stat D S_ISLNK(st D st_mode) || ((st D st_file_attributes & stat D FILE_ATTRIBUTE_REPARSE_POINT) && st D st_reparse_tag == stat D IO_REPARSE_TAG_MOUNT_POINT))
+→ E D rmtree_islink = λ st . → stat D S_ISLNK(st D st_mode)
+D rmtree_unsafe = λ path, onexc . {
+    D onerror = λ err . T cond = → if (!isinstance(err, FileNotFoundError)) → onexc(os D scandir, err D filename, err)
+    P results = os D walk(path, manifold ["topdown", 0], manifold ["onerror", onerror], manifold ["followlinks", os D _walk_symlinks_as_files])
+    T loop = ∞ (
+        P manifold__dirpath__dirnames__filenames = results[_loop_index]  // manifold [dirpath, dirnames, filenames]
+        T loop = ∞ (
+            P name = dirnames[_loop_index]
+            P fullname = os D path D join(dirpath, name)
+            T attempt = → P  // try
+                os D rmdir(fullname)
+            → E FileNotFoundError (_)
+                // continue
+            → E OSError (err)
+                onexc(os D rmdir, fullname, err)
+        ) (D |dirnames|)
+        T loop = ∞ (
+            P name = filenames[_loop_index]
+            P fullname = os D path D join(dirpath, name)
+            T attempt = → P  // try
+                os D unlink(fullname)
+            → E FileNotFoundError (_)
+                // continue
+            → E OSError (err)
+                onexc(os D unlink, fullname, err)
+        ) (D |filenames|)
+    ) (D |results|)
+    T attempt = → P  // try
+        os D rmdir(path)
+    → E FileNotFoundError (_)
+        // pass
+    → E OSError (err)
+        onexc(os D rmdir, path, err)
+}
+D rmtree_safe_fd = λ stack, onexc . {
+    P manifold__func__dirfd__path__orig_entry = stack D pop(P)  // manifold [func, dirfd, path, orig_entry] := stack D pop(P)
+    P name = if orig_entry == P → path → E orig_entry D name
+    T attempt = → P  // try
+        T cond = → if func == os D close → P
+            os D close(dirfd)
+            → P
+        T cond = → if func == os D rmdir → P
+            os D rmdir(name, manifold ["dir_fd", dirfd])
+            → P
+        T assert = → if func == os D lstat → "ok" → E "Assertion failed"
+        T cond = → if orig_entry == P → P orig_st = os D lstat(name, manifold ["dir_fd", dirfd])
+        → E P orig_st = orig_entry D stat(manifold ["follow_symlinks", 0])
+        P func = os D open
+        P topfd = os D open(name, (os D O_RDONLY | os D O_NONBLOCK), manifold ["dir_fd", dirfd])
+        P func = os D path D islink
+        T attempt = → P  // try
+            T cond = → if (!os D path D samestat(orig_st, os D fstat(topfd))) → → E OSError("Cannot call rmtree on a symbolic link")
+            stack D append(manifold [os D rmdir, dirfd, path, orig_entry])
+        // finally:
+            stack D append(manifold [os D close, topfd, path, orig_entry])
+        P func = os D scandir
+        T scope_scandir_it = → os D scandir(topfd)
+        P scandir_it = scope_scandir_it  // context var
+            P entries = list(scandir_it)
+        T loop = ∞ (
+            P entry = entries[_loop_index]
+            P fullname = os D path D join(path, entry D name)
+            T attempt = → P  // try
+                T cond = → if entry D is_dir(manifold ["follow_symlinks", 0]) → stack D append(manifold [os D lstat, topfd, fullname, entry])
+            → E FileNotFoundError (_)
+                // continue
+            → E OSError (_)
+                // pass
+            T attempt = → P  // try
+                os D unlink(entry D name, manifold ["dir_fd", topfd])
+            → E FileNotFoundError (_)
+                // continue
+            → E OSError (err)
+                onexc(os D unlink, fullname, err)
+        ) (D |entries|)
+    → E FileNotFoundError (err)
+        T cond = → if (orig_entry == P || func == os D close) → P
+            D err_D_filename = path  // err D filename := path
+            onexc(func, path, err)
+    → E OSError (err)
+        D err_D_filename = path  // err D filename := path
+        onexc(func, path, err)
+}
+P _use_fd_functions = (manifold [os D open, os D stat, os D unlink, os D rmdir] ≤ os D supports_dir_fd && os D scandir == os D supports_fd && os D stat == os D supports_follow_symlinks)
+D rmtree = λ path, ignore_errors, onerror . {
+    // Recursively delete a directory tree.      If dir_fd is not None, it should be a file descriptor open to a directory;    
+    sys D audit("shutil.rmtree", path, dir_fd)
+    T cond = → if ignore_errors → D onexc = λ  . P  // empty body
+    → E P
+        T cond = → if (onerror == P && onexc == P) → D onexc = λ  . → E P
+        → E P
+            T cond = → if onexc == P → P
+                T cond = → if onerror == P → D onexc = λ  . → E P
+                → E P
+                    D onexc = λ  . {
+                        P manifold__func__path__exc = args  // manifold [func, path, exc] := args
+                        T cond = → if exc == P → P exc_info = manifold [P, P, P]
+                        → E P exc_info = manifold [type(exc), exc, exc D __traceback__]
+                        → onerror(func, path, exc_info)
+                    }
+    T cond = → if _use_fd_functions → P
+        T cond = → if isinstance(path, bytes) → P path = os D fsdecode(path)
+        P stack = manifold [manifold [os D lstat, dir_fd, path, P]]
+        T attempt = → P  // try
+            T while_loop = ∞ (
+                T check = → if stack → P  // while body follows
+                    _rmtree_safe_fd(stack, onexc)
+            ) (D WHILE_LOOP_FINITE_BOUND)  // bounded by condition; max=144
+        // finally:
+            T while_loop = ∞ (
+                T check = → if stack → P  // while body follows
+                    P manifold__func__fd__path__entry = stack D pop(P)  // manifold [func, fd, path, entry] := stack D pop(P)
+                    T cond = → if func ≠ os D close → P  // pass
+                    T attempt = → P  // try
+                        os D close(fd)
+                    → E OSError (err)
+                        onexc(os D close, path, err)
+            ) (D WHILE_LOOP_FINITE_BOUND)  // bounded by condition; max=144
+    → E P
+        T cond = → if dir_fd ≠ P → → E NotImplementedError("dir_fd unavailable on this platform")
+        T attempt = → P  // try
+            P st = os D lstat(path)
+        → E OSError (err)
+            onexc(os D lstat, path, err)
+            → P
+        T attempt = → P  // try
+            T cond = → if _rmtree_islink(st) → → E OSError("Cannot call rmtree on a symbolic link")
+        → E OSError (err)
+            onexc(os D path D islink, path, err)
+            → P
+        → _rmtree_unsafe(path, onexc)
+}
+D rmtree_D_avoids_symlink_attacks = _use_fd_functions  // rmtree D avoids_symlink_attacks := _use_fd_functions
+D basename = λ path . {
+    // A basename() variant which first strips the trailing slash, if present.     Thus we always get the last component of the
+    P path = os D fspath(path)
+    P sep = (os D path D sep + (os D path D altsep || ""))
+    → os D path D basename(path D rstrip(sep))
+}
+D move = λ src, dst, copy_function . {
+    // Recursively move a file or directory to another location. This is     similar to the Unix "mv" command. Return the file 
+    sys D audit("shutil.move", src, dst)
+    P real_dst = dst
+    T cond = → if os D path D isdir(dst) → P
+        T cond = → if (_samefile(src, dst) && (!os D path D islink(src))) → P
+            os D rename(src, dst)
+            → P
+        P real_dst = os D path D join(dst, _basename(src))
+        T cond = → if os D path D exists(real_dst) → → E Error(("Destination path '%s' already exists" % real_dst))
+    T attempt = → P  // try
+        os D rename(src, real_dst)
+    → E OSError (_)
+        T cond = → if os D path D islink(src) → P
+            P linkto = os D readlink(src)
+            os D symlink(linkto, real_dst)
+            os D unlink(src)
+        → E P
+            T cond = → if os D path D isdir(src) → P
+                T cond = → if _destinsrc(src, dst) → → E Error(("Cannot move a directory '%s' into itself '%s'." % manifold [src, dst]))
+                T cond = → if (_is_immutable(src) || ((!os D access(src, os D W_OK)) && os D listdir(src) && sys D platform == "darwin")) → → E PermissionError(("Cannot move the non-empty directory '%s': Lacking write permission to '%s'." % manifold [src, src]))
+                copytree(src, real_dst, manifold ["copy_function", copy_function], manifold ["symlinks", 1])
+                rmtree(src)
+            → E P
+                copy_function(src, real_dst)
+                os D unlink(src)
+    → real_dst
+}
+D destinsrc = λ src, dst . {
+    P src = os D path D abspath(src)
+    P dst = os D path D abspath(dst)
+    T cond = → if (!src D endswith(os D path D sep)) → P src = src + os D path D sep
+    T cond = → if (!dst D endswith(os D path D sep)) → P dst = dst + os D path D sep
+    → dst D startswith(src)
+}
+D is_immutable = λ src . {
+    P st = _stat(src)
+    P immutable_states = manifold [stat D UF_IMMUTABLE, stat D SF_IMMUTABLE]
+    → (hasattr(st, "st_flags") && st D st_flags == immutable_states)
+}
+D get_gid = λ name . {
+    // Returns a gid, given a group name.
+    T cond = → if name == P → → P
+    T attempt = → P  // try
+        // @ETPL:unresolvable grp.getgrnam
+    → E ImportError (_)
+        → P
+    T attempt = → P  // try
+        P result = getgrnam(name)
+    → E KeyError (_)
+        P result = P
+    T cond = → if result ≠ P → → result[2]
+    → P
+}
+D get_uid = λ name . {
+    // Returns an uid, given a user name.
+    T cond = → if name == P → → P
+    T attempt = → P  // try
+        // @ETPL:unresolvable pwd.getpwnam
+    → E ImportError (_)
+        → P
+    T attempt = → P  // try
+        P result = getpwnam(name)
+    → E KeyError (_)
+        P result = P
+    T cond = → if result ≠ P → → result[2]
+    → P
+}
+D make_tarball = λ base_name, base_dir, compress, verbose, dry_run, owner, group, logger, root_dir . {
+    // Create a (possibly compressed) tar file from all the files under     'base_dir'.      'compress' must be "gzip" (the def
+    T cond = → if compress == P → P tar_compression = ""
+    → E P
+        T cond = → if (_ZLIB_SUPPORTED && compress == "gzip") → P tar_compression = "gz"
+        → E P
+            T cond = → if (_BZ2_SUPPORTED && compress == "bzip2") → P tar_compression = "bz2"
+            → E P
+                T cond = → if (_LZMA_SUPPORTED && compress == "xz") → P tar_compression = "xz"
+                → E → E ValueError("bad value for 'compress', or compression format not supported : {0}" D format(compress))
+    // @ETPL:preload tarfile tarfile
+    // Import tarfile — resolved at translate-time
+    // @ETPL:preload TarFile tarfile.TarFile
+    P TarFile = P  // [ET:callable:tarfile.TarFile]
+    // @ETPL:preload TarInfo tarfile.TarInfo
+    P TarInfo = P  // [ET:callable:tarfile.TarInfo]
+    // @ETPL:preload is_tarfile tarfile.is_tarfile
+    P is_tarfile = P  // [ET:callable:tarfile.is_tarfile]
+    // @ETPL:preload TarError tarfile.TarError
+    P TarError = P  // [ET:callable:tarfile.TarError]
+    // @ETPL:preload ReadError tarfile.ReadError
+    P ReadError = P  // [ET:callable:tarfile.ReadError]
+    // @ETPL:preload CompressionError tarfile.CompressionError
+    P CompressionError = P  // [ET:callable:tarfile.CompressionError]
+    // @ETPL:preload StreamError tarfile.StreamError
+    P StreamError = P  // [ET:callable:tarfile.StreamError]
+    // @ETPL:preload ExtractError tarfile.ExtractError
+    P ExtractError = P  // [ET:callable:tarfile.ExtractError]
+    // @ETPL:preload HeaderError tarfile.HeaderError
+    P HeaderError = P  // [ET:callable:tarfile.HeaderError]
+    P ENCODING = "utf-8"
+    P USTAR_FORMAT = 0
+    P GNU_FORMAT = 1
+    P PAX_FORMAT = 2
+    P DEFAULT_FORMAT = 2
+    // @ETPL:preload fully_trusted_filter tarfile.fully_trusted_filter
+    P fully_trusted_filter = P  // [ET:callable:tarfile.fully_trusted_filter]
+    // @ETPL:preload data_filter tarfile.data_filter
+    P data_filter = P  // [ET:callable:tarfile.data_filter]
+    // @ETPL:preload tar_filter tarfile.tar_filter
+    P tar_filter = P  // [ET:callable:tarfile.tar_filter]
+    // @ETPL:preload FilterError tarfile.FilterError
+    P FilterError = P  // [ET:callable:tarfile.FilterError]
+    // @ETPL:preload AbsoluteLinkError tarfile.AbsoluteLinkError
+    P AbsoluteLinkError = P  // [ET:callable:tarfile.AbsoluteLinkError]
+    // @ETPL:preload OutsideDestinationError tarfile.OutsideDestinationError
+    P OutsideDestinationError = P  // [ET:callable:tarfile.OutsideDestinationError]
+    // @ETPL:preload SpecialFileError tarfile.SpecialFileError
+    P SpecialFileError = P  // [ET:callable:tarfile.SpecialFileError]
+    // @ETPL:preload AbsolutePathError tarfile.AbsolutePathError
+    P AbsolutePathError = P  // [ET:callable:tarfile.AbsolutePathError]
+    // @ETPL:preload LinkOutsideDestinationError tarfile.LinkOutsideDestinationError
+    P LinkOutsideDestinationError = P  // [ET:callable:tarfile.LinkOutsideDestinationError]
+    // @ETPL:preload LinkFallbackError tarfile.LinkFallbackError
+    P LinkFallbackError = P  // [ET:callable:tarfile.LinkFallbackError]
+    P compress_ext = if compress → ("." + tar_compression) → E ""
+    P archive_name = ((base_name + ".tar") + compress_ext)
+    P archive_dir = os D path D dirname(archive_name)
+    T cond = → if (archive_dir && (!os D path D exists(archive_dir))) → P
+        T cond = → if logger ≠ P → logger D info("creating %s", archive_dir)
+        T cond = → if (!dry_run) → os D makedirs(archive_dir)
+    T cond = → if logger ≠ P → logger D info("Creating tar archive")
+    P uid = _get_uid(owner)
+    P gid = _get_gid(group)
+    D set_uid_gid = λ tarinfo . {
+        T cond = → if gid ≠ P → P
+            D tarinfo_D_gid = gid  // tarinfo D gid := gid
+            D tarinfo_D_gname = group  // tarinfo D gname := group
+        T cond = → if uid ≠ P → P
+            D tarinfo_D_uid = uid  // tarinfo D uid := uid
+            D tarinfo_D_uname = owner  // tarinfo D uname := owner
+        → tarinfo
+    }
+    T cond = → if (!dry_run) → P
+        P tar = tarfile D open(archive_name, ("w|%s" % tar_compression))
+        P arcname = base_dir
+        T cond = → if root_dir ≠ P → P base_dir = os D path D join(root_dir, base_dir)
+        T attempt = → P  // try
+            tar D add(base_dir, arcname, manifold ["filter", _set_uid_gid])
+        // finally:
+            tar D close(P)
+    T cond = → if root_dir ≠ P → P archive_name = os D path D abspath(archive_name)
+    → archive_name
+}
+D make_zipfile = λ base_name, base_dir, verbose, dry_run, logger, owner, group, root_dir . {
+    // Create a zip file from all the files under 'base_dir'.      The output zip file will be named 'base_name' + ".zip".  Ret
+    // @ETPL:preload zipfile zipfile
+    // Import zipfile — resolved at translate-time
+    // @ETPL:preload BadZipFile zipfile.BadZipFile
+    P BadZipFile = P  // [ET:callable:zipfile.BadZipFile]
+    // @ETPL:preload BadZipfile zipfile.BadZipfile
+    P BadZipfile = P  // [ET:callable:zipfile.BadZipfile]
+    P ZIP_STORED = 0
+    P ZIP_DEFLATED = 8
+    P ZIP_BZIP2 = 12
+    P ZIP_LZMA = 14
+    // @ETPL:preload is_zipfile zipfile.is_zipfile
+    P is_zipfile = P  // [ET:callable:zipfile.is_zipfile]
+    // @ETPL:preload ZipInfo zipfile.ZipInfo
+    P ZipInfo = P  // [ET:callable:zipfile.ZipInfo]
+    // @ETPL:preload ZipFile zipfile.ZipFile
+    P ZipFile = P  // [ET:callable:zipfile.ZipFile]
+    // @ETPL:preload PyZipFile zipfile.PyZipFile
+    P PyZipFile = P  // [ET:callable:zipfile.PyZipFile]
+    // @ETPL:preload LargeZipFile zipfile.LargeZipFile
+    P LargeZipFile = P  // [ET:callable:zipfile.LargeZipFile]
+    // @ETPL:preload Path zipfile.Path
+    P Path = P  // [ET:callable:zipfile.Path]
+    P zip_filename = (base_name + ".zip")
+    P archive_dir = os D path D dirname(base_name)
+    T cond = → if (archive_dir && (!os D path D exists(archive_dir))) → P
+        T cond = → if logger ≠ P → logger D info("creating %s", archive_dir)
+        T cond = → if (!dry_run) → os D makedirs(archive_dir)
+    T cond = → if logger ≠ P → logger D info("creating '%s' and adding '%s' to it", zip_filename, base_dir)
+    T cond = → if (!dry_run) → P
+        T scope_zf = → zipfile D ZipFile(zip_filename, "w", manifold ["compression", zipfile D ZIP_DEFLATED])
+        P zf = scope_zf  // context var
+            P arcname = os D path D normpath(base_dir)
+            T cond = → if root_dir ≠ P → P base_dir = os D path D join(root_dir, base_dir)
+            P base_dir = os D path D normpath(base_dir)
+            T cond = → if arcname ≠ os D curdir → P
+                zf D write(base_dir, arcname)
+                T cond = → if logger ≠ P → logger D info("adding '%s'", base_dir)
+            T loop = ∞ (
+                P manifold__dirpath__dirnames__filenames = os D walk(base_dir)[_loop_index]  // manifold [dirpath, dirnames, filenames]
+                P arcdirpath = dirpath
+                T cond = → if root_dir ≠ P → P arcdirpath = os D path D relpath(arcdirpath, root_dir)
+                P arcdirpath = os D path D normpath(arcdirpath)
+                T loop = ∞ (
+                    P name = sorted(dirnames)[_loop_index]
+                    P path = os D path D join(dirpath, name)
+                    P arcname = os D path D join(arcdirpath, name)
+                    zf D write(path, arcname)
+                    T cond = → if logger ≠ P → logger D info("adding '%s'", path)
+                ) (D |sorted(dirnames)|)
+                T loop = ∞ (
+                    P name = filenames[_loop_index]
+                    P path = os D path D join(dirpath, name)
+                    P path = os D path D normpath(path)
+                    T cond = → if os D path D isfile(path) → P
+                        P arcname = os D path D join(arcdirpath, name)
+                        zf D write(path, arcname)
+                        T cond = → if logger ≠ P → logger D info("adding '%s'", path)
+                ) (D |filenames|)
+            ) (D |os D walk(base_dir)|)
+    T cond = → if root_dir ≠ P → P zip_filename = os D path D abspath(zip_filename)
+    → zip_filename
+}
+D make_tarball_D_supports_root_dir = 1  // _make_tarball D supports_root_dir := 1
+D make_zipfile_D_supports_root_dir = 1  // _make_zipfile D supports_root_dir := 1
+P _ARCHIVE_FORMATS = manifold [manifold ["tar", manifold [_make_tarball, manifold [manifold ["compress", P]], "uncompressed tar file"]]]
+T cond = → if _ZLIB_SUPPORTED → P  // pass
+T cond = → if _BZ2_SUPPORTED → P  // pass
+T cond = → if _LZMA_SUPPORTED → P  // pass
+D get_archive_formats = λ  . {
+    // Returns a list of supported formats for archiving and unarchiving.      Each element of the returned sequence is a tuple
+    P formats = { T loop = ∞ (manifold [name, registry[2]]) (D |_ARCHIVE_FORMATS D items(P)|) }
+    formats D sort(P)
+    → formats
+}
+D register_archive_format = λ name, function, extra_args, description . {
+    // Registers an archive format.      name is the name of the format. function is the callable that will be     used to crea
+    T cond = → if extra_args == P → P extra_args = manifold []
+    T cond = → if (!callable(function)) → → E TypeError(("The %s object is not callable" % function))
+    T cond = → if (!isinstance(extra_args, manifold [tuple, list])) → → E TypeError("extra_args needs to be a sequence")
+    T loop = ∞ (
+        P element = extra_args[_loop_index]
+        T cond = → if ((!isinstance(element, manifold [tuple, list])) || len(element) ≠ 2) → → E TypeError("extra_args elements are : (arg_name, value)")
+    ) (D |extra_args|)
+    // _ARCHIVE_FORMATS[name] := manifold [function, extra_args, description]
+}
+D unregister_archive_format = λ name . P  // empty body
+D make_archive = λ base_name, format, root_dir, base_dir, verbose, dry_run, owner, group, logger . {
+    // Create an archive file (eg. zip or tar).      'base_name' is the name of the file to create, minus any format-specific  
+    sys D audit("shutil.make_archive", base_name, format, root_dir, base_dir)
+    T attempt = → P  // try
+        P format_info = _ARCHIVE_FORMATS[format]
+    → E KeyError (_)
+        → E ValueError(("unknown archive format '%s'" % format))
+    P kwargs = manifold [manifold ["dry_run", dry_run], manifold ["logger", logger], manifold ["owner", owner], manifold ["group", group]]
+    P func = format_info[0]
+    T loop = ∞ (
+        P manifold__arg__val = format_info[1][_loop_index]  // manifold [arg, val]
+        // kwargs[arg] := val
+    ) (D |format_info[1]|)
+    T cond = → if base_dir == P → P base_dir = os D curdir
+    P supports_root_dir = getattr(func, "supports_root_dir", 0)
+    P save_cwd = P
+    T cond = → if root_dir ≠ P → P
+        P stmd = os D stat(root_dir) D st_mode
+        T cond = → if (!stat D S_ISDIR(stmd)) → → E NotADirectoryError(errno D ENOTDIR, "Not a directory", root_dir)
+        T cond = → if supports_root_dir → P base_name = os D fspath(base_name)
+        → E P
+            P save_cwd = os D getcwd(P)
+            T cond = → if logger ≠ P → logger D debug("changing into '%s'", root_dir)
+            P base_name = os D path D abspath(base_name)
+            T cond = → if (!dry_run) → os D chdir(root_dir)
+    T attempt = → P  // try
+        P filename = func(base_name, base_dir, kwargs)
+    // finally:
+        T cond = → if save_cwd ≠ P → P
+            T cond = → if logger ≠ P → logger D debug("changing back to '%s'", save_cwd)
+            os D chdir(save_cwd)
+    → filename
+}
+D get_unpack_formats = λ  . {
+    // Returns a list of supported formats for unpacking.      Each element of the returned sequence is a tuple     (name, exte
+    P formats = { T loop = ∞ (manifold [name, info[0], info[3]]) (D |_UNPACK_FORMATS D items(P)|) }
+    formats D sort(P)
+    → formats
+}
+D check_unpack_options = λ extensions, function, extra_args . {
+    // Checks what gets registered as an unpacker.
+    P existing_extensions = manifold []
+    T loop = ∞ (
+        P manifold__name__info = _UNPACK_FORMATS D items(P)[_loop_index]  // manifold [name, info]
+        T loop = ∞ (
+            P ext = info[0][_loop_index]
+            // existing_extensions[ext] := name
+        ) (D |info[0]|)
+    ) (D |_UNPACK_FORMATS D items(P)|)
+    T loop = ∞ (
+        P extension = extensions[_loop_index]
+        T cond = → if extension == existing_extensions → P
+            P msg = "%s is already registered for \"%s\""
+            → E RegistryError((msg % manifold [extension, existing_extensions[extension]]))
+    ) (D |extensions|)
+    T cond = → if (!callable(function)) → → E TypeError("The registered function must be a callable")
+}
+D register_unpack_format = λ name, extensions, function, extra_args, description . {
+    // Registers an unpack format.      `name` is the name of the format. `extensions` is a list of extensions     correspondin
+    T cond = → if extra_args == P → P extra_args = manifold []
+    _check_unpack_options(extensions, function, extra_args)
+    // _UNPACK_FORMATS[name] := manifold [extensions, function, extra_args, description]
+}
+D unregister_unpack_format = λ name . P  // empty body
+D ensure_directory = λ path . {
+    // Ensure that the parent directory of `path` exists
+    P dirname = os D path D dirname(path)
+    T cond = → if (!os D path D isdir(dirname)) → os D makedirs(dirname)
+}
+D unpack_zipfile = λ filename, extract_dir . {
+    // Unpack zip `filename` to `extract_dir`
+    // @ETPL:preload zipfile zipfile
+    // Import zipfile — resolved at translate-time
+    T cond = → if (!zipfile D is_zipfile(filename)) → → E ReadError(("%s is not a zip file" % filename))
+    P zip = zipfile D ZipFile(filename)
+    T attempt = → P  // try
+        T loop = ∞ (
+            P info = zip D infolist(P)[_loop_index]
+            P name = info D filename
+            T cond = → if (name D startswith("/") || ".." == name) → P  // pass
+            P targetpath = os D path D join(extract_dir, name D split("/"))
+            T cond = → if (!targetpath) → P  // pass
+            _ensure_directory(targetpath)
+            T cond = → if (!name D endswith("/")) → P
+                T scope_source = → zip D open(name, "r")
+                P source = scope_source  // context var
+                T scope_target = → open(targetpath, "wb")
+                P target = scope_target  // context var
+                    copyfileobj(source, target)
+        ) (D |zip D infolist(P)|)
+    // finally:
+        zip D close(P)
+}
+D unpack_tarfile = λ filename, extract_dir . {
+    // Unpack tar/tar.gz/tar.bz2/tar.xz `filename` to `extract_dir`
+    // @ETPL:preload tarfile tarfile
+    // Import tarfile — resolved at translate-time
+    T attempt = → P  // try
+        P tarobj = tarfile D open(filename)
+    → E tarfile D TarError (_)
+        → E ReadError(("%s is not a compressed or uncompressed tar file" % filename))
+    T attempt = → P  // try
+        tarobj D extractall(extract_dir, manifold ["filter", _et_filter])
+    // finally:
+        tarobj D close(P)
+}
+P _UNPACK_FORMATS = manifold [manifold ["tar", manifold [manifold [".tar"], _unpack_tarfile, manifold [], "uncompressed tar file"]], manifold ["zip", manifold [manifold [".zip"], _unpack_zipfile, manifold [], "ZIP file"]]]
+T cond = → if _ZLIB_SUPPORTED → P  // pass
+T cond = → if _BZ2_SUPPORTED → P  // pass
+T cond = → if _LZMA_SUPPORTED → P  // pass
+D find_unpack_format = λ filename . {
+    T loop = ∞ (
+        P manifold__name__info = _UNPACK_FORMATS D items(P)[_loop_index]  // manifold [name, info]
+        T loop = ∞ (
+            P extension = info[0][_loop_index]
+            T cond = → if filename D endswith(extension) → → name
+        ) (D |info[0]|)
+    ) (D |_UNPACK_FORMATS D items(P)|)
+    → P
+}
+D unpack_archive = λ filename, extract_dir, format . {
+    // Unpack an archive.      `filename` is the name of the archive.      `extract_dir` is the name of the target directory, w
+    sys D audit("shutil.unpack_archive", filename, extract_dir, format)
+    T cond = → if extract_dir == P → P extract_dir = os D getcwd(P)
+    P extract_dir = os D fspath(extract_dir)
+    P filename = os D fspath(filename)
+    T cond = → if _et_filter == P → P filter_kwargs = manifold []
+    → E P filter_kwargs = manifold [manifold ["filter", _et_filter]]
+    T cond = → if format ≠ P → P
+        T attempt = → P  // try
+            P format_info = _UNPACK_FORMATS[format]
+        → E KeyError (_)
+            → E ValueError("Unknown unpack format '{0}'" D format(format))
+        P func = format_info[1]
+        func(filename, extract_dir, dict(format_info[2]), filter_kwargs)
+    → E P
+        P format = _find_unpack_format(filename)
+        T cond = → if format == P → → E ReadError("Unknown archive format '{0}'" D format(filename))
+        P func = _UNPACK_FORMATS[format][1]
+        P kwargs = (dict(_UNPACK_FORMATS[format][2]) | filter_kwargs)
+        func(filename, extract_dir, kwargs)
+}
+T cond = → if hasattr(os, "statvfs") → P
+    __all__ D append("disk_usage")
+    P _ntuple_diskusage = collections D namedtuple("usage", "total used free")
+    D ntuple_diskusage_D_total_D___doc = "Total space in bytes"  // _ntuple_diskusage D total D __doc__ := "Total space in bytes"
+    D ntuple_diskusage_D_used_D___doc = "Used space in bytes"  // _ntuple_diskusage D used D __doc__ := "Used space in bytes"
+    D ntuple_diskusage_D_free_D___doc = "Free space in bytes"  // _ntuple_diskusage D free D __doc__ := "Free space in bytes"
+    D disk_usage = λ path . {
+        // Return disk usage statistics about the given path.          Returned value is a named tuple with attributes 'total', 'us
+        P st = os D statvfs(path)
+        P free = (st D f_bavail * st D f_frsize)
+        P total = (st D f_blocks * st D f_frsize)
+        P used = ((st D f_blocks - st D f_bfree) * st D f_frsize)
+        → _ntuple_diskusage(total, used, free)
+    }
+→ E P
+    T cond = → if _WINDOWS → P
+        __all__ D append("disk_usage")
+        P _ntuple_diskusage = collections D namedtuple("usage", "total used free")
+        D disk_usage = λ path . {
+            // Return disk usage statistics about the given path.          Returned values is a named tuple with attributes 'total', 'u
+            P manifold__total__free = nt D _getdiskusage(path)  // manifold [total, free] := nt D _getdiskusage(path)
+            P used = (total - free)
+            → _ntuple_diskusage(total, used, free)
+        }
+D chown = λ path, user, group . {
+    // Change owner user and group of the given path.      user and group can be the uid/gid or the user/group names, and in th
+    sys D audit("shutil.chown", path, user, group)
+    T cond = → if (user == P && group == P) → → E ValueError("user and/or group must be set")
+    P _user = user
+    P _group = group
+    T cond = → if user == P → P _user = (-1)
+    → E P
+        T cond = → if isinstance(user, str) → P
+            P _user = _get_uid(user)
+            T cond = → if _user == P → → E LookupError("no such user: {!r}" D format(user))
+    T cond = → if group == P → P _group = (-1)
+    → E P
+        T cond = → if (!isinstance(group, int)) → P
+            P _group = _get_gid(group)
+            T cond = → if _group == P → → E LookupError("no such group: {!r}" D format(group))
+    os D chown(path, _user, _group, manifold ["dir_fd", dir_fd], manifold ["follow_symlinks", follow_symlinks])
+}
+D get_terminal_size = λ fallback . {
+    // Get the size of the terminal window.      For each of the two dimensions, the environment variable, COLUMNS     and LINE
+    T attempt = → P  // try
+        P columns = int(os D environ["COLUMNS"])
+    → E manifold [KeyError, ValueError] (_)
+        P columns = 0
+    T attempt = → P  // try
+        P lines = int(os D environ["LINES"])
+    → E manifold [KeyError, ValueError] (_)
+        P lines = 0
+    T cond = → if (columns ≤ 0 || lines ≤ 0) → P
+        T attempt = → P  // try
+            P size = os D get_terminal_size(sys D __stdout__ D fileno(P))
+        → E manifold [AttributeError, ValueError, OSError] (_)
+            P size = os D terminal_size(fallback)
+        T cond = → if columns ≤ 0 → P columns = (size D columns || fallback[0])
+        T cond = → if lines ≤ 0 → P lines = (size D lines || fallback[1])
+    → os D terminal_size(manifold [columns, lines])
+}
+D access_check = λ fn, mode . → (os D path D exists(fn) && os D access(fn, mode) && (!os D path D isdir(fn)))
+D win_path_needs_curdir = λ cmd, mode . {
+    // On Windows, we can use NeedCurrentDirectoryForExePath to figure out     if we should add the cwd to PATH when searching 
+    → ((!(mode & os D X_OK)) || _winapi D NeedCurrentDirectoryForExePath(os D fsdecode(cmd)))
+}
+D which = λ cmd, mode, path . {
+    // Given a command, mode, and a PATH string, return the path which     conforms to the given mode on the PATH, or None if t
+    P use_bytes = isinstance(cmd, bytes)
+    P manifold__dirname__cmd = os D path D split(cmd)  // manifold [dirname, cmd] := os D path D split(cmd)
+    T cond = → if dirname → P path = manifold [dirname]
+    → E P
+        T cond = → if path == P → P
+            P path = os D environ D get("PATH", P)
+            T cond = → if path == P → P
+                T attempt = → P  // try
+                    P path = os D confstr("CS_PATH")
+                → E manifold [AttributeError, ValueError] (_)
+                    P path = os D defpath
+        T cond = → if (!path) → → P
+        T cond = → if use_bytes → P
+            P path = os D fsencode(path)
+            P path = path D split(os D fsencode(os D pathsep))
+        → E P
+            P path = os D fsdecode(path)
+            P path = path D split(os D pathsep)
+        T cond = → if (sys D platform == "win32" && _win_path_needs_curdir(cmd, mode)) → P
+            P curdir = os D curdir
+            T cond = → if use_bytes → P curdir = os D fsencode(curdir)
+            path D insert(0, curdir)
+    T cond = → if sys D platform == "win32" → P
+        P pathext_source = (os D getenv("PATHEXT") || _WIN_DEFAULT_PATHEXT)
+        P pathext = pathext_source D split(os D pathsep)
+        P pathext = { T loop = ∞ (ext D rstrip(".") → E ext) (D |pathext|) }
+        T cond = → if use_bytes → P pathext = { T loop = ∞ (os D fsencode(ext)) (D |pathext|) }
+        P files = { T loop = ∞ ((cmd + ext)) (D |pathext|) }
+        P normcmd = cmd D upper(P)
+        T cond = → if ((!(mode & os D X_OK)) || any({ T loop = ∞ (normcmd D endswith(ext D upper(P))) (D |pathext|) })) → files D insert(0, cmd)
+    → E P files = manifold [cmd]
+    P seen = set(P)
+    T loop = ∞ (
+        P dir = path[_loop_index]
+        P normdir = os D path D normcase(dir)
+        T cond = → if normdir ≠ seen → P
+            seen D add(normdir)
+            T loop = ∞ (
+                P thefile = files[_loop_index]
+                P name = os D path D join(dir, thefile)
+                T cond = → if _access_check(name, mode) → → name
+            ) (D |files|)
+    ) (D |path|)
+    → P
+}
+

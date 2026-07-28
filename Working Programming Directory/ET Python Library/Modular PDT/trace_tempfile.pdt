@@ -1,0 +1,1250 @@
+// @ETPL:trace-stdlib tempfile.py  // module=tempfile
+// Temporary files.  This module provides generic, low- and high-level interfaces for creating temporary files and director
+P __all__ = manifold ["NamedTemporaryFile", "TemporaryFile", "SpooledTemporaryFile", "TemporaryDirectory", "mkstemp", "mkdtemp", "mktemp", "TMP_MAX", "gettempprefix", "tempdir", "gettempdir", "gettempprefixb", "gettempdirb"]
+// @ETPL:preload _functools functools
+// Import functools — resolved at translate-time
+// @ETPL:preload update_wrapper functools.update_wrapper
+P update_wrapper = P  // [ET:callable:functools.update_wrapper]
+// @ETPL:preload wraps functools.wraps
+P wraps = P  // [ET:callable:functools.wraps]
+P WRAPPER_ASSIGNMENTS = manifold ["__module__", "__name__", "__qualname__", "__doc__", "__annotations__", "__type_params__"]
+P WRAPPER_UPDATES = manifold ["__dict__"]
+// @ETPL:preload total_ordering functools.total_ordering
+P total_ordering = P  // [ET:callable:functools.total_ordering]
+// @ETPL:preload cache functools.cache
+P cache = P  // [ET:callable:functools.cache]
+// @ETPL:preload cmp_to_key functools.cmp_to_key
+P cmp_to_key = P  // [ET:callable:functools.cmp_to_key]
+// @ETPL:preload lru_cache functools.lru_cache
+P lru_cache = P  // [ET:callable:functools.lru_cache]
+// @ETPL:preload reduce functools.reduce
+P reduce = P  // [ET:callable:functools.reduce]
+// @ETPL:preload partial functools.partial
+P partial = P  // [ET:callable:functools.partial]
+// @ETPL:preload partialmethod functools.partialmethod
+P partialmethod = P  // [ET:callable:functools.partialmethod]
+// @ETPL:preload singledispatch functools.singledispatch
+P singledispatch = P  // [ET:callable:functools.singledispatch]
+// @ETPL:preload singledispatchmethod functools.singledispatchmethod
+P singledispatchmethod = P  // [ET:callable:functools.singledispatchmethod]
+// @ETPL:preload cached_property functools.cached_property
+P cached_property = P  // [ET:callable:functools.cached_property]
+// @ETPL:preload _warnings warnings
+// Import warnings — resolved at translate-time
+// @ETPL:preload warn warnings.warn
+P warn = P  // [ET:callable:warnings.warn]
+// @ETPL:preload warn_explicit warnings.warn_explicit
+P warn_explicit = P  // [ET:callable:warnings.warn_explicit]
+// @ETPL:preload showwarning warnings.showwarning
+P showwarning = P  // [ET:callable:warnings.showwarning]
+// @ETPL:preload formatwarning warnings.formatwarning
+P formatwarning = P  // [ET:callable:warnings.formatwarning]
+// @ETPL:preload filterwarnings warnings.filterwarnings
+P filterwarnings = P  // [ET:callable:warnings.filterwarnings]
+// @ETPL:preload simplefilter warnings.simplefilter
+P simplefilter = P  // [ET:callable:warnings.simplefilter]
+// @ETPL:preload resetwarnings warnings.resetwarnings
+P resetwarnings = P  // [ET:callable:warnings.resetwarnings]
+// @ETPL:preload catch_warnings warnings.catch_warnings
+P catch_warnings = P  // [ET:callable:warnings.catch_warnings]
+// @ETPL:preload deprecated warnings.deprecated
+P deprecated = P  // [ET:callable:warnings.deprecated]
+// @ETPL:preload _io io
+// Import io — resolved at translate-time
+// @ETPL:preload BlockingIOError io.BlockingIOError
+P BlockingIOError = P  // [ET:callable:io.BlockingIOError]
+// @ETPL:preload open io.open
+P open = P  // [ET:callable:io.open]
+// @ETPL:preload open_code io.open_code
+P open_code = P  // [ET:callable:io.open_code]
+// @ETPL:preload IOBase io.IOBase
+P IOBase = P  // [ET:callable:io.IOBase]
+// @ETPL:preload RawIOBase io.RawIOBase
+P RawIOBase = P  // [ET:callable:io.RawIOBase]
+// @ETPL:preload FileIO io.FileIO
+P FileIO = P  // [ET:callable:io.FileIO]
+// @ETPL:preload BytesIO io.BytesIO
+P BytesIO = P  // [ET:callable:io.BytesIO]
+// @ETPL:preload StringIO io.StringIO
+P StringIO = P  // [ET:callable:io.StringIO]
+// @ETPL:preload BufferedIOBase io.BufferedIOBase
+P BufferedIOBase = P  // [ET:callable:io.BufferedIOBase]
+// @ETPL:preload BufferedReader io.BufferedReader
+P BufferedReader = P  // [ET:callable:io.BufferedReader]
+// @ETPL:preload BufferedWriter io.BufferedWriter
+P BufferedWriter = P  // [ET:callable:io.BufferedWriter]
+// @ETPL:preload BufferedRWPair io.BufferedRWPair
+P BufferedRWPair = P  // [ET:callable:io.BufferedRWPair]
+// @ETPL:preload BufferedRandom io.BufferedRandom
+P BufferedRandom = P  // [ET:callable:io.BufferedRandom]
+// @ETPL:preload TextIOBase io.TextIOBase
+P TextIOBase = P  // [ET:callable:io.TextIOBase]
+// @ETPL:preload TextIOWrapper io.TextIOWrapper
+P TextIOWrapper = P  // [ET:callable:io.TextIOWrapper]
+// @ETPL:preload UnsupportedOperation io.UnsupportedOperation
+P UnsupportedOperation = P  // [ET:callable:io.UnsupportedOperation]
+P SEEK_SET = 0
+P SEEK_CUR = 1
+P SEEK_END = 2
+P DEFAULT_BUFFER_SIZE = 8192
+// @ETPL:preload text_encoding io.text_encoding
+P text_encoding = P  // [ET:callable:io.text_encoding]
+// @ETPL:preload IncrementalNewlineDecoder io.IncrementalNewlineDecoder
+P IncrementalNewlineDecoder = P  // [ET:callable:io.IncrementalNewlineDecoder]
+// @ETPL:preload _os os
+// Import os — resolved at translate-time
+P altsep = "/"
+P curdir = "."
+P pardir = ".."
+P sep = "\\"
+P pathsep = ";"
+P linesep = "\r\n"
+P defpath = ".;C:\\bin"
+P name = "nt"
+// @ETPL:preload path os.path
+P devnull = "nul"
+// @ETPL:preload fsencode os.fsencode
+P fsencode = P  // [ET:callable:os.fsencode]
+// @ETPL:preload fsdecode os.fsdecode
+P fsdecode = P  // [ET:callable:os.fsdecode]
+// @ETPL:preload get_exec_path os.get_exec_path
+P get_exec_path = P  // [ET:callable:os.get_exec_path]
+// @ETPL:preload fdopen os.fdopen
+P fdopen = P  // [ET:callable:os.fdopen]
+P extsep = "."
+// @ETPL:preload _exit os._exit
+P _exit = P  // [ET:callable:os._exit]
+// @ETPL:preload DirEntry os.DirEntry
+P DirEntry = P  // [ET:callable:os.DirEntry]
+P EX_OK = 0
+P F_OK = 0
+P O_APPEND = 8
+P O_BINARY = 32768
+P O_CREAT = 256
+P O_EXCL = 1024
+P O_NOINHERIT = 128
+P O_RANDOM = 16
+P O_RDONLY = 0
+P O_RDWR = 2
+P O_SEQUENTIAL = 32
+P O_SHORT_LIVED = 4096
+P O_TEMPORARY = 64
+P O_TEXT = 16384
+P O_TRUNC = 512
+P O_WRONLY = 1
+P P_DETACH = 4
+P P_NOWAIT = 1
+P P_NOWAITO = 3
+P P_OVERLAY = 2
+P P_WAIT = 0
+P R_OK = 4
+P TMP_MAX = 2147483647
+P W_OK = 2
+P X_OK = 1
+// @ETPL:preload abort os.abort
+P abort = P  // [ET:callable:os.abort]
+// @ETPL:preload access os.access
+P access = P  // [ET:callable:os.access]
+// @ETPL:preload chdir os.chdir
+P chdir = P  // [ET:callable:os.chdir]
+// @ETPL:preload chmod os.chmod
+P chmod = P  // [ET:callable:os.chmod]
+// @ETPL:preload close os.close
+P close = P  // [ET:callable:os.close]
+// @ETPL:preload closerange os.closerange
+P closerange = P  // [ET:callable:os.closerange]
+// @ETPL:preload cpu_count os.cpu_count
+P cpu_count = P  // [ET:callable:os.cpu_count]
+// @ETPL:preload device_encoding os.device_encoding
+P device_encoding = P  // [ET:callable:os.device_encoding]
+// @ETPL:preload dup os.dup
+P dup = P  // [ET:callable:os.dup]
+// @ETPL:preload dup2 os.dup2
+P dup2 = P  // [ET:callable:os.dup2]
+P environ = P  // [ET:unrepresentable:_Environ]
+// @ETPL:preload error os.error
+P error = P  // [ET:callable:os.error]
+// @ETPL:preload execv os.execv
+P execv = P  // [ET:callable:os.execv]
+// @ETPL:preload execve os.execve
+P execve = P  // [ET:callable:os.execve]
+// @ETPL:preload fchmod os.fchmod
+P fchmod = P  // [ET:callable:os.fchmod]
+// @ETPL:preload fspath os.fspath
+P fspath = P  // [ET:callable:os.fspath]
+// @ETPL:preload fstat os.fstat
+P fstat = P  // [ET:callable:os.fstat]
+// @ETPL:preload fsync os.fsync
+P fsync = P  // [ET:callable:os.fsync]
+// @ETPL:preload ftruncate os.ftruncate
+P ftruncate = P  // [ET:callable:os.ftruncate]
+// @ETPL:preload get_blocking os.get_blocking
+P get_blocking = P  // [ET:callable:os.get_blocking]
+// @ETPL:preload get_handle_inheritable os.get_handle_inheritable
+P get_handle_inheritable = P  // [ET:callable:os.get_handle_inheritable]
+// @ETPL:preload get_inheritable os.get_inheritable
+P get_inheritable = P  // [ET:callable:os.get_inheritable]
+// @ETPL:preload get_terminal_size os.get_terminal_size
+P get_terminal_size = P  // [ET:callable:os.get_terminal_size]
+// @ETPL:preload getcwd os.getcwd
+P getcwd = P  // [ET:callable:os.getcwd]
+// @ETPL:preload getcwdb os.getcwdb
+P getcwdb = P  // [ET:callable:os.getcwdb]
+// @ETPL:preload getlogin os.getlogin
+P getlogin = P  // [ET:callable:os.getlogin]
+// @ETPL:preload getpid os.getpid
+P getpid = P  // [ET:callable:os.getpid]
+// @ETPL:preload getppid os.getppid
+P getppid = P  // [ET:callable:os.getppid]
+// @ETPL:preload isatty os.isatty
+P isatty = P  // [ET:callable:os.isatty]
+// @ETPL:preload kill os.kill
+P kill = P  // [ET:callable:os.kill]
+// @ETPL:preload lchmod os.lchmod
+P lchmod = P  // [ET:callable:os.lchmod]
+// @ETPL:preload link os.link
+P link = P  // [ET:callable:os.link]
+// @ETPL:preload listdir os.listdir
+P listdir = P  // [ET:callable:os.listdir]
+// @ETPL:preload listdrives os.listdrives
+P listdrives = P  // [ET:callable:os.listdrives]
+// @ETPL:preload listmounts os.listmounts
+P listmounts = P  // [ET:callable:os.listmounts]
+// @ETPL:preload listvolumes os.listvolumes
+P listvolumes = P  // [ET:callable:os.listvolumes]
+// @ETPL:preload lseek os.lseek
+P lseek = P  // [ET:callable:os.lseek]
+// @ETPL:preload lstat os.lstat
+P lstat = P  // [ET:callable:os.lstat]
+// @ETPL:preload mkdir os.mkdir
+P mkdir = P  // [ET:callable:os.mkdir]
+// @ETPL:preload pipe os.pipe
+P pipe = P  // [ET:callable:os.pipe]
+// @ETPL:preload putenv os.putenv
+P putenv = P  // [ET:callable:os.putenv]
+// @ETPL:preload read os.read
+P read = P  // [ET:callable:os.read]
+// @ETPL:preload readlink os.readlink
+P readlink = P  // [ET:callable:os.readlink]
+// @ETPL:preload remove os.remove
+P remove = P  // [ET:callable:os.remove]
+// @ETPL:preload rename os.rename
+P rename = P  // [ET:callable:os.rename]
+// @ETPL:preload replace os.replace
+P replace = P  // [ET:callable:os.replace]
+// @ETPL:preload rmdir os.rmdir
+P rmdir = P  // [ET:callable:os.rmdir]
+// @ETPL:preload scandir os.scandir
+P scandir = P  // [ET:callable:os.scandir]
+// @ETPL:preload set_blocking os.set_blocking
+P set_blocking = P  // [ET:callable:os.set_blocking]
+// @ETPL:preload set_handle_inheritable os.set_handle_inheritable
+P set_handle_inheritable = P  // [ET:callable:os.set_handle_inheritable]
+// @ETPL:preload set_inheritable os.set_inheritable
+P set_inheritable = P  // [ET:callable:os.set_inheritable]
+// @ETPL:preload spawnv os.spawnv
+P spawnv = P  // [ET:callable:os.spawnv]
+// @ETPL:preload spawnve os.spawnve
+P spawnve = P  // [ET:callable:os.spawnve]
+// @ETPL:preload startfile os.startfile
+P startfile = P  // [ET:callable:os.startfile]
+// @ETPL:preload stat os.stat
+P stat = P  // [ET:callable:os.stat]
+// @ETPL:preload stat_result os.stat_result
+P stat_result = P  // [ET:callable:os.stat_result]
+// @ETPL:preload statvfs_result os.statvfs_result
+P statvfs_result = P  // [ET:callable:os.statvfs_result]
+// @ETPL:preload strerror os.strerror
+P strerror = P  // [ET:callable:os.strerror]
+// @ETPL:preload symlink os.symlink
+P symlink = P  // [ET:callable:os.symlink]
+// @ETPL:preload system os.system
+P system = P  // [ET:callable:os.system]
+// @ETPL:preload terminal_size os.terminal_size
+P terminal_size = P  // [ET:callable:os.terminal_size]
+// @ETPL:preload times os.times
+P times = P  // [ET:callable:os.times]
+// @ETPL:preload times_result os.times_result
+P times_result = P  // [ET:callable:os.times_result]
+// @ETPL:preload truncate os.truncate
+P truncate = P  // [ET:callable:os.truncate]
+// @ETPL:preload umask os.umask
+P umask = P  // [ET:callable:os.umask]
+// @ETPL:preload uname_result os.uname_result
+P uname_result = P  // [ET:callable:os.uname_result]
+// @ETPL:preload unlink os.unlink
+P unlink = P  // [ET:callable:os.unlink]
+// @ETPL:preload unsetenv os.unsetenv
+P unsetenv = P  // [ET:callable:os.unsetenv]
+// @ETPL:preload urandom os.urandom
+P urandom = P  // [ET:callable:os.urandom]
+// @ETPL:preload utime os.utime
+P utime = P  // [ET:callable:os.utime]
+// @ETPL:preload waitpid os.waitpid
+P waitpid = P  // [ET:callable:os.waitpid]
+// @ETPL:preload waitstatus_to_exitcode os.waitstatus_to_exitcode
+P waitstatus_to_exitcode = P  // [ET:callable:os.waitstatus_to_exitcode]
+// @ETPL:preload write os.write
+P write = P  // [ET:callable:os.write]
+// @ETPL:preload makedirs os.makedirs
+P makedirs = P  // [ET:callable:os.makedirs]
+// @ETPL:preload removedirs os.removedirs
+P removedirs = P  // [ET:callable:os.removedirs]
+// @ETPL:preload renames os.renames
+P renames = P  // [ET:callable:os.renames]
+// @ETPL:preload walk os.walk
+P walk = P  // [ET:callable:os.walk]
+// @ETPL:preload execl os.execl
+P execl = P  // [ET:callable:os.execl]
+// @ETPL:preload execle os.execle
+P execle = P  // [ET:callable:os.execle]
+// @ETPL:preload execlp os.execlp
+P execlp = P  // [ET:callable:os.execlp]
+// @ETPL:preload execlpe os.execlpe
+P execlpe = P  // [ET:callable:os.execlpe]
+// @ETPL:preload execvp os.execvp
+P execvp = P  // [ET:callable:os.execvp]
+// @ETPL:preload execvpe os.execvpe
+P execvpe = P  // [ET:callable:os.execvpe]
+// @ETPL:preload getenv os.getenv
+P getenv = P  // [ET:callable:os.getenv]
+P supports_bytes_environ = 0
+// @ETPL:preload spawnl os.spawnl
+P spawnl = P  // [ET:callable:os.spawnl]
+// @ETPL:preload spawnle os.spawnle
+P spawnle = P  // [ET:callable:os.spawnle]
+// @ETPL:preload popen os.popen
+P popen = P  // [ET:callable:os.popen]
+// @ETPL:preload _shutil shutil
+// Import shutil — resolved at translate-time
+// @ETPL:preload copyfileobj shutil.copyfileobj
+P copyfileobj = P  // [ET:callable:shutil.copyfileobj]
+// @ETPL:preload copyfile shutil.copyfile
+P copyfile = P  // [ET:callable:shutil.copyfile]
+// @ETPL:preload copymode shutil.copymode
+P copymode = P  // [ET:callable:shutil.copymode]
+// @ETPL:preload copystat shutil.copystat
+P copystat = P  // [ET:callable:shutil.copystat]
+// @ETPL:preload copy shutil.copy
+P copy = P  // [ET:callable:shutil.copy]
+// @ETPL:preload copy2 shutil.copy2
+P copy2 = P  // [ET:callable:shutil.copy2]
+// @ETPL:preload copytree shutil.copytree
+P copytree = P  // [ET:callable:shutil.copytree]
+// @ETPL:preload move shutil.move
+P move = P  // [ET:callable:shutil.move]
+// @ETPL:preload rmtree shutil.rmtree
+P rmtree = P  // [ET:callable:shutil.rmtree]
+// @ETPL:preload Error shutil.Error
+P Error = P  // [ET:callable:shutil.Error]
+// @ETPL:preload SpecialFileError shutil.SpecialFileError
+P SpecialFileError = P  // [ET:callable:shutil.SpecialFileError]
+// @ETPL:preload ExecError shutil.ExecError
+P ExecError = P  // [ET:callable:shutil.ExecError]
+// @ETPL:preload make_archive shutil.make_archive
+P make_archive = P  // [ET:callable:shutil.make_archive]
+// @ETPL:preload get_archive_formats shutil.get_archive_formats
+P get_archive_formats = P  // [ET:callable:shutil.get_archive_formats]
+// @ETPL:preload register_archive_format shutil.register_archive_format
+P register_archive_format = P  // [ET:callable:shutil.register_archive_format]
+// @ETPL:preload unregister_archive_format shutil.unregister_archive_format
+P unregister_archive_format = P  // [ET:callable:shutil.unregister_archive_format]
+// @ETPL:preload get_unpack_formats shutil.get_unpack_formats
+P get_unpack_formats = P  // [ET:callable:shutil.get_unpack_formats]
+// @ETPL:preload register_unpack_format shutil.register_unpack_format
+P register_unpack_format = P  // [ET:callable:shutil.register_unpack_format]
+// @ETPL:preload unregister_unpack_format shutil.unregister_unpack_format
+P unregister_unpack_format = P  // [ET:callable:shutil.unregister_unpack_format]
+// @ETPL:preload unpack_archive shutil.unpack_archive
+P unpack_archive = P  // [ET:callable:shutil.unpack_archive]
+// @ETPL:preload ignore_patterns shutil.ignore_patterns
+P ignore_patterns = P  // [ET:callable:shutil.ignore_patterns]
+// @ETPL:preload chown shutil.chown
+P chown = P  // [ET:callable:shutil.chown]
+// @ETPL:preload which shutil.which
+P which = P  // [ET:callable:shutil.which]
+// @ETPL:preload SameFileError shutil.SameFileError
+P SameFileError = P  // [ET:callable:shutil.SameFileError]
+// @ETPL:preload disk_usage shutil.disk_usage
+P disk_usage = P  // [ET:callable:shutil.disk_usage]
+// @ETPL:preload _errno errno
+// Import errno — resolved at translate-time
+P E2BIG = 7
+P EACCES = 13
+P EADDRINUSE = 10048
+P EADDRNOTAVAIL = 10049
+P EAFNOSUPPORT = 10047
+P EAGAIN = 11
+P EALREADY = 10037
+P EBADF = 9
+P EBADMSG = 104
+P EBUSY = 16
+P ECANCELED = 105
+P ECHILD = 10
+P ECONNABORTED = 10053
+P ECONNREFUSED = 10061
+P ECONNRESET = 10054
+P EDEADLK = 36
+P EDEADLOCK = 36
+P EDESTADDRREQ = 10039
+P EDOM = 33
+P EDQUOT = 10069
+P EEXIST = 17
+P EFAULT = 14
+P EFBIG = 27
+P EHOSTDOWN = 10064
+P EHOSTUNREACH = 10065
+P EIDRM = 111
+P EILSEQ = 42
+P EINPROGRESS = 10036
+P EINTR = 4
+P EINVAL = 22
+P EIO = 5
+P EISCONN = 10056
+P EISDIR = 21
+P ELOOP = 10062
+P EMFILE = 24
+P EMLINK = 31
+P EMSGSIZE = 10040
+P ENAMETOOLONG = 38
+P ENETDOWN = 10050
+P ENETRESET = 10052
+P ENETUNREACH = 10051
+P ENFILE = 23
+P ENOBUFS = 10055
+P ENODATA = 120
+P ENODEV = 19
+P ENOENT = 2
+P ENOEXEC = 8
+P ENOLCK = 39
+P ENOLINK = 121
+P ENOMEM = 12
+P ENOMSG = 122
+P ENOPROTOOPT = 10042
+P ENOSPC = 28
+P ENOSR = 124
+P ENOSTR = 125
+P ENOSYS = 40
+P ENOTCONN = 10057
+P ENOTDIR = 20
+P ENOTEMPTY = 41
+P ENOTRECOVERABLE = 127
+P ENOTSOCK = 10038
+P ENOTSUP = 129
+P ENOTTY = 25
+P ENXIO = 6
+P EOPNOTSUPP = 10045
+P EOVERFLOW = 132
+P EOWNERDEAD = 133
+P EPERM = 1
+P EPFNOSUPPORT = 10046
+P EPIPE = 32
+P EPROTO = 134
+P EPROTONOSUPPORT = 10043
+P EPROTOTYPE = 10041
+P ERANGE = 34
+P EREMOTE = 10071
+P EROFS = 30
+P ESHUTDOWN = 10058
+P ESOCKTNOSUPPORT = 10044
+P ESPIPE = 29
+P ESRCH = 3
+P ESTALE = 10070
+P ETIME = 137
+P ETIMEDOUT = 10060
+P ETOOMANYREFS = 10059
+P ETXTBSY = 139
+P EUSERS = 10068
+P EWOULDBLOCK = 10035
+P EXDEV = 18
+P WSABASEERR = 10000
+P WSAEACCES = 10013
+P WSAEADDRINUSE = 10048
+P WSAEADDRNOTAVAIL = 10049
+P WSAEAFNOSUPPORT = 10047
+P WSAEALREADY = 10037
+P WSAEBADF = 10009
+P WSAECONNABORTED = 10053
+P WSAECONNREFUSED = 10061
+P WSAECONNRESET = 10054
+P WSAEDESTADDRREQ = 10039
+P WSAEDISCON = 10101
+P WSAEDQUOT = 10069
+P WSAEFAULT = 10014
+P WSAEHOSTDOWN = 10064
+P WSAEHOSTUNREACH = 10065
+P WSAEINPROGRESS = 10036
+P WSAEINTR = 10004
+P WSAEINVAL = 10022
+P WSAEISCONN = 10056
+P WSAELOOP = 10062
+P WSAEMFILE = 10024
+P WSAEMSGSIZE = 10040
+P WSAENAMETOOLONG = 10063
+P WSAENETDOWN = 10050
+P WSAENETRESET = 10052
+P WSAENETUNREACH = 10051
+P WSAENOBUFS = 10055
+P WSAENOPROTOOPT = 10042
+P WSAENOTCONN = 10057
+P WSAENOTEMPTY = 10066
+P WSAENOTSOCK = 10038
+P WSAEOPNOTSUPP = 10045
+P WSAEPFNOSUPPORT = 10046
+P WSAEPROCLIM = 10067
+P WSAEPROTONOSUPPORT = 10043
+P WSAEPROTOTYPE = 10041
+P WSAEREMOTE = 10071
+P WSAESHUTDOWN = 10058
+P WSAESOCKTNOSUPPORT = 10044
+P WSAESTALE = 10070
+P WSAETIMEDOUT = 10060
+P WSAETOOMANYREFS = 10059
+P WSAEUSERS = 10068
+P WSAEWOULDBLOCK = 10035
+P WSANOTINITIALISED = 10093
+P WSASYSNOTREADY = 10091
+P WSAVERNOTSUPPORTED = 10092
+// @ETPL:preload errorcode errno.errorcode
+// [ET:complex-dict:errorcode]
+// @ETPL:preload _Random random.Random
+P _Random = P  // [ET:callable:random.Random]
+// @ETPL:preload _sys sys
+// Import sys — resolved at translate-time
+// @ETPL:preload activate_stack_trampoline sys.activate_stack_trampoline
+P activate_stack_trampoline = P  // [ET:callable:sys.activate_stack_trampoline]
+// @ETPL:preload addaudithook sys.addaudithook
+P addaudithook = P  // [ET:callable:sys.addaudithook]
+P api_version = 1013
+P argv = manifold ["ETPL.py", "translate", "ETPL.py", "--lang", "python", "--output", "ETPL_self.pdt"]
+// @ETPL:preload audit sys.audit
+P audit = P  // [ET:callable:sys.audit]
+P base_exec_prefix = "C:\\Program Files\\Python313"
+P base_prefix = "C:\\Program Files\\Python313"
+// @ETPL:preload breakpointhook sys.breakpointhook
+P breakpointhook = P  // [ET:callable:sys.breakpointhook]
+P builtin_module_names = manifold ["_abc", "_ast", "_bisect", "_blake2", "_codecs", "_codecs_cn", "_codecs_hk", "_codecs_iso2022", "_codecs_jp", "_codecs_kr", "_codecs_tw", "_collections", "_contextvars", "_csv", "_datetime", "_functools", "_heapq", "_imp", "_interpchannels", "_interpqueues", "_interpreters", "_io", "_json", "_locale", "_lsprof", "_md5", "_multibytecodec", "_opcode", "_operator", "_pickle", "_random", "_sha1", "_sha2", "_sha3", "_signal", "_sre", "_stat", "_statistics", "_string", "_struct", "_suggestions", "_symtable", "_sysconfig", "_thread", "_tokenize", "_tracemalloc", "_typing", "_warnings", "_weakref", "_winapi"]
+P byteorder = "little"
+// @ETPL:preload call_tracing sys.call_tracing
+P call_tracing = P  // [ET:callable:sys.call_tracing]
+P copyright = "Copyright (c) 2001-2024 Python Software Foundation.\nAll Rights Reserved.\n\nCopyright (c) 2000 BeOpen.com.\nAll Rights Reserved.\n\nCopyright (c) 1995-2001 Corporation for National Research Initiatives.\nAll Rights Reserved.\n\nCopyright (c) 1991-1995 Stichting Mathematisch Centrum, Amsterdam.\nAll Rights Reserved."
+// @ETPL:preload deactivate_stack_trampoline sys.deactivate_stack_trampoline
+P deactivate_stack_trampoline = P  // [ET:callable:sys.deactivate_stack_trampoline]
+// @ETPL:preload displayhook sys.displayhook
+P displayhook = P  // [ET:callable:sys.displayhook]
+P dllhandle = 140730231881728
+P dont_write_bytecode = 0
+// @ETPL:preload exc_info sys.exc_info
+P exc_info = P  // [ET:callable:sys.exc_info]
+// @ETPL:preload excepthook sys.excepthook
+P excepthook = P  // [ET:callable:sys.excepthook]
+// @ETPL:preload exception sys.exception
+P exception = P  // [ET:callable:sys.exception]
+P exec_prefix = "C:\\Program Files\\Python313"
+P executable = "C:\\Program Files\\Python313\\python.exe"
+// @ETPL:preload exit sys.exit
+P exit = P  // [ET:callable:sys.exit]
+P flags = manifold [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 4300]
+P float_info = manifold [1.7976931348623157e+308, 1024, 308, 2.2250738585072014e-308, -1021, -307, 15, 53, 2.220446049250313e-16, 2, 1]
+P float_repr_style = "short"
+// @ETPL:preload get_asyncgen_hooks sys.get_asyncgen_hooks
+P get_asyncgen_hooks = P  // [ET:callable:sys.get_asyncgen_hooks]
+// @ETPL:preload get_coroutine_origin_tracking_depth sys.get_coroutine_origin_tracking_depth
+P get_coroutine_origin_tracking_depth = P  // [ET:callable:sys.get_coroutine_origin_tracking_depth]
+// @ETPL:preload get_int_max_str_digits sys.get_int_max_str_digits
+P get_int_max_str_digits = P  // [ET:callable:sys.get_int_max_str_digits]
+// @ETPL:preload getallocatedblocks sys.getallocatedblocks
+P getallocatedblocks = P  // [ET:callable:sys.getallocatedblocks]
+// @ETPL:preload getdefaultencoding sys.getdefaultencoding
+P getdefaultencoding = P  // [ET:callable:sys.getdefaultencoding]
+// @ETPL:preload getfilesystemencodeerrors sys.getfilesystemencodeerrors
+P getfilesystemencodeerrors = P  // [ET:callable:sys.getfilesystemencodeerrors]
+// @ETPL:preload getfilesystemencoding sys.getfilesystemencoding
+P getfilesystemencoding = P  // [ET:callable:sys.getfilesystemencoding]
+// @ETPL:preload getprofile sys.getprofile
+P getprofile = P  // [ET:callable:sys.getprofile]
+// @ETPL:preload getrecursionlimit sys.getrecursionlimit
+P getrecursionlimit = P  // [ET:callable:sys.getrecursionlimit]
+// @ETPL:preload getrefcount sys.getrefcount
+P getrefcount = P  // [ET:callable:sys.getrefcount]
+// @ETPL:preload getsizeof sys.getsizeof
+P getsizeof = P  // [ET:callable:sys.getsizeof]
+// @ETPL:preload getswitchinterval sys.getswitchinterval
+P getswitchinterval = P  // [ET:callable:sys.getswitchinterval]
+// @ETPL:preload gettrace sys.gettrace
+P gettrace = P  // [ET:callable:sys.gettrace]
+// @ETPL:preload getunicodeinternedsize sys.getunicodeinternedsize
+P getunicodeinternedsize = P  // [ET:callable:sys.getunicodeinternedsize]
+// @ETPL:preload getwindowsversion sys.getwindowsversion
+P getwindowsversion = P  // [ET:callable:sys.getwindowsversion]
+P hash_info = manifold [64, 2305843009213693951, 314159, 0, 1000003, "siphash13", 64, 128, 0]
+P hexversion = 51186672
+P implementation = P  // [ET:unrepresentable:SimpleNamespace]
+P int_info = manifold [30, 4, 4300, 640]
+// @ETPL:preload intern sys.intern
+P intern = P  // [ET:callable:sys.intern]
+// @ETPL:preload is_finalizing sys.is_finalizing
+P is_finalizing = P  // [ET:callable:sys.is_finalizing]
+// @ETPL:preload is_stack_trampoline_active sys.is_stack_trampoline_active
+P is_stack_trampoline_active = P  // [ET:callable:sys.is_stack_trampoline_active]
+P maxsize = 9223372036854775807
+P maxunicode = 1114111
+P meta_path = manifold [P, P, P, P]
+// @ETPL:preload modules sys.modules
+// [ET:complex-dict:modules]
+// @ETPL:preload monitoring sys.monitoring
+P orig_argv = manifold ["python", "ETPL.py", "translate", "ETPL.py", "--lang", "python", "--output", "ETPL_self.pdt"]
+P path_hooks = manifold [P, P, P]
+// @ETPL:preload path_importer_cache sys.path_importer_cache
+// [ET:complex-dict:path_importer_cache]
+P platform = "win32"
+P platlibdir = "DLLs"
+P prefix = "C:\\Program Files\\Python313"
+P pycache_prefix = P
+// @ETPL:preload set_asyncgen_hooks sys.set_asyncgen_hooks
+P set_asyncgen_hooks = P  // [ET:callable:sys.set_asyncgen_hooks]
+// @ETPL:preload set_coroutine_origin_tracking_depth sys.set_coroutine_origin_tracking_depth
+P set_coroutine_origin_tracking_depth = P  // [ET:callable:sys.set_coroutine_origin_tracking_depth]
+// @ETPL:preload set_int_max_str_digits sys.set_int_max_str_digits
+P set_int_max_str_digits = P  // [ET:callable:sys.set_int_max_str_digits]
+// @ETPL:preload setprofile sys.setprofile
+P setprofile = P  // [ET:callable:sys.setprofile]
+// @ETPL:preload setrecursionlimit sys.setrecursionlimit
+P setrecursionlimit = P  // [ET:callable:sys.setrecursionlimit]
+// @ETPL:preload setswitchinterval sys.setswitchinterval
+P setswitchinterval = P  // [ET:callable:sys.setswitchinterval]
+// @ETPL:preload settrace sys.settrace
+P settrace = P  // [ET:callable:sys.settrace]
+P stderr = P  // [ET:unrepresentable:TextIOWrapper]
+P stdin = P  // [ET:unrepresentable:TextIOWrapper]
+P stdlib_module_names = manifold ["__future__", "_abc", "_aix_support", "_android_support", "_apple_support", "_ast", "_asyncio", "_bisect", "_blake2", "_bz2", "_codecs", "_codecs_cn", "_codecs_hk", "_codecs_iso2022", "_codecs_jp", "_codecs_kr", "_codecs_tw", "_collections", "_collections_abc", "_colorize", "_compat_pickle", "_compression", "_contextvars", "_csv", "_ctypes", "_curses", "_curses_panel", "_datetime", "_dbm", "_decimal", "_elementtree", "_frozen_importlib", "_frozen_importlib_external", "_functools", "_gdbm", "_hashlib", "_heapq", "_imp", "_interpchannels", "_interpqueues", "_interpreters", "_io", "_ios_support", "_json", "_locale", "_lsprof", "_lzma", "_markupbase", "_md5", "_multibytecodec"]  // frozenset
+P stdout = P  // [ET:unrepresentable:TextIOWrapper]
+P thread_info = manifold ["nt", P, P]
+// @ETPL:preload unraisablehook sys.unraisablehook
+P unraisablehook = P  // [ET:callable:sys.unraisablehook]
+P version = "3.13.11 (tags/v3.13.11:6278944, Dec  5 2025, 16:26:58) [MSC v.1944 64 bit (AMD64)]"
+P version_info = manifold [3, 13, 11, "final", 0]
+P warnoptions = manifold []
+P winver = "3.13"
+// @ETPL:preload _types types
+// Import types — resolved at translate-time
+// @ETPL:preload FunctionType types.FunctionType
+P FunctionType = P  // [ET:callable:types.FunctionType]
+// @ETPL:preload LambdaType types.LambdaType
+P LambdaType = P  // [ET:callable:types.LambdaType]
+// @ETPL:preload CodeType types.CodeType
+P CodeType = P  // [ET:callable:types.CodeType]
+// @ETPL:preload MappingProxyType types.MappingProxyType
+P MappingProxyType = P  // [ET:callable:types.MappingProxyType]
+// @ETPL:preload SimpleNamespace types.SimpleNamespace
+P SimpleNamespace = P  // [ET:callable:types.SimpleNamespace]
+// @ETPL:preload CellType types.CellType
+P CellType = P  // [ET:callable:types.CellType]
+// @ETPL:preload GeneratorType types.GeneratorType
+P GeneratorType = P  // [ET:callable:types.GeneratorType]
+// @ETPL:preload CoroutineType types.CoroutineType
+P CoroutineType = P  // [ET:callable:types.CoroutineType]
+// @ETPL:preload AsyncGeneratorType types.AsyncGeneratorType
+P AsyncGeneratorType = P  // [ET:callable:types.AsyncGeneratorType]
+// @ETPL:preload MethodType types.MethodType
+P MethodType = P  // [ET:callable:types.MethodType]
+// @ETPL:preload BuiltinFunctionType types.BuiltinFunctionType
+P BuiltinFunctionType = P  // [ET:callable:types.BuiltinFunctionType]
+// @ETPL:preload BuiltinMethodType types.BuiltinMethodType
+P BuiltinMethodType = P  // [ET:callable:types.BuiltinMethodType]
+// @ETPL:preload WrapperDescriptorType types.WrapperDescriptorType
+P WrapperDescriptorType = P  // [ET:callable:types.WrapperDescriptorType]
+// @ETPL:preload MethodWrapperType types.MethodWrapperType
+P MethodWrapperType = P  // [ET:callable:types.MethodWrapperType]
+// @ETPL:preload MethodDescriptorType types.MethodDescriptorType
+P MethodDescriptorType = P  // [ET:callable:types.MethodDescriptorType]
+// @ETPL:preload ClassMethodDescriptorType types.ClassMethodDescriptorType
+P ClassMethodDescriptorType = P  // [ET:callable:types.ClassMethodDescriptorType]
+// @ETPL:preload ModuleType types.ModuleType
+P ModuleType = P  // [ET:callable:types.ModuleType]
+// @ETPL:preload TracebackType types.TracebackType
+P TracebackType = P  // [ET:callable:types.TracebackType]
+// @ETPL:preload FrameType types.FrameType
+P FrameType = P  // [ET:callable:types.FrameType]
+// @ETPL:preload GetSetDescriptorType types.GetSetDescriptorType
+P GetSetDescriptorType = P  // [ET:callable:types.GetSetDescriptorType]
+// @ETPL:preload MemberDescriptorType types.MemberDescriptorType
+P MemberDescriptorType = P  // [ET:callable:types.MemberDescriptorType]
+// @ETPL:preload new_class types.new_class
+P new_class = P  // [ET:callable:types.new_class]
+// @ETPL:preload resolve_bases types.resolve_bases
+P resolve_bases = P  // [ET:callable:types.resolve_bases]
+// @ETPL:preload prepare_class types.prepare_class
+P prepare_class = P  // [ET:callable:types.prepare_class]
+// @ETPL:preload get_original_bases types.get_original_bases
+P get_original_bases = P  // [ET:callable:types.get_original_bases]
+// @ETPL:preload DynamicClassAttribute types.DynamicClassAttribute
+P DynamicClassAttribute = P  // [ET:callable:types.DynamicClassAttribute]
+// @ETPL:preload coroutine types.coroutine
+P coroutine = P  // [ET:callable:types.coroutine]
+// @ETPL:preload GenericAlias types.GenericAlias
+P GenericAlias = P  // [ET:callable:types.GenericAlias]
+// @ETPL:preload UnionType types.UnionType
+P UnionType = P  // [ET:callable:types.UnionType]
+// @ETPL:preload EllipsisType types.EllipsisType
+P EllipsisType = P  // [ET:callable:types.EllipsisType]
+// @ETPL:preload NoneType types.NoneType
+P NoneType = P  // [ET:callable:types.NoneType]
+// @ETPL:preload NotImplementedType types.NotImplementedType
+P NotImplementedType = P  // [ET:callable:types.NotImplementedType]
+// @ETPL:preload CapsuleType types.CapsuleType
+P CapsuleType = P  // [ET:callable:types.CapsuleType]
+// @ETPL:preload _weakref weakref
+// Import weakref — resolved at translate-time
+// @ETPL:preload ref weakref.ref
+P ref = P  // [ET:callable:weakref.ref]
+// @ETPL:preload proxy weakref.proxy
+P proxy = P  // [ET:callable:weakref.proxy]
+// @ETPL:preload getweakrefcount weakref.getweakrefcount
+P getweakrefcount = P  // [ET:callable:weakref.getweakrefcount]
+// @ETPL:preload getweakrefs weakref.getweakrefs
+P getweakrefs = P  // [ET:callable:weakref.getweakrefs]
+// @ETPL:preload WeakKeyDictionary weakref.WeakKeyDictionary
+P WeakKeyDictionary = P  // [ET:callable:weakref.WeakKeyDictionary]
+// @ETPL:preload ReferenceType weakref.ReferenceType
+P ReferenceType = P  // [ET:callable:weakref.ReferenceType]
+// @ETPL:preload ProxyType weakref.ProxyType
+P ProxyType = P  // [ET:callable:weakref.ProxyType]
+// @ETPL:preload CallableProxyType weakref.CallableProxyType
+P CallableProxyType = P  // [ET:callable:weakref.CallableProxyType]
+P ProxyTypes = manifold [P, P]
+// @ETPL:preload WeakValueDictionary weakref.WeakValueDictionary
+P WeakValueDictionary = P  // [ET:callable:weakref.WeakValueDictionary]
+// @ETPL:preload WeakSet weakref.WeakSet
+P WeakSet = P  // [ET:callable:weakref.WeakSet]
+// @ETPL:preload WeakMethod weakref.WeakMethod
+P WeakMethod = P  // [ET:callable:weakref.WeakMethod]
+// @ETPL:preload finalize weakref.finalize
+P finalize = P  // [ET:callable:weakref.finalize]
+// @ETPL:preload _thread _thread
+// Import _thread — resolved at translate-time
+// @ETPL:preload LockType _thread.LockType
+P LockType = P  // [ET:callable:_thread.LockType]
+// @ETPL:preload RLock _thread.RLock
+P RLock = P  // [ET:callable:_thread.RLock]
+P TIMEOUT_MAX = 4294967.0
+// @ETPL:preload allocate _thread.allocate
+P allocate = P  // [ET:callable:_thread.allocate]
+// @ETPL:preload allocate_lock _thread.allocate_lock
+P allocate_lock = P  // [ET:callable:_thread.allocate_lock]
+// @ETPL:preload daemon_threads_allowed _thread.daemon_threads_allowed
+P daemon_threads_allowed = P  // [ET:callable:_thread.daemon_threads_allowed]
+// @ETPL:preload exit_thread _thread.exit_thread
+P exit_thread = P  // [ET:callable:_thread.exit_thread]
+// @ETPL:preload get_ident _thread.get_ident
+P get_ident = P  // [ET:callable:_thread.get_ident]
+// @ETPL:preload get_native_id _thread.get_native_id
+P get_native_id = P  // [ET:callable:_thread.get_native_id]
+// @ETPL:preload interrupt_main _thread.interrupt_main
+P interrupt_main = P  // [ET:callable:_thread.interrupt_main]
+// @ETPL:preload lock _thread.lock
+P lock = P  // [ET:callable:_thread.lock]
+// @ETPL:preload stack_size _thread.stack_size
+P stack_size = P  // [ET:callable:_thread.stack_size]
+// @ETPL:preload start_joinable_thread _thread.start_joinable_thread
+P start_joinable_thread = P  // [ET:callable:_thread.start_joinable_thread]
+// @ETPL:preload start_new _thread.start_new
+P start_new = P  // [ET:callable:_thread.start_new]
+// @ETPL:preload start_new_thread _thread.start_new_thread
+P start_new_thread = P  // [ET:callable:_thread.start_new_thread]
+P _allocate_lock = _thread D allocate_lock
+P _text_openflags = ((_os D O_RDWR | _os D O_CREAT) | _os D O_EXCL)
+T cond = → if hasattr(_os, "O_NOFOLLOW") → P _text_openflags = _text_openflags | _os D O_NOFOLLOW
+P _bin_openflags = _text_openflags
+T cond = → if hasattr(_os, "O_BINARY") → P _bin_openflags = _bin_openflags | _os D O_BINARY
+T cond = → if hasattr(_os, "TMP_MAX") → P TMP_MAX = _os D TMP_MAX
+→ E P TMP_MAX = 10000
+P template = "tmp"
+P _once_lock = _allocate_lock(P)
+D exists = λ fn . {
+    T attempt = → P  // try
+        _os D lstat(fn)
+    → E OSError (_)
+        → 0
+}
+D infer_return_type = λ  . {
+    // Look at the type of all args and divine their implied return type.
+    P return_type = P
+    T loop = ∞ (
+        P arg = args[_loop_index]
+        T cond = → if arg == P → P  // pass
+        T cond = → if isinstance(arg, _os D PathLike) → P arg = _os D fspath(arg)
+        T cond = → if isinstance(arg, bytes) → P
+            T cond = → if return_type == str → → E TypeError("Can't mix bytes and non-bytes in path components.")
+            P return_type = bytes
+        → E P
+            T cond = → if return_type == bytes → → E TypeError("Can't mix bytes and non-bytes in path components.")
+            P return_type = str
+    ) (D |args|)
+    T cond = → if return_type == P → P
+        T cond = → if (tempdir == P || isinstance(tempdir, str)) → → str
+        → E → bytes
+    → return_type
+}
+D sanitize_params = λ prefix, suffix, dir . {
+    // Common parameter processing for most APIs in this module.
+    P output_type = _infer_return_type(prefix, suffix, dir)
+    T cond = → if suffix == P → P suffix = output_type(P)
+    T cond = → if prefix == P → P
+        T cond = → if output_type == str → P prefix = template
+        → E P prefix = _os D fsencode(template)
+    T cond = → if dir == P → P
+        T cond = → if output_type == str → P dir = gettempdir(P)
+        → E P dir = gettempdirb(P)
+    → manifold [prefix, suffix, dir, output_type]
+}
+D RandomNameSequence = λ . P  // class
+    // An instance of _RandomNameSequence generates an endless     sequence of unpredictable strings which can safely be incorp
+    P characters = "abcdefghijklmnopqrstuvwxyz0123456789_"
+    D RandomNameSequence__rng = λ self . {
+        P cur_pid = _os D getpid(P)
+        T cond = → if cur_pid ≠ getattr(self, "_rng_pid", P) → P
+            D self_D__rng = _Random(P)  // self D _rng := _Random(P)
+            D self_D__rng_pid = cur_pid  // self D _rng_pid := cur_pid
+        → self D _rng
+    }
+    D RandomNameSequence____iter = λ self . → self
+    D RandomNameSequence____next = λ self . → "" D join(self D rng D choices(self D characters, manifold ["k", 8]))
+D candidate_tempdir_list = λ  . {
+    // Generate a list of candidate temporary directories which     _get_default_tempdir will try.
+    P dirlist = manifold []
+    T loop = ∞ (
+        P envname = manifold ["TMPDIR", "TEMP", "TMP"][_loop_index]
+        P dirname = _os D getenv(envname)
+        T cond = → if dirname → dirlist D append(dirname)
+    ) (D |manifold ["TMPDIR", "TEMP", "TMP"]|)
+    T cond = → if _os D name == "nt" → dirlist D extend(manifold [_os D path D expanduser("~\\AppData\\Local\\Temp"), _os D path D expandvars("%SYSTEMROOT%\\Temp"), "c:\\temp", "c:\\tmp", "\\temp", "\\tmp"])
+    → E dirlist D extend(manifold ["/tmp", "/var/tmp", "/usr/tmp"])
+    T attempt = → P  // try
+        dirlist D append(_os D getcwd(P))
+    → E manifold [AttributeError, OSError] (_)
+        dirlist D append(_os D curdir)
+    → dirlist
+}
+D get_default_tempdir = λ dirlist . {
+    // Calculate the default directory to use for temporary files.     This routine should be called exactly once.      We dete
+    P namer = _RandomNameSequence(P)
+    T cond = → if dirlist == P → P dirlist = _candidate_tempdir_list(P)
+    T loop = ∞ (
+        P dir = dirlist[_loop_index]
+        T cond = → if dir ≠ _os D curdir → P dir = _os D path D abspath(dir)
+        T loop = ∞ (
+            P seq = range(100)[_loop_index]
+            P name = next(namer)
+            P filename = _os D path D join(dir, name)
+            T attempt = → P  // try
+                P fd = _os D open(filename, _bin_openflags, 384)
+                T attempt = → P  // try
+                    T attempt = → P  // try
+                        _os D write(fd, b'blat')
+                    // finally:
+                        _os D close(fd)
+                // finally:
+                    _os D unlink(filename)
+                → dir
+            → E FileExistsError (_)
+                // pass
+            → E PermissionError (_)
+                T cond = → if (_os D name == "nt" && _os D path D isdir(dir) && _os D access(dir, _os D W_OK)) → P  // pass
+                // break
+            → E OSError (_)
+                // break
+        ) (D |range(100)|)
+    ) (D |dirlist|)
+    → E FileNotFoundError(_errno D ENOENT, ("No usable temporary directory found in %s" % dirlist))
+}
+P _name_sequence = P
+D get_candidate_names = λ  . {
+    // Common setup sequence for all user-callable interfaces.
+    // global _name_sequence
+    T cond = → if _name_sequence == P → P
+        _once_lock D acquire(P)
+        T attempt = → P  // try
+            T cond = → if _name_sequence == P → P _name_sequence = _RandomNameSequence(P)
+        // finally:
+            _once_lock D release(P)
+    → _name_sequence
+}
+D mkstemp_inner = λ dir, pre, suf, flags, output_type . {
+    // Code common to mkstemp, TemporaryFile, and NamedTemporaryFile.
+    P dir = _os D path D abspath(dir)
+    P names = _get_candidate_names(P)
+    T cond = → if output_type == bytes → P names = _et_map(_os D fsencode, names)
+    T loop = ∞ (
+        P seq = range(TMP_MAX)[_loop_index]
+        P name = next(names)
+        P file = _os D path D join(dir, ((pre + name) + suf))
+        _sys D audit("tempfile.mkstemp", file)
+        T attempt = → P  // try
+            P fd = _os D open(file, flags, 384)
+        → E FileExistsError (_)
+            // continue
+        → E PermissionError (_)
+            T cond = → if (_os D name == "nt" && _os D path D isdir(dir) && _os D access(dir, _os D W_OK)) → P  // pass
+        → manifold [fd, file]
+    ) (D |range(TMP_MAX)|)
+    → E FileExistsError(_errno D EEXIST, "No usable temporary file name found")
+}
+D dont_follow_symlinks = λ func, path . {
+    T cond = → if func == _os D supports_follow_symlinks → func(path, args, manifold ["follow_symlinks", 0])
+    → E T cond = → if (!_os D path D islink(path)) → func(path, args)
+}
+D resetperms = λ path . {
+    T attempt = → P  // try
+        P chflags = _os D chflags
+    → E AttributeError (_)
+        // pass
+    _dont_follow_symlinks(_os D chmod, path, 448)
+}
+D gettempprefix = λ  . {
+    // The default prefix for temporary directories as string.
+    → _os D fsdecode(template)
+}
+D gettempprefixb = λ  . {
+    // The default prefix for temporary directories as bytes.
+    → _os D fsencode(template)
+}
+P tempdir = P
+D gettempdir = λ  . {
+    // Private accessor for tempfile.tempdir.
+    // global tempdir
+    T cond = → if tempdir == P → P
+        _once_lock D acquire(P)
+        T attempt = → P  // try
+            T cond = → if tempdir == P → P tempdir = _get_default_tempdir(P)
+        // finally:
+            _once_lock D release(P)
+    → tempdir
+}
+D gettempdir = λ  . {
+    // Returns tempfile.tempdir as str.
+    → _os D fsdecode(_gettempdir(P))
+}
+D gettempdirb = λ  . {
+    // Returns tempfile.tempdir as bytes.
+    → _os D fsencode(_gettempdir(P))
+}
+D mkstemp = λ suffix, prefix, dir, text . {
+    // User-callable function to create and return a unique temporary     file.  The return value is a pair (fd, name) where fd
+    P manifold__prefix__suffix__dir__output_type = _sanitize_params(prefix, suffix, dir)  // manifold [prefix, suffix, dir, output_type] := _sanitize_params(prefix, suffix, dir)
+    T cond = → if text → P flags = _text_openflags
+    → E P flags = _bin_openflags
+    → _mkstemp_inner(dir, prefix, suffix, flags, output_type)
+}
+D mkdtemp = λ suffix, prefix, dir . {
+    // User-callable function to create and return a unique temporary     directory.  The return value is the pathname of the d
+    P manifold__prefix__suffix__dir__output_type = _sanitize_params(prefix, suffix, dir)  // manifold [prefix, suffix, dir, output_type] := _sanitize_params(prefix, suffix, dir)
+    P names = _get_candidate_names(P)
+    T cond = → if output_type == bytes → P names = _et_map(_os D fsencode, names)
+    T loop = ∞ (
+        P seq = range(TMP_MAX)[_loop_index]
+        P name = next(names)
+        P file = _os D path D join(dir, ((prefix + name) + suffix))
+        _sys D audit("tempfile.mkdtemp", file)
+        T attempt = → P  // try
+            _os D mkdir(file, 448)
+        → E FileExistsError (_)
+            // continue
+        → E PermissionError (_)
+            T cond = → if (_os D name == "nt" && _os D path D isdir(dir) && _os D access(dir, _os D W_OK)) → P  // pass
+        → _os D path D abspath(file)
+    ) (D |range(TMP_MAX)|)
+    → E FileExistsError(_errno D EEXIST, "No usable temporary directory name found")
+}
+D mktemp = λ suffix, prefix, dir . {
+    // User-callable function to return a unique temporary file name.  The     file is not created.      Arguments are similar 
+    T cond = → if dir == P → P dir = gettempdir(P)
+    P names = _get_candidate_names(P)
+    T loop = ∞ (
+        P seq = range(TMP_MAX)[_loop_index]
+        P name = next(names)
+        P file = _os D path D join(dir, ((prefix + name) + suffix))
+        T cond = → if (!_exists(file)) → → file
+    ) (D |range(TMP_MAX)|)
+    → E FileExistsError(_errno D EEXIST, "No usable temporary filename found")
+}
+D TemporaryFileCloser = λ . P  // class
+    // A separate object allowing proper closing of a temporary file's     underlying file object, without adding a __del__ met
+    P cleanup_called = 0
+    P close_called = 0
+    D TemporaryFileCloser____init = λ self, file, name, delete, delete_on_close . {
+        D self_D_file = file  // self D file := file
+        D self_D_name = name  // self D name := name
+        D self_D_delete = delete  // self D delete := delete
+        D self_D_delete_on_close = delete_on_close  // self D delete_on_close := delete_on_close
+    }
+    D TemporaryFileCloser__cleanup = λ self, windows, unlink . {
+        T cond = → if (!self D cleanup_called) → P
+            D self_D_cleanup_called = 1  // self D cleanup_called := 1
+            T attempt = → P  // try
+                T cond = → if (!self D close_called) → P
+                    D self_D_close_called = 1  // self D close_called := 1
+                    self D file D close(P)
+            // finally:
+                T cond = → if (self D delete && (!(windows && self D delete_on_close))) → P
+                    T attempt = → P  // try
+                        unlink(self D name)
+                    → E FileNotFoundError (_)
+                        // pass
+    }
+    D TemporaryFileCloser__close = λ self . {
+        T cond = → if (!self D close_called) → P
+            D self_D_close_called = 1  // self D close_called := 1
+            T attempt = → P  // try
+                self D file D close(P)
+            // finally:
+                T cond = → if (self D delete && self D delete_on_close) → self D cleanup(P)
+    }
+    D TemporaryFileCloser____del = λ self . self D cleanup(P)
+D TemporaryFileWrapper = λ . P  // class
+    // Temporary file wrapper      This class provides a wrapper around files opened for     temporary use.  In particular, it 
+    D TemporaryFileWrapper____init = λ self, file, name, delete, delete_on_close . {
+        D self_D_file = file  // self D file := file
+        D self_D_name = name  // self D name := name
+        D self_D__closer = _TemporaryFileCloser(file, name, delete, delete_on_close)  // self D _closer := _TemporaryFileCloser(file, name, delete, delete_on_close)
+    }
+    D TemporaryFileWrapper____getattr = λ self, name . {
+        P file = self D __dict__["file"]
+        P a = getattr(file, name)
+        T cond = → if hasattr(a, "__call__") → P
+            P func = a
+            D TemporaryFileWrapper__func_wrapper = λ  . → func(args, kwargs)
+            D func_wrapper_D__closer = self D _closer  // func_wrapper D _closer := self D _closer
+            P a = func_wrapper
+        T cond = → if (!isinstance(a, int)) → setattr(self, name, a)
+        → a
+    }
+    D TemporaryFileWrapper____enter = λ self . {
+        self D file D __enter__(P)
+        → self
+    }
+    D TemporaryFileWrapper____exit = λ self, exc, value, tb . {
+        P result = self D file D __exit__(exc, value, tb)
+        self D _closer D cleanup(P)
+        → result
+    }
+    D TemporaryFileWrapper__close = λ self . {
+        // Close the temporary file, possibly deleting it.
+        self D _closer D close(P)
+    }
+    D TemporaryFileWrapper____iter = λ self . {
+        T loop = ∞ (
+            P line = self D file[_loop_index]
+            → line
+        ) (D |self D file|)
+    }
+D NamedTemporaryFile = λ mode, buffering, encoding, newline, suffix, prefix, dir, delete . {
+    // Create and return a temporary file.     Arguments:     'prefix', 'suffix', 'dir' -- as for mkstemp.     'mode' -- the mo
+    P manifold__prefix__suffix__dir__output_type = _sanitize_params(prefix, suffix, dir)  // manifold [prefix, suffix, dir, output_type] := _sanitize_params(prefix, suffix, dir)
+    P flags = _bin_openflags
+    T cond = → if (_os D name == "nt" && delete && delete_on_close) → P flags = flags | _os D O_TEMPORARY
+    T cond = → if "b" ≠ mode → P encoding = _io D text_encoding(encoding)
+    P name = P
+    D opener = λ  . {
+        // nonlocal name
+        P manifold__fd__name = _mkstemp_inner(dir, prefix, suffix, flags, output_type)  // manifold [fd, name] := _mkstemp_inner(dir, prefix, suffix, flags, output_type)
+        → fd
+    }
+    T attempt = → P  // try
+        P file = _io D open(dir, mode, manifold ["buffering", buffering], manifold ["newline", newline], manifold ["encoding", encoding], manifold ["errors", errors], manifold ["opener", opener])
+        T attempt = → P  // try
+            P raw = getattr(file, "buffer", file)
+            P raw = getattr(raw, "raw", raw)
+            D raw_D_name = name  // raw D name := name
+            → _TemporaryFileWrapper(file, name, delete, delete_on_close)
+        → E Exception (_)
+            file D close(P)
+            → E P
+    → E Exception (_)
+        T cond = → if (name ≠ P && (!(_os D name == "nt" && delete && delete_on_close))) → _os D unlink(name)
+        → E P
+}
+T cond = → if (_os D name ≠ "posix" || _sys D platform == "cygwin") → P TemporaryFile = NamedTemporaryFile
+→ E P
+    P _O_TMPFILE_WORKS = hasattr(_os, "O_TMPFILE")
+    D TemporaryFile = λ mode, buffering, encoding, newline, suffix, prefix, dir . {
+        // Create and return a temporary file.         Arguments:         'prefix', 'suffix', 'dir' -- as for mkstemp.         'mod
+        // global _O_TMPFILE_WORKS
+        T cond = → if "b" ≠ mode → P encoding = _io D text_encoding(encoding)
+        P manifold__prefix__suffix__dir__output_type = _sanitize_params(prefix, suffix, dir)  // manifold [prefix, suffix, dir, output_type] := _sanitize_params(prefix, suffix, dir)
+        P flags = _bin_openflags
+        T cond = → if _O_TMPFILE_WORKS → P
+            P fd = P
+            D opener = λ  . {
+                // nonlocal fd
+                P flags2 = ((flags | _os D O_TMPFILE) & (-_os D O_CREAT - 1))
+                P fd = _os D open(dir, flags2, 384)
+                → fd
+            }
+            T attempt = → P  // try
+                P file = _io D open(dir, mode, manifold ["buffering", buffering], manifold ["newline", newline], manifold ["encoding", encoding], manifold ["errors", errors], manifold ["opener", opener])
+                P raw = getattr(file, "buffer", file)
+                P raw = getattr(raw, "raw", raw)
+                D raw_D_name = fd  // raw D name := fd
+                → file
+            → E IsADirectoryError (_)
+                P _O_TMPFILE_WORKS = 0
+            → E OSError (_)
+                // pass
+        P fd = P
+        D opener = λ  . {
+            // nonlocal fd
+            P manifold__fd__name = _mkstemp_inner(dir, prefix, suffix, flags, output_type)  // manifold [fd, name] := _mkstemp_inner(dir, prefix, suffix, flags, output_type)
+            T attempt = → P  // try
+                _os D unlink(name)
+            → E BaseException (e)
+                _os D close(fd)
+                → E P
+            → fd
+        }
+        P file = _io D open(dir, mode, manifold ["buffering", buffering], manifold ["newline", newline], manifold ["encoding", encoding], manifold ["errors", errors], manifold ["opener", opener])
+        P raw = getattr(file, "buffer", file)
+        P raw = getattr(raw, "raw", raw)
+        D raw_D_name = fd  // raw D name := fd
+        → file
+    }
+D SpooledTemporaryFile = λ . P  // class(_io D IOBase)
+    // Temporary file wrapper, specialized to switch from BytesIO     or StringIO to a real file when it exceeds a certain size
+    P _rolled = 0
+    D SpooledTemporaryFile____init = λ self, max_size, mode, buffering, encoding, newline, suffix, prefix, dir . {
+        T cond = → if "b" == mode → D self_D__file = _io D BytesIO(P)  // self D _file := _io D BytesIO(P)
+        → E P
+            P encoding = _io D text_encoding(encoding)
+            D self_D__file = _io D TextIOWrapper(_io D BytesIO(P), manifold ["encoding", encoding], manifold ["errors", errors], manifold ["newline", newline])  // self D _file := _io D TextIOWrapper(_io D BytesIO(P), manifold ["encoding", encoding], manifold ["errors", errors], manifold ["newline", newline])
+        D self_D__max_size = max_size  // self D _max_size := max_size
+        D self_D__rolled = 0  // self D _rolled := 0
+        D self_D__TemporaryFileArgs = manifold [manifold ["mode", mode], manifold ["buffering", buffering], manifold ["suffix", suffix], manifold ["prefix", prefix], manifold ["encoding", encoding], manifold ["newline", newline], manifold ["dir", dir], manifold ["errors", errors]]  // self D _TemporaryFileArgs := manifold [manifold ["mode", mode], manifold ["buffering", buffering], manifold ["suffix", suffix], manifold ["prefix", prefix], manifold ["encoding", encoding], manifold ["newline", newline], manifold ["dir", dir], manifold ["errors", errors]]
+    }
+    P __class_getitem__ = classmethod(_types D GenericAlias)
+    D SpooledTemporaryFile___check = λ self, file . {
+        T cond = → if self D _rolled → → P
+        P max_size = self D _max_size
+        T cond = → if (max_size && file D tell(P) > max_size) → self D rollover(P)
+    }
+    D SpooledTemporaryFile__rollover = λ self . {
+        T cond = → if self D _rolled → → P
+        P file = self D _file
+        P newfile = TemporaryFile(self D _TemporaryFileArgs)
+        D self_D__file = TemporaryFile(self D _TemporaryFileArgs)  // self D _file := TemporaryFile(self D _TemporaryFileArgs)
+        // del self._TemporaryFileArgs
+        P pos = file D tell(P)
+        T cond = → if hasattr(newfile, "buffer") → newfile D buffer D write(file D detach(P) D getvalue(P))
+        → E newfile D write(file D getvalue(P))
+        newfile D seek(pos, 0)
+        D self_D__rolled = 1  // self D _rolled := 1
+    }
+    D SpooledTemporaryFile____enter = λ self . {
+        T cond = → if self D _file D closed → → E ValueError("Cannot enter context with closed file")
+        → self
+    }
+    D SpooledTemporaryFile____exit = λ self, exc, value, tb . self D _file D close(P)
+    D SpooledTemporaryFile____iter = λ self . → self D _file D __iter__(P)
+    D SpooledTemporaryFile____del = λ self . {
+        T cond = → if (!self D closed) → P
+            _warnings D warn("Unclosed file {!r}" D format(self), ResourceWarning, manifold ["stacklevel", 2], manifold ["source", self])
+            self D close(P)
+    }
+    D SpooledTemporaryFile__close = λ self . self D _file D close(P)
+    D SpooledTemporaryFile__closed = λ self . → self D _file D closed
+    D SpooledTemporaryFile__encoding = λ self . → self D _file D encoding
+    D SpooledTemporaryFile__errors = λ self . → self D _file D errors
+    D SpooledTemporaryFile__fileno = λ self . {
+        self D rollover(P)
+        → self D _file D fileno(P)
+    }
+    D SpooledTemporaryFile__flush = λ self . self D _file D flush(P)
+    D SpooledTemporaryFile__isatty = λ self . → self D _file D isatty(P)
+    D SpooledTemporaryFile__mode = λ self . {
+        T attempt = → P  // try
+            → self D _file D mode
+        → E AttributeError (_)
+            → self D _TemporaryFileArgs["mode"]
+    }
+    D SpooledTemporaryFile__name = λ self . {
+        T attempt = → P  // try
+            → self D _file D name
+        → E AttributeError (_)
+            → P
+    }
+    D SpooledTemporaryFile__newlines = λ self . → self D _file D newlines
+    D SpooledTemporaryFile__readable = λ self . → self D _file D readable(P)
+    D SpooledTemporaryFile__read = λ self . → self D _file D read(args)
+    D SpooledTemporaryFile__read1 = λ self . → self D _file D read1(args)
+    D SpooledTemporaryFile__readinto = λ self, b . → self D _file D readinto(b)
+    D SpooledTemporaryFile__readinto1 = λ self, b . → self D _file D readinto1(b)
+    D SpooledTemporaryFile__readline = λ self . → self D _file D readline(args)
+    D SpooledTemporaryFile__readlines = λ self . → self D _file D readlines(args)
+    D SpooledTemporaryFile__seekable = λ self . → self D _file D seekable(P)
+    D SpooledTemporaryFile__seek = λ self . → self D _file D seek(args)
+    D SpooledTemporaryFile__tell = λ self . → self D _file D tell(P)
+    D SpooledTemporaryFile__truncate = λ self, size . {
+        T cond = → if size == P → → self D _file D truncate(P)
+        → E P
+            T cond = → if size > self D _max_size → self D rollover(P)
+            → self D _file D truncate(size)
+    }
+    D SpooledTemporaryFile__writable = λ self . → self D _file D writable(P)
+    D SpooledTemporaryFile__write = λ self, s . {
+        P file = self D _file
+        P rv = file D write(s)
+        self D _check(file)
+        → rv
+    }
+    D SpooledTemporaryFile__writelines = λ self, iterable . {
+        T cond = → if (self D _max_size == 0 || self D _rolled) → → self D _file D writelines(iterable)
+        P it = iter(iterable)
+        T loop = ∞ (
+            P line = it[_loop_index]
+            self D write(line)
+            T cond = → if self D _rolled → → self D _file D writelines(it)
+        ) (D |it|)
+    }
+    D SpooledTemporaryFile__detach = λ self . → self D _file D detach(P)
+D TemporaryDirectory = λ . P  // class
+    // Create and return a temporary directory.  This has the same     behavior as mkdtemp but can be used as a context manager
+    D TemporaryDirectory____init = λ self, suffix, prefix, dir, ignore_cleanup_errors . {
+        D self_D_name = mkdtemp(suffix, prefix, dir)  // self D name := mkdtemp(suffix, prefix, dir)
+        D self_D__ignore_cleanup_errors = ignore_cleanup_errors  // self D _ignore_cleanup_errors := ignore_cleanup_errors
+        D self_D__delete = delete  // self D _delete := delete
+        D self_D__finalizer = _weakref D finalize(self, self D _cleanup, self D name, manifold ["warn_message", "Implicitly cleaning up {!r}" D format(self)], manifold ["ignore_errors", self D _ignore_cleanup_errors], manifold ["delete", self D _delete])  // self D _finalizer := _weakref D finalize(self, self D _cleanup, self D name, manifold ["warn_message", "Implicitly cleaning up {!r}" D format(self)], manifold ["ignore_errors", self D _ignore_cleanup_errors], manifold ["delete", self D _delete])
+    }
+    D TemporaryDirectory___rmtree = λ cls, name, ignore_errors, repeated . {
+        D TemporaryDirectory__onexc = λ func, path, exc . {
+            T cond = → if isinstance(exc, PermissionError) → P
+                T cond = → if (repeated && path == name) → P
+                    T cond = → if ignore_errors → → P
+                    → E P
+                T attempt = → P  // try
+                    T cond = → if path ≠ name → _resetperms(_os D path D dirname(path))
+                    _resetperms(path)
+                    T attempt = → P  // try
+                        _os D unlink(path)
+                    → E IsADirectoryError (_)
+                        cls D _rmtree(path, manifold ["ignore_errors", ignore_errors])
+                    → E PermissionError (_)
+                        T cond = → if ((!_os D path D isdir(path)) || _os D path D isjunction(path)) → P
+                            T cond = → if ignore_errors → → P
+                            → E P
+                        cls D _rmtree(path, manifold ["ignore_errors", ignore_errors], manifold ["repeated", path == name])
+                → E FileNotFoundError (_)
+                    // pass
+            → E T cond = → if isinstance(exc, FileNotFoundError) → P  // pass
+        }
+        _shutil D rmtree(name, manifold ["onexc", onexc])
+    }
+    D TemporaryDirectory___cleanup = λ cls, name, warn_message, ignore_errors, delete . {
+        T cond = → if delete → P
+            cls D _rmtree(name, manifold ["ignore_errors", ignore_errors])
+            _warnings D warn(warn_message, ResourceWarning)
+    }
+    D TemporaryDirectory____repr = λ self . → "<{} {!r}>" D format(self D __class__ D __name__, self D name)
+    D TemporaryDirectory____enter = λ self . → self D name
+    D TemporaryDirectory____exit = λ self, exc, value, tb . T cond = → if self D _delete → self D cleanup(P)
+    D TemporaryDirectory__cleanup = λ self . T cond = → if (self D _finalizer D detach(P) || _os D path D exists(self D name)) → self D _rmtree(self D name, manifold ["ignore_errors", self D _ignore_cleanup_errors])
+    P __class_getitem__ = classmethod(_types D GenericAlias)
+
