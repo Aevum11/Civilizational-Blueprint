@@ -1,0 +1,36 @@
+======================================================================
+  ET STATIC REMOVAL — T-SHADOW REPORT
+  Source: 3.etlm
+  N=12, 48000 Hz, 2 ch
+======================================================================
+
+  Method: T-shadow structural classification
+  Classifier 1: T/D resolution gradient (center vs ∂I edge)
+  Classifier 2: ε sign lean (Koide/comma bias)
+  Static = BOTH flat (T without D-constraint)
+  Signal = EITHER structured (T under D-constraint)
+
+  Signal frames: 456896
+  Static frames: 2880
+  Signal samples: 912231
+  Static samples: 5752
+
+  Signal |ε|/cell = 0.204521
+  Static |ε|/cell = 0.207474
+  1/S = 0.25 (manifold constant, S=4)
+
+  SIGNAL d-families:
+    d=  1: 8.43%
+    d=  2: 10.52%
+    d=  3: 14.86%
+    d=  4: 15.00%
+    d=  6: 17.41%
+    d= 12: 33.78%
+
+  STATIC d-families:
+    d=  1: 8.90%
+    d=  2: 9.94%
+    d=  3: 13.98%
+    d=  4: 14.85%
+    d=  6: 17.61%
+    d= 12: 34.72%

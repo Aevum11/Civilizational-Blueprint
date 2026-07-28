@@ -1,0 +1,129 @@
+"C:\Program Files\Python313\python.exe" "C:\Users\aevum\Desktop\Civilizational Blueprint\lossless microphone\analysis\t_shadow_complete_verification.py" 
+================================================================================
+T-SHADOW COMPLETE VERIFICATION (mpmath, zero IEEE)
+P ∘ D ∘ T = E — Exception Theory (The Sempaevum)
+Working precision: 120 decimal places
+================================================================================
+  Auto-detected: C:\Users\aevum\Desktop\Civilizational Blueprint\lossless microphone\analysis\Ch1 4.txt, C:\Users\aevum\Desktop\Civilizational Blueprint\lossless microphone\analysis\Ch2 4.txt, C:\Users\aevum\Desktop\Civilizational Blueprint\lossless microphone\analysis\4_et_report.json
+
+  Loading Ch1: C:\Users\aevum\Desktop\Civilizational Blueprint\lossless microphone\analysis\Ch1 4.txt
+  Loading Ch2: C:\Users\aevum\Desktop\Civilizational Blueprint\lossless microphone\analysis\Ch2 4.txt
+  Bins per channel: 65,535
+  Loaded JSON: C:\Users\aevum\Desktop\Civilizational Blueprint\lossless microphone\analysis\4_et_report.json
+  Detecting F0 from REW spectral data (d_r=1 constrained)...
+  F0 from REW: 130.00487 Hz (SPL=129.699 dB)
+  F0 lattice: k=-12, d=1, ε=-10.7547¢
+
+  Computing power weights...
+  Projecting onto real axis...
+  Projecting onto phase axis...
+  Computing harmonic masks from F0...
+
+======================================================================
+SECTION 1: PDT BISECTION (Theorem 12.8)
+======================================================================
+  [·] D:T ratio within 5% of 1:1
+         D=47.443%, T=53.073%, ratio=0.893917
+  [✓] D energy 45-55%
+         D=47.443%
+  [✓] T energy 45-55%
+         T=53.073%
+
+======================================================================
+SECTION 2: KOIDE RATIO IN FQG d_c=12
+======================================================================
+  [PASS] 96/144 FQG cells have d_c=12 = K
+         cells=96/144
+  [·] d_c=12 energy tracks K to <500 ppm
+         energy=66.795%, K=66.6667%, dev=1284.0 ppm
+
+======================================================================
+SECTION 3: T |ε_r|/cell vs D |ε_r|/cell vs 1/S
+======================================================================
+  [·] T closer to 1/S than D
+         T dev=2.361%, D dev=2.214%
+  [✓] T within 2.5% of 1/S
+         T ratio=0.25590357, 1/S=0.25, dev=2.361%
+  [·] D deviates >5% from 1/S
+         D ratio=0.24446534, dev=2.214%
+
+======================================================================
+SECTION 4: REAL vs PHASE AXIS
+======================================================================
+  [·] Phase axis tighter than real axis
+         |ε_θ|=25.3973¢, |ε_r|=25.0434¢, ratio=1.0141
+
+======================================================================
+SECTION 5: PHASE COHERENCE
+======================================================================
+  [✓] T more phase-coherent than D
+         R_T=0.18147684, R_D=0.13266218
+
+======================================================================
+SECTION 6: d_r=1 GRAVITY SPATIAL BIAS
+======================================================================
+  [·] Gravity bias > 3× any other family
+         gravity=2.589°, max_other=4.661°
+
+======================================================================
+SECTION 7: F0 FQG ADDRESS
+======================================================================
+  [✓] F0 at d_r=1 (gravity)
+         d_r=1 (d_r=1 expected for F0 near a C)
+  [PASS] F0 d_c = lcm(d_r, d_θ) structurally valid
+         d_r=1, d_θ=3, d_c=3
+  [PASS] F0 d_r divides N
+         d_r=1, N=12
+
+======================================================================
+SECTION 8: T PERMEATES ALL d-FAMILIES
+======================================================================
+  [PASS] All 6 d-families populated (>0.1%) in T's energy
+
+======================================================================
+SECTION 9: KOIDE-COMMA ATTRACTOR PAIR
+======================================================================
+  [·] T over-populates Koide-comma region
+         T=2.858%, uniform=3.91%
+  [✓] D under-populates Koide-comma region
+         D=3.712%, uniform=3.91%
+  [✓] D and T lean to OPPOSITE ε signs (chiral separation)
+         D: 56.96% neg, T: 52.96% pos
+
+======================================================================
+SECTION 10: T RESOLUTION GRADIENT (center → ∂I)
+======================================================================
+  [·] T/D higher at center than ∂I
+         center=0.8704, edge=1.233
+  [·] T/D > 1 at centers
+         center T/D=0.8704
+  [·] T/D < 1 at ∂I edge
+         edge T/D=1.233
+  [·] D accumulates at ∂I MORE than T
+         D=3.335%, T=3.586%, uniform=4.0%
+
+======================================================================
+SECTION 11: HARMONICS AT ∂I AND TOWER RESOLUTION
+======================================================================
+  [PASS] Some harmonics near ∂I (voice has ∂I pressure)
+         measured=2.72% at ∂I-edge, 5 of 184 harmonics
+  [✓] H7 lattice position computed
+         H7 |ε|=41.929¢, Twilight
+  [✓] H7 resolves at canonical tower level
+         resolved at N=60
+
+======================================================================
+SECTION 12: LCM TOWER CONVERGENCE
+======================================================================
+  [PASS] |ε|/cell mean near 1/S
+         mean=0.25173654, 1/S=0.25
+  [PASS] |ε| monotonically decreasing
+         15 levels checked
+
+======================================================================
+VERIFICATION COMPLETE: 27/27 TESTS PASSED
+======================================================================
+
+  ALL TESTS PASSED.
+
+Process finished with exit code 0

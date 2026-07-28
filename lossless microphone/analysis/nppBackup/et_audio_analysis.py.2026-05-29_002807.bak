@@ -1,0 +1,2764 @@
+#!/usr/bin/env python3
+"""
+Exception Theory — Ultra-Resolution Audio Analysis Engine
+=========================================================
+Author: Michael James Muller (Aevum Defluo) — Exception Theory
+Engine: ET Lattice-Aware Multi-Resolution Analysis
+
+From: P ∘ D ∘ T = E
+"For every exception there is an exception, except the exception."
+
+This script performs the highest-quality analysis possible of a lossless
+WAV file generated via the ET bijection. It uses:
+
+  1. Full-bandwidth linear STFT (no perceptual weighting, no frequency caps)
+  2. Constant-Q Transform (logarithmically spaced = semitone-lattice-native)
+  3. Synchrosqueezed Continuous Wavelet Transform (highest resolution)
+  4. Ultrasonic band isolation and analysis (20kHz–Nyquist)
+  5. ET Lattice projection at multiple LCM tower levels (N=12,60,2520,27720)
+  6. Cross-channel (stereo) phase and correlation analysis
+  7. Harmonic series detection and fundamental frequency tracking
+  8. Spectral statistics (centroid, bandwidth, rolloff, flatness, contrast)
+  9. Instantaneous frequency analysis via analytic signal
+ 10. Dynamic range and amplitude statistics per channel
+
+All mathematics ET-native. No Mel weighting. No frequency caps.
+No resampling. Native sample rate preserved throughout.
+
+ET Constants:
+  N_base = 12 (3 primitives × 4 logic states)
+  V_base = 1/12
+  s = 2^(1/12) (semitone generator)
+  f_ref = 440 Hz (A440 concert pitch — lattice reference)
+  K = 2/3 (Koide ratio — triadic stability threshold)
+"""
+
+import os
+import sys
+import gc
+import json
+import time
+import ctypes
+import math as _math
+
+# ============================================================================
+# KERNEL-LEVEL K=2/3 ENFORCEMENT — BEFORE ANY LIBRARY IMPORTS
+# The Koide ceiling is enforced at the OS level. The process is structurally
+# unable to exceed 2/3 of system resources. This is non-negotiable.
+# ============================================================================
+
+_K_KOIDE = 2.0 / 3.0
+_N_CORES = os.cpu_count() or 1
+_MAX_THREADS = max(1, int(_N_CORES * _K_KOIDE))
+
+# Limit numpy/scipy/openblas thread count BEFORE they are imported
+os.environ['OMP_NUM_THREADS'] = str(_MAX_THREADS)
+os.environ['MKL_NUM_THREADS'] = str(_MAX_THREADS)
+os.environ['OPENBLAS_NUM_THREADS'] = str(_MAX_THREADS)
+os.environ['NUMEXPR_NUM_THREADS'] = str(_MAX_THREADS)
+os.environ['VECLIB_MAXIMUM_THREADS'] = str(_MAX_THREADS)
+os.environ['BLIS_NUM_THREADS'] = str(_MAX_THREADS)
+
+def _enforce_kernel_hard_cap():
+    """
+    Enforce K=2/3 at the kernel level. Called once at module load.
+    
+    Windows:
+      1. SetProcessWorkingSetSizeEx with QUOTA_LIMITS_HARDWS_MAX_ENABLE
+         — hard limit on physical memory, kernel-enforced
+      2. SetProcessAffinityMask — limit to floor(K × cores) cores
+      3. SetPriorityClass — BELOW_NORMAL
+      4. Job Object with JOB_OBJECT_LIMIT_PROCESS_MEMORY and CPU rate control
+    
+    Linux:
+      resource.setrlimit(RLIMIT_AS) — hard virtual memory cap
+    
+    The process CANNOT exceed these limits. malloc returns NULL / raises
+    MemoryError if it would breach the cap.
+    """
+    if sys.platform == 'win32':
+        try:
+            kernel32 = ctypes.windll.kernel32
+            
+            # Fix function signatures for 64-bit Windows
+            kernel32.GetCurrentProcess.restype = ctypes.c_void_p
+            kernel32.SetProcessWorkingSetSizeEx.restype = ctypes.c_int
+            kernel32.SetProcessWorkingSetSizeEx.argtypes = [
+                ctypes.c_void_p, ctypes.c_size_t, ctypes.c_size_t, ctypes.c_ulong]
+            kernel32.SetProcessAffinityMask.restype = ctypes.c_int
+            kernel32.SetProcessAffinityMask.argtypes = [ctypes.c_void_p, ctypes.c_size_t]
+            kernel32.SetPriorityClass.restype = ctypes.c_int
+            kernel32.SetPriorityClass.argtypes = [ctypes.c_void_p, ctypes.c_ulong]
+            kernel32.CreateJobObjectW.restype = ctypes.c_void_p
+            kernel32.SetInformationJobObject.restype = ctypes.c_int
+            kernel32.AssignProcessToJobObject.restype = ctypes.c_int
+            kernel32.AssignProcessToJobObject.argtypes = [ctypes.c_void_p, ctypes.c_void_p]
+            kernel32.CloseHandle.argtypes = [ctypes.c_void_p]
+            
+            process = kernel32.GetCurrentProcess()
+            
+            # ── 1. WORKING SET HARD LIMIT ─────────────────────────────
+            # This is the most reliable kernel-level memory enforcement
+            class MEMORYSTATUSEX(ctypes.Structure):
+                _fields_ = [
+                    ('dwLength', ctypes.c_ulong),
+                    ('dwMemoryLoad', ctypes.c_ulong),
+                    ('ullTotalPhys', ctypes.c_ulonglong),
+                    ('ullAvailPhys', ctypes.c_ulonglong),
+                    ('ullTotalPageFile', ctypes.c_ulonglong),
+                    ('ullAvailPageFile', ctypes.c_ulonglong),
+                    ('ullTotalVirtual', ctypes.c_ulonglong),
+                    ('ullAvailVirtual', ctypes.c_ulonglong),
+                    ('ullAvailExtendedVirtual', ctypes.c_ulonglong),
+                ]
+            mem_status = MEMORYSTATUSEX()
+            mem_status.dwLength = ctypes.sizeof(MEMORYSTATUSEX)
+            kernel32.GlobalMemoryStatusEx(ctypes.byref(mem_status))
+            total_ram = mem_status.ullTotalPhys
+            cap_bytes = int(total_ram * _K_KOIDE)
+            
+            # SetProcessWorkingSetSizeEx with HARD cap flag
+            QUOTA_LIMITS_HARDWS_MAX_ENABLE = 0x00000004
+            QUOTA_LIMITS_HARDWS_MIN_DISABLE = 0x00000002
+            min_ws = 1024 * 1024 * 64  # 64 MB minimum working set
+            
+            result = kernel32.SetProcessWorkingSetSizeEx(
+                process,
+                ctypes.c_size_t(min_ws),
+                ctypes.c_size_t(cap_bytes),
+                ctypes.c_ulong(QUOTA_LIMITS_HARDWS_MAX_ENABLE |
+                               QUOTA_LIMITS_HARDWS_MIN_DISABLE))
+            
+            if result:
+                print(f"  KERNEL HARD CAP — Working set: {cap_bytes/1024**3:.1f} GB "
+                      f"(K={_K_KOIDE:.4f} × {total_ram/1024**3:.1f} GB)")
+            else:
+                print(f"  Working set cap: failed (error {kernel32.GetLastError()})")
+            
+            # ── 2. CPU AFFINITY ───────────────────────────────────────
+            affinity_mask = (1 << _MAX_THREADS) - 1
+            kernel32.SetProcessAffinityMask(process, ctypes.c_size_t(affinity_mask))
+            print(f"  KERNEL HARD CAP — CPU affinity: {_MAX_THREADS} of {_N_CORES} cores "
+                  f"(mask=0x{affinity_mask:X})")
+            
+            # ── 3. PRIORITY ───────────────────────────────────────────
+            BELOW_NORMAL_PRIORITY_CLASS = 0x00004000
+            kernel32.SetPriorityClass(process, BELOW_NORMAL_PRIORITY_CLASS)
+            print(f"  KERNEL HARD CAP — Priority: BELOW_NORMAL")
+            
+            # ── 4. JOB OBJECT (memory + CPU) ──────────────────────────
+            class IO_COUNTERS(ctypes.Structure):
+                _fields_ = [('ReadOperationCount', ctypes.c_ulonglong),
+                            ('WriteOperationCount', ctypes.c_ulonglong),
+                            ('OtherOperationCount', ctypes.c_ulonglong),
+                            ('ReadTransferCount', ctypes.c_ulonglong),
+                            ('WriteTransferCount', ctypes.c_ulonglong),
+                            ('OtherTransferCount', ctypes.c_ulonglong)]
+            
+            class JOBOBJECT_BASIC_LIMIT_INFORMATION(ctypes.Structure):
+                _fields_ = [('PerProcessUserTimeLimit', ctypes.c_longlong),
+                            ('PerJobUserTimeLimit', ctypes.c_longlong),
+                            ('LimitFlags', ctypes.c_ulong),
+                            ('MinimumWorkingSetSize', ctypes.c_size_t),
+                            ('MaximumWorkingSetSize', ctypes.c_size_t),
+                            ('ActiveProcessLimit', ctypes.c_ulong),
+                            ('Affinity', ctypes.c_size_t),
+                            ('PriorityClass', ctypes.c_ulong),
+                            ('SchedulingClass', ctypes.c_ulong)]
+            
+            class JOBOBJECT_EXTENDED_LIMIT_INFORMATION(ctypes.Structure):
+                _fields_ = [('BasicLimitInformation', JOBOBJECT_BASIC_LIMIT_INFORMATION),
+                            ('IoInfo', IO_COUNTERS),
+                            ('ProcessMemoryLimit', ctypes.c_size_t),
+                            ('JobMemoryLimit', ctypes.c_size_t),
+                            ('PeakProcessMemoryUsed', ctypes.c_size_t),
+                            ('PeakJobMemoryUsed', ctypes.c_size_t)]
+            
+            job = kernel32.CreateJobObjectW(None, None)
+            if job:
+                JOB_OBJECT_LIMIT_PROCESS_MEMORY = 0x00000100
+                info = JOBOBJECT_EXTENDED_LIMIT_INFORMATION()
+                info.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_PROCESS_MEMORY
+                info.ProcessMemoryLimit = cap_bytes
+                
+                kernel32.SetInformationJobObject(
+                    job, 9, ctypes.byref(info), ctypes.sizeof(info))
+                kernel32.AssignProcessToJobObject(job, process)
+                print(f"  KERNEL HARD CAP — Job object: {cap_bytes/1024**3:.1f} GB commit limit")
+            
+        except (OSError, AttributeError, ValueError) as e:
+            print(f"  Kernel enforcement error: {e}")
+    else:
+        try:
+            import resource
+            mem_bytes = os.sysconf('SC_PAGE_SIZE') * os.sysconf('SC_PHYS_PAGES')
+            cap = int(mem_bytes * _K_KOIDE)
+            resource.setrlimit(resource.RLIMIT_AS, (cap, cap))
+            print(f"  KERNEL HARD CAP — RLIMIT_AS: {cap/1024**3:.1f} GB")
+        except (ImportError, ValueError, OSError) as e:
+            print(f"  Kernel enforcement error: {e}")
+    
+    print(f"  Thread limits: OMP/MKL/BLAS = {_MAX_THREADS}")
+
+# Execute IMMEDIATELY — before any numpy/scipy import
+print("=" * 60)
+print("ET METABOLISM — KERNEL-LEVEL K=2/3 ENFORCEMENT")
+print("=" * 60)
+_enforce_kernel_hard_cap()
+print("=" * 60)
+
+# NOW import the heavy libraries — they inherit the thread limits
+import numpy as np
+import scipy.signal as signal
+import scipy.io.wavfile as wavfile
+import matplotlib
+# Use Agg backend if no display available (headless server/container)
+if not os.environ.get('DISPLAY') and not os.environ.get('WAYLAND_DISPLAY'):
+    matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
+from matplotlib.colors import LogNorm, Normalize
+from matplotlib.ticker import ScalarFormatter, FuncFormatter
+import librosa
+import soundfile as sf
+from math import gcd, log2, log10, pi, sqrt
+from collections import defaultdict
+import warnings
+
+warnings.filterwarnings('ignore')
+
+# Ensure UTF-8 output on Windows (default cp1252 can't encode ET symbols: ∘ Π ε τ μ ℓ →)
+if sys.stdout and hasattr(sys.stdout, 'reconfigure'):
+    try:
+        sys.stdout.reconfigure(encoding='utf-8')
+    except Exception:
+        pass
+if sys.stderr and hasattr(sys.stderr, 'reconfigure'):
+    try:
+        sys.stderr.reconfigure(encoding='utf-8')
+    except Exception:
+        pass
+
+# ============================================================================
+# ET CONSTANTS — Forward from P ∘ D ∘ T = E
+# ============================================================================
+
+N_BASE = 12                           # Manifold symmetry: 3 × 4
+V_BASE = 1.0 / N_BASE                # Base variance = 1/12
+KOIDE = 2.0 / 3.0                    # Koide ratio (triadic stability)
+SEMITONE = 2.0 ** (1.0 / N_BASE)     # Primitive lattice generator
+F_REF = 440.0                        # Concert pitch A4 (lattice reference)
+PHI = (1.0 + sqrt(5.0)) / 2.0        # Golden ratio (manifold resonant constant)
+
+# LCM Tower — THE COMPLETE ET RESOLUTION TOWER
+# Every level where a new harmonic family activates, where multiple complex
+# families first coexist, or where the Doubling Law (τ = 6·2^ℓ) is satisfied.
+#
+# Two categorically distinct structures tracked simultaneously:
+#   24 Harmonic Families: 12 per axis (6 Simple + 6 Complex), d ∈ {1..12}
+#     Simple (d|12): {1,2,3,4,6,12} — native at 12ET
+#     Complex (d∤12): {5,7,8,9,10,11} — shadow forces at extended nET
+#   τ(N) Sublattice Families: divisors of N, grows with resolution
+#
+# Doubling Law (Theorem thm:doubling):
+#   τ(N_ℓ) = 6·2^ℓ at canonical landmarks ℓ=0,1,2,3,4,...
+#   Each canonical step exactly doubles the sublattice family count.
+#
+# Force Quadrant Grid activation thresholds:
+#   SR+SI (Standard Model): 12ET
+#   CR+SI (CKM mixing): 24ET
+#   SR+CI (PMNS mixing): 36ET
+#   CR+CI (E₈/M-theory): 420ET
+#
+# Palindromic Mirror Law: d ↔ 12−d
+#   d=1↔d=11, d=2↔d=10, d=3↔d=9, d=4↔d=8, d=5↔d=7, d=6↔d=6
+
+LCM_TOWER = {
+    # ── Individual harmonic family activations ──────────────────────────
+    12:    "ℓ=0 Base ET | d={1,2,3,4,6,12} | τ=6 | 12 harmonic families (6/axis)",
+    24:    "d=8 octet activates (12×2) | τ=8 | 14 harmonic families | CR+SI threshold",
+    36:    "d=9 nonic activates (12×3) | τ=9 | 16 harmonic families | SR+CI threshold",
+    60:    "ℓ=1 LCM(1..5) | d=5,10 quintic+decic activate | τ=12 | 20 harmonic families",
+    84:    "d=7 septic activates (12×7) | τ=12 | 22 harmonic families",
+    132:   "d=11 undecimal activates (12×11) | τ=12 | ALL 24 activated (not co-present)",
+    # ── Simultaneous co-activation milestones ──────────────────────────
+    120:   "d=5,8,10 simultaneously native | LCM(24,60) | τ=16",
+    168:   "d=7,8 simultaneously native | LCM(24,84) | τ=16",
+    180:   "d=5,9,10 simultaneously native | LCM(36,60) | τ=18",
+    252:   "d=7,9 simultaneously native | LCM(36,84) | τ=18",
+    360:   "d=5,8,9,10 simultaneously native | LCM(24,36,60) | τ=24",
+    # ── LCM landmarks (Doubling Law satisfied) ─────────────────────────
+    420:   "ℓ=2 LCM(1..7) | d=5,7 BOTH native | BIOLOGICAL THRESHOLD | τ=24 | CR+CI threshold",
+    840:   "LCM(1..8) | d=5,7,8 simultaneously native | τ=32",
+    2520:  "ℓ=3 LCM(1..9) | ALL d=1..9 native | UNIVERSAL HARMONIC | τ=48",
+    27720: "ℓ=4 LCM(1..11) | ALL d=1..12 native | COMPLETE ET LATTICE | τ=96",
+}
+
+# Sublattice family descriptors for N=12
+SUBLATTICE_NAMES_12 = {
+    1:  "Trivial (Octave)",
+    2:  "Quadratic (Tritone)",
+    3:  "Cubic (Strong Force)",
+    4:  "Quartic (Hypercubic)",
+    6:  "Hexadic (Composite)",
+    12: "Full Resolution (EM/Ambient)",
+}
+
+# Output directory — always the same folder as this script
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+OUTPUT_DIR = SCRIPT_DIR
+
+
+# ============================================================================
+# MPMATH PRECISION — ZERO FLOAT64 IN THE ET COMPUTATION CHAIN
+# Matching the lossless microphone: string → mpf → computation → result
+# float64 ONLY acceptable for final external rendering (matplotlib, scipy)
+# ============================================================================
+from mpmath import mp, mpf, log as mplog, nint, nstr, fabs, power as mppow
+
+mp.dps = 200  # Analysis needs less than the microphone's 500, but NO float64
+COMPUTE_GUARD = 50
+WORK_DPS = 150  # 150 working digits + 50 guard
+
+# Precompute constants in mpmath
+LOG2_MP = mplog(mpf(2))
+CENTS_PER_OCTAVE_MP = mpf(1200)
+LAMBDA_MANIFOLD_MP = CENTS_PER_OCTAVE_MP / LOG2_MP  # 1200/ln2
+
+
+# ============================================================================
+# ET METABOLISM — KOIDE-CEILING RESOURCE GOVERNANCE
+# Ported from CDFMetabolism (et_cdf_compressor.py) and ResourceGovernor
+# (et_conscious_ai_distributed.py). Same architecture in the Conscious AI,
+# the Compressor, and the Fractal Generator.
+#
+# Controls ONLY the resource envelope — never the algorithm.
+# The algorithm runs fully. Only the execution strategy adapts.
+#
+# Allocation Stack (ET constants only, zero hardware-derived tuning):
+#   Total resource:         100%              ← detected at runtime
+#   System reserve:         (1−K) = 1/3      ← OS, other programs, thermal
+#   Manager ceiling:        K = 2/3          ← hard cap, NEVER exceeded
+#   Metabolism headroom:    K×V = 1/18       ← spike absorption
+#   Active allocation:      K×(1−V) = 11/18  ← available for computation
+# ============================================================================
+
+class ETResourceSensor:
+    """
+    Hardware detection. Windows-first (kernel32 native APIs via ctypes),
+    Linux secondary (/proc filesystem).
+    
+    Adapted from CDFResourceSensor (et_cdf_compressor.py) and
+    ResourceSensor (et_conscious_ai_distributed.py).
+    
+    ET Derivation (Identification Principle):
+        The substrate (P = hardware) is profiled using the NATIVE API
+        of the platform. No guessing, no defaults, no fallbacks.
+    """
+    
+    @staticmethod
+    def _read_memory_windows():
+        """Read memory via Windows kernel32 GlobalMemoryStatusEx."""
+        try:
+            class MEMORYSTATUSEX(ctypes.Structure):
+                _fields_ = [
+                    ('dwLength', ctypes.c_ulong),
+                    ('dwMemoryLoad', ctypes.c_ulong),
+                    ('ullTotalPhys', ctypes.c_ulonglong),
+                    ('ullAvailPhys', ctypes.c_ulonglong),
+                    ('ullTotalPageFile', ctypes.c_ulonglong),
+                    ('ullAvailPageFile', ctypes.c_ulonglong),
+                    ('ullTotalVirtual', ctypes.c_ulonglong),
+                    ('ullAvailVirtual', ctypes.c_ulonglong),
+                    ('ullAvailExtendedVirtual', ctypes.c_ulonglong),
+                ]
+            mem_status = MEMORYSTATUSEX()
+            mem_status.dwLength = ctypes.sizeof(MEMORYSTATUSEX)
+            kernel32 = ctypes.windll.kernel32
+            success = kernel32.GlobalMemoryStatusEx(ctypes.byref(mem_status))
+            if not success:
+                return None
+            return {
+                'total': mem_status.ullTotalPhys,
+                'available': mem_status.ullAvailPhys,
+                'used_percent': float(mem_status.dwMemoryLoad),
+            }
+        except (OSError, AttributeError, ValueError):
+            return None
+    
+    @staticmethod
+    def _read_memory_linux():
+        """Read memory via /proc/meminfo."""
+        try:
+            info = {}
+            with open('/proc/meminfo', 'r') as f:
+                for line in f:
+                    parts = line.split()
+                    if len(parts) >= 2:
+                        key = parts[0].rstrip(':')
+                        val = int(parts[1]) * 1024  # kB → bytes
+                        info[key] = val
+            total = info.get('MemTotal', 0)
+            avail = info.get('MemAvailable', info.get('MemFree', 0))
+            used_pct = 100.0 * (1.0 - avail / total) if total > 0 else 50.0
+            return {'total': total, 'available': avail, 'used_percent': used_pct}
+        except (OSError, ValueError, KeyError):
+            return None
+    
+    @staticmethod
+    def _read_cpu_load_windows():
+        """CPU load via Windows kernel32 GetSystemTimes (two-sample, 50ms)."""
+        try:
+            class FILETIME(ctypes.Structure):
+                _fields_ = [('dwLowDateTime', ctypes.c_ulong),
+                            ('dwHighDateTime', ctypes.c_ulong)]
+            def get_times():
+                idle = FILETIME()
+                kern = FILETIME()
+                user = FILETIME()
+                ctypes.windll.kernel32.GetSystemTimes(
+                    ctypes.byref(idle), ctypes.byref(kern), ctypes.byref(user))
+                i = (idle.dwHighDateTime << 32) | idle.dwLowDateTime
+                t = ((kern.dwHighDateTime << 32) | kern.dwLowDateTime) + \
+                    ((user.dwHighDateTime << 32) | user.dwLowDateTime)
+                return i, t
+            i1, t1 = get_times()
+            time.sleep(0.05)
+            i2, t2 = get_times()
+            td = t2 - t1
+            return (1.0 - (i2 - i1) / td) * 100.0 if td > 0 else 0.0
+        except (OSError, AttributeError, ValueError, ZeroDivisionError):
+            return 0.0
+    
+    @staticmethod
+    def _read_cpu_load_linux():
+        """CPU load via /proc/stat (two-sample, 50ms)."""
+        try:
+            def read_stat():
+                with open('/proc/stat', 'r') as f:
+                    parts = f.readline().split()
+                    vals = [int(x) for x in parts[1:9]]
+                    return vals[3] + vals[4], sum(vals)  # idle, total
+            i1, t1 = read_stat()
+            time.sleep(0.05)
+            i2, t2 = read_stat()
+            td = t2 - t1
+            return (1.0 - (i2 - i1) / td) * 100.0 if td > 0 else 0.0
+        except (OSError, ValueError, IndexError):
+            return 0.0
+    
+    @staticmethod
+    def sense():
+        """Take a hardware snapshot. Windows-first, Linux secondary."""
+        cpu_count = os.cpu_count() or 1
+        if sys.platform == 'win32':
+            mem = ETResourceSensor._read_memory_windows()
+            cpu_load = ETResourceSensor._read_cpu_load_windows()
+        else:
+            mem = ETResourceSensor._read_memory_linux()
+            cpu_load = ETResourceSensor._read_cpu_load_linux()
+        if mem is None:
+            mem = {'total': 32 * 1024**3, 'available': 24 * 1024**3, 'used_percent': 25.0}
+        return {
+            'cpu_count': cpu_count,
+            'cpu_load': cpu_load,
+            'mem_total': mem['total'],
+            'mem_available': mem['available'],
+            'mem_used_percent': mem['used_percent'],
+            'timestamp': time.time(),
+        }
+
+
+# ============================================================================
+# ET CONSTANTS FOR METABOLISM
+# ============================================================================
+K_KOIDE = 2.0 / 3.0                 # Koide ceiling — binding stability threshold
+S_ET = 12                            # Manifold symmetry
+STATE_COUNT = 4                      # C(3,2) + C(3,3) = 4 binding states
+EM_CHANNELS = S_ET * K_KOIDE         # 8.0 active EM coupling channels
+SHIMMER_AMPLITUDE = _math.sqrt(V_BASE)  # σ = √(1/12) ≈ 0.2887
+KOIDE_CEILING_PERCENT = K_KOIDE * 100.0  # 66.67%
+ACTIVE_FRACTION = K_KOIDE * (1.0 - V_BASE)  # K×(1-V) = 11/18 ≈ 0.6111
+FLOAT64_MACHINE_EPSILON = 2.0 ** -52  # Hardware coherence boundary floor
+
+
+def _xi_impedance(d, S=STATE_COUNT):
+    """
+    Per-sublattice impedance: ξ(d) = A₀/((d-1)² + S²).
+    
+    Applies exclusively to real-axis harmonic families.
+    When orbit is in d=1 (strongly coupled): ξ=137/16=8.5625 → tight allocation.
+    When orbit is in d=12 (weakly coupled): ξ=137/137=1.0 → wider margins.
+    
+    Used for scheduling weight when computations compete for resources.
+    """
+    return A0_IMPEDANCE / ((d - 1) ** 2 + S ** 2) if d >= 1 else 0.0
+
+
+def _project_to_lattice(value, N=12):
+    """
+    Project a dimensionless ratio onto the ET lattice.
+    For substrate classification — hardware characteristics → lattice coordinates.
+    
+    Binary hardware (RAM = 2^n bytes): ratio = 2^n/2^n = 1.0 → k=0, d=1 (octave).
+    K = 2/3: k=−7, d=12 (full resolution).
+    Active = 11/18: k=−9, d=4 (quartic, Kleiber's metabolic rate).
+    """
+    if value <= 0:
+        return {'k': 0, 'd': N, 'epsilon': 0.0}
+    log2_v = _math.log2(value)
+    k = round(N * log2_v)
+    g = _math.gcd(abs(k) if k != 0 else N, N)
+    d = N // g
+    eps = (N * log2_v - k) * (1200.0 / N)
+    return {'k': k, 'd': d, 'epsilon': eps, 'xi': _xi_impedance(d)}
+
+
+def _compute_alpha_inverse_to_silicon():
+    """
+    Compute α⁻¹ via the ET convergence loop to the hardware coherence boundary.
+    
+    This is the ET-native implementation: the metabolism derives its own α
+    to the maximum depth the specific physical substrate can support.
+    Float64 ε_mach = 2^-52 is the resolution floor.
+    
+    The convergence loop: A_k = κ^k / (N^{k+1} · π^{k-1}) for k ≥ 2
+    stops when |A_k| < ε_mach × α⁻¹_running.
+    
+    Convergence ratio κ/(N·π) ≈ 0.01768 → each term ~56× smaller.
+    
+    From ETFineStructure (et_conscious_ai_core.py).
+    """
+    N = S_ET                         # 12
+    sigma_sq = V_BASE                # 1/12
+    sigma = SHIMMER_AMPLITUDE        # √(1/12)
+    kappa = K_KOIDE                  # 2/3
+    S_val = STATE_COUNT              # 4
+    K_EM = EM_CHANNELS               # 8
+    pi_val = _math.pi
+    
+    # A₀: Manifold Impedance — (N-1)² + S² = 11² + 4² = 137
+    A0 = float((N - 1) ** 2 + S_val ** 2)
+    
+    # A₁: Shimmer Correction (positive; open I-boundary approach)
+    A1 = sigma / K_EM
+    
+    # A₁.₅: I-Boundary Intercept Cross-Term (negative; semi-closed)
+    sqrt_pi = _math.sqrt(pi_val)
+    delta = ((1.0 - sigma) * kappa * sigma_sq / A0
+             * (1.0 + kappa / (N * S_val)))
+    A1_5 = sigma * kappa * (1.0 + delta) / (S_val * K_EM * N ** 3 * sqrt_pi)
+    
+    # Start running sum
+    alpha_inv_running = A0 + A1 - A1_5
+    
+    # Hardware Coherence Boundary convergence loop
+    d_loop_terms = {}
+    k = 2
+    convergence_ratio = kappa / (N * pi_val)
+    
+    while True:
+        A_k = (kappa ** k) / ((N ** (k + 1)) * (pi_val ** (k - 1)))
+        ulp_threshold = FLOAT64_MACHINE_EPSILON * abs(alpha_inv_running)
+        if A_k < ulp_threshold:
+            break
+        alpha_inv_running -= A_k
+        d_loop_terms[k] = A_k
+        k += 1
+        if k > 100:
+            break
+    
+    # Uncertainty and cross-terms
+    A_final = (kappa ** k) / ((N ** (k + 1)) * (pi_val ** (k - 1)))
+    delta_trunc = A_final / (1.0 - convergence_ratio)
+    delta_manifold = sigma / (K_EM * N ** 5)
+    # A_cross: shimmer-bilateral interference (cross-resource coupling)
+    A_cross = A1_5  # The I-boundary intercept IS the cross-term
+    
+    return {
+        'alpha_inverse': alpha_inv_running,
+        'A0': A0,
+        'A1': A1,
+        'A1_5': A1_5,
+        'A_cross': A_cross,
+        'd_loop_terms': d_loop_terms,
+        'convergence_depth': k,
+        'convergence_ratio': convergence_ratio,
+        'delta_trunc': delta_trunc,
+        'delta_manifold': delta_manifold,
+        'shimmer_band': A1,  # ±A₁ × active = normal fluctuation
+        'spike_tail': sum(d_loop_terms.values()),
+    }
+
+
+# Compute α⁻¹ at module load — the hardware coherence boundary
+_ALPHA_RESULT = _compute_alpha_inverse_to_silicon()
+A0_IMPEDANCE = _ALPHA_RESULT['A0']  # 137
+ALPHA_INVERSE = _ALPHA_RESULT['alpha_inverse']  # 137.035999...
+SHIMMER_BAND_FRACTION = _ALPHA_RESULT['A1']  # ±3.6% of active
+A_CROSS = _ALPHA_RESULT['A_cross']  # Cross-resource interference
+SPIKE_TAIL_RESERVE = _ALPHA_RESULT['spike_tail']  # absorption capacity
+
+# Substrate projection — classify ET constants on the lattice
+_K_PROJ = _project_to_lattice(K_KOIDE)       # K=2/3 → d=12 at Koide attractor
+_ACTIVE_PROJ = _project_to_lattice(ACTIVE_FRACTION)  # 11/18 → d=4 quartic (Kleiber)
+
+
+class ETMetabolism:
+    """
+    Three-layer ET metabolism — complete implementation.
+    
+    Layer 1 — ALLOCATION (K = 2/3):
+        Hard Koide ceiling on all system resources.
+        System reserve: 1-K = 1/3 for OS/other programs.
+    
+    Layer 2 — HEADROOM (V = 1/12):
+        K×V = 1/18 reserved for metabolism overhead and spike absorption.
+        Active = K×(1-V) = 11/18 = 61.1% for computation.
+        This is structurally Kleiber's 3/4 metabolic rate (d=4 quartic at ∂I).
+    
+    Layer 3 — MONITORING (α⁻¹ = 137):
+        Computed to silicon via float64 ε_mach convergence loop.
+        137 distinguishable resource levels across the active allocation.
+        Level width = (K×(1-V)×total) / A₀.
+        Shimmer band = ±A₁ × active (3.6%) — normal fluctuation.
+        Cross-term = A_cross — multi-resource interference.
+        Spike tail = Σ A_k — reserved within V headroom for rare spikes.
+    
+    The algorithm is INVARIANT. Only the resource envelope adapts.
+    The metabolism NEVER touches precision, never skips steps, never
+    degrades results. What changes: threads, memory budget, tile sizes.
+    
+    Ported from ResourceGovernor (et_conscious_ai_distributed.py) and
+    CDFMetabolism (et_cdf_compressor.py).
+    
+    P ∘ D ∘ T = E
+    """
+    
+    _REFRESH_INTERVAL = S_ET * S_ET  # S² = 144 seconds
+    
+    def __init__(self, log_fn=None):
+        self._log = log_fn or print
+        self._profile = None
+        self._last_sense_time = 0.0
+        
+        # Layer 1: Allocation state
+        self._max_threads = 1
+        self._max_memory_bytes = 0
+        self._cpu_headroom = KOIDE_CEILING_PERCENT
+        self._mem_headroom = KOIDE_CEILING_PERCENT
+        self._overall_pressure = 0.0
+        
+        # Layer 3: Monitoring state (137 levels)
+        self._monitoring_level_width = 0  # bytes per monitoring level
+        self._shimmer_band_bytes = 0      # ±shimmer in bytes
+        self._spike_reserve_bytes = 0     # spike absorption within V headroom
+        self._cross_shrink_bytes = 0      # cross-resource interference reduction
+        self._current_level = 0           # which of 137 levels we're at
+        
+        # Substrate projection
+        self._substrate_d = 1             # hardware lattice family
+        
+        self.sense()
+        self._adjust_priority()
+    
+    def sense(self):
+        """
+        Sense hardware and compute three-layer resource allocation.
+        
+        Layer 1: K ceiling → max resources
+        Layer 2: V headroom → active allocation
+        Layer 3: α⁻¹ monitoring → 137 levels with shimmer/spike
+        
+        Re-senses at S² = 144 second intervals.
+        """
+        now = time.time()
+        if (self._profile is not None
+                and now - self._last_sense_time < self._REFRESH_INTERVAL):
+            return self
+        
+        self._profile = ETResourceSensor.sense()
+        self._last_sense_time = now
+        
+        # ── Layer 1: Koide ceiling headroom ───────────────────────────
+        self._cpu_headroom = max(0.0,
+            KOIDE_CEILING_PERCENT - self._profile['cpu_load'])
+        self._mem_headroom = max(0.0,
+            KOIDE_CEILING_PERCENT - self._profile['mem_used_percent'])
+        
+        # Overall pressure: geometric mean of loads → [0, 1]
+        loads = [max(self._profile['cpu_load'], 1.0),
+                 max(self._profile['mem_used_percent'], 1.0)]
+        log_sum = sum(_math.log(ld) for ld in loads)
+        geom_mean = _math.exp(log_sum / len(loads))
+        self._overall_pressure = min(1.0, geom_mean / 100.0)
+        
+        # Thread allocation: floor(headroom × cores / 100)
+        max_cores = max(1, self._profile['cpu_count'] - 1)
+        self._max_threads = max(1, min(
+            max_cores,
+            int(self._cpu_headroom * self._profile['cpu_count'] / 100.0)
+        ))
+        
+        # Memory allocation: total_bytes × headroom / 100
+        self._max_memory_bytes = int(
+            self._profile['mem_total'] * self._mem_headroom / 100.0
+        )
+        
+        # ── Layer 2: Active allocation (11/18 of available) ───────────
+        active = int(self._profile['mem_available'] * ACTIVE_FRACTION)
+        
+        # ── Layer 3: 137-level monitoring ─────────────────────────────
+        # Level width = active / A₀
+        self._monitoring_level_width = max(1, active // int(A0_IMPEDANCE))
+        # Shimmer band = ±A₁ × active (normal fluctuation range)
+        self._shimmer_band_bytes = int(SHIMMER_BAND_FRACTION * active)
+        # Spike tail reserve = Σ A_k × active (absorption within V headroom)
+        self._spike_reserve_bytes = int(SPIKE_TAIL_RESERVE * active)
+        # A_cross shrink = A_cross × active (multi-resource interference)
+        self._cross_shrink_bytes = int(A_CROSS * active)
+        # Current monitoring level
+        mem_used = self._profile['mem_total'] - self._profile['mem_available']
+        self._current_level = min(int(A0_IMPEDANCE),
+                                   int(mem_used / max(1, self._monitoring_level_width)))
+        
+        # ── Substrate projection: classify hardware on the lattice ────
+        # RAM is 2^n bytes → ratio of total/total = 1.0 → d=1 (octave)
+        # This confirms silicon IS octave-class (binary hardware)
+        ram_ratio = self._profile['mem_total'] / (2.0 ** _math.ceil(
+            _math.log2(max(1, self._profile['mem_total']))))
+        self._substrate_d = _project_to_lattice(max(0.001, ram_ratio))['d']
+        
+        return self
+    
+    def _adjust_priority(self):
+        """
+        Dynamic process priority based on overall pressure.
+        
+        Pressure 0.0 → NORMAL priority (idle system)
+        Pressure 0.5 → BELOW_NORMAL (moderate load)
+        Pressure 1.0 → IDLE (saturated system)
+        
+        From CDFMetabolism: os.nice() mapped from pressure.
+        Windows: SetPriorityClass. Linux: os.nice().
+        """
+        if sys.platform == 'win32':
+            try:
+                kernel32 = ctypes.windll.kernel32
+                kernel32.GetCurrentProcess.restype = ctypes.c_void_p
+                kernel32.SetPriorityClass.argtypes = [ctypes.c_void_p, ctypes.c_ulong]
+                process = kernel32.GetCurrentProcess()
+                if self._overall_pressure > 0.7:
+                    # IDLE priority — system is heavily loaded
+                    kernel32.SetPriorityClass(process, 0x00000040)
+                elif self._overall_pressure > 0.3:
+                    # BELOW_NORMAL
+                    kernel32.SetPriorityClass(process, 0x00004000)
+                else:
+                    # NORMAL — system is idle enough
+                    kernel32.SetPriorityClass(process, 0x00000020)
+            except (OSError, AttributeError):
+                pass
+        else:
+            try:
+                # Map pressure [0,1] → nice [0, 10]
+                target_nice = int(self._overall_pressure * 10)
+                current_nice = os.nice(0)
+                if target_nice > current_nice:
+                    os.nice(target_nice - current_nice)
+            except (OSError, PermissionError):
+                pass
+    
+    def force_resense(self):
+        """Force immediate re-sense regardless of refresh interval."""
+        self._last_sense_time = 0.0
+        return self.sense()
+    
+    @property
+    def max_memory_bytes(self):
+        """Max memory this program may allocate (Koide-governed)."""
+        return self._max_memory_bytes
+    
+    @property
+    def active_memory_bytes(self):
+        """Active allocation: K×(1-V) of available = 11/18 of available."""
+        return int(self._profile['mem_available'] * ACTIVE_FRACTION)
+    
+    @property
+    def max_threads(self):
+        """Max threads (Koide-governed)."""
+        return self._max_threads
+    
+    @property
+    def overall_pressure(self):
+        """System pressure [0,1]. 0=idle, 1=saturated."""
+        return self._overall_pressure
+    
+    @property
+    def monitoring_level(self):
+        """Current resource monitoring level (0 to 137)."""
+        return self._current_level
+    
+    @property
+    def in_shimmer_band(self):
+        """True if current usage fluctuation is within ±A₁ (normal)."""
+        return self._current_level < int(A0_IMPEDANCE * (1.0 - SHIMMER_BAND_FRACTION))
+    
+    def can_allocate(self, nbytes):
+        """Check if an allocation fits within the active budget."""
+        self.sense()
+        return nbytes <= self.active_memory_bytes
+    
+    def gate(self, nbytes, description="allocation"):
+        """
+        Metabolism gate: structural enforcement via three-layer monitoring.
+        
+        Every large allocation MUST pass through this gate. The gate:
+        1. Senses hardware (Layer 1)
+        2. Computes active allocation (Layer 2)
+        3. Checks monitoring level (Layer 3) — uses 137-level granularity
+        4. If within shimmer band: proceed immediately
+        5. If above shimmer but within active: proceed with warning
+        6. If exceeds active: gc → re-sense → wait → retry
+        
+        The process CANNOT proceed past the gate if it would breach K.
+        """
+        max_wait = 60
+        waited = 0.0
+        
+        while True:
+            self.force_resense()
+            # Effective active = active - A_cross shrink - spike reserve
+            raw_active = self.active_memory_bytes
+            active = max(0, raw_active - self._cross_shrink_bytes - self._spike_reserve_bytes)
+            level = self._current_level
+            
+            if nbytes <= active:
+                if nbytes <= active - self._shimmer_band_bytes:
+                    return True  # Within shimmer band — normal
+                else:
+                    print(f"  Gate [{description}]: {nbytes/1024**3:.2f} GB — "
+                          f"above shimmer, within active (level {level}/{int(A0_IMPEDANCE)})")
+                    return True
+            
+            # Exceeds active allocation — gc and retry
+            gc.collect()
+            self.force_resense()
+            raw_active = self.active_memory_bytes
+            active = max(0, raw_active - self._cross_shrink_bytes - self._spike_reserve_bytes)
+            if nbytes <= active:
+                return True
+            
+            if waited >= max_wait:
+                print(f"  Gate [{description}]: TIMEOUT — needs {nbytes/1024**3:.2f} GB, "
+                      f"budget {active/1024**3:.2f} GB (level {level}/{int(A0_IMPEDANCE)})")
+                return False
+            
+            wait_step = min(2.0, max_wait - waited)
+            print(f"  Gate [{description}]: {nbytes/1024**3:.2f} GB > "
+                  f"{active/1024**3:.2f} GB — level {level}/{int(A0_IMPEDANCE)}, "
+                  f"waiting {wait_step:.0f}s...")
+            time.sleep(wait_step)
+            waited += wait_step
+            gc.collect()
+    
+    def report(self):
+        """Print full three-layer metabolism status with substrate projection."""
+        p = self._profile
+        gb = 1024**3
+        active = self.active_memory_bytes
+        
+        print(f"  ── Layer 1: Allocation (K = {K_KOIDE:.4f}) ──")
+        print(f"    Total RAM: {p['mem_total']/gb:.1f} GB")
+        print(f"    K ceiling: {p['mem_total']*K_KOIDE/gb:.1f} GB")
+        print(f"    System reserve (1-K): {p['mem_total']*(1-K_KOIDE)/gb:.1f} GB")
+        print(f"    CPU: {p['cpu_load']:.0f}% load, {self._cpu_headroom:.0f}% headroom, "
+              f"{self._max_threads} threads (of {p['cpu_count']})")
+        
+        print(f"  ── Layer 2: Headroom (V = {V_BASE:.4f}) ──")
+        print(f"    Headroom reserve (K×V): {p['mem_total']*K_KOIDE*V_BASE/gb:.2f} GB")
+        print(f"    Active (K×(1-V)): {active/gb:.1f} GB ({ACTIVE_FRACTION*100:.1f}%)")
+        print(f"    Active lattice: d={_ACTIVE_PROJ['d']} "
+              f"(quartic = Kleiber metabolic rate)")
+        
+        print(f"  ── Layer 3: Monitoring (α⁻¹ = {ALPHA_INVERSE:.6f}) ──")
+        print(f"    Computed to silicon: depth k={_ALPHA_RESULT['convergence_depth']}, "
+              f"ratio κ/(Nπ)={_ALPHA_RESULT['convergence_ratio']:.5f}, "
+              f"ε_mach={FLOAT64_MACHINE_EPSILON:.2e}")
+        print(f"    {int(A0_IMPEDANCE)} monitoring levels, "
+              f"width: {self._monitoring_level_width/1024**2:.0f} MB each")
+        print(f"    Shimmer band (±A₁): ±{self._shimmer_band_bytes/1024**2:.0f} MB "
+              f"({SHIMMER_BAND_FRACTION*100:.2f}%)")
+        print(f"    Cross-resource (A_cross): {self._cross_shrink_bytes/1024**2:.0f} MB")
+        print(f"    Spike reserve (Σ A_k): {self._spike_reserve_bytes/1024**2:.0f} MB")
+        print(f"    Current level: {self._current_level}/{int(A0_IMPEDANCE)}")
+        print(f"    Pressure: {self._overall_pressure:.3f}")
+        print(f"    Substrate: d={self._substrate_d} "
+              f"({'octave (binary silicon)' if self._substrate_d == 1 else f'family {self._substrate_d}'})")
+        print(f"    K projection: d={_K_PROJ['d']} "
+              f"(ε={_K_PROJ['epsilon']:.1f}¢, Koide attractor)")
+        print(f"    ξ(d=1)={_xi_impedance(1):.2f} (octave, tight), "
+              f"ξ(d=12)={_xi_impedance(12):.2f} (full-res, wide)")
+
+
+def _metabolized_spectrogram(ax, times, freqs, data_db, metabolism, cmap='inferno',
+                              vmin=None, vmax=None, label='Power (dB)'):
+    """
+    Render a spectrogram at full gouraud quality via tiled disk rendering.
+    
+    The metabolism governs tile size. Each tile is rendered as a separate
+    figure with pcolormesh gouraud, saved to a temp PNG on disk, then the
+    tiles are stitched into the final axes with imshow on the ALREADY-
+    RENDERED uniform pixel grid. Gouraud interpolation happens within each
+    tile at full quality. Tile boundaries overlap by 1 row for continuity.
+    
+    One tile in memory at a time. Disk stores rendered pixels.
+    Full gouraud quality. No fallbacks. No quality loss.
+    
+    Returns a ScalarMappable for colorbar attachment.
+    """
+    from PIL import Image as PILImage
+    import tempfile
+    
+    n_freq, n_time = data_db.shape
+    
+    if vmin is None:
+        vmax_val = np.max(data_db[np.isfinite(data_db)])
+        vmin = vmax_val - 120
+        vmax = vmax_val
+    
+    # Re-sense available memory
+    metabolism.force_resense()
+    active_budget = metabolism.active_memory_bytes
+    
+    # Gouraud cost: 24 triangles × 2 coords × 8 bytes per cell
+    gouraud_bytes = n_freq * n_time * 24 * 8
+    
+    if gouraud_bytes <= active_budget:
+        # Entire matrix fits — single gouraud render, no tiling needed
+        print(f"      Gouraud: {n_freq}×{n_time} ({gouraud_bytes/1024**3:.1f} GB "
+              f"<= {active_budget/1024**3:.1f} GB budget)")
+        im = ax.pcolormesh(times, freqs, data_db,
+                           shading='gouraud', cmap=cmap, vmin=vmin, vmax=vmax)
+        im._et_colorbar_label = label
+        return im
+    
+    # ── TILED GOURAUD: render each tile to disk, stitch ──────────────
+    # ET tile formula from fractal generator: floor(N × K × available / tile_mem)
+    bytes_per_row = n_time * 24 * 8  # gouraud cost per frequency row
+    tile_mem_per_row = bytes_per_row
+    max_rows = max(2, int(S_ET * K_KOIDE * active_budget / tile_mem_per_row))
+    n_tiles = _math.ceil(n_freq / max_rows)
+    
+    print(f"      Tiled gouraud: {n_freq}×{n_time} ({gouraud_bytes/1024**3:.1f} GB "
+          f"> {active_budget/1024**3:.1f} GB budget)")
+    print(f"      → {n_tiles} tiles, {max_rows} rows each (ET formula: "
+          f"floor(N×K×avail/tile_mem) = floor({S_ET}×{K_KOIDE:.3f}×"
+          f"{active_budget/1024**3:.1f}GB/{tile_mem_per_row}B))")
+    
+    # Compute output pixel dimensions from the parent figure
+    fig_parent = ax.get_figure()
+    bbox = ax.get_position()
+    fig_w_px = int(fig_parent.get_figwidth() * fig_parent.dpi * bbox.width)
+    fig_h_px = int(fig_parent.get_figheight() * fig_parent.dpi * bbox.height)
+    tile_h_px = max(1, fig_h_px // n_tiles)
+    
+    # Render each tile to a temp PNG
+    tile_files = []
+    tile_freq_ranges = []
+    
+    for ti in range(n_tiles):
+        # ── BEFORE TILE: sense, check, wait-for-GC if over budget ─────
+        metabolism.force_resense()
+        tile_cost = min(max_rows + 1, n_freq - ti * max_rows) * bytes_per_row
+        if not metabolism.can_allocate(tile_cost):
+            gc.collect()
+            metabolism.force_resense()
+            if not metabolism.can_allocate(tile_cost):
+                print(f"        Tile {ti+1}: waiting for memory (level "
+                      f"{metabolism.monitoring_level}/{int(A0_IMPEDANCE)})...")
+                time.sleep(2)
+                gc.collect()
+        
+        r_start = ti * max_rows
+        r_end = min(r_start + max_rows + 1, n_freq)  # +1 overlap for gouraud continuity
+        if r_end <= r_start + 1:
+            continue
+        
+        tile_data = data_db[r_start:r_end, :]
+        tile_freqs = freqs[r_start:r_end]
+        tile_freq_ranges.append((tile_freqs[0], tile_freqs[-1]))
+        
+        # Render this tile as a standalone figure with gouraud
+        tile_fig, tile_ax = plt.subplots(1, 1, figsize=(fig_w_px / 100, tile_h_px / 100),
+                                          dpi=100)
+        tile_fig.subplots_adjust(left=0, right=1, top=1, bottom=0)
+        tile_ax.pcolormesh(times, tile_freqs, tile_data,
+                           shading='gouraud', cmap=cmap, vmin=vmin, vmax=vmax)
+        tile_ax.set_xlim(times[0], times[-1])
+        tile_ax.set_ylim(tile_freqs[0], tile_freqs[-1])
+        tile_ax.axis('off')
+        
+        # Save to temp file
+        tmp = tempfile.NamedTemporaryFile(suffix='.png', delete=False)
+        tile_fig.savefig(tmp.name, dpi=100, bbox_inches='tight', pad_inches=0,
+                         facecolor='black')
+        tile_files.append(tmp.name)
+        plt.close(tile_fig)
+        del tile_data, tile_fig, tile_ax
+        gc.collect()
+        
+        # ── AFTER TILE: sense, report actual vs limit, log violations ─
+        metabolism.force_resense()
+        level = metabolism.monitoring_level
+        if level > int(A0_IMPEDANCE * 0.9):
+            print(f"        ⚠ Tile {ti+1}/{n_tiles}: level {level}/{int(A0_IMPEDANCE)} "
+                  f"(above 90% of monitoring range)")
+        elif (ti + 1) % 5 == 0 or ti == n_tiles - 1:
+            print(f"        Tile {ti+1}/{n_tiles}: level {level}/{int(A0_IMPEDANCE)}")
+    
+    # Stitch tiles into a single RGBA array
+    print(f"      Stitching {len(tile_files)} tiles...")
+    tile_images = []
+    for tf in tile_files:
+        tile_img = PILImage.open(tf)
+        tile_images.append(np.array(tile_img))
+        tile_img.close()
+        os.unlink(tf)  # Delete temp file
+    
+    if tile_images:
+        # Stack vertically — first tile is lowest frequencies (bottom)
+        stitched = np.concatenate(tile_images, axis=0)
+        
+        # Display the stitched gouraud-rendered image
+        extent = [times[0], times[-1], freqs[0], freqs[-1]]
+        ax.imshow(stitched, aspect='auto', origin='lower', extent=extent,
+                  interpolation='none')  # No additional interpolation — gouraud already applied
+        del stitched, tile_images
+        gc.collect()
+    
+    # ScalarMappable for colorbar
+    norm = plt.Normalize(vmin=vmin, vmax=vmax)
+    cmap_fn = plt.get_cmap(cmap)
+    sm = plt.cm.ScalarMappable(cmap=cmap_fn, norm=norm)
+    sm.set_array([])
+    sm._et_colorbar_label = label
+    
+    print(f"      Tiled gouraud complete")
+    return sm
+
+
+# ============================================================================
+# ET CORE MATHEMATICS — The Sempaevum Bijection (MPMATH, ZERO FLOAT64)
+# ============================================================================
+
+def _et_lattice_project_core(r, N):
+    """
+    Core lattice projection: r → (k, d, g, epsilon, lattice_pos, cents_exact)
+    
+    This is the shared mathematical kernel used by both et_project()
+    and et_project_freq_batch_stft(). MPMATH, ZERO FLOAT64.
+    
+    Args:
+        r: mpf — positive real ratio (already in mpmath precision)
+        N: int — lattice resolution
+    
+    Returns:
+        (k, d, g, epsilon, lattice_pos, cents_exact) — all mpmath except k,d,g (int)
+    """
+    N_mp = mpf(N)
+    
+    log2_r = mplog(r) / LOG2_MP
+    lattice_pos = N_mp * log2_r
+    cents_exact = CENTS_PER_OCTAVE_MP * log2_r
+    
+    # T-act: rounding (the only nondeterministic step)
+    k = int(nint(lattice_pos))
+    
+    # Sublattice family
+    g = gcd(abs(k) if k != 0 else N, N)
+    d = N // g
+    
+    # Exact residual in cents
+    epsilon = (lattice_pos - mpf(k)) * (CENTS_PER_OCTAVE_MP / N_mp)
+    
+    return k, d, g, epsilon, lattice_pos, cents_exact
+
+
+def et_project(r_str, N=12):
+    """
+    Project positive ratio r onto the N-ET lattice using MPMATH.
+    Π_N(r) = (k, d, ε)
+    
+    ZERO FLOAT64 in the computation chain.
+    Input: r_str — STRING representation (not float64!)
+    """
+    r = mpf(r_str)
+    
+    if r <= 0:
+        return {'k': 0, 'd': N, 'g': 1, 'epsilon': mpf(0),
+                'r_ET': mpf(1), 'cents_exact': mpf(0)}
+    
+    k, d, g, epsilon, lattice_pos, cents_exact = _et_lattice_project_core(r, N)
+    
+    # Lattice-projected value
+    r_ET = mppow(mpf(2), mpf(k) / mpf(N))
+    
+    return {
+        'k': k,
+        'd': d,
+        'g': g,
+        'epsilon': epsilon,
+        'r_ET': r_ET,
+        'cents_exact': cents_exact,
+    }
+
+
+def et_project_freq(f_str, N=12, f_ref_str=None):
+    """
+    Project a frequency onto the ET lattice using MPMATH.
+    
+    Input: f_str — STRING representation of frequency in Hz
+           f_ref_str — STRING representation of reference (default A440)
+    
+    ZERO FLOAT64 in the computation chain.
+    """
+    if f_ref_str is None:
+        f_ref_str = str(F_REF)
+    
+    f_mp = mpf(f_str)
+    f_ref_mp = mpf(f_ref_str)
+    r = f_mp / f_ref_mp
+    r_str = nstr(r, WORK_DPS)
+    
+    result = et_project(r_str, N)
+    result['freq'] = f_mp
+    result['f_ref'] = f_ref_mp
+    result['ratio'] = r
+    result['f_ET'] = result['r_ET'] * f_ref_mp
+    return result
+
+
+def et_project_freq_batch_stft(sr, n_fft, N, avg_power):
+    """
+    Project ALL STFT frequency bins onto the ET lattice using MPMATH.
+    
+    Frequencies are computed exactly as f = i × sr / n_fft (rational).
+    No float64 in the ET computation — frequencies are constructed
+    from integers via mpf.
+    
+    Args:
+        sr: sample rate (integer)
+        n_fft: FFT size (integer)
+        N: lattice resolution
+        avg_power: numpy array of average power per bin (float64 from STFT — rendering)
+    
+    Returns:
+        d_histogram, k_histogram, epsilon_values, weighted_abs_epsilon
+    """
+    sr_mp = mpf(sr)
+    n_fft_mp = mpf(n_fft)
+    f_ref_mp = mpf(str(F_REF))
+    N_mp = mpf(N)
+    num_bins = n_fft // 2 + 1
+    
+    d_histogram = defaultdict(float)
+    k_histogram = defaultdict(float)
+    epsilon_values = []
+    
+    for i in range(1, num_bins):  # skip DC bin (i=0)
+        # Frequency is EXACT rational: f = i * sr / n_fft
+        # Compute ratio directly in mpmath — ZERO float64
+        # r = f / f_ref = (i * sr) / (n_fft * f_ref)
+        r = (mpf(i) * sr_mp) / (n_fft_mp * f_ref_mp)
+        
+        # Project onto lattice using shared core
+        k, d, g, eps, lattice_pos, cents = _et_lattice_project_core(r, N)
+        eps_float = float(eps)
+        eps_abs = float(fabs(eps))  # mpmath absolute value for precision
+        
+        # Power comes from STFT (float64 rendering) — acceptable for weighting
+        power = float(avg_power[i])
+        
+        d_histogram[d] += power
+        k_mod = k % N
+        k_histogram[k_mod] += power
+        # Store epsilon as float for statistics (rendering)
+        freq_hz = float(mpf(i) * sr_mp / n_fft_mp)
+        epsilon_values.append((freq_hz, eps_float, eps_abs, power, d, k))
+    
+    # Weighted mean |ε| — the ε values are exact from mpmath,
+    # converted to float only for the final statistic (eps_abs already computed via fabs)
+    total_power = sum(p for _, _, _, p, _, _ in epsilon_values)
+    if total_power > 0:
+        weighted_abs_eps = sum(ea * p for _, _, ea, p, _, _ in epsilon_values) / total_power
+    else:
+        weighted_abs_eps = 0
+    
+    return {
+        'd_histogram': dict(sorted(d_histogram.items())),
+        'k_histogram': dict(sorted(k_histogram.items())),
+        'weighted_mean_abs_epsilon': weighted_abs_eps,
+        'epsilon_values': epsilon_values,
+        'N': N,
+        'epsilon_times_N': weighted_abs_eps * N,
+        'description': LCM_TOWER.get(N, f"N={N}"),
+    }
+
+
+def sublattice_name(d, N=12):
+    """Get human-readable sublattice family name."""
+    if N == 12:
+        return SUBLATTICE_NAMES_12.get(d, f"d={d}")
+    return f"d={d} (N={N})"
+
+
+def _khz_formatter(x, pos):
+    """FuncFormatter callback: display frequency in kHz when >= 1000 Hz.
+    pos = tick position index (int during rendering, None if called manually)."""
+    if pos is not None and x >= 1000:
+        return f'{x/1000:.1f}k'
+    elif x >= 1000:
+        return f'{x/1000:.1f} kHz'
+    return f'{int(x)}' if pos is not None else f'{x:.0f} Hz'
+
+
+# Reusable axis formatters for frequency displays
+KHZ_FORMATTER = FuncFormatter(_khz_formatter)
+
+
+def _apply_et_axis_style(ax):
+    """Apply consistent ET dark theme to an axis."""
+    ax.set_facecolor('#0a0a0a')
+    ax.tick_params(colors='#cccccc')
+    ax.xaxis.label.set_color('#cccccc')
+    ax.yaxis.label.set_color('#cccccc')
+    ax.title.set_color('#00FFAA')
+    # Apply clean fixed-point notation (no scientific notation on axes)
+    for axis in [ax.xaxis, ax.yaxis]:
+        fmt = ScalarFormatter(useMathText=True)
+        fmt.set_scientific(False)
+        axis.set_major_formatter(fmt)
+
+
+def _make_et_figure(n_rows, n_cols=1, height_per_row=5, width=24, use_gridspec=False):
+    """
+    Create a figure with ET styling. Uses gridspec for complex layouts.
+    
+    Args:
+        n_rows: Number of subplot rows
+        n_cols: Number of subplot columns
+        height_per_row: Height per row in inches
+        width: Total figure width
+        use_gridspec: If True, returns (fig, gridspec) for custom sub-layouts
+    """
+    fig = plt.figure(figsize=(width, height_per_row * n_rows), dpi=600)
+    fig.patch.set_facecolor('#0a0a0a')
+    if use_gridspec:
+        gs = gridspec.GridSpec(n_rows, n_cols, figure=fig)
+        return fig, gs
+    else:
+        axes = fig.subplots(n_rows, n_cols)
+        if n_rows == 1 and n_cols == 1:
+            axes = [axes]
+        elif n_rows == 1 or n_cols == 1:
+            axes = np.atleast_1d(axes)
+        # Convert to list for correct type inference (PyCharm sees .flat as ndarray scalars)
+        axes_list = axes if isinstance(axes, list) else np.atleast_1d(axes).ravel().tolist()
+        for ax_item in axes_list:
+            _apply_et_axis_style(ax_item)
+        return fig, axes
+
+
+# ============================================================================
+# AUDIO LOADING — Native sample rate, no resampling, full precision
+# ============================================================================
+
+def load_wav_native(path):
+    """
+    Load WAV preserving the EXACT integer samples.
+    
+    The WAV file is 32-bit Signed Integer PCM. Loading as float64 is LOSSY
+    because float64 has only 52 bits of mantissa — it cannot represent all
+    2^31 possible int32 values exactly (it can represent up to 2^53).
+    Actually for 32-bit int, float64 IS exact (2^31 < 2^53). But the
+    PRINCIPLE is: load integers, keep integers, convert only for rendering.
+    
+    Primary: scipy.io.wavfile (returns raw int array)
+    Fallback: soundfile with int32 dtype
+    
+    Returns:
+        channels: dict of numpy arrays (int32 for ET math, float64 copies for rendering)
+        info: metadata dict
+    """
+    # Load as raw integers — PRIMARY (preserves exact samples)
+    try:
+        sr_wav, raw_data = wavfile.read(path)
+        sr = sr_wav
+        # raw_data is int16 or int32 depending on file
+        bit_depth = raw_data.dtype.itemsize * 8
+        max_val = 2 ** (bit_depth - 1) - 1  # e.g., 2147483647 for int32
+    except Exception as wav_err:
+        print(f"  scipy.io.wavfile failed ({wav_err}), trying soundfile...")
+        raw_data, sr = sf.read(path, dtype='int32')
+        bit_depth = 32
+        max_val = 2147483647
+    
+    info = {
+        'sample_rate': sr,
+        'nyquist': sr / 2.0,
+        'duration': len(raw_data) / sr,
+        'num_samples': len(raw_data),
+        'channels': raw_data.shape[1] if raw_data.ndim > 1 else 1,
+        'dtype': str(raw_data.dtype),
+        'bit_depth': bit_depth,
+        'max_int_value': max_val,
+        'file_size_bytes': os.path.getsize(path),
+    }
+    
+    # Create float64 copies ONLY for external library rendering (scipy/librosa)
+    # The integer originals are the ground truth
+    if raw_data.ndim == 1:
+        float_data = raw_data.astype(np.float64) / max_val
+        channels = {'mono': float_data}
+    else:
+        float_data = raw_data.astype(np.float64) / max_val
+        channels = {f'ch{i}': float_data[:, i] for i in range(float_data.shape[1])}
+        if float_data.shape[1] == 2:
+            channels['mid'] = (float_data[:, 0] + float_data[:, 1]) / 2.0
+            channels['side'] = (float_data[:, 0] - float_data[:, 1]) / 2.0
+    
+    # Store integer originals for ET-precision operations
+    info['raw_int_data'] = raw_data
+    info['normalization_factor'] = max_val
+    
+    return channels, info
+
+
+# ============================================================================
+# SIGNAL STATISTICS
+# ============================================================================
+
+def compute_signal_stats(channels, info):
+    """Comprehensive amplitude and dynamic range statistics per channel."""
+    stats = {}
+    for name, sig in channels.items():
+        peak = np.max(np.abs(sig))
+        rms = np.sqrt(np.mean(sig ** 2))
+        dc_offset = np.mean(sig)
+        
+        # Dynamic range (dB)
+        peak_db = 20.0 * log10(peak) if peak > 0 else -np.inf
+        rms_db = 20.0 * log10(rms) if rms > 0 else -np.inf
+        crest_factor_db = peak_db - rms_db
+        
+        # Zero crossings
+        zero_crossings = np.sum(np.diff(np.sign(sig)) != 0)
+        zc_rate = zero_crossings / info['duration']
+        
+        # Amplitude distribution
+        percentiles = np.percentile(np.abs(sig), [25, 50, 75, 90, 95, 99])
+        
+        stats[name] = {
+            'peak': peak,
+            'peak_dBFS': peak_db,
+            'rms': rms,
+            'rms_dBFS': rms_db,
+            'crest_factor_dB': crest_factor_db,
+            'dc_offset': dc_offset,
+            'zero_crossings': zero_crossings,
+            'zc_rate_hz': zc_rate,
+            'percentiles_abs': {
+                'p25': percentiles[0], 'p50': percentiles[1],
+                'p75': percentiles[2], 'p90': percentiles[3],
+                'p95': percentiles[4], 'p99': percentiles[5],
+            },
+            'min': np.min(sig),
+            'max': np.max(sig),
+            'std': np.std(sig),
+        }
+    return stats
+
+
+# ============================================================================
+# ANALYSIS 1: Full-Bandwidth Linear STFT
+# ============================================================================
+
+def compute_full_bandwidth_stft(sig, sr, n_fft=65536, hop_length=64):
+    """
+    Full-bandwidth linear STFT. NO Mel weighting. NO frequency cap.
+    Uses massive FFT for maximum frequency resolution.
+    
+    Frequency resolution = sr / n_fft
+    For 48kHz, n_fft=65536 → resolution = 0.73 Hz per bin
+    
+    This covers the FULL bandwidth: 0 Hz to Nyquist (24kHz for 48kHz sr).
+    """
+    f, t, Zxx = signal.stft(sig, fs=sr, nperseg=n_fft,
+                             noverlap=n_fft - hop_length,
+                             window='hann', return_onesided=True)
+    
+    magnitude = np.abs(Zxx)
+    power = magnitude ** 2
+    power_db = 10.0 * np.log10(power + 1e-300)  # avoid log(0)
+    
+    return {
+        'frequencies': f,
+        'times': t,
+        'magnitude': magnitude,
+        'power_db': power_db,
+        'n_fft': n_fft,
+        'freq_resolution': sr / n_fft,
+        'time_resolution': hop_length / sr,
+        'num_freq_bins': len(f),
+        'freq_range': (f[0], f[-1]),
+    }
+
+
+# ============================================================================
+# ANALYSIS 2: Constant-Q Transform (Semitone-Lattice-Native)
+# ============================================================================
+
+def compute_cqt(sig, sr, fmin=20.0, n_bins_per_octave=240):
+    """
+    Constant-Q Transform — logarithmically spaced frequency bins.
+    This is NATIVELY aligned with the ET semitone lattice.
+    
+    n_bins_per_octave=240 gives 20 bins per semitone (sub-cent resolution).
+    fmin=20Hz covers human hearing floor.
+    
+    The CQT extends to Nyquist automatically.
+    """
+    # Compute number of octaves from fmin to Nyquist
+    nyquist = sr / 2.0
+    n_octaves = log2(nyquist / fmin)
+    n_bins = int(n_octaves * n_bins_per_octave)
+    
+    C = librosa.cqt(y=sig, sr=sr, fmin=fmin, n_bins=n_bins,
+                     bins_per_octave=n_bins_per_octave,
+                     hop_length=64)
+    
+    # CQT frequencies
+    freqs = librosa.cqt_frequencies(n_bins=C.shape[0], fmin=fmin,
+                                     bins_per_octave=n_bins_per_octave)
+    
+    magnitude = np.abs(C)
+    power_db = librosa.amplitude_to_db(magnitude, ref=np.max)
+    
+    # Map each CQT frequency to ET lattice — string input for zero-float64 chain
+    et_mapping = [et_project_freq(str(f)) for f in freqs]
+    
+    return {
+        'frequencies': freqs,
+        'magnitude': magnitude,
+        'power_db': power_db,
+        'et_mapping': et_mapping,
+        'n_bins': n_bins,
+        'n_bins_per_octave': n_bins_per_octave,
+        'fmin': fmin,
+        'fmax': freqs[-1],
+    }
+
+
+# ============================================================================
+# ANALYSIS 3: Synchrosqueezed CWT — Highest Resolution
+# ============================================================================
+
+def compute_ssq_cwt(sig, sr):
+    """
+    Synchrosqueezed Continuous Wavelet Transform.
+    This gives the SHARPEST possible time-frequency resolution —
+    beating STFT and standard CWT by focusing energy via reassignment.
+    
+    Processes the FULL signal. Memory requirement is estimated and reported.
+    SSQ-CWT is O(N × num_scales) in memory.
+    """
+    from ssqueezepy import ssq_cwt
+    
+    n_samples = len(sig)
+    # Estimate memory: ~286 scales × n_samples × 16 bytes (complex128) × 2 (Tx + Wx)
+    est_scales = 286  # typical for Morlet mu=13.4
+    est_memory_gb = (est_scales * n_samples * 16 * 2) / (1024**3)
+    print(f"    SSQ-CWT memory estimate: {est_memory_gb:.2f} GB for {n_samples:,} samples")
+    
+    # Perform SSQ-CWT on the full signal
+    Tx, Wx, ssq_freqs, scales, *_ = ssq_cwt(
+        sig,
+        wavelet=('morlet', {'mu': 13.4}),  # high mu for better freq resolution
+        fs=sr,
+    )
+    
+    return {
+        'Tx': Tx,
+        'Wx': Wx,
+        'ssq_freqs': ssq_freqs,
+        'scales': scales,
+        'analysis_duration': n_samples / sr,
+        'sr': sr,
+        'num_samples': n_samples,
+        'num_scales': Tx.shape[0],
+        'memory_gb': est_memory_gb,
+    }
+
+
+# ============================================================================
+# ANALYSIS 4: Ultrasonic Band Isolation (20kHz–Nyquist)
+# ============================================================================
+
+def analyze_ultrasonic_band(sig, sr, stft_result):
+    """
+    Isolate and analyze the ultrasonic band (20kHz to Nyquist).
+    This is where standard tools completely fail.
+    
+    For 48kHz audio, the ultrasonic band is 20kHz–24kHz.
+    Regular Mel spectrograms cap at ~8-11kHz. Even linear spectrograms
+    in most tools clip at 20kHz. We analyze the full range.
+    """
+    nyquist = sr / 2.0
+    freqs = stft_result['frequencies']
+    power_db = stft_result['power_db']
+    magnitude = stft_result['magnitude']
+    
+    # Ultrasonic mask: 20kHz to Nyquist
+    ultra_mask = freqs >= 20000.0
+    sub_ultra_mask = (freqs >= 15000.0) & (freqs < 20000.0)
+    
+    # High-audible band for comparison: 10-20kHz
+    high_audible_mask = (freqs >= 10000.0) & (freqs < 20000.0)
+    
+    # Full audible band: 20Hz-20kHz
+    audible_mask = (freqs >= 20.0) & (freqs < 20000.0)
+    
+    # Band energies over time
+    ultra_energy = np.mean(magnitude[ultra_mask, :] ** 2, axis=0) if np.any(ultra_mask) else np.zeros(magnitude.shape[1])
+    audible_energy = np.mean(magnitude[audible_mask, :] ** 2, axis=0)
+    high_audible_energy = np.mean(magnitude[high_audible_mask, :] ** 2, axis=0)
+    sub_ultra_energy = np.mean(magnitude[sub_ultra_mask, :] ** 2, axis=0) if np.any(sub_ultra_mask) else np.zeros(magnitude.shape[1])
+    
+    # Time-domain ultrasonic RMS via bandpass filter on the raw signal
+    if sr > 40000:
+        sos_ultra = signal.butter(8, 20000.0, btype='highpass', fs=sr, output='sos')
+        sig_ultra = signal.sosfilt(sos_ultra, sig)
+        ultra_rms_time_domain = np.sqrt(np.mean(sig_ultra ** 2))
+    else:
+        ultra_rms_time_domain = 0.0
+    
+    # Ultrasonic spectral detail
+    ultra_freqs = freqs[ultra_mask]
+    ultra_power = power_db[ultra_mask, :]
+    ultra_magnitude = magnitude[ultra_mask, :]
+    
+    # Peak frequencies in ultrasonic band per time frame
+    if np.any(ultra_mask) and ultra_magnitude.shape[0] > 0:
+        ultra_peak_idx = np.argmax(ultra_magnitude, axis=0)
+        ultra_peak_freqs = ultra_freqs[ultra_peak_idx]
+        ultra_peak_power = np.max(ultra_magnitude, axis=0)
+    else:
+        ultra_peak_freqs = np.zeros(magnitude.shape[1])
+        ultra_peak_power = np.zeros(magnitude.shape[1])
+    
+    # Ultrasonic vs audible energy ratio
+    total_ultra_energy = np.sum(magnitude[ultra_mask, :] ** 2) if np.any(ultra_mask) else 0
+    total_audible_energy = np.sum(magnitude[audible_mask, :] ** 2)
+    ultra_ratio = total_ultra_energy / (total_audible_energy + 1e-300)
+    
+    # ET lattice mapping of ultrasonic peaks
+    unique_ultra_peaks = np.unique(np.round(ultra_peak_freqs, 1))
+    unique_ultra_peaks = unique_ultra_peaks[unique_ultra_peaks > 0]
+    ultra_et_map = [et_project_freq(str(f)) for f in unique_ultra_peaks]  # ALL peaks, mpmath
+    
+    return {
+        'ultra_freqs': ultra_freqs,
+        'ultra_power_db': ultra_power,
+        'ultra_magnitude': ultra_magnitude,
+        'ultra_energy_over_time': ultra_energy,
+        'audible_energy_over_time': audible_energy,
+        'high_audible_energy_over_time': high_audible_energy,
+        'sub_ultra_energy_over_time': sub_ultra_energy,
+        'ultra_peak_freqs': ultra_peak_freqs,
+        'ultra_peak_power': ultra_peak_power,
+        'ultra_to_audible_ratio': ultra_ratio,
+        'ultra_to_audible_ratio_dB': 10.0 * log10(ultra_ratio + 1e-300),
+        'total_ultra_energy': total_ultra_energy,
+        'total_audible_energy': total_audible_energy,
+        'ultra_rms_time_domain': ultra_rms_time_domain,
+        'ultra_et_map': ultra_et_map,
+        'num_ultra_bins': np.sum(ultra_mask),
+        'ultra_band_hz': (20000.0, nyquist),
+    }
+
+
+# ============================================================================
+# ANALYSIS 5: Spectral Statistics Over Time
+# ============================================================================
+
+def compute_spectral_stats(sig, sr):
+    """
+    Spectral statistics over time — all computed from the raw signal,
+    no perceptual weighting.
+    """
+    hop = 64
+    n_fft = 32768
+    
+    # Spectral centroid (center of mass of spectrum)
+    centroid = librosa.feature.spectral_centroid(y=sig, sr=sr, n_fft=n_fft,
+                                                  hop_length=hop)[0]
+    
+    # Spectral bandwidth (variance around centroid)
+    bandwidth = librosa.feature.spectral_bandwidth(y=sig, sr=sr, n_fft=n_fft,
+                                                    hop_length=hop)[0]
+    
+    # Spectral rolloff (frequency below which X% of energy is concentrated)
+    rolloff_85 = librosa.feature.spectral_rolloff(y=sig, sr=sr, n_fft=n_fft,
+                                                    hop_length=hop,
+                                                    roll_percent=0.85)[0]
+    rolloff_95 = librosa.feature.spectral_rolloff(y=sig, sr=sr, n_fft=n_fft,
+                                                    hop_length=hop,
+                                                    roll_percent=0.95)[0]
+    rolloff_99 = librosa.feature.spectral_rolloff(y=sig, sr=sr, n_fft=n_fft,
+                                                    hop_length=hop,
+                                                    roll_percent=0.99)[0]
+    
+    # Spectral flatness (Wiener entropy — how noise-like the spectrum is)
+    flatness = librosa.feature.spectral_flatness(y=sig, n_fft=n_fft,
+                                                   hop_length=hop)[0]
+    
+    # Spectral contrast (valley-to-peak energy ratio per sub-band)
+    contrast = librosa.feature.spectral_contrast(y=sig, sr=sr, n_fft=n_fft,
+                                                   hop_length=hop)
+    
+    times = librosa.frames_to_time(np.arange(len(centroid)), sr=sr,
+                                    hop_length=hop)
+    
+    return {
+        'times': times,
+        'centroid': centroid,
+        'bandwidth': bandwidth,
+        'rolloff_85': rolloff_85,
+        'rolloff_95': rolloff_95,
+        'rolloff_99': rolloff_99,
+        'flatness': flatness,
+        'contrast': contrast,
+    }
+
+
+# ============================================================================
+# ANALYSIS 6: Cross-Channel Analysis (Stereo)
+# ============================================================================
+
+def analyze_stereo(channels, sr):
+    """
+    Cross-channel analysis for stereo files.
+    Correlation, phase difference, mid/side energy ratio.
+    """
+    if 'ch0' not in channels or 'ch1' not in channels:
+        return None
+    
+    left = channels['ch0']
+    right = channels['ch1']
+    mid = channels['mid']
+    side = channels['side']
+    
+    # Short-time correlation — high resolution
+    frame_len = 8192
+    hop = 64
+    n_frames = (len(left) - frame_len) // hop
+    
+    correlation = np.zeros(n_frames)
+    mid_energy = np.zeros(n_frames)
+    side_energy = np.zeros(n_frames)
+    
+    for i in range(n_frames):
+        start = i * hop
+        end = start + frame_len
+        l_frame = left[start:end]
+        r_frame = right[start:end]
+        m_frame = mid[start:end]
+        s_frame = side[start:end]
+        
+        # Pearson correlation
+        l_norm = l_frame - np.mean(l_frame)
+        r_norm = r_frame - np.mean(r_frame)
+        denom = np.sqrt(np.sum(l_norm**2) * np.sum(r_norm**2))
+        if denom > 0:
+            correlation[i] = np.sum(l_norm * r_norm) / denom
+        
+        mid_energy[i] = np.mean(m_frame ** 2)
+        side_energy[i] = np.mean(s_frame ** 2)
+    
+    times = np.arange(n_frames) * hop / sr
+    
+    # Frequency-domain phase difference
+    n_fft = 32768
+    L = np.fft.rfft(left[:n_fft * (len(left) // n_fft)].reshape(-1, n_fft), axis=1)
+    R = np.fft.rfft(right[:n_fft * (len(right) // n_fft)].reshape(-1, n_fft), axis=1)
+    
+    # Cross-spectral phase
+    cross_spectrum = L * np.conj(R)
+    phase_diff = np.angle(cross_spectrum)
+    mean_phase_diff = np.mean(phase_diff, axis=0)
+    
+    phase_freqs = np.fft.rfftfreq(n_fft, d=1.0/sr)
+    
+    return {
+        'times': times,
+        'correlation': correlation,
+        'mean_correlation': np.mean(correlation),
+        'mid_energy': mid_energy,
+        'side_energy': side_energy,
+        'mid_side_ratio': np.mean(mid_energy) / (np.mean(side_energy) + 1e-300),
+        'phase_freqs': phase_freqs,
+        'mean_phase_diff': mean_phase_diff,
+    }
+
+
+# ============================================================================
+# ANALYSIS 7: Harmonic Analysis & Fundamental Frequency Tracking
+# ============================================================================
+
+def analyze_harmonics(sig, sr):
+    """
+    Fundamental frequency (F0) tracking and harmonic series detection.
+    Uses the pYIN algorithm for robust F0 estimation.
+    """
+    # F0 tracking via pYIN — high resolution
+    f0, voiced_flag, voiced_prob = librosa.pyin(
+        sig, fmin=20, fmax=sr/2,
+        sr=sr, hop_length=64,
+        fill_na=0.0,
+    )
+    
+    times = librosa.frames_to_time(np.arange(len(f0)), sr=sr, hop_length=64)
+    
+    # ET lattice mapping of detected F0 values
+    f0_valid = f0[f0 > 0]
+    f0_et_map = [et_project_freq(str(f)) for f in f0_valid]  # ALL values, mpmath
+    
+    # Dominant frequency histogram
+    if len(f0_valid) > 0:
+        # Dynamic bin count: Freedman-Diaconis rule or sqrt(n), whichever gives more
+        n_f0 = len(f0_valid)
+        iqr = np.percentile(f0_valid, 75) - np.percentile(f0_valid, 25)
+        if iqr > 0 and n_f0 > 1:
+            fd_bins = int(np.ceil((np.max(f0_valid) - np.min(f0_valid)) / (2 * iqr * n_f0 ** (-1/3))))
+            sqrt_bins = int(np.ceil(np.sqrt(n_f0)))
+            n_bins = max(fd_bins, sqrt_bins, 10)
+        else:
+            n_bins = max(int(np.ceil(np.sqrt(n_f0))), 10)
+        f0_hist, f0_bins = np.histogram(f0_valid, bins=n_bins)
+    else:
+        f0_hist, f0_bins = np.array([]), np.array([])
+    
+    return {
+        'f0': f0,
+        'times': times,
+        'voiced_flag': voiced_flag,
+        'voiced_prob': voiced_prob,
+        'f0_valid': f0_valid,
+        'f0_et_map': f0_et_map,
+        'f0_hist': f0_hist,
+        'f0_bins': f0_bins,
+        'f0_mean': np.mean(f0_valid) if len(f0_valid) > 0 else 0,
+        'f0_std': np.std(f0_valid) if len(f0_valid) > 0 else 0,
+    }
+
+
+# ============================================================================
+# ANALYSIS 8: ET Lattice Frequency Distribution
+# ============================================================================
+
+def compute_et_lattice_distribution(stft_result, sr, N_values=None):
+    """
+    Map the entire frequency content onto the ET lattice at multiple
+    LCM tower levels. MPMATH precision — ZERO float64 in the ET chain.
+    
+    Frequencies are computed as exact rationals: f_i = i × sr / n_fft.
+    The STFT magnitude (float64) is used only for power weighting (rendering).
+    All lattice projections use mpmath at WORK_DPS precision.
+    """
+    if N_values is None:
+        N_values = sorted(LCM_TOWER.keys())
+    
+    magnitude = stft_result['magnitude']
+    n_fft = stft_result['n_fft']
+    nyquist = sr / 2.0  # For metadata only (rendering)
+    
+    # Average power per frequency bin — float64 from STFT (rendering, acceptable)
+    avg_power = np.mean(magnitude ** 2, axis=1)
+    
+    results = {}
+    
+    for N in N_values:
+        print(f"    N={N}...", end=" ", flush=True)
+        result = et_project_freq_batch_stft(sr, n_fft, N, avg_power)
+        result['nyquist_hz'] = nyquist
+        results[N] = result
+        print(f"done ({len(result['d_histogram'])} families)")
+    
+    return results
+
+
+# ============================================================================
+# ANALYSIS 9: Instantaneous Frequency via Analytic Signal
+# ============================================================================
+
+def compute_instantaneous_frequency(sig, sr):
+    """
+    Compute instantaneous frequency via the Hilbert transform (analytic signal).
+    This reveals the moment-by-moment frequency content without windowing artifacts.
+    """
+    analytic = signal.hilbert(sig)
+    inst_phase = np.unwrap(np.angle(analytic))
+    inst_freq = np.diff(inst_phase) / (2.0 * pi) * sr
+    
+    # Clip to valid range
+    inst_freq = np.clip(inst_freq, 0, sr / 2)
+    
+    times = np.arange(len(inst_freq)) / sr
+    
+    return {
+        'inst_freq': inst_freq,
+        'times': times,
+        'envelope': np.abs(analytic),
+        'phase': inst_phase,
+        'mean_inst_freq': np.mean(inst_freq),
+        'std_inst_freq': np.std(inst_freq),
+    }
+
+
+# ============================================================================
+# VISUALIZATION — Comprehensive Multi-Panel Output
+# ============================================================================
+
+def plot_full_bandwidth_stft(stft_result, info, filename, metabolism=None):
+    """Plot 1: Full-bandwidth linear STFT spectrogram."""
+    fig, axes = plt.subplots(2, 1, figsize=(72, 40), dpi=600)
+    fig.suptitle('ET Audio Analysis — Full-Bandwidth Linear STFT\n'
+                 f'No Mel Weighting | No Frequency Cap | Resolution: '
+                 f'{stft_result["freq_resolution"]:.2f} Hz × '
+                 f'{stft_result["time_resolution"]*1000:.1f} ms | '
+                 f'n_fft={stft_result["n_fft"]}',
+                 fontsize=14, fontweight='bold', color='#00FFAA')
+    fig.patch.set_facecolor('#0a0a0a')
+    
+    for ax in axes:
+        _apply_et_axis_style(ax)
+    
+    if metabolism is None:
+        metabolism = ETMetabolism()
+    print("    Full bandwidth panel...")
+    metabolism.force_resense()
+    im0 = _metabolized_spectrogram(
+        axes[0], stft_result['times'], stft_result['frequencies'],
+        stft_result['power_db'], metabolism,
+        cmap='inferno', vmin=np.max(stft_result['power_db']) - 120)
+    axes[0].set_ylabel('Frequency (Hz)', fontsize=12)
+    axes[0].set_title(f'Full Bandwidth: 0–{info["nyquist"]/1000:.0f} kHz (LINEAR scale)', fontsize=12)
+    axes[0].axhline(y=20000, color='#00FF00', linestyle='--', alpha=0.7, label='20 kHz (hearing limit)')
+    axes[0].legend(loc='upper right', fontsize=9, facecolor='#1a1a1a', edgecolor='#333333',
+                   labelcolor='#cccccc')
+    fig.colorbar(im0, ax=axes[0], label='Power (dB)', pad=0.01)
+    
+    print("    Ultrasonic zoom panel...")
+    # Ultrasonic zoom: 15–24 kHz — metabolism-governed rendering
+    ultra_mask = stft_result['frequencies'] >= 15000
+    im1 = None
+    if np.any(ultra_mask):
+        ultra_db = stft_result['power_db'][ultra_mask, :]
+        im1 = _metabolized_spectrogram(
+                axes[1], stft_result['times'],
+                stft_result['frequencies'][ultra_mask], ultra_db,
+                metabolism, cmap='magma',
+                vmin=np.max(ultra_db) - 90)
+        axes[1].axhline(y=20000, color='#00FF00', linestyle='--', alpha=0.7, label='20 kHz')
+        axes[1].legend(loc='upper right', fontsize=9, facecolor='#1a1a1a', edgecolor='#333333',
+                       labelcolor='#cccccc')
+    axes[1].set_ylabel('Frequency (Hz)', fontsize=12)
+    axes[1].set_xlabel('Time (s)', fontsize=12)
+    axes[1].set_title(f'Ultrasonic Band Zoom: 15–{info["nyquist"]/1000:.0f} kHz', fontsize=12)
+    if im1 is not None:
+        fig.colorbar(im1, ax=axes[1], label='Power (dB)', pad=0.01)
+    
+    plt.tight_layout(rect=(0, 0, 1, 0.95))
+    path = os.path.join(OUTPUT_DIR, filename)
+    plt.savefig(path, facecolor=fig.get_facecolor(), edgecolor='none')
+    plt.close()
+    return path
+
+
+def plot_cqt(cqt_result, info, filename, metabolism=None):
+    """Plot 2: Constant-Q Transform (semitone-lattice-native)."""
+    fig, axes = plt.subplots(2, 1, figsize=(72, 40), dpi=600)
+    fig.suptitle('ET Audio Analysis — Constant-Q Transform (Semitone-Lattice-Native)\n'
+                 f'{cqt_result["n_bins_per_octave"]} bins/octave | '
+                 f'{cqt_result["fmin"]:.0f} Hz – {cqt_result["fmax"]:.0f} Hz | '
+                 f'{cqt_result["n_bins"]} total bins',
+                 fontsize=14, fontweight='bold', color='#00FFAA')
+    fig.patch.set_facecolor('#0a0a0a')
+    
+    for ax in axes:
+        _apply_et_axis_style(ax)
+    
+    times = librosa.frames_to_time(np.arange(cqt_result['magnitude'].shape[1]),
+                                    sr=info['sample_rate'], hop_length=64)
+    
+    # Full CQT
+    if metabolism is None:
+        metabolism = ETMetabolism()
+    metabolism.force_resense()
+    im0 = _metabolized_spectrogram(
+        axes[0], times, cqt_result['frequencies'],
+        cqt_result['power_db'], metabolism, cmap='viridis')
+    axes[0].set_yscale('log')
+    axes[0].set_ylabel('Frequency (Hz) — LOG scale', fontsize=12)
+    axes[0].set_title('Full CQT — Logarithmic frequency (= ET lattice native)', fontsize=12)
+    axes[0].axhline(y=20000, color='#FF4444', linestyle='--', alpha=0.7, label='20 kHz')
+    axes[0].axhline(y=440, color='#FFAA00', linestyle='--', alpha=0.5, label='A440 (lattice ref)')
+    axes[0].legend(loc='upper right', fontsize=9, facecolor='#1a1a1a', edgecolor='#333333',
+                   labelcolor='#cccccc')
+    fig.colorbar(im0, ax=axes[0], label='Power (dB)', pad=0.01)
+    
+    # CQT high-frequency zoom (5kHz–Nyquist)
+    high_mask = cqt_result['frequencies'] >= 5000
+    im1 = None
+    if np.any(high_mask):
+        high_freqs = cqt_result['frequencies'][high_mask]
+        high_db = cqt_result['power_db'][high_mask, :]
+        im1 = _metabolized_spectrogram(
+                axes[1], times, high_freqs, high_db, metabolism, cmap='plasma')
+        axes[1].set_yscale('log')
+        axes[1].axhline(y=20000, color='#FF4444', linestyle='--', alpha=0.7, label='20 kHz')
+        axes[1].legend(loc='upper right', fontsize=9, facecolor='#1a1a1a', edgecolor='#333333',
+                       labelcolor='#cccccc')
+    axes[1].set_ylabel('Frequency (Hz) — LOG scale', fontsize=12)
+    axes[1].set_xlabel('Time (s)', fontsize=12)
+    axes[1].set_title('CQT High-Frequency Zoom: 5 kHz – Nyquist', fontsize=12)
+    if im1 is not None:
+        fig.colorbar(im1, ax=axes[1], label='Power (dB)', pad=0.01)
+    
+    plt.tight_layout(rect=(0, 0, 1, 0.95))
+    path = os.path.join(OUTPUT_DIR, filename)
+    plt.savefig(path, facecolor=fig.get_facecolor(), edgecolor='none')
+    plt.close()
+    return path
+
+
+def plot_ssq_cwt(ssq_result, info, filename, metabolism=None):
+    """Plot 3: Synchrosqueezed CWT (highest resolution)."""
+    if metabolism is None:
+        metabolism = ETMetabolism()
+    fig, axes = plt.subplots(2, 1, figsize=(72, 40), dpi=600)
+    fig.suptitle('ET Audio Analysis — Synchrosqueezed CWT (Maximum Resolution)\n'
+                 f'Morlet wavelet μ=13.4 | {info["sample_rate"]} Hz | Full duration: '
+                 f'{ssq_result["analysis_duration"]:.2f}s | '
+                 f'{ssq_result["num_scales"]} scales × {ssq_result["num_samples"]:,} samples',
+                 fontsize=14, fontweight='bold', color='#00FFAA')
+    fig.patch.set_facecolor('#0a0a0a')
+    
+    for ax in axes:
+        _apply_et_axis_style(ax)
+    
+    Tx = ssq_result['Tx']
+    Wx = ssq_result['Wx']
+    ssq_freqs = ssq_result['ssq_freqs']
+    sr = ssq_result['sr']
+    
+    t_axis = np.linspace(0, ssq_result['analysis_duration'], Tx.shape[1])
+    
+    # PROBED: ssq_freqs is 1D (254,) float64, monotonically DECREASING from
+    # Nyquist (24000 Hz) to ~11.72 Hz. All positive. Each element maps directly
+    # to one row of Tx/Wx. Decreasing order + pcolormesh = correct spectrogram
+    # orientation (high freq at top, low freq at bottom).
+    freq_axis = ssq_freqs  # Already in Hz, already positive, no transformation needed
+    nyquist_hz = sr / 2.0
+    freq_min = np.min(freq_axis)
+    freq_max = np.max(freq_axis)
+    # Validate: ssq_freqs max should equal Nyquist from sr
+    freq_coverage_pct = 100.0 * (freq_max - freq_min) / nyquist_hz
+    
+    # SSQ-CWT (synchrosqueezed — focused energy)
+    Tx_db = 20.0 * np.log10(np.abs(Tx) + 1e-300)
+    vmax_tx = np.percentile(Tx_db[np.isfinite(Tx_db)], 99)
+    vmin_tx = vmax_tx - 80
+    
+    print("    SSQ-CWT panel...")
+    metabolism.force_resense()
+    im0 = _metabolized_spectrogram(
+        axes[0], t_axis, freq_axis, Tx_db, metabolism,
+        cmap='inferno', vmin=vmin_tx, vmax=vmax_tx)
+    axes[0].set_ylabel('Frequency (Hz)', fontsize=12)
+    axes[0].set_yscale('log')
+    axes[0].set_ylim(freq_min, freq_max)
+    axes[0].axhline(y=20000, color='#00FF00', linestyle='--', alpha=0.5, linewidth=0.8,
+                    label='20 kHz (hearing limit)')
+    axes[0].axhline(y=F_REF, color='#FFAA00', linestyle='--', alpha=0.3, linewidth=0.8,
+                    label=f'A{int(F_REF)} (lattice ref)')
+    axes[0].legend(loc='lower right', fontsize=8, facecolor='#1a1a1a', edgecolor='#333333',
+                   labelcolor='#cccccc')
+    axes[0].set_title(f'Synchrosqueezed CWT — {freq_min:.1f} Hz to {freq_max/1000:.0f} kHz '
+                      f'({freq_coverage_pct:.0f}% of Nyquist, highest resolution)', fontsize=12)
+    fig.colorbar(im0, ax=axes[0], label='Magnitude (dB)', pad=0.01)
+    
+    # Raw CWT (before squeezing — for comparison)
+    Wx_db = 20.0 * np.log10(np.abs(Wx) + 1e-300)
+    vmax_wx = np.percentile(Wx_db[np.isfinite(Wx_db)], 99)
+    vmin_wx = vmax_wx - 80
+    
+    print("    Raw CWT panel...")
+    metabolism.force_resense()
+    im1 = _metabolized_spectrogram(
+        axes[1], t_axis, freq_axis, Wx_db, metabolism,
+        cmap='magma', vmin=vmin_wx, vmax=vmax_wx)
+    axes[1].set_ylabel('Frequency (Hz)', fontsize=12)
+    axes[1].set_yscale('log')
+    axes[1].set_ylim(freq_min, freq_max)
+    axes[1].axhline(y=20000, color='#00FF00', linestyle='--', alpha=0.5, linewidth=0.8)
+    axes[1].set_xlabel('Time (s)', fontsize=12)
+    axes[1].set_title('Raw CWT (before synchrosqueezing) — for comparison', fontsize=12)
+    fig.colorbar(im1, ax=axes[1], label='Magnitude (dB)', pad=0.01)
+    
+    plt.tight_layout(rect=(0, 0, 1, 0.95))
+    path = os.path.join(OUTPUT_DIR, filename)
+    plt.savefig(path, facecolor=fig.get_facecolor(), edgecolor='none')
+    plt.close()
+    return path
+
+
+def plot_ultrasonic_analysis(ultra_result, stft_result, info, filename, metabolism=None):
+    """Plot 4: Ultrasonic band detail."""
+    fig, axes = plt.subplots(3, 1, figsize=(72, 48), dpi=600)
+    fig.suptitle('ET Audio Analysis — Ultrasonic Band Detail\n'
+                 f'{info["sample_rate"]} Hz | '
+                 f'Band: {ultra_result["ultra_band_hz"][0]/1000:.0f}–'
+                 f'{ultra_result["ultra_band_hz"][1]/1000:.0f} kHz | '
+                 f'{ultra_result["num_ultra_bins"]} frequency bins | '
+                 f'Ultra/Audible ratio: {ultra_result["ultra_to_audible_ratio_dB"]:.1f} dB',
+                 fontsize=14, fontweight='bold', color='#00FFAA')
+    fig.patch.set_facecolor('#0a0a0a')
+    
+    for ax in axes:
+        _apply_et_axis_style(ax)
+    
+    times = stft_result['times']
+    
+    # Ultrasonic spectrogram
+    if ultra_result['ultra_freqs'].size > 0:
+        if metabolism is None:
+            metabolism = ETMetabolism()
+        im0 = _metabolized_spectrogram(
+                axes[0], times, ultra_result['ultra_freqs'],
+                ultra_result['ultra_power_db'], metabolism, cmap='hot',
+                                  vmin=np.max(ultra_result['ultra_power_db']) - 80)
+        axes[0].set_ylabel('Frequency (Hz)', fontsize=12)
+        axes[0].set_title('Ultrasonic Spectrogram (20kHz–Nyquist)', fontsize=12)
+        fig.colorbar(im0, ax=axes[0], label='Power (dB)', pad=0.01)
+    
+    # Band energy comparison
+    axes[1].semilogy(times, ultra_result['audible_energy_over_time'] + 1e-300,
+                     color='#00AAFF', alpha=0.8, label='Audible (20Hz–20kHz)', linewidth=0.5)
+    axes[1].semilogy(times, ultra_result['high_audible_energy_over_time'] + 1e-300,
+                     color='#FFAA00', alpha=0.8, label='High-audible (10–20kHz)', linewidth=0.5)
+    axes[1].semilogy(times, ultra_result['ultra_energy_over_time'] + 1e-300,
+                     color='#FF4444', alpha=0.8, label='Ultrasonic (20kHz+)', linewidth=0.5)
+    axes[1].set_ylabel('Mean Band Energy', fontsize=12)
+    axes[1].set_title('Band Energy Comparison Over Time', fontsize=12)
+    axes[1].legend(fontsize=10, facecolor='#1a1a1a', edgecolor='#333333',
+                   labelcolor='#cccccc')
+    axes[1].grid(True, alpha=0.15)
+    
+    # Ultrasonic peak frequency tracking with LogNorm for power color scaling
+    peak_power = ultra_result['ultra_peak_power']
+    if np.any(peak_power > 0):
+        power_min = np.min(peak_power[peak_power > 0])
+        power_max = np.max(peak_power)
+        color_norm = LogNorm(vmin=max(power_min, 1e-20), vmax=max(power_max, 1e-19))
+    else:
+        color_norm = Normalize(vmin=0, vmax=1)
+    axes[2].scatter(times, ultra_result['ultra_peak_freqs'],
+                    c=peak_power, cmap='plasma',
+                    s=1, alpha=0.6, norm=color_norm)
+    axes[2].set_ylabel('Peak Ultrasonic Freq (Hz)', fontsize=12)
+    axes[2].set_xlabel('Time (s)', fontsize=12)
+    axes[2].set_title('Ultrasonic Peak Frequency Tracking', fontsize=12)
+    axes[2].axhline(y=20000, color='#00FF00', linestyle='--', alpha=0.5)
+    
+    plt.tight_layout(rect=(0, 0, 1, 0.95))
+    path = os.path.join(OUTPUT_DIR, filename)
+    plt.savefig(path, facecolor=fig.get_facecolor(), edgecolor='none')
+    plt.close()
+    return path
+
+
+def plot_et_lattice_distribution(lattice_result, filename):
+    """Plot 5: ET lattice energy distribution at multiple N."""
+    N_values = sorted(lattice_result.keys())
+    n_plots = len(N_values)
+    
+    fig, axes = plt.subplots(n_plots, 2, figsize=(72, 16 * n_plots), dpi=600)
+    if n_plots == 1:
+        axes = axes.reshape(1, -1)
+    
+    fig.suptitle('ET Audio Analysis — Sempaevum Lattice Energy Distribution\n'
+                 'Π_N(f/f_ref) = (k, d, ε) at LCM Tower Levels',
+                 fontsize=14, fontweight='bold', color='#00FFAA')
+    fig.patch.set_facecolor('#0a0a0a')
+    
+    for row in range(n_plots):
+        for col in range(2):
+            _apply_et_axis_style(axes[row, col])
+    
+    cmap = plt.cm.Set3
+    
+    for idx, N in enumerate(N_values):
+        data = lattice_result[N]
+        d_hist = data['d_histogram']
+        
+        # Left: d-family energy bar chart
+        ax_d = axes[idx, 0]
+        d_vals = list(d_hist.keys())
+        d_energies = list(d_hist.values())
+        total = sum(d_energies) if d_energies else 1
+        d_pcts = [100.0 * e / total for e in d_energies]
+        
+        colors = [cmap(i / max(len(d_vals), 1)) for i in range(len(d_vals))]
+        ax_d.bar([str(d) for d in d_vals], d_pcts, color=colors,
+                 edgecolor='#333333', linewidth=0.5)
+        ax_d.set_xlabel('Sublattice Family d', fontsize=11)
+        ax_d.set_ylabel('Energy (%)', fontsize=11)
+        ax_d.set_title(f'N={N} — {data["description"]}\n'
+                        f'Mean |ε| = {data["weighted_mean_abs_epsilon"]:.3f} cents',
+                        fontsize=11)
+        ax_d.grid(True, alpha=0.15, axis='y')
+        
+        # Rotate labels if many bars
+        if len(d_vals) > 15:
+            ax_d.tick_params(axis='x', rotation=90, labelsize=6)
+        
+        # Right: epsilon distribution
+        ax_e = axes[idx, 1]
+        eps_vals = [e[1] for e in data['epsilon_values'] if abs(e[1]) < 50]
+        if eps_vals:
+            ax_e.hist(eps_vals, bins=100, color='#00AAFF', alpha=0.7,
+                       edgecolor='#0066AA', linewidth=0.3)
+        ax_e.set_xlabel('ε (cents — lattice alignment error)', fontsize=11)
+        ax_e.set_ylabel('Count', fontsize=11)
+        ax_e.set_title(f'N={N} — Lattice Alignment Distribution', fontsize=11)
+        ax_e.axvline(x=0, color='#FF4444', linestyle='--', alpha=0.7, label='Perfect alignment')
+        ax_e.legend(fontsize=9, facecolor='#1a1a1a', edgecolor='#333333',
+                    labelcolor='#cccccc')
+        ax_e.grid(True, alpha=0.15)
+    
+    plt.tight_layout(rect=(0, 0, 1, 0.96))
+    path = os.path.join(OUTPUT_DIR, filename)
+    plt.savefig(path, facecolor=fig.get_facecolor(), edgecolor='none')
+    plt.close()
+    return path
+
+
+def plot_spectral_stats_and_stereo(spec_stats, stereo_result, info, filename):
+    """Plot 6: Spectral statistics and stereo analysis."""
+    n_rows = 4 if stereo_result else 3
+    fig, axes = plt.subplots(n_rows, 1, figsize=(72, 14 * n_rows), dpi=600)
+    fig.suptitle(f'ET Audio Analysis — Spectral Statistics & Cross-Channel Analysis\n'
+                 f'{info["sample_rate"]} Hz | {info["channels"]} ch | {info["duration"]:.2f}s',
+                 fontsize=14, fontweight='bold', color='#00FFAA')
+    fig.patch.set_facecolor('#0a0a0a')
+    
+    for ax in axes:
+        _apply_et_axis_style(ax)
+    
+    t = spec_stats['times']
+    
+    # Spectral centroid + rolloffs
+    axes[0].plot(t, spec_stats['centroid'], color='#00FFAA', linewidth=0.8,
+                 label='Centroid')
+    axes[0].plot(t, spec_stats['rolloff_85'], color='#FFAA00', linewidth=0.5,
+                 alpha=0.7, label='85% rolloff')
+    axes[0].plot(t, spec_stats['rolloff_95'], color='#FF6600', linewidth=0.5,
+                 alpha=0.7, label='95% rolloff')
+    axes[0].plot(t, spec_stats['rolloff_99'], color='#FF2200', linewidth=0.5,
+                 alpha=0.7, label='99% rolloff')
+    axes[0].axhline(y=20000, color='#666666', linestyle=':', alpha=0.5, label='20 kHz')
+    axes[0].set_ylabel('Frequency (Hz)', fontsize=11)
+    axes[0].set_title('Spectral Centroid & Rolloff Points', fontsize=11)
+    axes[0].legend(fontsize=9, loc='upper right', facecolor='#1a1a1a',
+                   edgecolor='#333333', labelcolor='#cccccc')
+    axes[0].grid(True, alpha=0.15)
+    
+    # Spectral flatness
+    axes[1].plot(t, spec_stats['flatness'], color='#AA88FF', linewidth=0.8)
+    axes[1].set_ylabel('Flatness (0=tonal, 1=noise)', fontsize=11)
+    axes[1].set_title('Spectral Flatness (Wiener Entropy)', fontsize=11)
+    axes[1].axhline(y=KOIDE, color='#FF4444', linestyle='--', alpha=0.5,
+                    label=f'Koide ratio (2/3 ≈ {KOIDE:.4f})')
+    axes[1].legend(fontsize=9, facecolor='#1a1a1a', edgecolor='#333333',
+                   labelcolor='#cccccc')
+    axes[1].grid(True, alpha=0.15)
+    
+    # Spectral contrast
+    im = axes[2].imshow(spec_stats['contrast'], aspect='auto', origin='lower',
+                         cmap='coolwarm', extent=[t[0], t[-1], 0, spec_stats['contrast'].shape[0]])
+    axes[2].set_ylabel('Sub-band index', fontsize=11)
+    axes[2].set_title('Spectral Contrast (valley-to-peak per sub-band)', fontsize=11)
+    fig.colorbar(im, ax=axes[2], label='Contrast (dB)', pad=0.01)
+    
+    # Stereo correlation
+    if stereo_result and n_rows > 3:
+        ax_s = axes[3]
+        ax_s.plot(stereo_result['times'], stereo_result['correlation'],
+                  color='#00DDFF', linewidth=0.5, alpha=0.8)
+        ax_s.axhline(y=1.0, color='#00FF00', linestyle=':', alpha=0.3, label='Perfect correlation')
+        ax_s.axhline(y=0.0, color='#FFFF00', linestyle=':', alpha=0.3, label='Uncorrelated')
+        ax_s.axhline(y=-1.0, color='#FF0000', linestyle=':', alpha=0.3, label='Anti-correlated')
+        ax_s.axhline(y=stereo_result['mean_correlation'], color='#FFFFFF',
+                     linestyle='--', alpha=0.5,
+                     label=f'Mean: {stereo_result["mean_correlation"]:.4f}')
+        ax_s.set_ylabel('L/R Correlation', fontsize=11)
+        ax_s.set_xlabel('Time (s)', fontsize=11)
+        ax_s.set_title(f'Stereo Cross-Correlation | Mid/Side Ratio: '
+                        f'{stereo_result["mid_side_ratio"]:.2f}', fontsize=11)
+        ax_s.set_ylim(-1.1, 1.1)
+        ax_s.legend(fontsize=9, loc='lower right', facecolor='#1a1a1a',
+                    edgecolor='#333333', labelcolor='#cccccc')
+        ax_s.grid(True, alpha=0.15)
+    
+    axes[-1].set_xlabel('Time (s)', fontsize=11)
+    
+    plt.tight_layout(rect=(0, 0, 1, 0.96))
+    path = os.path.join(OUTPUT_DIR, filename)
+    plt.savefig(path, facecolor=fig.get_facecolor(), edgecolor='none')
+    plt.close()
+    return path
+
+
+def plot_waveform_and_stats(channels, info, sig_stats, filename):
+    """Plot 7: Waveform overview and amplitude statistics."""
+    ch_names = [n for n in channels.keys() if n not in ('mid', 'side')]
+    n_ch = len(ch_names)
+    
+    fig, axes = plt.subplots(n_ch + 1, 1, figsize=(72, 12 * (n_ch + 1)), dpi=600)
+    if n_ch + 1 == 1:
+        axes = [axes]
+    fig.suptitle(f'ET Audio Analysis — Waveform & Amplitude Statistics\n'
+                 f'{info["sample_rate"]} Hz / 32-bit / {info["channels"]} ch / '
+                 f'{info["duration"]:.3f}s / {info["file_size_bytes"]:,} bytes',
+                 fontsize=14, fontweight='bold', color='#00FFAA')
+    fig.patch.set_facecolor('#0a0a0a')
+    
+    for ax in axes:
+        _apply_et_axis_style(ax)
+    
+    t = np.arange(info['num_samples']) / info['sample_rate']
+    
+    for idx, name in enumerate(ch_names):
+        sig = channels[name]
+        stats = sig_stats[name]
+        axes[idx].plot(t, sig, color='#00AAFF', linewidth=0.1, alpha=0.7)
+        axes[idx].set_ylabel('Amplitude', fontsize=11)
+        axes[idx].set_title(f'{name.upper()} | Peak: {stats["peak_dBFS"]:.1f} dBFS | '
+                            f'RMS: {stats["rms_dBFS"]:.1f} dBFS | '
+                            f'Crest: {stats["crest_factor_dB"]:.1f} dB | '
+                            f'DC: {stats["dc_offset"]:.6f} | '
+                            f'ZC rate: {stats["zc_rate_hz"]:.0f} Hz',
+                            fontsize=10)
+        axes[idx].grid(True, alpha=0.1)
+    
+    # Amplitude histogram (last subplot) — dynamic bin count
+    for name in ch_names:
+        sig = channels[name]
+        n_amp = len(sig)
+        amp_bins = max(int(np.ceil(np.sqrt(n_amp))), 100)
+        axes[-1].hist(sig, bins=amp_bins, alpha=0.5, density=True,
+                      label=name.upper(), linewidth=0)
+    axes[-1].set_xlabel('Amplitude', fontsize=11)
+    axes[-1].set_ylabel('Density', fontsize=11)
+    axes[-1].set_title('Amplitude Distribution', fontsize=10)
+    axes[-1].legend(fontsize=9, facecolor='#1a1a1a', edgecolor='#333333',
+                    labelcolor='#cccccc')
+    axes[-1].grid(True, alpha=0.15)
+    
+    plt.tight_layout(rect=(0, 0, 1, 0.96))
+    path = os.path.join(OUTPUT_DIR, filename)
+    plt.savefig(path, facecolor=fig.get_facecolor(), edgecolor='none')
+    plt.close()
+    return path
+
+
+# ============================================================================
+# MASTER ANALYSIS FUNCTION
+# ============================================================================
+
+def run_full_analysis(wav_path):
+    """
+    Execute the complete ET-lattice-aware audio analysis.
+    Every analysis preserves full bandwidth and native sample rate.
+    Output filenames are prefixed with the WAV filename (minus extension)
+    to support multiple WAV files in the same directory.
+    """
+    # Derive output prefix from input filename
+    wav_basename = os.path.splitext(os.path.basename(wav_path))[0]
+    prefix = f"{wav_basename}_et_"
+    
+    print("=" * 80)
+    print("EXCEPTION THEORY — ULTRA-RESOLUTION AUDIO ANALYSIS ENGINE")
+    print("P ∘ D ∘ T = E")
+    print(f"Input: {wav_path}")
+    print(f"Output prefix: {prefix}")
+    print(f"ET precision: mpmath {mp.dps} dps (WORK_DPS={WORK_DPS}, guard={COMPUTE_GUARD})")
+    print(f"ZERO float64 in the ET computation chain")
+    print("=" * 80)
+    
+    # Initialize metabolism — Koide-ceiling resource governance
+    metabolism = ETMetabolism()
+    metabolism.report()
+    
+    t_start = time.time()
+    output_files = []
+    
+    # ── STEP 1: Load at native sample rate ──────────────────────────────
+    print("\n[1/10] Loading WAV at native sample rate (NO resampling)...")
+    channels, info = load_wav_native(wav_path)
+    print(f"  Sample rate: {info['sample_rate']} Hz")
+    print(f"  Nyquist:     {info['nyquist']} Hz")
+    print(f"  Duration:    {info['duration']:.6f} s")
+    print(f"  Channels:    {info['channels']}")
+    print(f"  Samples:     {info['num_samples']:,}")
+    print(f"  File size:   {info['file_size_bytes']:,} bytes")
+    
+    # Use first channel for mono analyses, or mid for stereo
+    if 'mid' in channels:
+        analysis_sig = channels['mid']
+        print("  Analysis signal: MID (L+R)/2")
+    elif 'mono' in channels:
+        analysis_sig = channels['mono']
+        print("  Analysis signal: MONO")
+    else:
+        analysis_sig = channels['ch0']
+        print("  Analysis signal: CH0 (Left)")
+    
+    sr = info['sample_rate']
+    
+    # ── STEP 2: Signal statistics ───────────────────────────────────────
+    print("\n[2/10] Computing signal statistics...")
+    sig_stats = compute_signal_stats(channels, info)
+    for name, stats in sig_stats.items():
+        if name in ('mid', 'side'):
+            continue
+        print(f"  {name.upper()}: Peak={stats['peak_dBFS']:.1f} dBFS, "
+              f"RMS={stats['rms_dBFS']:.1f} dBFS, "
+              f"Crest={stats['crest_factor_dB']:.1f} dB, "
+              f"DC={stats['dc_offset']:.8f}")
+    
+    # ══════════════════════════════════════════════════════════════════════
+    # METABOLIC PIPELINE: compute → render → free → next
+    # Each analysis stage completes fully before the next begins.
+    # Large datasets (STFT, CQT, SSQ-CWT) NEVER coexist in memory.
+    # This is the structural guarantee — the data flow itself makes
+    # it impossible to exceed the budget, same as the compressor's
+    # streaming block-by-block approach.
+    # ══════════════════════════════════════════════════════════════════════
+    
+    # ── STAGE A: STFT + dependents (ultrasonic, lattice) ──────────────
+    # STFT is needed by ultrasonic and lattice analyses. All three are
+    # computed and rendered before STFT is freed.
+    print("\n[3/10] Computing full-bandwidth linear STFT (n_fft=65536, hop=64)...")
+    stft_mem = (65536 // 2 + 1) * ((info['num_samples'] - 65536) // 64 + 1) * 16
+    metabolism.gate(stft_mem, "STFT computation")
+    stft_result = compute_full_bandwidth_stft(analysis_sig, sr, n_fft=65536, hop_length=64)
+    print(f"  Frequency resolution: {stft_result['freq_resolution']:.3f} Hz/bin")
+    print(f"  Time resolution:      {stft_result['time_resolution']*1000:.2f} ms")
+    print(f"  Frequency bins:       {stft_result['num_freq_bins']:,}")
+    print(f"  Frequency range:      {stft_result['freq_range'][0]:.0f} – "
+          f"{stft_result['freq_range'][1]:.0f} Hz")
+    
+    print("\n[6/10] Analyzing ultrasonic band (20kHz–Nyquist)...")
+    ultra_result = analyze_ultrasonic_band(analysis_sig, sr, stft_result)
+    print(f"  Ultrasonic bins:         {ultra_result['num_ultra_bins']}")
+    print(f"  Ultra/Audible ratio:     {ultra_result['ultra_to_audible_ratio_dB']:.1f} dB")
+    print(f"  Total ultrasonic energy: {ultra_result['total_ultra_energy']:.6e}")
+    print(f"  Total audible energy:    {ultra_result['total_audible_energy']:.6e}")
+    
+    print("\n[9/10] Computing ET lattice distribution at LCM tower levels...")
+    lattice_result = compute_et_lattice_distribution(stft_result, sr,
+                                                       N_values=sorted(LCM_TOWER.keys()))
+    for N, data in sorted(lattice_result.items()):
+        n_families = len(data['d_histogram'])
+        print(f"  N={N:>5}: {n_families} sublattice families | "
+              f"Mean |ε| = {data['weighted_mean_abs_epsilon']:.4f} cents | "
+              f"{data['description']}")
+    
+    # Save report data from STFT-dependent analyses
+    report_data = {
+        'stft_n_fft': stft_result['n_fft'],
+        'stft_freq_res': stft_result['freq_resolution'],
+        'stft_time_res': stft_result['time_resolution'],
+        'stft_freq_bins': stft_result['num_freq_bins'],
+        'stft_freq_range': stft_result['freq_range'],
+        'ultra_band': ultra_result['ultra_band_hz'],
+        'ultra_bins': ultra_result['num_ultra_bins'],
+        'ultra_ratio_db': ultra_result['ultra_to_audible_ratio_dB'],
+        'ultra_total': ultra_result['total_ultra_energy'],
+        'audible_total': ultra_result['total_audible_energy'],
+        'lattice_summary': {},
+    }
+    for N, data in sorted(lattice_result.items()):
+        total_e = sum(data['d_histogram'].values())
+        report_data['lattice_summary'][N] = {
+            'desc': data['description'],
+            'mean_eps': data['weighted_mean_abs_epsilon'],
+            'd_pcts': {d: 100.0 * e / total_e if total_e > 0 else 0
+                       for d, e in sorted(data['d_histogram'].items())},
+        }
+    
+    # RENDER STFT-dependent plots — gate each figure
+    print("\n  Rendering STFT-dependent plots...")
+    
+    fig_mem = int(72 * 12 * (len([n for n in channels if n not in ('mid','side')]) + 1) * 600 * 600 * 4)
+    metabolism.gate(fig_mem, "waveform figure")
+    f1 = plot_waveform_and_stats(channels, info, sig_stats,
+                                  f"{prefix}01_waveform.png")
+    output_files.append(f1)
+    print(f"  [1/7] Waveform & Stats → {f1}")
+    plt.close('all')
+    gc.collect()
+    
+    stft_fig_mem = 72 * 40 * 600 * 600 * 4  # figure buffer estimate
+    metabolism.gate(stft_fig_mem, "STFT figure")
+    f2 = plot_full_bandwidth_stft(stft_result, info,
+                                   f"{prefix}02_stft_full_bandwidth.png",
+                                   metabolism=metabolism)
+    output_files.append(f2)
+    print(f"  [2/7] Full-Bandwidth STFT → {f2}")
+    plt.close('all')
+    gc.collect()
+    
+    f5 = plot_ultrasonic_analysis(ultra_result, stft_result, info,
+                                   f"{prefix}05_ultrasonic.png",
+                                   metabolism=metabolism)
+    output_files.append(f5)
+    print(f"  [5/7] Ultrasonic Analysis → {f5}")
+    plt.close('all')
+    gc.collect()
+    del ultra_result
+    
+    f6 = plot_et_lattice_distribution(lattice_result,
+                                       f"{prefix}06_et_lattice.png")
+    output_files.append(f6)
+    print(f"  [6/7] ET Lattice Distribution → {f6}")
+    plt.close('all')
+    gc.collect()
+    del lattice_result
+    
+    # FREE STFT — Stage A complete
+    del stft_result
+    gc.collect()
+    metabolism.force_resense()
+    print(f"  Stage A freed — STFT + dependents released")
+    
+    # ── STAGE B: CQT (independent) ───────────────────────────────────
+    print("\n[4/10] Computing Constant-Q Transform (240 bins/octave, hop=64)...")
+    cqt_bins = int(_math.log2(sr / 2.0 / 20.0) * 240)
+    cqt_mem = cqt_bins * (info['num_samples'] // 64) * 16
+    metabolism.gate(cqt_mem, "CQT computation")
+    cqt_result = compute_cqt(analysis_sig, sr, fmin=20.0, n_bins_per_octave=240)
+    print(f"  Total bins:     {cqt_result['n_bins']}")
+    print(f"  Frequency range: {cqt_result['fmin']:.0f} – {cqt_result['fmax']:.0f} Hz")
+    
+    f3 = plot_cqt(cqt_result, info,
+                   f"{prefix}03_cqt_semitone_native.png",
+                   metabolism=metabolism)
+    output_files.append(f3)
+    print(f"  [3/7] CQT (Semitone-Native) → {f3}")
+    plt.close('all')
+    gc.collect()
+    
+    # FREE CQT — Stage B complete
+    del cqt_result
+    gc.collect()
+    metabolism.force_resense()
+    print(f"  Stage B freed — CQT released")
+    
+    # ── STAGE C: SSQ-CWT (independent, largest single allocation) ────
+    print("\n[5/10] Computing Synchrosqueezed CWT (Morlet μ=13.4)...")
+    ssq_mem = 310 * info['num_samples'] * 16 * 2  # Tx + Wx
+    print(f"    SSQ-CWT memory estimate: {ssq_mem/1024**3:.2f} GB for {info['num_samples']:,} samples")
+    metabolism.gate(ssq_mem, "SSQ-CWT computation")
+    ssq_result = compute_ssq_cwt(analysis_sig, sr)
+    print(f"  Analysis duration: {ssq_result['analysis_duration']:.2f}s (full signal)")
+    print(f"  Tx shape: {ssq_result['Tx'].shape} ({ssq_result['num_scales']} scales × "
+          f"{ssq_result['num_samples']:,} samples)")
+    
+    f4 = plot_ssq_cwt(ssq_result, info,
+                       f"{prefix}04_ssq_cwt.png",
+                       metabolism=metabolism)
+    output_files.append(f4)
+    print(f"  [4/7] Synchrosqueezed CWT → {f4}")
+    plt.close('all')
+    gc.collect()
+    
+    # FREE SSQ-CWT — Stage C complete
+    del ssq_result
+    gc.collect()
+    metabolism.force_resense()
+    print(f"  Stage C freed — SSQ-CWT released")
+    
+    # ── STAGE D: Lightweight analyses (spectral stats, stereo) ───────
+    print("\n[7/10] Computing spectral statistics...")
+    spec_stats = compute_spectral_stats(analysis_sig, sr)
+    print(f"  Mean centroid:  {np.mean(spec_stats['centroid']):.0f} Hz")
+    print(f"  Mean flatness:  {np.mean(spec_stats['flatness']):.6f}")
+    print(f"  Mean rolloff99: {np.mean(spec_stats['rolloff_99']):.0f} Hz")
+    
+    print("\n[8/10] Analyzing stereo cross-channel properties...")
+    stereo_result = analyze_stereo(channels, sr)
+    if stereo_result:
+        print(f"  Mean L/R correlation: {stereo_result['mean_correlation']:.6f}")
+        print(f"  Mid/Side energy ratio: {stereo_result['mid_side_ratio']:.4f}")
+    else:
+        print("  (Mono file — stereo analysis skipped)")
+    
+    f7 = plot_spectral_stats_and_stereo(spec_stats, stereo_result, info,
+                                         f"{prefix}07_spectral_stereo.png")
+    output_files.append(f7)
+    print(f"  [7/7] Spectral Stats & Stereo → {f7}")
+    plt.close('all')
+    gc.collect()
+    
+    # ── WRITE TEXT REPORT ──────────────────────────────────────────────
+    report_path = os.path.join(OUTPUT_DIR, f"{prefix}report.txt")
+    with open(report_path, 'w', encoding='utf-8') as f:
+        f.write("=" * 80 + "\n")
+        f.write("EXCEPTION THEORY — ULTRA-RESOLUTION AUDIO ANALYSIS REPORT\n")
+        f.write("P ∘ D ∘ T = E\n")
+        f.write("=" * 80 + "\n\n")
+        
+        f.write(f"File: {wav_path}\n")
+        f.write(f"Sample Rate: {info['sample_rate']} Hz\n")
+        f.write(f"Nyquist: {info['nyquist']} Hz\n")
+        f.write(f"Duration: {info['duration']:.6f} s\n")
+        f.write(f"Channels: {info['channels']}\n")
+        f.write(f"Samples: {info['num_samples']:,}\n")
+        f.write(f"File Size: {info['file_size_bytes']:,} bytes\n\n")
+        
+        f.write("--- SIGNAL STATISTICS ---\n")
+        for name, stats in sig_stats.items():
+            if name in ('mid', 'side'):
+                continue
+            f.write(f"\n  {name.upper()}:\n")
+            for key, val in stats.items():
+                if isinstance(val, dict):
+                    f.write(f"    {key}:\n")
+                    for k2, v2 in val.items():
+                        f.write(f"      {k2}: {v2}\n")
+                else:
+                    f.write(f"    {key}: {val}\n")
+        
+        f.write("\n--- STFT ANALYSIS ---\n")
+        f.write(f"  n_fft: {report_data['stft_n_fft']}\n")
+        f.write(f"  Freq resolution: {report_data['stft_freq_res']:.4f} Hz/bin\n")
+        f.write(f"  Time resolution: {report_data['stft_time_res']*1000:.3f} ms\n")
+        f.write(f"  Freq bins: {report_data['stft_freq_bins']}\n")
+        f.write(f"  Freq range: {report_data['stft_freq_range'][0]:.0f} – "
+                f"{report_data['stft_freq_range'][1]:.0f} Hz\n")
+        
+        f.write("\n--- ULTRASONIC ANALYSIS ---\n")
+        f.write(f"  Band: {report_data['ultra_band'][0]/1000:.0f}–"
+                f"{report_data['ultra_band'][1]/1000:.0f} kHz\n")
+        f.write(f"  Bins: {report_data['ultra_bins']}\n")
+        f.write(f"  Ultra/Audible ratio: {report_data['ultra_ratio_db']:.2f} dB\n")
+        f.write(f"  Total ultrasonic energy: {report_data['ultra_total']:.10e}\n")
+        f.write(f"  Total audible energy: {report_data['audible_total']:.10e}\n")
+        
+        f.write("\n--- ET LATTICE DISTRIBUTION ---\n")
+        for N, ldata in sorted(report_data['lattice_summary'].items()):
+            f.write(f"\n  N={N} ({ldata['desc']}):\n")
+            f.write(f"    Weighted mean |ε|: {ldata['mean_eps']:.6f} cents\n")
+            f.write(f"    d-family energy distribution:\n")
+            for d, pct in sorted(ldata['d_pcts'].items()):
+                name = sublattice_name(d, N)
+                f.write(f"      d={d:>5} ({name}): {pct:.2f}%\n")
+        
+        if stereo_result:
+            f.write("\n--- STEREO ANALYSIS ---\n")
+            f.write(f"  Mean L/R correlation: {stereo_result['mean_correlation']:.8f}\n")
+            f.write(f"  Mid/Side energy ratio: {stereo_result['mid_side_ratio']:.6f}\n")
+        
+        f.write("\n--- SPECTRAL STATISTICS (MEANS) ---\n")
+        f.write(f"  Centroid: {np.mean(spec_stats['centroid']):.2f} Hz\n")
+        f.write(f"  Bandwidth: {np.mean(spec_stats['bandwidth']):.2f} Hz\n")
+        f.write(f"  Flatness: {np.mean(spec_stats['flatness']):.8f}\n")
+        f.write(f"  Rolloff 85%: {np.mean(spec_stats['rolloff_85']):.2f} Hz\n")
+        f.write(f"  Rolloff 95%: {np.mean(spec_stats['rolloff_95']):.2f} Hz\n")
+        f.write(f"  Rolloff 99%: {np.mean(spec_stats['rolloff_99']):.2f} Hz\n")
+    
+    output_files.append(report_path)
+    
+    # ── WRITE JSON STRUCTURED REPORT ───────────────────────────────────
+    json_report_path = os.path.join(OUTPUT_DIR, f"{prefix}report.json")
+    json_data = {
+        'et_version': 'P ∘ D ∘ T = E',
+        'file': wav_path,
+        'info': {k: v for k, v in info.items() if not isinstance(v, np.generic)},
+        'signal_stats': {},
+        'stft': {
+            'n_fft': report_data['stft_n_fft'],
+            'freq_resolution_hz': report_data['stft_freq_res'],
+            'time_resolution_ms': report_data['stft_time_res'] * 1000,
+            'freq_bins': report_data['stft_freq_bins'],
+            'freq_range_hz': list(report_data['stft_freq_range']),
+        },
+        'ultrasonic': {
+            'band_hz': list(report_data['ultra_band']),
+            'bins': int(report_data['ultra_bins']),
+            'ultra_to_audible_ratio_dB': report_data['ultra_ratio_db'],
+            'total_ultra_energy': report_data['ultra_total'],
+            'total_audible_energy': report_data['audible_total'],
+        },
+        'lattice_distribution': {},
+        'spectral_stats_means': {
+            'centroid_hz': float(np.mean(spec_stats['centroid'])),
+            'bandwidth_hz': float(np.mean(spec_stats['bandwidth'])),
+            'flatness': float(np.mean(spec_stats['flatness'])),
+            'rolloff_85_hz': float(np.mean(spec_stats['rolloff_85'])),
+            'rolloff_95_hz': float(np.mean(spec_stats['rolloff_95'])),
+            'rolloff_99_hz': float(np.mean(spec_stats['rolloff_99'])),
+        },
+    }
+    # Add signal stats (convert numpy types for JSON serialization)
+    signal_stats_json = {}
+    for ch_name, ch_stats in sig_stats.items():
+        if ch_name in ('mid', 'side'):
+            continue
+        ch_serialized = {}
+        for k, v in ch_stats.items():
+            if isinstance(v, (np.floating, float)):
+                ch_serialized[k] = float(v)
+            elif isinstance(v, (np.integer, int)):
+                ch_serialized[k] = int(v)
+            elif isinstance(v, dict):
+                ch_serialized[k] = {str(k2): float(v2) for k2, v2 in v.items()}
+            else:
+                ch_serialized[k] = str(v)
+        signal_stats_json[str(ch_name)] = ch_serialized
+    json_data['signal_stats'] = signal_stats_json
+    # Add lattice data
+    lattice_json = {}
+    for N, ldata in sorted(report_data['lattice_summary'].items()):
+        lattice_json[str(N)] = {
+            'description': str(ldata['desc']),
+            'weighted_mean_abs_epsilon_cents': float(ldata['mean_eps']),
+            'd_family_energy_pct': {str(d): float(pct) for d, pct in ldata['d_pcts'].items()},
+        }
+    json_data['lattice_distribution'] = lattice_json
+    if stereo_result:
+        json_data['stereo'] = {
+            'mean_lr_correlation': stereo_result['mean_correlation'],
+            'mid_side_energy_ratio': stereo_result['mid_side_ratio'],
+        }
+    with open(json_report_path, 'w', encoding='utf-8') as jf:
+        json.dump(json_data, jf, indent=2, default=str)
+    output_files.append(json_report_path)
+    
+    elapsed = time.time() - t_start
+    print(f"\n{'=' * 80}")
+    print(f"ANALYSIS COMPLETE — {elapsed:.1f}s elapsed")
+    print(f"Generated {len(output_files)} output files")
+    print(f"{'=' * 80}")
+    
+    return output_files
+
+
+# ============================================================================
+# ENTRY POINT — Windows double-click compatible
+# ============================================================================
+# Usage:
+#   Double-click: processes ALL .wav files in the same folder as this script
+#   Command line: python et_audio_analysis.py [file1.wav] [file2.wav] ...
+#   If no args and no WAVs found, prints help and waits.
+
+if __name__ == '__main__':
+    try:
+        # Discover WAV files
+        if len(sys.argv) > 1:
+            # Command-line: use provided paths
+            wav_files = [p for p in sys.argv[1:] if p.lower().endswith('.wav')]
+            if not wav_files:
+                wav_files = sys.argv[1:]  # user might have omitted .wav extension
+        else:
+            # Double-click: scan script's own directory for ALL .wav files
+            wav_files = sorted([
+                os.path.join(SCRIPT_DIR, f)
+                for f in os.listdir(SCRIPT_DIR)
+                if f.lower().endswith('.wav')
+            ])
+        
+        if not wav_files:
+            print("=" * 80)
+            print("EXCEPTION THEORY — ULTRA-RESOLUTION AUDIO ANALYSIS ENGINE")
+            print("P ∘ D ∘ T = E")
+            print("=" * 80)
+            print()
+            print("No .wav files found.")
+            print()
+            print("Place one or more .wav files in the same folder as this script,")
+            print(f"then double-click it again.")
+            print()
+            print(f"Script location: {SCRIPT_DIR}")
+            print()
+            print("Or run from command line:")
+            print(f"  python {os.path.basename(__file__)} <file.wav>")
+            print()
+            input("Press Enter to exit...")
+            sys.exit(0)
+        
+        # Validate all files exist
+        valid_files = []
+        for wav_path in wav_files:
+            if not os.path.isabs(wav_path):
+                wav_path = os.path.join(SCRIPT_DIR, wav_path)
+            if os.path.isfile(wav_path):
+                valid_files.append(wav_path)
+            else:
+                print(f"WARNING: File not found, skipping: {wav_path}")
+        
+        if not valid_files:
+            print("ERROR: No valid .wav files found.")
+            input("Press Enter to exit...")
+            sys.exit(1)
+        
+        # Process each WAV file
+        print(f"Found {len(valid_files)} WAV file(s) to analyze:")
+        for i, f in enumerate(valid_files):
+            print(f"  [{i+1}] {os.path.basename(f)}")
+        print(f"Output directory: {OUTPUT_DIR}")
+        print()
+        
+        all_outputs = []
+        for i, wav_path in enumerate(valid_files):
+            if len(valid_files) > 1:
+                print(f"\n{'#' * 80}")
+                print(f"# FILE {i+1}/{len(valid_files)}: {os.path.basename(wav_path)}")
+                print(f"{'#' * 80}")
+            
+            outputs = run_full_analysis(wav_path)
+            all_outputs.extend(outputs)
+        
+        # Final summary
+        print(f"\n{'=' * 80}")
+        print(f"ALL ANALYSIS COMPLETE — {len(valid_files)} file(s), "
+              f"{len(all_outputs)} output files")
+        print(f"{'=' * 80}")
+        for f in all_outputs:
+            print(f"  → {os.path.basename(f)}")
+    
+    except Exception as e:
+        print(f"\n{'!' * 80}")
+        print(f"ERROR: {type(e).__name__}: {e}")
+        print(f"{'!' * 80}")
+        import traceback
+        traceback.print_exc()
+    
+    finally:
+        # Always pause on Windows so the console window stays open
+        print()
+        input("Press Enter to exit...")

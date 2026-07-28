@@ -1,0 +1,30 @@
+======================================================================
+  ET STATIC REMOVAL — CASCADE COHERENCE REPORT
+  Source: 3.etlm
+  N=12, 48000 Hz, 2 ch
+  Cascade: [1, 12, 6, 4, 3, 12, 2, 12, 3, 4, 6, 12]
+======================================================================
+  Method: Palindromic cascade coherence
+  Cascade-coherent transitions identify smooth k-traversal (signal)
+  Incoherent transitions identify random k-jumps (static)
+
+  Signal frames: 158066
+  Static frames: 301710
+  Signal samples: 316054
+  Static samples: 601929
+
+  SIGNAL d-families:
+    d=  1: 8.23%
+    d=  2: 8.91%
+    d=  3: 16.15%
+    d=  4: 16.35%
+    d=  6: 16.85%
+    d= 12: 33.51%
+
+  STATIC d-families:
+    d=  1: 8.54%
+    d=  2: 11.36%
+    d=  3: 14.17%
+    d=  4: 14.30%
+    d=  6: 17.71%
+    d= 12: 33.93%

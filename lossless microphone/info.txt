@@ -1,0 +1,44 @@
+File Summary
+File Name : 3.wav
+Channels : 2
+Sample Rate : 48000
+Precision : 32-bit
+Duration : 00:00:09.58 = 459776 samples ~ 718.4 CDDA sectors
+File Size : 3.68M
+Bit Rate : 3.07M
+Sample Encoding: 32-bit Signed Integer PCM
+ 
+File Detail
+Samples read: 919552
+Length (seconds): 9.578667
+Scaled by: 2147483647.0
+Maximum amplitude: 0.294586
+Minimum amplitude: -0.313232
+Midline amplitude: -0.009323
+Mean norm: 0.011700
+Mean amplitude: -0.000028
+RMS amplitude: 0.022871
+Maximum delta: 0.361267
+Minimum delta: 0.000000
+Mean delta: 0.003239
+RMS delta: 0.010160
+Rough frequency: 3393
+Volume adjustment: 3.193
+ 
+Channel Detail
+Overall Left Right
+DC offset -0.000038 -0.000038 -0.000018
+Min level -0.313232 -0.297607 -0.313232
+Max level 0.294586 0.279236 0.294586
+Pk lev dB -10.08 -10.53 -10.08
+RMS lev dB -32.81 -33.05 -32.59
+RMS Pk dB -20.63 -21.20 -20.63
+RMS Tr dB -49.04 -49.04 -48.53
+Crest factor - 13.37 13.35
+Flat factor 0.00 0.00 0.00
+Pk count 2 2 2
+Bit-depth 31/32 31/32 31/32
+Num samples 460k
+Length s 9.579
+Scale max 1.000000
+Window s 0.050

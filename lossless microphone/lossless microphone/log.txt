@@ -1,0 +1,314 @@
+╔══════════════════════════════════════════════════════════════════╗
+║        ET LOSSLESS MICROPHONE — CONTINUOUS-DISCRETE BRIDGE     ║
+║        Derived forward from P∘D∘T = E                         ║
+║        The bijection Π_N(r)=(k,d,ε) is algebraic identity     ║
+║        Zero loss. Zero approximation. Zero free parameters.   ║
+╚══════════════════════════════════════════════════════════════════╝
+
+  All files saved to: C:\Users\aevum\Desktop\Civilizational Blueprint\lossless microphone
+  Precision: 400 dps (1200 binary digits + guard)
+  Λ = 1200/ln2 = 1731.23404906676
+
+  ┌──────────────────────────────────────────┐
+  │            MAIN MENU                      │
+  ├──────────────────────────────────────────┤
+  │  1. Record from microphone                │
+  │  2. Process a WAV file                    │
+  │  3. Reconstruct from ETLM file            │
+  │  4. Run verification suite (13 tests)     │
+  │  5. Full demonstration                    │
+  │  6. Hardware capabilities report           │
+  │  7. Exit                                  │
+  └──────────────────────────────────────────┘
+
+  Select [1-7]: 1
+  Recording name (Enter for timestamp): 2
+╔══════════════════════════════════════════════════════════════════╗
+║        ET LOSSLESS MICROPHONE — RECORD MODE                    ║
+║        Derived forward from P∘D∘T = E                         ║
+╚══════════════════════════════════════════════════════════════════╝
+
+  ╔══════════════════════════════════════════════════════════╗
+  ║       ET LOSSLESS MICROPHONE — RECORDING                ║
+  ║       Direct ADC → Π_N bijection → ETLM (no raw WAV)   ║
+  ╚══════════════════════════════════════════════════════════╝
+
+  ┌──────────────────────────────────────────────────────────┐
+  │  HARDWARE CAPABILITY REPORT                              │
+  ├──────────────────────────────────────────────────────────┤
+  │  Device:      Microsoft Sound Mapper - Input            │
+  │  Channels:    2                                         │
+  │  Max rate:    384000 Hz                              │
+  │  Bit depth:   32-bit (int32)                       │
+  │  Supported rates: 384000, 352800, 192000, 176400, 96000, 88200
+  │  Oversampling @20kHz: 19.2×                          │
+  │  Oversampling @4kHz:  96.0×                          │
+  │  Status:      ✓ READY — maximum capabilities active     │
+  └──────────────────────────────────────────────────────────┘
+  Resolution: N=12 | Precision: 400 dps
+  Differential tracker: dε = Λ·dr/r (resolves sub-cell structure)
+  σ_ET = 1/√12 = 0.28867513 (structural cell scale)
+
+  ● RECORDING... press ENTER to stop.
+
+
+  ■ STOPPED after 10.69s. Captured 4096000 frames (10.67s)
+
+  Projecting 8192000 samples through ET bijection + differential tracker...
+  Saving ET lossless → 2.etlm
+  Reconstructing → 2.wav (from ETLM)
+
+  Differential tracker statistics:
+    Total samples:           8192000
+    Predictions accepted:    191864 (2.363%)
+    Measurement overrides:   7927085
+    Resolved depth:          +0.01725 levels
+    Total resolved:          32.02 (ADC base: 32)
+    σ_ET = 1/√12 = 0.28867513 (structural cell scale)
+    ∂I escalations (F):      737167
+    Twilight zone samples:   1847559
+    Dominant d-family (K):   d=12
+
+  Lattice analysis:
+  Total samples:     8192000
+  Non-zero samples:  8179674
+  Zero samples:      12326 (0.1505%)
+  k range:           [-678, -33] (span=645)
+  Dynamic range:     53.75 octaves = 323.6 dB
+  ε statistics:      mean=-2.16945¢, RMS=25.6214¢, range=[-49.9527, 49.991]¢
+  Cell transitions:  7133841 (87.08% of sample pairs)
+  d-family changes:  6821012 (83.26%)
+  Sign changes:      72089 (0.88%)
+  d-family distribution (sublattice families at N=12):
+    d=  1:   632241 (   7.729%)
+    d=  2:   711108 (   8.694%)
+    d=  3:  1188328 (   14.53%)
+    d=  4:  1154878 (   14.12%)
+    d=  5:    45226 (  0.5529%)
+    d=  6:  1297940 (   15.87%)
+    d= 10:   137554 (   1.682%)
+    d= 12:  2458012 (   30.05%)
+    d= 15:    35031 (  0.4283%)
+    d= 20:    87699 (   1.072%)
+    d= 30:   125199 (   1.531%)
+    d= 60:   306458 (   3.747%)
+
+  Output files (in C:\Users\aevum\Desktop\Civilizational Blueprint\lossless microphone):
+    2.etlm                                    303419688 bytes  (ET lossless)
+    2.wav                                      32768044 bytes  (playback)
+
+  The ETLM IS the recording. The WAV is reconstructed from it.
+  The lattice is a perfect deterministic crystal. ε is exact.
+  Only limitation: engineering (building the hardware).
+
+  Press Enter to return to menu...
+
+  ┌──────────────────────────────────────────┐
+  │            MAIN MENU                      │
+  ├──────────────────────────────────────────┤
+  │  1. Record from microphone                │
+  │  2. Process a WAV file                    │
+  │  3. Reconstruct from ETLM file            │
+  │  4. Run verification suite (13 tests)     │
+  │  5. Full demonstration                    │
+  │  6. Hardware capabilities report           │
+  │  7. Exit                                  │
+  └──────────────────────────────────────────┘
+
+  Select [1-7]: 4
+╔══════════════════════════════════════════════════════════════════╗
+║        ET LOSSLESS MICROPHONE — VERIFICATION SUITE             ║
+╚══════════════════════════════════════════════════════════════════╝
+================================================================================
+  ET LOSSLESS MICROPHONE — VERIFICATION SUITE
+  Testing that the continuous-discrete bridge has ZERO loss
+================================================================================
+
+  ──────────────────────────────────────────────────────────────────────
+  1. Round-Trip (Mathematical Constants)
+  ──────────────────────────────────────────────────────────────────────
+    π            N=   12: k=    20 d=   3 ε=  -18.2046¢  EXACT ✓
+    e            N=   12: k=    17 d=  12 ε=    31.234¢  EXACT ✓
+    φ            N=   12: k=     8 d=   3 ε=   33.0903¢  EXACT ✓
+    √2           N=   12: k=     6 d=   2 ε=-1.9634e-397¢  EXACT ✓
+    2/3 (Koide)  N=   12: k=    -7 d=  12 ε=    -1.955¢  EXACT ✓
+    3/2 (fifth)  N=   12: k=     7 d=  12 ε=     1.955¢  EXACT ✓
+    α⁻¹          N=   12: k=    85 d=  12 ε=   18.0934¢  EXACT ✓
+    μ(e/p)       N=   12: k=   130 d=   6 ε=   10.9644¢  EXACT ✓
+    σ_ET         N=   12: k=   -22 d=   6 ε=   49.0225¢  EXACT ✓
+    Λ            N=   12: k=   129 d=   4 ε=   9.10208¢  EXACT ✓
+    10⁻¹⁰        N=   12: k=  -399 d=   4 ε=   36.8629¢  EXACT ✓
+    10¹⁰         N=   12: k=   399 d=   4 ε=  -36.8629¢  EXACT ✓
+  → ✓ PASS
+
+  ──────────────────────────────────────────────────────────────────────
+  2. Round-Trip (Audio Sample Values)
+  ──────────────────────────────────────────────────────────────────────
+    0.5                      → EXACT ✓
+    -0.5                     → EXACT ✓
+    0.001                    → EXACT ✓
+    -0.001                   → EXACT ✓
+    0.999999                 → EXACT ✓
+    -0.999999                → EXACT ✓
+    0.00001                  → EXACT ✓
+    1/8388608                → EXACT ✓
+    -1/8388608               → EXACT ✓
+    0.7071067811865          → EXACT ✓
+    123456/8388608           → EXACT ✓
+    -7654321/8388608         → EXACT ✓
+  → ✓ PASS
+
+  ──────────────────────────────────────────────────────────────────────
+  3. WAV Round-Trip (File I/O)
+  ──────────────────────────────────────────────────────────────────────
+    sine      : 2400 samples, 0 mismatches  ✓
+    chirp     : 2400 samples, 0 mismatches  ✓
+    impulse   : 2400 samples, 0 mismatches  ✓
+    dc        : 2400 samples, 0 mismatches  ✓
+    square    : 2400 samples, 0 mismatches  ✓
+  → ✓ PASS
+
+  ──────────────────────────────────────────────────────────────────────
+  4. Cross-Resolution Transition
+  ──────────────────────────────────────────────────────────────────────
+    20 cross-resolution transitions tested
+    All transitions match direct projection: ✓
+  → ✓ PASS
+
+  ──────────────────────────────────────────────────────────────────────
+  5. Differential Control Identity
+  ──────────────────────────────────────────────────────────────────────
+    r=3.1415926535  dε/dr: exact=551.06891 numeric=551.06891  err=1.592e-201  ✓
+    r=2.7182818284  dε/dr: exact=636.88541 numeric=636.88541  err=1.839e-201  ✓
+    r=0.5           dε/dr: exact=3462.4681 numeric=3462.4681  err=1.0e-200  ✓
+    r=2.0           dε/dr: exact=865.61702 numeric=865.61702  err=2.5e-201  ✓
+    r=137.036       dε/dr: exact=12.633425 numeric=12.633425  err=3.649e-203  ✓
+    Λ = 1200/ln2 = 1731.23404906676 (verified constant)
+  → ✓ PASS
+
+  ──────────────────────────────────────────────────────────────────────
+  6. Lattice Arithmetic
+  ──────────────────────────────────────────────────────────────────────
+    3.141592×2.718281: k_×=37 κ=0 EXACT ✓  ÷: k_÷=3 κ=0 EXACT ✓
+    0.666666×1.5: k_×=0 κ=0 EXACT ✓  ÷: k_÷=-14 κ=0 EXACT ✓
+    137.036×1836.152: k_×=215 κ=0 EXACT ✓  ÷: k_÷=-45 κ=0 EXACT ✓
+  → ✓ PASS
+
+  ──────────────────────────────────────────────────────────────────────
+  7. Precision Scaling
+  ──────────────────────────────────────────────────────────────────────
+    The bijection is ALGEBRAIC IDENTITY — zero mathematical error.
+    Guard digits (100) absorb transcendental residual.
+    At each dps, truncated comparison → EXACT 0.
+
+    dps= 100 (internal=200): EXACT 0 — lossless ✓
+    dps= 200 (internal=300): EXACT 0 — lossless ✓
+    dps= 400 (internal=500): EXACT 0 — lossless ✓
+
+    All levels EXACT: the bijection has ZERO error.
+    This is not approximation. This is algebraic identity.
+  → ✓ PASS
+
+  ──────────────────────────────────────────────────────────────────────
+  8. Bipolar Sign Encoding
+  ──────────────────────────────────────────────────────────────────────
+    0.5         : sign=+1 k_θ=0 d_θ=1 EXACT ✓
+    -0.5        : sign=-1 k_θ=6 d_θ=2 EXACT ✓
+    0.123456    : sign=+1 k_θ=0 d_θ=1 EXACT ✓
+    -0.123456   : sign=-1 k_θ=6 d_θ=2 EXACT ✓
+    0.999       : sign=+1 k_θ=0 d_θ=1 EXACT ✓
+    -0.999      : sign=-1 k_θ=6 d_θ=2 EXACT ✓
+    0.001       : sign=+1 k_θ=0 d_θ=1 EXACT ✓
+    -0.001      : sign=-1 k_θ=6 d_θ=2 EXACT ✓
+  → ✓ PASS
+
+  ──────────────────────────────────────────────────────────────────────
+  9. Zero Sample Handling
+  ──────────────────────────────────────────────────────────────────────
+    Zero sample: is_zero=True, sign=0, reconstructed=0.0  ✓
+  → ✓ PASS
+
+  ──────────────────────────────────────────────────────────────────────
+  10. Tower Escalation
+  ──────────────────────────────────────────────────────────────────────
+    π:
+      N=   12: k=     20 d=    3 transition=✓
+      N=   60: k=     99 d=   20 transition=✓
+      N=  420: k=    694 d=  210 transition=✓
+      N=  840: k=   1387 d=  840 transition=✓
+      N= 2520: k=   4162 d= 1260 transition=✓
+      N=27720: k=  45779 d=27720 transition=✓
+    φ:
+      N=   12: k=      8 d=    3 transition=✓
+      N=   60: k=     42 d=   10 transition=✓
+      N=  420: k=    292 d=  105 transition=✓
+      N=  840: k=    583 d=  840 transition=✓
+      N= 2520: k=   1749 d=  840 transition=✓
+      N=27720: k=  19244 d= 6930 transition=✓
+    σ_ET:
+      N=   12: k=    -22 d=    6 transition=✓
+      N=   60: k=   -108 d=    5 transition=✓
+      N=  420: k=   -753 d=  140 transition=✓
+      N=  840: k=  -1506 d=  140 transition=✓
+      N= 2520: k=  -4517 d= 2520 transition=✓
+      N=27720: k= -49688 d= 3465 transition=✓
+    0.5:
+      N=   12: k=    -12 d=    1 transition=✓
+      N=   60: k=    -60 d=    1 transition=✓
+      N=  420: k=   -420 d=    1 transition=✓
+      N=  840: k=   -840 d=    1 transition=✓
+      N= 2520: k=  -2520 d=    1 transition=✓
+      N=27720: k= -27720 d=    1 transition=✓
+  → ✓ PASS
+
+  ──────────────────────────────────────────────────────────────────────
+  11. Backbone Bridge (Identity G)
+  ──────────────────────────────────────────────────────────────────────
+    π       : Cont_EML=19.817954 → T_round k=20 δ=-0.182046 → Webb d=3  ✓
+    e       : Cont_EML=17.31234 → T_round k=17 δ=0.31234 → Webb d=12  ✓
+    φ       : Cont_EML=8.330903 → T_round k=8 δ=0.330903 → Webb d=3  ✓
+    2/3     : Cont_EML=-7.01955 → T_round k=-7 δ=-0.01955 → Webb d=12  ✓
+    α⁻¹     : Cont_EML=85.180934 → T_round k=85 δ=0.180934 → Webb d=12  ✓
+    σ_ET    : Cont_EML=-21.509775 → T_round k=-22 δ=0.490225 → Webb d=6  ✓
+    Backbone factorization: Π_N = Disc_Webb ∘ T_round ∘ Cont_EML
+    Three backbones converge at N=12 (Theorem 15.15)
+  → ✓ PASS
+
+  ──────────────────────────────────────────────────────────────────────
+  12. d-Family Composition (Identity C)
+  ──────────────────────────────────────────────────────────────────────
+    C.3 Residue symmetry Res(d) = {k, N-k}: ✓
+    C.4 Universal d=1 channel (1 ∈ d⊗d ∀d): ✓
+    C.5 d=12 universality (12⊗12 = all): [1, 2, 3, 4, 6, 12] ✓
+    C.6 Lattice multiplication matches direct: ✓
+  → ✓ PASS
+
+  ──────────────────────────────────────────────────────────────────────
+  13. ∂I Boundary (Identity F)
+  ──────────────────────────────────────────────────────────────────────
+    F.1 Half-cell width = 600/N = 50.0¢: ✓
+    F.2 Adjacent cells always differ in d-family: ✓ (k=-24..24)
+    F.3 Boundary detection for cell-edge values: ✓
+  → ✓ PASS
+
+================================================================================
+  VERIFICATION SUMMARY
+================================================================================
+    ✓ 1. Round-Trip (Mathematical Constants)
+    ✓ 2. Round-Trip (Audio Sample Values)
+    ✓ 3. WAV Round-Trip (File I/O)
+    ✓ 4. Cross-Resolution Transition
+    ✓ 5. Differential Control Identity
+    ✓ 6. Lattice Arithmetic
+    ✓ 7. Precision Scaling
+    ✓ 8. Bipolar Sign Encoding
+    ✓ 9. Zero Sample Handling
+    ✓ 10. Tower Escalation
+    ✓ 11. Backbone Bridge (Identity G)
+    ✓ 12. d-Family Composition (Identity C)
+    ✓ 13. ∂I Boundary (Identity F)
+
+  OVERALL: ALL PASS ✓ — LOSSLESS VERIFIED
+================================================================================
+
+  Press Enter to return to menu...

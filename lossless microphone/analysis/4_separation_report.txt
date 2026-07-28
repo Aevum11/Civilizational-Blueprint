@@ -1,0 +1,47 @@
+======================================================================
+  ET MULTI-LAYER SEPARATION REPORT — V2 METADATA
+  Source: 4.etlm (V2)
+  N=12, 48000 Hz, 2 ch, 933888 samples
+======================================================================
+
+  METHOD: Per-sample classification from V2 metadata.
+  The differential control identity IS the temporal context.
+  No windows. No statistics. Each sample classified by its own metadata.
+
+  CLASSIFIER:
+    predicted + any                      -> VOICE
+    override + cascade + d_reachable     -> VOICE
+    override + NOT cascade               -> TRANSIENT
+    override + cascade + NOT d_reachable -> AMBIENT
+    initial + high tightness (> K=2/3)   -> VOICE
+    initial + low tightness              -> AMBIENT
+    zero                                 -> STATIC
+
+  VOICE: 471069 samples (50.44%)
+    d=  1: 10.84%
+    d=  2: 8.45%
+    d=  3: 12.94%
+    d=  4: 15.76%
+    d=  6: 9.60%
+    d= 12: 42.42%
+
+  TRANSIENT: 329479 samples (35.28%)
+    d=  1: 8.79%
+    d=  2: 11.96%
+    d=  3: 12.72%
+    d=  4: 13.75%
+    d=  6: 17.89%
+    d= 12: 34.88%
+
+  AMBIENT: 131677 samples (14.10%)
+    d=  1: 0.02%
+    d=  2: 13.75%
+    d=  3: 26.73%
+    d=  4: 15.31%
+    d=  6: 44.05%
+    d= 12: 0.15%
+
+  STATIC: 1663 samples (0.18%)
+
+  GUARANTEE: Voice + Transient + Ambient + Static = Original
+  Every sample in exactly one layer. Zero remainder.
