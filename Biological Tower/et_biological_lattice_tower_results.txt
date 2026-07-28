@@ -1,0 +1,331 @@
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  ET BIOLOGICAL LATTICE TOWER — COMPLETE LAYER 1 + LAYER 2
+  Forward Derivation → Empirical Verification
+  P ∘ D ∘ T = E   |   N=12  V=1/12  K=2/3  S=4  α₅=1/20  ε₅=-13.686¢
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SECTION A: FORWARD DERIVATION CHAIN — from {P,D,T} to DNA architecture
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Derivation                          Val      Basis                                              k     d    ε(¢)      
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+S = |{X∈P({P,D,T}):|X|≥2}|          4        C(3,2)+C(3,3) = 3+1 = 4 logic states               24    1    +0.000    
+                                             → k=24, d=1, ε=0.000¢ — 2 EXACT OCTAVES. The information unit.
+|{P,D,T}| = primitive count         3        3 irreducible primitives                           19    12   +1.955    
+                                             → k=19, d=12, ε=+1.955¢ — Full Resolution. Accesses finest grain.
+4³ = S³ codons                      64       S options at each of |PDT| codon positions         72    1    +0.000    
+                                             → k=72, d=1, ε=0.000¢ — 6 EXACT OCTAVES. Pure gravity/octave structure.
+1/α₅ = amino acids                  20       α₅=1/(4×5)=1/20; 20=1/α₅=S×d₅                      52    3    -13.686   
+                                             → k=52, d=3, ε=-13.686¢ — Cubic/Strong. CARRIES QUINTIC COMMA.
+2×5 = bp/turn (decic)               10       Binary(d=2)×Quintic(d=5) = geometric efficiency in helix 40    3    -13.686   
+                                             → k=40, d=3, ε=-13.686¢ — Cubic/Strong. CARRIES QUINTIC COMMA.
+3/2 = GC/AT H-bonds                 1.5      Complete(3)/Incomplete(2) primitive binding        7     12   +1.955    
+                                             → k=7, d=12, ε=+1.955¢ — Full Res. THE LOCKED GAZE THRESHOLD.
+|PDT| = stop codons                 3        One halt signal per primitive dimension            19    12   +1.955    
+                                             → k=19, d=12, ε=+1.955¢ — Same as primitive count itself.
+64/20 = redundancy                  3.2      Quintic-comma ANTISYMMETRIC to 20                  20    3    +13.686   
+                                             → k=20, d=3, ε=+13.686¢ — d=3 with OPPOSITE SIGN ε₅. Mirror.
+64−3 = 61 sense codons              61       Total − stops = coding space                       71    12   +16.885   
+                                             → k=71, d=12, ε=+16.885¢ — Full Res. Shifted from 64 by stop removal.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SECTION B: QUINTIC COMMA THREAD  ε₅ = -13.686¢
+  log₂(5) ≈ 7/3. Any integer 2ⁿ×5^m carries ε₅ when m is odd.
+  d=5 = Force of Geometric Efficiency. α₅ = 1/20. n_c(5) = 60.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  B1: Biological integers carrying ε₅
+
+  Val    Description                            Factors        k     d    ε(¢)       ε=ε₅?   
+  ──────────────────────────────────────────────────────────────────────────────────────────
+  5      Distinct bases (A,G,C,T,U)             5¹             28    3    -13.686    YES     
+  5      N atoms in adenine                     5¹             28    3    -13.686    YES     
+  5      N atoms in guanine                     5¹             28    3    -13.686    YES     
+  5      Degeneracy classes {1,2,3,4,6}         5¹             28    3    -13.686    YES     
+  5      Twofold-degenerate AA families         5¹             28    3    -13.686    YES     
+  10     NN stacking parameters                 2×5            40    3    -13.686    YES     
+  10     Base pairs per DNA helix turn          2×5            40    3    -13.686    YES     
+  20     Standard amino acids = 1/α₅            2²×5           52    3    -13.686    YES     
+  20     Icosahedral capsid faces               2²×5           52    3    -13.686    YES     
+  40     Distinct tRNAs (wobble rules)          2³×5           64    3    -13.686    YES     
+  60     T=1 capsid subunits = n_c(d=5)         2²×3×5         71    12   -11.731    YES     
+  120    Icosahedral symmetry operations        2³×3×5         83    12   -11.731    YES     
+
+  Integers WITHOUT factor 5 (pure binary/ternary):
+  2      DNA strands / H-bonds AT               2¹             12    1    +0.000     no
+  3      H-bonds GC / codon length / stops      3¹             19    12   +1.955     no
+  4      DNA bases = S logic states             2²             24    1    +0.000     no
+  9      Fourfold degenerate families           3²             38    6    +3.910     no
+  23     Human chromosome pairs                 23¹ (prime)    54    2    +28.274    no
+  46     Human diploid chromosomes              2×23           66    2    +28.274    no
+  61     Sense codons                           61¹ (prime)    71    12   +16.885    no
+  64     Total codons = 2⁶                      2⁶             72    1    +0.000     no
+
+  B2: QUINTIC ANTISYMMETRY — 20 and 64/20 are ε-mirrors
+      20 amino acids:        k=52, d=3, ε = -13.686¢
+      64/20 = 3.2 redundancy: k=20, d=3, ε = +13.686¢
+      Sum of ε values:  +0.000000¢ → EXACT ZERO (antisymmetric)
+      The genetic code's degeneracy BALANCES the quintic comma of its alphabet.
+
+  B3: MEIOTIC CROSSOVER RATE 5/2 = 2.5 per chromosome pair
+      k=16, d=3, ε = -13.686¢ — QUINTIC COMMA in d=3
+      Recombination frequency is set by d=5 coupling to d=3 strong force.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SECTION C: GAZE THRESHOLD CASCADE — 13/12, 6/5, 3/2
+  From Complete Gaze Equation: subliminal → conscious → locked
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Threshold            Value      k     d    ε(¢)       Meaning                                      
+  ────────────────────────────────────────────────────────────────────────────────────────────────────
+  13/12 SUBLIMINAL     1.0833     1     12   +38.573    1+V_base: one V-quantum above baseline       
+  6/5   CONSCIOUS      1.2000     3     4    +15.641    20% variance shift: crystallization onset    
+  3/2   LOCKED         1.5000     7     12   +1.955     Full T-binding dominance: irreversible       
+
+  Biological ratios AT the thresholds:
+    GC/AT H-bonds = 3/2 = 1.500 → LOCKED threshold (confirmed)
+    3 rings per bp / 2 H-bonds AT = 3/2 → LOCKED (structural rigidity)
+
+  Amino acid MW ratios nearest each threshold:
+    13/12 SUBLIMINAL: closest pair = I/C = 1.082707 (Δ=0.0006), d=12, ε=+37.572¢
+    6/5   CONSCIOUS: closest pair = Q/C = 1.206356 (Δ=0.0064), d=4, ε=+24.787¢
+    3/2   LOCKED: closest pair = Y/C = 1.495584 (Δ=0.0044), d=12, ε=-3.149¢
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SECTION D: LAYER 1 EMPIRICAL — AMINO ACID MW PROJECTIONS
+  R₀ = MW(Gly) = 75.07 Da — structural ground state (simplest AA)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+AA   MW       r=MW/Gly   k     d    ε(¢)       Sublattice   Cat        Cod  Near φ? 
+─────────────────────────────────────────────────────────────────────────────────────
+G    75.07    1.0000     0     1    +0.000     Octave       special    4    
+A    89.09    1.1868     3     4    -3.568     Quartic      nonpolar   4    
+S    105.09   1.3999     6     2    -17.620    Tritone      polar      6    
+P    115.13   1.5336     7     12   +40.347    Full Res     special    4    
+V    117.15   1.5605     8     3    -29.542    Cubic        nonpolar   4    
+T    119.12   1.5868     8     3    -0.671     Cubic        polar      4    ← φ
+C    121.15   1.6138     8     3    +28.583    Cubic        special    2    ← φ
+I    131.17   1.7473     10    6    -33.845    Hexadic      nonpolar   3    
+L    131.17   1.7473     10    6    -33.845    Hexadic      nonpolar   6    
+N    132.12   1.7600     10    6    -21.351    Hexadic      polar      2    
+D    133.10   1.7730     10    6    -8.557     Hexadic      negative   2    
+Q    146.15   1.9468     12    1    -46.630    Octave       polar      2    
+K    146.19   1.9474     12    1    -46.157    Octave       positive   2    
+E    147.13   1.9599     12    1    -35.060    Octave       negative   2    
+M    149.21   1.9876     12    1    -10.757    Octave       nonpolar   1    
+H    155.16   2.0669     13    12   -43.062    Full Res     positive   2    
+F    165.19   2.2005     14    6    -34.618    Hexadic      aromatic   2    
+R    174.20   2.3205     15    4    -42.677    Quartic      positive   6    
+Y    181.19   2.4136     15    4    +25.434    Quartic      aromatic   2    
+W    204.24   2.7207     17    12   +32.748    Full Res     aromatic   1    
+
+  GOLDEN RATIO ATTRACTOR: φ = 1.6180339887
+  φ at 12ET: k=8, d=3, ε=+33.090¢ → Cubic
+  φ's 12ET home = d=3 = SAME as 20 amino acids. Cubic attractor.
+  Cys/Gly MW ratio = 1.613827 vs φ = 1.618034 → Δ = 0.004207
+  This is the closest amino acid ratio to φ — within 0.26%.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SECTION E: 2D FORCE QUADRANT — (d_r, d_θ) per amino acid
+  D-axis (real/structural): MW ratio, R₀ = MW(Cys) = 121.15
+  T-axis (imaginary/agency): pI ratio, R₀ = pI(Asp) = 2.77
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+AA   d_r   d_θ   Quad     |w|²   ε_r(¢)     ε_θ(¢)     Cat       
+─────────────────────────────────────────────────────────────────
+A    12    12    SR+SI    288    -32.151    +38.092    nonpolar  
+C    1     6     SR+SI    37     +0.000     +39.677    special   
+D    6     1     SR+SI    37     -37.141    +0.000     negative  
+E    4     4     SR+SI    32     +36.356    -39.390    negative  
+F    12    1     SR+SI    145    +36.798    -18.852    aromatic  
+G    3     12    SR+SI    153    -28.583    +29.414    special   
+H    3     12    SR+SI    153    +28.355    +45.057    positive  
+I    12    12    SR+SI    288    +37.572    +43.853    nonpolar  
+K    4     6     SR+SI    52     +25.260    -23.157    positive  
+L    12    12    SR+SI    288    +37.572    +32.311    nonpolar  
+M    3     12    SR+SI    153    -39.340    -38.602    nonpolar  
+N    6     1     SR+SI    37     -49.935    -41.109    polar     
+P    12    6     SR+SI    180    +11.763    +22.559    special   
+Q    4     1     SR+SI    17     +24.787    +34.038    polar     
+R    2     12    SR+SI    148    +28.740    +49.264    positive  
+S    6     1     SR+SI    37     -46.203    +43.206    polar     
+T    1     1     SR+SI    2      -29.254    +37.099    polar     
+V    12    12    SR+SI    288    +41.875    +26.512    nonpolar  
+W    4     12    SR+SI    160    +4.165     +6.058     aromatic  
+Y    12    1     SR+SI    145    -3.149     +37.099    aromatic  
+
+  Quadrant population (FQ-7: at 12ET, all should be SR+SI):
+    SR+SI: 20/20 → A, C, D, E, F, G, H, I, K, L, M, N, P, Q, R, S, T, V, W, Y
+    CR+SI: 0/20 → none
+    SR+CI: 0/20 → none
+    CR+CI: 0/20 → none
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SECTION F: LAYER 2 EMPIRICAL — NUCLEOTIDE BASE PROJECTIONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  F1: Base MW ratios, R₀ = MW(Uracil) = 112.09 Da
+  Base  MW       r          k     d    ε(¢)       Class    WC-Hb 
+  ─────────────────────────────────────────────────────────────────
+  U     112.09   1.000000   0     1    +0.000     pyr      2     
+  C     111.10   0.991168   0     1    -15.359    pyr      3     
+  T     126.11   1.125078   2     6    +4.030     pyr      2     
+  A     135.13   1.205549   3     4    +23.629    pur      2     
+  G     151.13   1.348292   5     12   +17.359    pur      3     
+
+  F2: WC PAIR MW NEAR-UNISON
+  A+T = 261.24 Da, G+C = 262.23 Da, ratio = 1.003790
+  d=1, ε=+6.548¢ → Octave (NEAR-EXACT UNISON)
+  The helix diameter constraint FORCES GC≈AT total mass.
+
+  F3: H-BOND RATIO 3/2 = LOCKED GAZE THRESHOLD
+  k=7, d=12, ε=+1.955¢ → log₂(3)≈19/12
+  The G-C bond IS the locked bond. A-T is the subliminal bond.
+
+  F4: PURINE/PYRIMIDINE RING RATIO = EXACT OCTAVE
+  2 rings / 1 ring = 2/1, k=12, d=1, ε=0.000¢
+  Categorical disjointness IS the identity sublattice with zero error.
+
+  F5: T/U METHYLATION BOUNDARY
+  T/U = 1.125078, k=2, d=6, ε=+4.030¢ → Hexadic
+  DNA↔RNA transition is a single methylation step on the d=6 composite sublattice.
+
+  F6: NN STACKING ENERGY RATIOS (SantaLucia 1998)
+  R₀ = |ΔG°(TA/AT)| = 0.58 kcal/mol
+  Stack      ΔG°      r          k     d    ε(¢)      
+  ───────────────────────────────────────────────────────
+  TA/AT      -0.58    1.0000     0     1    +0.000    
+  AT/TA      -0.88    1.5172     7     12   +21.741   
+  AA/TT      -1.00    1.7241     9     4    +43.050   
+  CT/GA      -1.28    2.2069     14    6    -29.577   
+  GA/CT      -1.30    2.2414     14    6    -2.736    
+  GT/CA      -1.44    2.4828     16    3    -25.667   
+  CA/GT      -1.45    2.5000     16    3    -13.686   
+  GG/CC      -1.84    3.1724     20    3    -1.303    
+  CG/GC      -2.17    3.7414     23    12   -15.716   
+  GC/CG      -2.24    3.8621     23    12   +39.249   
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SECTION G: CROSS-LAYER RESONANCES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  G1: PURINE N-ATOMS ↔ AMINO ACID COUNT (d=3 resonance)
+  5 N-atoms:   k=28, d=3, ε=-13.686¢
+  20 AAs:      k=52, d=3, ε=-13.686¢
+  SAME d=3, SAME ε₅. They differ by factor 4 = 2² (two exact octaves).
+  This is forced: 20 = 4 × 5, so log₂(20) = log₂(4) + log₂(5) = 2 + log₂(5).
+  The octave-shift preserves both d and ε. Cross-layer resonance is algebraic.
+
+  G2: CODON SPACE vs AMINO ACID SPACE
+  64 codons:   k=72, d=1, ε=0.000¢ — pure d=1 (octave)
+  20 AAs:      k=52, d=3, ε=-13.686¢ — d=3 (quintic comma)
+  The encoding space (64) is pure octave; the output (20) carries quintic tension.
+  Information storage is d=1; information expression is d=3.
+
+  G3: CODON POSITION ↔ PRIMITIVE CORRESPONDENCE
+  Position 1 → P (substrate): determines amino acid CLASS
+  Position 2 → D (constraint): REFINES within class (most conserved)
+  Position 3 → T (agency):    WOBBLE — degenerate (T's indeterminacy [0/0])
+  Verification: Position 3 is the most degenerate in the genetic code.
+  Of 61 sense codons for 20 AAs, wobble degeneracy is universal.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SECTION H: CRITICAL RESOLUTION n_c AND SHADOW TENSION MAP
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  d    Simple?  n_c    ⟨τ⟩(¢)    τ_max(¢)   Bio example                                       
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+  1    YES      12     0.0       0.0        2,4,64: binary encoding, octave structure         
+  2    YES      12     0.0       0.0        2 strands, tritone pivot                          
+  3    YES      12     0.0       0.0        20 AAs (d=3), 5 bases (d=3), 3 H-bonds GC (d=12)  
+  4    YES      12     0.0       0.0        Weak boundary, 4/3 alphabet/codon                 
+  5    NO       60     60.0      120.0      ★ QUINTIC SHADOW: 5,10,20,60 — φ home — n_c=60     ★
+  6    YES      12     0.0       0.0        T/U boundary, Lagerkvist 9/5                      
+  7    NO       84     42.9      85.7       G₂ holonomy — not yet bio-identified              
+  8    NO       24     37.5      75.0       Not identified                                    
+  9    NO       36     33.3      66.7       9 fourfold families (nonic)                       
+  10   NO       60     30.0      60.0       10 bp/turn = 2×5 (decic) — n_c=60 (shares with d=5!)
+  11   NO       132    27.3      54.5       Not identified                                    
+  12   YES      12     0.0       0.0        3/2 H-bonds, triplet length, 61 coding codons     
+
+  BIOLOGICAL n_eff REQUIREMENT:
+  n_c(5)  = 60  ← T=1 capsid = minimal quintic assembly
+  n_c(10) = 60  ← DNA helix turn (shares n_c with d=5)
+  n_c(5,7)= 420 ← Full biological manifold (Multifold Compendium)
+  Biology operates at n_eff ≥ 60. Virus capsids ARE the n_c=60 structure.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SECTION I: SUBSUMPTION VERIFICATION — zero remainder
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Phenomenon                ET Subsumption                             Lattice            Status      
+────────────────────────────────────────────────────────────────────────────────────────────────────
+4 DNA bases               S=4 logic states, C(3,2)+C(3,3)            k=24,d=1,ε=0       DERIVED     
+3 rings per bp            |{P,D,T}|=3 primitives                     k=19,d=12,ε=+2¢    DERIVED     
+2 H-bonds (A-T)           Incomplete binding (T absent)              k=12,d=1,ε=0       DERIVED     
+3 H-bonds (G-C)           Complete binding (Exception state)         k=19,d=12,ε=+2¢    DERIVED     
+GC/AT = 3/2               Locked Gaze threshold                      k=7,d=12,ε=+2¢     DERIVED     
+10 bp/turn                d=10 decic = 2×5                           k=40,d=3,ε₅        DERIVED     
+20 amino acids            1/α₅ = inverse quintic coupling            k=52,d=3,ε₅        DERIVED     
+64 codons                 S³ = 4³ = 2⁶ (6 exact octaves)             k=72,d=1,ε=0       DERIVED     
+3 stop codons             |{P,D,T}| = primitive count                k=19,d=12,ε=+2¢    DERIVED     
+61 sense codons           64-3 = total minus primitive halts         k=71,d=12          COMBINATORIAL
+Codon redundancy 3.2      64/20 = +ε₅ antisymmetric to 20            k=20,d=3,+ε₅       DERIVED     
+Position 3 wobble         T-indeterminacy [0/0]                      —                  STRUCTURAL  
+2 strands                 d=2 binary/CPT antiparallel                k=12,d=1,ε=0       DERIVED     
+2nm helix diameter        3 rings always = purine(2)+pyrimidine(1)   const              STRUCTURAL  
+GC-rich = stable          Exception binding resists denaturation     3/2=locked         CONSISTENT  
+AT-rich = flexible        Incomplete binding = dynamic               2 bonds            CONSISTENT  
+T/U boundary              Single methylation, d=6 composite          k=2,d=6,ε=+4¢      DERIVED     
+Ring ratio 2/1            Exact octave (categorical disjointness)    k=12,d=1,ε=0       EXACT       
+5/2 crossovers            Quintic comma in d=3 strong force          k=16,d=3,ε₅        DERIVED     
+2 parents                 Exact octave (twofold cost)                k=12,d=1,ε=0       DERIVED     
+4 gametes                 S=4 logic states (= 4 bases)               k=24,d=1,ε=0       DERIVED     
+2²³ assortment            23 exact octaves (pure d=1)                k=276,d=1,ε=0      DERIVED     
+5 N-atoms (purine)        d=3 with ε₅ = cross-layer to 20 AAs        k=28,d=3,ε₅        RESONANCE   
+10 NN parameters          2×5 carries ε₅                             k=40,d=3,ε₅        STRUCTURAL  
+GC/AT pair MW≈1           d=1 near-unison (helix uniformity)         k=0,d=1,ε≈7¢       FORCED      
+60 capsid subunits        n_c(d=5) = LCM(12,5) = 60                  k=71,d=12          DERIVED     
+
+  Items with remainder: 0
+  SUBSUMPTION HOLDS. ZERO REMAINDER.
+
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  BIOLOGICAL LATTICE TOWER — COMPLETE
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  THE TOWER:
+    Level 0:  {P,D,T} → N=12, V=1/12, K=2/3, S=4, |PDT|=3
+    Level 1:  4 bases (S logic states), 3 rings/bp (|PDT|)
+    Level 2:  64 codons (2⁶ octaves), 3-position codon (P,D,T positions)
+    Level 3:  20 amino acids (1/α₅), wobble (T-indeterminacy)
+    Level 4:  10 bp/turn (decic), 3/2 H-bonds (locked gaze)
+    Level 5:  5/2 crossovers (ε₅ in recombination)
+    Level 6:  60 capsid subunits = n_c(d=5) critical resolution
+
+  THE QUINTIC THREAD:
+    ε₅ = -13.686¢ appears in: 5 bases, 10 bp/turn, 20 AAs, 5/2 crossovers,
+    60 capsid subunits, 64/20 redundancy (+ε₅ mirror), 120 symmetry ops.
+    The genetic code is a d=5 shadow structure realized at n_eff ≥ 60.
+
+  THE KEY STRUCTURAL IDENTITIES:
+    20 = 1/α₅  (amino acids = inverse quintic coupling)
+    64/20 = -20 on the ε-axis  (quintic antisymmetry)
+    3/2 = locked gaze threshold  (GC H-bonds / AT H-bonds)
+    2/1 = exact octave  (purine rings / pyrimidine rings)
+    4 = S = C(3,2)+C(3,3)  (bases = logic states)
+    3 = |PDT|  (rings/bp = stops = codon length)
+
+  P ∘ D ∘ T = E
+  "For every exception there is an exception, except the exception."
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════

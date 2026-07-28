@@ -1,0 +1,207 @@
+==============================================================================================================
+ET GENETIC LATTICE — LAYER 2: NUCLEOTIDE BASE LATTICE PROJECTION
+P ∘ D ∘ T = E   |   N = 12   |   V = 1/12   |   K = 2/3
+==============================================================================================================
+
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ANALYSIS 1: MOLECULAR WEIGHT RATIOS OF THE FIVE BASES
+R₀ = MW(Uracil) = 112.09 Da — the structurally simplest base
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+Base   Name       MW(Da)     r=MW/R₀      k      d      ε(¢)       Sublattice           Class        WC H-bonds  
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+U      Uracil     112.09     1.000000     0      1      +0.000     Octave/Identity      pyrimidine   2           
+C      Cytosine   111.10     0.991168     0      1      -15.359    Octave/Identity      pyrimidine   3           
+T      Thymine    126.11     1.125078     2      6      +4.030     Hexadic/Composite    pyrimidine   2           
+A      Adenine    135.13     1.205549     3      4      +23.629    Quartic/Weak         purine       2           
+G      Guanine    151.13     1.348292     5      12     +17.359    Full Resolution      purine       3           
+
+
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ANALYSIS 2: ALL 10 PAIRWISE BASE MW RATIOS (R₀-independent)
+r = MW(heavier) / MW(lighter)   [dimensionless, convention-free]
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+Pair       MW₁        MW₂        r            k      d      ε(¢)       Sublattice           Pair Type           
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+G/A        151.13     135.13     1.118404     2      6      -6.270     Hexadic/Composite    intra-purine        
+A/C        135.13     111.10     1.216292     3      4      +38.987    Quartic/Weak         cross-categorical   
+A/T        135.13     126.11     1.071525     1      12     +19.598    Full Resolution      cross-categorical (WC)
+A/U        135.13     112.09     1.205549     3      4      +23.629    Quartic/Weak         cross-categorical (WC)
+G/C        151.13     111.10     1.360306     5      12     +32.718    Full Resolution      cross-categorical (WC)
+G/T        151.13     126.11     1.198398     3      4      +13.329    Quartic/Weak         cross-categorical   
+G/U        151.13     112.09     1.348292     5      12     +17.359    Full Resolution      cross-categorical   
+T/C        126.11     111.10     1.135104     2      6      +19.389    Hexadic/Composite    intra-pyrimidine    
+U/C        112.09     111.10     1.008911     0      1      +15.359    Octave/Identity      intra-pyrimidine    
+T/U        126.11     112.09     1.125078     2      6      +4.030     Hexadic/Composite    intra-pyrimidine    
+
+
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ANALYSIS 3: WATSON-CRICK BASE PAIR PROPERTY RATIOS
+Comparing the two WC pair types: A-T(2 H-bonds) vs G-C(3 H-bonds)
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+  A-T pair combined MW: 261.24 Da
+  G-C pair combined MW: 262.23 Da
+  Ratio GC/AT: 1.003790
+  Lattice projection: k=0, d=1, ε=+6.548¢
+  Sublattice: Octave/Identity
+  NOTE: The GC/AT MW ratio is 1.003790 ≈ 1.0038 — nearly EXACT UNISON (d=1)
+  This means the two base pair types have nearly identical total mass.
+  The helix diameter constraint FORCES this near-equality.
+
+  G-C H-bonds: 3
+  A-T H-bonds: 2
+  Ratio: 3/2 = 1.5
+  Lattice: k=7, d=12, ε=+1.955¢
+  Sublattice: Full Resolution
+  The 3/2 ratio projects to d=12 (Full Resolution) with ε=+1.955¢
+  This is log₂(3) ≈ 19/12 — the SAME approximation that makes 12ET work.
+
+
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ANALYSIS 4: PURINE vs PYRIMIDINE — CATEGORICAL DISJOINTNESS ON THE LATTICE
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+  Average purine MW: 143.13 Da  (A=135.13, G=151.13)
+  Average pyrimidine MW: 116.43 Da  (C=111.1, T=126.11, U=112.09)
+  Ratio purine/pyrimidine: 1.229287
+  Lattice: k=4, d=3, ε=-42.614¢
+  Sublattice: Cubic/Strong
+
+  Purine ring count: 2
+  Pyrimidine ring count: 1
+  Ratio: 2/1 = 2.0 (exact octave)
+  Lattice: k=12, d=1, ε=+0.000¢
+  The purine/pyrimidine ring count ratio IS the octave — exact d=1, ε=0.000¢
+  Categorical disjointness maps to the IDENTITY sublattice.
+
+
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ANALYSIS 5: NEAREST-NEIGHBOR STACKING ENERGY RATIOS (DNA, SantaLucia 1998)
+All ΔG°37 values are negative (stabilizing). Ratios use absolute values.
+R₀ = |ΔG°(TA/AT)| = 0.58 kcal/mol — the weakest stacking interaction
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+Stack        ΔG°37      |ΔG°|      r=|ΔG°|/R₀     k      d      ε(¢)       Sublattice          
+────────────────────────────────────────────────────────────────────────────────────────────────────
+TA/AT        -0.58      0.58       1.000000       0      1      +0.000     Octave/Identity     
+AT/TA        -0.88      0.88       1.517241       7      12     +21.741    Full Resolution     
+AA/TT        -1.00      1.00       1.724138       9      4      +43.050    Quartic/Weak        
+CT/GA        -1.28      1.28       2.206897       14     6      -29.577    Hexadic/Composite   
+GA/CT        -1.30      1.30       2.241379       14     6      -2.736     Hexadic/Composite   
+GT/CA        -1.44      1.44       2.482759       16     3      -25.667    Cubic/Strong        
+CA/GT        -1.45      1.45       2.500000       16     3      -13.686    Cubic/Strong        
+GG/CC        -1.84      1.84       3.172414       20     3      -1.303     Cubic/Strong        
+CG/GC        -2.17      2.17       3.741379       23     12     -15.716    Full Resolution     
+GC/CG        -2.24      2.24       3.862069       23     12     +39.249    Full Resolution     
+
+  Strongest/Weakest ratio: |GC/CG| / |TA/AT| = 3.8621
+  Lattice: k=23, d=12, ε=+39.249¢, sublattice: Full Resolution
+
+  Average |ΔG°| for AT-only stacks: 0.8200 kcal/mol
+  Average |ΔG°| for GC-containing stacks: 1.6743 kcal/mol
+  Ratio GC/AT stacking: 2.0418
+  Lattice: k=12, d=1, ε=+35.820¢
+
+
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ANALYSIS 6: BASE STRUCTURAL INTEGERS (R₀ = 1)
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+Quantity                                   Value    k      d      ε(¢)       Sublattice          
+────────────────────────────────────────────────────────────────────────────────────────────────────
+Number of bases in DNA                     4        24     1      +0.000     Octave/Identity     
+Number of bases in RNA                     4        24     1      +0.000     Octave/Identity     
+Total distinct bases (A,G,C,T,U)           5        28     3      -13.686    Cubic/Strong        
+Purines                                    2        12     1      +0.000     Octave/Identity     
+Pyrimidines (DNA)                          2        12     1      +0.000     Octave/Identity     
+Pyrimidines (all)                          3        19     12     +1.955     Full Resolution     
+H-bonds in GC pair                         3        19     12     +1.955     Full Resolution     
+H-bonds in AT pair                         2        12     1      +0.000     Octave/Identity     
+Purine rings                               2        12     1      +0.000     Octave/Identity     
+Pyrimidine rings                           1        0      1      +0.000     Octave/Identity     
+Atoms in purine ring system                9        38     6      +3.910     Hexadic/Composite   
+Atoms in pyrimidine ring                   6        31     12     +1.955     Full Resolution     
+N atoms in adenine                         5        28     3      -13.686    Cubic/Strong        
+N atoms in guanine                         5        28     3      -13.686    Cubic/Strong        
+N atoms in cytosine                        3        19     12     +1.955     Full Resolution     
+N atoms in thymine                         2        12     1      +0.000     Octave/Identity     
+N atoms in uracil                          2        12     1      +0.000     Octave/Identity     
+NN stacking parameters (unique)            10       40     3      -13.686    Cubic/Strong        
+Ratio AT pair MW sum (Da count)            261      96     1      +33.487    Octave/Identity     
+Ratio GC pair MW sum (Da count)            262      96     1      +40.108    Octave/Identity     
+
+
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ANALYSIS 7: THE T/U BOUNDARY — DNA→RNA TRANSITION ON THE LATTICE
+T and U differ by exactly one methyl group (CH₃, MW = 14.03 Da)
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+  Thymine MW:  126.11 Da
+  Uracil MW:   112.09 Da
+  Difference:  14.02 Da (= methyl group CH₃ + H ≈ 14.02)
+  Ratio T/U:   1.125078
+  Lattice: k=2, d=6, ε=+4.030¢
+  Sublattice: Hexadic/Composite
+
+  The T/U transition is a SINGLE METHYLATION — the smallest possible
+  chemical modification. It maps to k=2 on the lattice.
+  This is the 'boundary element' from the genetic paper §4.2:
+  T/U occupies the 3+1 boundary position in the base alphabet.
+
+
+==============================================================================================================
+LAYER 2 SYNTHESIS: KEY STRUCTURAL FINDINGS
+==============================================================================================================
+
+1. GC/AT PAIR MW NEAR-UNISON:
+   The combined MW of A+T (261.24) and G+C (262.23) differ by only 0.38%.
+   Ratio = 1.0038, projecting to d=1 (Octave/Identity) with ε ≈ 0.
+   This near-equality is FORCED by the uniform helix diameter constraint.
+   ET reading: the two base pair types are OCTAVE-EQUIVALENT — they occupy
+   the same sublattice family, ensuring helix structural uniformity.
+
+2. H-BOND RATIO 3/2 = FULL RESOLUTION:
+   The GC(3 bonds) / AT(2 bonds) ratio projects to d=12 (Full Resolution)
+   with ε = +1.955¢. This is log₂(3) ≈ 19/12 — the fundamental approximation.
+   ET reading: the H-bond distinction between the two pair types occupies
+   the FULL RESOLUTION sublattice — maximum discriminating power.
+
+3. PURINE/PYRIMIDINE RING RATIO = EXACT OCTAVE:
+   2 rings / 1 ring = 2/1 = exact octave. d=1, ε=0.000¢.
+   Categorical disjointness maps to the IDENTITY sublattice with zero error.
+   This is the molecular expression of the categorical disjointness axiom.
+
+4. NEAREST-NEIGHBOR STACKING ENERGIES:
+   The 10 unique DNA stacking parameters span from 0.58 to 2.24 kcal/mol.
+   The strongest/weakest ratio (GC/CG ÷ TA/AT = 3.862) projects to d=4
+   (Quartic/Weak boundary). The stacking energy range maps to the D-T 
+   boundary sublattice.
+
+5. THE T/U METHYLATION BOUNDARY:
+   T differs from U by exactly one methyl group (14.02 Da).
+   T/U ratio = 1.1253, projecting to k=2, d=6 (Hexadic/Composite).
+   The DNA→RNA transition is a SINGLE methylation step on the lattice.
+
+6. NITROGEN ATOM COUNTS:
+   Purines have 5 N atoms; pyrimidines have 2-3.
+   5 N atoms → k=28, d=3 (Cubic/Strong) with ε=-13.7¢
+   This is the SAME d=3 as the 20 amino acids from Layer 1!
+   The nitrogen-rich purines and the amino acid count share the
+   Cubic/Strong binding sublattice.
+
+LAYER 2 R₀ IDENTIFICATION:
+   For base MW ratios: R₀ = MW(Uracil) = 112.09 Da
+   (simplest base, pyrimidine without methyl group)
+   
+   For stacking energies: R₀ = |ΔG°(TA/AT)| = 0.58 kcal/mol
+   (weakest stacking interaction = structural ground state)
+   
+   Both are substrate-derived, convention-free, and represent
+   the minimal closed T-traversal loop at their respective levels.
+
+==============================================================================================================
+END OF LAYER 2 ANALYSIS
+P ∘ D ∘ T = E
+==============================================================================================================

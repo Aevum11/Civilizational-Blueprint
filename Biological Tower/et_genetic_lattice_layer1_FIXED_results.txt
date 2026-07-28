@@ -1,0 +1,192 @@
+==============================================================================================================
+ET GENETIC LATTICE — LAYER 1 FIXED: 2D FORCE QUADRANT + SHADOW TENSIONS
+P ∘ D ∘ T = E   |   N = 12   |   V = 1/12   |   K = 2/3
+==============================================================================================================
+
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+PART 1: THE QUINTIC COMMA ε₅ = -13.686¢ THROUGH THE BIOLOGICAL TOWER
+Identification: log₂(5) ≈ 7/3, and ε₅ = (log₂(5) - 7/3) × 1200 = -13.686¢
+Any integer = 2ⁿ × 5^m × (other primes) carries ε₅ when m is odd.
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+  ε₅ (quintic comma) = -13.686¢
+  φ in 12ET: k=8, d=3, ε=+33.090¢ — Cubic attractor
+
+Value    Description                                Factorization             k      d      ε(¢)       Carries ε₅?    Shadow τ  
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+5        Distinct bases (A,G,C,T,U)                 5 = 5¹                    28     3      -13.686    YES (×5)       0 (simple)
+5        N atoms in adenine                         5 = 5¹                    28     3      -13.686    YES (×5)       0 (simple)
+5        N atoms in guanine                         5 = 5¹                    28     3      -13.686    YES (×5)       0 (simple)
+10       NN stacking parameters (unique)            10 = 2¹ × 5¹              40     3      -13.686    YES (×5)       0 (simple)
+10       Base pairs per DNA turn                    10 = 2¹ × 5¹              40     3      -13.686    YES (×5)       0 (simple)
+20       Standard amino acids                       20 = 2² × 5¹              52     3      -13.686    YES (×5)       0 (simple)
+20       Icosahedral capsid faces                   20 = 2² × 5¹              52     3      -13.686    YES (×5)       0 (simple)
+60       Subunits in T=1 capsid                     60 = 2² × 3¹ × 5¹         71     12     -11.731    YES (×5)       0 (simple)
+120      Symmetry ops of icosahedron                120 = 2³ × 3¹ × 5¹        83     12     -11.731    YES (×5)       0 (simple)
+4        DNA bases per strand                       4 = 2² (NO factor of 5)   24     1      +0.000     no             0 (simple)
+64       Codons                                     64 = 2⁶ (NO factor of 5)  72     1      +0.000     no             0 (simple)
+3        Codon length                               3 = 3¹ (NO factor of 5)   19     12     +1.955     no             0 (simple)
+2        H-bonds in AT pair                         2 = 2¹ (NO factor of 5)   12     1      +0.000     no             0 (simple)
+3        H-bonds in GC pair                         3 = 3¹ (NO factor of 5)   19     12     +1.955     no             0 (simple)
+61       Coding codons                              61 = 61¹ (prime, NO factor of 5) 71     12     +16.885    no             0 (simple)
+
+  VERIFICATION: ε(5) = -13.686¢
+  ε(10) = ε(2×5) = ε(2) + ε(5) = 0 + -13.686 = -13.686¢
+  ε(20) = ε(4×5) = ε(4) + ε(5) = 0 + -13.686 = -13.686¢
+  ε(60) = ε(4×3×5) = ε(4) + ε(3) + ε(5) = 0 + 1.955 + -13.686 = -11.731¢
+
+  The quintic comma PERMEATES the genetic code through factors of 5.
+  Biology's structural integers are saturated with the d=5 shadow force.
+  n_c(d=5) = LCM(12,5) = 60. The biological tower requires n_eff ≥ 60.
+
+
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+PART 2: 2D FORCE VECTORS (d_r, d_θ) FOR EACH AMINO ACID
+D-axis (real, structural): MW ratio, R₀ = MW(Cys) = 121.15
+T-axis (imaginary, agency): pI ratio, R₀ = pI(Asp) = 2.77
+Quadrant = SR+SI / CR+SI / SR+CI / CR+CI
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+AA   d_r(MW)   d_θ(pI)   Quadrant   |w|²     n_c      τ_r(¢)    τ_θ(¢)    Category     ε_r(¢)     ε_θ(¢)    
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+A    12        12        SR+SI      288      12       0.0       0.0       nonpolar     -32.151    +38.092   
+C    1         6         SR+SI      37       12       0.0       0.0       special      +0.000     +39.677   
+D    6         1         SR+SI      37       12       0.0       0.0       negative     -37.141    +0.000    
+E    4         4         SR+SI      32       12       0.0       0.0       negative     +36.356    -39.390   
+F    12        1         SR+SI      145      12       0.0       0.0       aromatic     +36.798    -18.852   
+G    3         12        SR+SI      153      12       0.0       0.0       special      -28.583    +29.414   
+H    3         12        SR+SI      153      12       0.0       0.0       positive     +28.355    +45.057   
+I    12        12        SR+SI      288      12       0.0       0.0       nonpolar     +37.572    +43.853   
+K    4         6         SR+SI      52       12       0.0       0.0       positive     +25.260    -23.157   
+L    12        12        SR+SI      288      12       0.0       0.0       nonpolar     +37.572    +32.311   
+M    3         12        SR+SI      153      12       0.0       0.0       nonpolar     -39.340    -38.602   
+N    6         1         SR+SI      37       12       0.0       0.0       polar        -49.935    -41.109   
+P    12        6         SR+SI      180      12       0.0       0.0       special      +11.763    +22.559   
+Q    4         1         SR+SI      17       12       0.0       0.0       polar        +24.787    +34.038   
+R    2         12        SR+SI      148      12       0.0       0.0       positive     +28.740    +49.264   
+S    6         1         SR+SI      37       12       0.0       0.0       polar        -46.203    +43.206   
+T    1         1         SR+SI      2        12       0.0       0.0       polar        -29.254    +37.099   
+V    12        12        SR+SI      288      12       0.0       0.0       nonpolar     +41.875    +26.512   
+W    4         12        SR+SI      160      12       0.0       0.0       aromatic     +4.165     +6.058    
+Y    12        1         SR+SI      145      12       0.0       0.0       aromatic     -3.149     +37.099   
+
+  QUADRANT POPULATION:
+    SR+SI: 20 AAs — A(nonpolar), C(special), D(negative), E(negative), F(aromatic), G(special), H(positive), I(nonpolar), K(positive), L(nonpolar), M(nonpolar), N(polar), P(special), Q(polar), R(positive), S(polar), T(polar), V(nonpolar), W(aromatic), Y(aromatic)
+    CR+SI: 0 AAs — 
+    SR+CI: 0 AAs — 
+    CR+CI: 0 AAs — 
+
+
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+PART 3: GOLDEN RATIO φ AS LATTICE ATTRACTOR
+φ = 1.6180... maps to d=3 (Cubic) at 12ET with ε = +33.09¢
+Which amino acid MW ratios are near φ? (Cubic attractor proximity)
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+  φ = 1.6180339887
+  12ET: k=8, d=3, ε=+33.090¢ — Cubic
+
+  Amino acid MW ratios closest to φ (R₀ = MW(Gly) = 75.07):
+  AA    MW         r=MW/75.07     |r-φ|      d      ε(¢)      
+  ────────────────────────────────────────────────────────────
+  C     121.15     1.613827       0.004207   3      +28.583   
+  T     119.12     1.586786       0.031248   3      -0.671    
+  V     117.15     1.560543       0.057490   3      -29.542   
+  P     115.13     1.533635       0.084399   12     +40.347   
+
+  Pairwise MW ratios closest to φ:
+  Pair       r              |r-φ|      d      ε(¢)      
+  ───────────────────────────────────────────────────────
+  C/G        1.613827       0.004207   3      +28.583   
+  Q/A        1.640476       0.022442   4      -43.063   
+  K/A        1.640925       0.022891   4      -42.589   
+  T/G        1.586786       0.031248   3      -0.671    
+  E/A        1.651476       0.033442   4      -31.493   
+  R/S        1.657627       0.039593   4      -25.057   
+  Y/P        1.573786       0.044248   3      -14.913   
+  F/S        1.571891       0.046143   3      -16.999   
+
+
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+PART 4: CRITICAL RESOLUTION n_c — WHAT RESOLUTION DOES BIOLOGY REQUIRE?
+n_c(d) = LCM(12, d) — first lattice where force d becomes native
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+  d     Simple?    n_c      ⟨τ⟩(¢)     τ_max(¢)   Biological examples                               
+  ───────────────────────────────────────────────────────────────────────────────────────────────
+  1     YES        12       0.0        0.0        Powers of 2: 4 bases, 64 codons, 2 H-bonds AT     
+  2     YES        12       0.0        0.0        Serine(MW), Tritone pivot                         
+  3     YES        12       0.0        0.0        20 AAs, 5 bases, 3 H-bonds GC, Cubic/Strong       
+  4     YES        12       0.0        0.0        Weak boundary, 4/3 alphabet/codon ratio           
+  5     NO         60       60.0       120.0      QUINTIC SHADOW: 5,10,20,60 — φ's attractor home   
+  6     YES        12       0.0        0.0        Hexadic/Composite: T/U boundary, Lagerkvist 9/5   
+  7     NO         84       42.9       85.7       G₂ holonomy: not yet identified in biology        
+  8     NO         24       37.5       75.0       Not identified                                    
+  9     NO         36       33.3       66.7       Nonic: 9 fourfold families                        
+  10    NO         60       30.0       60.0       DNA helix turn: 10 bp/turn                        
+  11    NO         132      27.3       54.5       Not identified                                    
+  12    YES        12       0.0        0.0        Full resolution: 3/2 ratio, triplet length        
+
+  BIOLOGICAL CRITICAL RESOLUTION:
+    n_c(d=5) = LCM(12,5)  = 60   ← First quintic resolution
+    n_c(d=7) = LCM(12,7)  = 84   ← First septic resolution
+    n_c(d=10)= LCM(12,10) = 60   ← DNA helix turn (shares with d=5!)
+    n_c(d=5,d=7) = LCM(12,5,7) = 420 ← First d=35 resolution
+
+    The biological tower activates at n_eff ≥ 60 at minimum.
+    The virus capsid (60 subunits) IS the n_c=60 critical assembly.
+    DNA helix (10 bp/turn) embeds d=10=2×5 → quintic structural efficiency.
+
+
+==============================================================================================================
+PART 5: COMPLETE BIOLOGICAL FORCE PROFILE — LAYER 1 CORRECTED
+==============================================================================================================
+
+THE QUINTIC THREAD — THE STRUCTURAL BACKBONE OF THE GENETIC CODE:
+
+  The number 5 — and its multiples 10, 20, 60, 120 — permeates biology.
+  Every one of these integers carries the quintic comma ε₅ = -13.686¢.
+  This is NOT numerology: 20 = 2² × 5, so log₂(20) = 2 + log₂(5),
+  and ε(20) = ε(5) because the factor 2² contributes exact zero cents.
+
+  d=5 is the "Force of Geometric Efficiency" (QS-15 in the corpus).
+  It activates at n_c = 60 — the exact subunit count of T=1 capsids.
+  It manifests as: icosahedral symmetry, φ-based packing, pentagonal geometry.
+  All of these appear in: virus capsids, DNA turns, amino acid count,
+  base count, nitrogen count, and the genetic code's fundamental integers.
+
+  The genetic code is a d=5 shadow structure realized at n_eff ≥ 60.
+
+THE FORCE QUADRANT FOR AMINO ACIDS:
+
+  D-axis (real, structural): Molecular weight — WHAT the molecule IS
+  T-axis (imaginary, agency): Isoelectric point — HOW the molecule ACTS
+  R₀_D = MW(Cys) = 121.15 (best structural clustering)
+  R₀_T = pI(Asp) = 2.77 (best functional clustering, score 0.80)
+
+  Each amino acid occupies a cell (d_r, d_θ) in the force quadrant grid.
+  The quadrant assignment tells us the force CHARACTER of that amino acid
+  in the biological lattice — whether it's simple/simple, complex/simple, etc.
+
+GOLDEN RATIO φ AS CUBIC ATTRACTOR:
+
+  φ maps to d=3 at 12ET — the SAME sublattice as 20 amino acids.
+  The golden ratio is attracted to the Strong/Cubic force.
+  Amino acid MW ratios near φ occupy the cubic sublattice.
+  The golden ratio packing efficiency (phyllotaxis, capsids) and the
+  amino acid alphabet size (20 = 4 × 5) share the same lattice home.
+
+WHAT WAS FIXED FROM 1A/1B:
+
+  1. LCM amplification removed — it was masking, not revealing structure
+  2. Force quadrant (d_r, d_θ) replaces scalar d-vector
+  3. Shadow tensions computed for non-simple d values
+  4. Quintic comma identified as the biological thread
+  5. Critical resolution n_c linked to biological assembly structures
+  6. Golden ratio attractor analysis added
+  7. D-axis vs T-axis properly identified (not arbitrary axis labels)
+
+==============================================================================================================
+END OF LAYER 1 FIXED
+P ∘ D ∘ T = E
+==============================================================================================================

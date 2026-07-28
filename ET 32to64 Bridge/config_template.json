@@ -1,0 +1,128 @@
+{
+  "_comment": "ET32 Bridge Configuration \u2014 P\u2218D\u2218T = E",
+  "_version": "2.0.0",
+  "_et_derivation": {
+    "S": 12,
+    "K": "2/3",
+    "V": "1/12",
+    "hd": 4096,
+    "IPC_BUFFER_SIZE": 49152,
+    "PDT_HEADER_SIZE": 48,
+    "CONN_TIMEOUT_MS": 1500,
+    "RETRY_COUNT": 12,
+    "QUEUE_DEPTH": 144,
+    "HANDLE_BASE": "0x80000001",
+    "HANDLE_MAX": "0xFFFFF000"
+  },
+  "_bridge_mode_docs": {
+    "_what": "Controls which 32-bit processes the bridge engages with.",
+    "whitelist": "Bridge ONLY the processes listed under 'targets'. Default mode. Precise control.",
+    "blacklist": "Bridge ALL 32-bit processes on the system EXCEPT those listed under 'blacklist'. Use this to extend every 32-bit application at once.",
+    "_et_derivation": "whitelist D = explicit inclusion set. blacklist D = all 32-bit minus exclusion set. Both describe the same P from opposite D-directions. ET Identification Principle: the same P (all 32-bit processes) with complementary D-sets."
+  },
+  "bridge": {
+    "_comment": "Core bridge behaviour",
+    "mode": "whitelist",
+    "_mode_options": [
+      "whitelist",
+      "blacklist"
+    ],
+    "auto_inject": true,
+    "inject_on_startup": true,
+    "helper_path": null,
+    "dll_path": "et_bridge32.dll",
+    "pipe_prefix": "\\\\.\\pipe\\ET32_PDT_"
+  },
+  "_blacklist_comment": [
+    "Used when bridge.mode = 'blacklist'.",
+    "List exe names (case-insensitive) that should NOT be bridged.",
+    "Recommended entries: critical system processes that must not be modified.",
+    "This list is entirely under your control \u2014 no entries are hardcoded.",
+    "Example: your antivirus, anti-cheat engines, or trusted 32-bit system tools."
+  ],
+  "blacklist": [
+    "_comment_only_remove_this_line_to_activate",
+    "example_anticheat.exe",
+    "example_av_scanner.exe"
+  ],
+  "ipc": {
+    "_comment": "IPC tuning \u2014 derived from ET: buffer = hd\u00d7S = 4096\u00d712 = 49152; queue = S\u00b2 = 144",
+    "buffer_size": 49152,
+    "queue_depth": 144,
+    "worker_threads": 12,
+    "dispatch_threads": 12
+  },
+  "logging": {
+    "_comment": "Logging configuration. Log is always written to disk (immediate flush). Survives crashes.",
+    "_crash_coverage": [
+      "sys.excepthook        \u2014 unhandled Python exceptions",
+      "faulthandler          \u2014 C-level crashes, segfaults, stack overflow, SIGABRT",
+      "atexit                \u2014 final flush + error registry summary on any exit",
+      "Windows SEH filter    \u2014 DLL-level crashes from injected code"
+    ],
+    "_path_resolution": [
+      "file = null or absent  \u2192 log placed in same directory as ET32_Bridge.exe (default)",
+      "file = 'et32_bridge.log' \u2192 relative \u2192 resolved from exe directory",
+      "file = 'C:\\\\Logs\\\\et32.log' \u2192 absolute path \u2192 used as-is",
+      "dir  = 'C:\\\\Logs'           \u2192 log placed in this directory as et32_bridge.log"
+    ],
+    "level": "INFO",
+    "file": null,
+    "dir": null,
+    "et_metrics": true,
+    "variance_log": true
+  },
+  "_targets_comment": "Used when bridge.mode = 'whitelist'. Listed processes are bridged. Others are ignored.",
+  "targets": [
+    {
+      "_comment": "Example: 32-bit game needing >4GB VRAM and large file maps",
+      "exe_name": "example_game.exe",
+      "enabled": false,
+      "inject_mode": "iat",
+      "_inject_modes": [
+        "iat",
+        "shellcode",
+        "dll"
+      ],
+      "features": "all",
+      "_features_detail": {
+        "all": "Enable all 12 command families (S=12)",
+        "memory": "d=1,2 \u2014 VirtualAlloc/Map",
+        "dll": "d=4   \u2014 LoadLibrary/GetProc",
+        "registry": "d=6   \u2014 RegOpenKey WOW64 bypass",
+        "graphics": "d=7   \u2014 VRAM / GPU info",
+        "files": "d=8   \u2014 Large file access >4GB",
+        "python": "d=11  \u2014 64-bit Python embed"
+      },
+      "mem_threshold_mb": 2730,
+      "dll_64_paths": [],
+      "gpu_enabled": true,
+      "gpu_vram_limit_gb": 0.0,
+      "python_64": false,
+      "python_home": "",
+      "registry_bypass": true,
+      "large_files": true,
+      "pipe_timeout_ms": 1500,
+      "launch_before": false,
+      "launch_args": []
+    },
+    {
+      "_comment": "Example: legacy 32-bit CAD tool needing extended memory",
+      "exe_name": "example_cad.exe",
+      "enabled": false,
+      "inject_mode": "iat",
+      "features": "memory",
+      "mem_threshold_mb": 2730,
+      "dll_64_paths": [],
+      "gpu_enabled": false,
+      "gpu_vram_limit_gb": 0.0,
+      "python_64": false,
+      "python_home": "",
+      "registry_bypass": false,
+      "large_files": true,
+      "pipe_timeout_ms": 1500,
+      "launch_before": false,
+      "launch_args": []
+    }
+  ]
+}
