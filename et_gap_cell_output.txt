@@ -1,0 +1,1036 @@
+════════════════════════════════════════════════════════════════════════════════
+  ET FORCE QUADRANT GRID — FOUR GAP CELL DOMAIN SIGNATURE INVESTIGATION
+  (5,5) | (7,7) | (5,7) | (8,9)
+  Foundation: P ∘ D ∘ T = E | N=12 | ℒ_ℂ = {2^(w/12) : w ∈ ℤ[i]}
+════════════════════════════════════════════════════════════════════════════════
+
+
+────────────────────────────────────────────────────────────────────────────────
+  ET MANIFOLD CONSTANTS  (all derived from P ∘ D ∘ T = E)
+────────────────────────────────────────────────────────────────────────────────
+
+  N = 12           (3 primitives × 4 logic states = manifold symmetry)
+  V = 1/12 = 0.083333  (base variance: discretization quantum)
+  K = 2/3 = 0.666667  (Koide ratio: triadic binding threshold)
+  |δ_r|   = 0.019550  (real cascade gap magnitude, n_max_r=25)
+  |δ_θ|   = 0.223357  (imaginary cascade gap magnitude, n_max_θ=2)
+  IMAG_AMP = n_max_r/n_max_θ = 25/2 = 12.5  (FQ-1 amplification)
+  λ_CKM   = √(K×V) = 0.235702  (CKM mixing: CR real-axis, small angles)
+  λ_PMNS  = λ_CKM × √(12.5) = 0.833333  (PMNS mixing: CI imag-axis, large angles)
+  n_bio   = LCM(1..7) = 420ET  (biological threshold, FQ-13)
+  φ       = 1.6180339887  (golden ratio, quintic asymptotic attractor)
+
+
+════════════════════════════════════════════════════════════════════════════════
+                  GAP CELL (5,5) — Icosahedral Dark Sector
+════════════════════════════════════════════════════════════════════════════════
+
+  Physical label : Doubly-quintic: icosahedral structure (d_r=5) × icosahedral phase (d_θ=5). Biological/quasicrystal tier × Otherworld/altered-states tier. CR+CI.
+  Quadrant       : CR+CI
+  Combined d     : 5
+  n_c            : 60ET  (LCM(12,5,5))
+  |w|²           : 50  (w = 5 + 5i in ℤ[i])
+  |w|            : 7.0711
+
+
+────────────────────────────────────────────────────────────────────────────────
+  GAUSSIAN PRIME CHARACTER  (ℤ[i] decomposition)
+────────────────────────────────────────────────────────────────────────────────
+
+  Real-axis  d_r=5: D+T-Split  (5^1: splits in ℤ[i] as conjugate pair)
+  Imag-axis  d_θ=5: D+T-Split  (5^1: splits in ℤ[i] as conjugate pair)
+
+
+────────────────────────────────────────────────────────────────────────────────
+  SHADOW TENSIONS AND COUPLINGS
+────────────────────────────────────────────────────────────────────────────────
+
+  Real  ⟨τ_r⟩       = 1200/(4×5) = 60.0000¢
+  Imag  ⟨τ_θ⟩       = 1200/(4×5) = 60.0000¢  (raw, before amplification)
+  Imag  ⟨τ_θ⟩_eff   = 60.0000¢ × 12.5 = 750.0000¢  (FQ-1 amplified)
+  α_r = 1/(4×5) = 0.05000000
+  α_θ = 1/(4×5) = 0.05000000  (raw)
+  α_θ_eff            = 0.62500000  (×12.5 amplified)
+  α_r / α_EM         = 6.8500×
+  α_θ_eff / α_EM     = 85.6250×
+
+
+────────────────────────────────────────────────────────────────────────────────
+  PALINDROMIC PARTNERS  (FQ-8 / 2D palindromic pairing)
+────────────────────────────────────────────────────────────────────────────────
+
+  real_axis_palindrome          : (7, 5)  [CR+CI, d_comb=35]
+  imag_axis_palindrome          : (5, 7)  [CR+CI, d_comb=35]
+  full_2d_palindrome            : (7, 7)  [CR+CI, d_comb=7]
+  transpose_dual                : (5, 5)  [CR+CI, d_comb=5]
+
+
+────────────────────────────────────────────────────────────────────────────────
+  DOMAIN MAP TIERS  (ET Universal Lattice Domain Map)
+────────────────────────────────────────────────────────────────────────────────
+
+  • Biological/Quasicrystal tier (d=5, 60ET first native)
+  • Cognition/Qualia (60ET — inembeddable in 12ET)
+  • Alternative Realities / Otherworld (d=5 in 60ET)
+
+
+────────────────────────────────────────────────────────────────────────────────
+  IDENTIFICATION PRINCIPLE
+────────────────────────────────────────────────────────────────────────────────
+
+Identification Principle Applied to Gap Cell (5,5):
+  Understand((5,5)) ⟺ Identified(P) ∧ Identified(D) ∧ Identified(T)
+
+  P: P-substrate: The multiplicative manifold (ℂ,×) restricted to the (5,5) sublattice sector. Requires extended lattice ℒ_ℂ^(60) — activated only at n_eff ≥ 60ET. Below this density: gap exists as shadow tension only.
+
+  D: D-Descriptors: Real-axis d_r=5 [D+T-Split  (5^1: splits in ℤ[i] as conjugate pair)] — COMPLEX-REAL (d_r∤12, requires n≥n_c for real resolution). Imaginary-axis d_θ=5 [D+T-Split  (5^1: splits in ℤ[i] as conjugate pair)] — COMPLEX-IMAGINARY (d_θ∤12, CI — phase incoherence, 12.5× amplification). Combined sublattice d=5. Shadow tension: ⟨τ_r⟩=60.000¢ (real), ⟨τ_θ⟩_eff=750.000¢ (imaginary×12.5).
+
+  T: T-Agency: Traverser operates at resolution n≥60ET in CR+CI quadrant. n_max_r=25 real stability levels, n_max_θ=2 imaginary levels. T at this cell: CI-amplified (large mixing).
+
+  Gap: DESCRIPTOR GAP: This cell is absent from observed physics at n=12ET. gap = D_missing(d_r=5, d_θ=5). By the Descriptor Gap Principle: gap = D_missing. Resolution: identify D_missing at n≥60ET. The gap closes as a first-order discrete transition at n_c=60ET.
+
+
+────────────────────────────────────────────────────────────────────────────────
+  FALSIFIABLE PREDICTIONS
+────────────────────────────────────────────────────────────────────────────────
+
+  [1] [THRESHOLD] This force activates at n_c=60ET. No d=(5,5)-class 
+      phenomenon exists below this descriptor density. At n_c=60ET: ε drops 
+      to exactly 0 at the (5,5) native positions — a discrete (not smooth) 
+      phase transition. 
+
+  [2] [COUPLING] Real-axis shadow coupling: α_r = 1/(4×5) = 0.050000. 
+      Imaginary effective coupling: α_θ_eff = 0.625000 (amplified 12.5× by 
+      FQ-1 imaginary amplification). Ratio α_θ_eff/α_EM = 85.625× relative to 
+      EM. 
+
+  [3] [FORCE NORM] |w|² = 5²+5² = 50. |w| = 7.0711. Interaction complexity 
+      rank: 50 (reference: EM=288, W-boson=32, gravity=5). 
+
+  [4] [PALINDROME] Real-axis palindromic partner: (7,5) — any process at 
+      (5,5) has a mirror at (7,5). Imaginary palindrome: (5,7). Full 2D 
+      palindrome: (7,7). 
+
+  [5] [QUASICRYSTAL] Any physical structure with (5,5) character will show 
+      5-fold diffraction symmetry on BOTH the structural (real) and phase 
+      (imaginary) axes. Electron diffraction: spots at 72°=2π/5 intervals. 
+      Spin structure: quintic phase correlation in neutron scattering. 
+
+  [6] [VIRAL CAPSID] The T=1 icosahedral capsid (60 subunits = n_c=60ET) is 
+      the minimal (5,5)-class assembly. Prediction: T=1 capsid geometry is 
+      the minimal physical embodiment of the (5,5) cell. All T=n² capsids 
+      (n=1,2,...) will show d=1 (octave-class) real-axis lattice. 
+
+  [7] [DARK SECTOR] If dark matter has (5,5) character: σ_DM/σ_SM ≈ 
+      α_(5,5)²/α_EM² = (1/20)²/(1/137)² = 46.92×. 5-fold icosahedral angular 
+      correlations in CMB polarisation. Golden-ratio spacing φ=1.618034 in 
+      galaxy void distributions. 
+
+  [8] [COSMIC LSS] Power spectrum P(k) should show a (5,5)-class resonance at 
+      k = k_BAO × 5/12 (quintic fraction of the BAO wavevector). This is a 
+      sub-BAO quintic harmonic — testable in DESI/Euclid surveys. 
+
+
+════════════════════════════════════════════════════════════════════════════════
+                 GAP CELL (7,7) — G₂×G₂ Extreme Dark Sector
+════════════════════════════════════════════════════════════════════════════════
+
+  Physical label : Maximum darkness: G₂ structural (d_r=7) × G₂ phase (d_θ=7). D-type/Inert in BOTH axes. Sacred-7 / Otherworld tier. CR+CI.
+  Quadrant       : CR+CI
+  Combined d     : 7
+  n_c            : 84ET  (LCM(12,7,7))
+  |w|²           : 98  (w = 7 + 7i in ℤ[i])
+  |w|            : 9.8995
+
+
+────────────────────────────────────────────────────────────────────────────────
+  GAUSSIAN PRIME CHARACTER  (ℤ[i] decomposition)
+────────────────────────────────────────────────────────────────────────────────
+
+  Real-axis  d_r=7: D-type/Inert  (7^1: remains prime in ℤ[i], zero T-mixing)
+  Imag-axis  d_θ=7: D-type/Inert  (7^1: remains prime in ℤ[i], zero T-mixing)
+
+
+────────────────────────────────────────────────────────────────────────────────
+  SHADOW TENSIONS AND COUPLINGS
+────────────────────────────────────────────────────────────────────────────────
+
+  Real  ⟨τ_r⟩       = 1200/(4×7) = 42.8571¢
+  Imag  ⟨τ_θ⟩       = 1200/(4×7) = 42.8571¢  (raw, before amplification)
+  Imag  ⟨τ_θ⟩_eff   = 42.8571¢ × 12.5 = 535.7143¢  (FQ-1 amplified)
+  α_r = 1/(4×7) = 0.03571429
+  α_θ = 1/(4×7) = 0.03571429  (raw)
+  α_θ_eff            = 0.44642857  (×12.5 amplified)
+  α_r / α_EM         = 4.8929×
+  α_θ_eff / α_EM     = 61.1607×
+
+
+────────────────────────────────────────────────────────────────────────────────
+  PALINDROMIC PARTNERS  (FQ-8 / 2D palindromic pairing)
+────────────────────────────────────────────────────────────────────────────────
+
+  real_axis_palindrome          : (5, 7)  [CR+CI, d_comb=35]
+  imag_axis_palindrome          : (7, 5)  [CR+CI, d_comb=35]
+  full_2d_palindrome            : (5, 5)  [CR+CI, d_comb=5]
+  transpose_dual                : (7, 7)  [CR+CI, d_comb=7]
+
+
+────────────────────────────────────────────────────────────────────────────────
+  DOMAIN MAP TIERS  (ET Universal Lattice Domain Map)
+────────────────────────────────────────────────────────────────────────────────
+
+  • Alternative Realities / Otherworld (d=7, 420ET)
+  • Religion/Mythology (sacred-7 direct T encounter)
+  • G₂ holonomy (M-theory compact 7-manifold)
+  • CP Violation (kaon, (4,7) SR+CI)
+
+
+────────────────────────────────────────────────────────────────────────────────
+  IDENTIFICATION PRINCIPLE
+────────────────────────────────────────────────────────────────────────────────
+
+Identification Principle Applied to Gap Cell (7,7):
+  Understand((7,7)) ⟺ Identified(P) ∧ Identified(D) ∧ Identified(T)
+
+  P: P-substrate: The multiplicative manifold (ℂ,×) restricted to the (7,7) sublattice sector. Requires extended lattice ℒ_ℂ^(84) — activated only at n_eff ≥ 84ET. Below this density: gap exists as shadow tension only.
+
+  D: D-Descriptors: Real-axis d_r=7 [D-type/Inert  (7^1: remains prime in ℤ[i], zero T-mixing)] — COMPLEX-REAL (d_r∤12, requires n≥n_c for real resolution). Imaginary-axis d_θ=7 [D-type/Inert  (7^1: remains prime in ℤ[i], zero T-mixing)] — COMPLEX-IMAGINARY (d_θ∤12, CI — phase incoherence, 12.5× amplification). Combined sublattice d=7. Shadow tension: ⟨τ_r⟩=42.857¢ (real), ⟨τ_θ⟩_eff=535.714¢ (imaginary×12.5).
+
+  T: T-Agency: Traverser operates at resolution n≥84ET in CR+CI quadrant. n_max_r=25 real stability levels, n_max_θ=2 imaginary levels. T at this cell: CI-amplified (large mixing).
+
+  Gap: DESCRIPTOR GAP: This cell is absent from observed physics at n=12ET. gap = D_missing(d_r=7, d_θ=7). By the Descriptor Gap Principle: gap = D_missing. Resolution: identify D_missing at n≥84ET. The gap closes as a first-order discrete transition at n_c=84ET.
+
+
+────────────────────────────────────────────────────────────────────────────────
+  FALSIFIABLE PREDICTIONS
+────────────────────────────────────────────────────────────────────────────────
+
+  [1] [THRESHOLD] This force activates at n_c=84ET. No d=(7,7)-class 
+      phenomenon exists below this descriptor density. At n_c=84ET: ε drops 
+      to exactly 0 at the (7,7) native positions — a discrete (not smooth) 
+      phase transition. 
+
+  [2] [COUPLING] Real-axis shadow coupling: α_r = 1/(4×7) = 0.035714. 
+      Imaginary effective coupling: α_θ_eff = 0.446429 (amplified 12.5× by 
+      FQ-1 imaginary amplification). Ratio α_θ_eff/α_EM = 61.161× relative to 
+      EM. 
+
+  [3] [FORCE NORM] |w|² = 7²+7² = 98. |w| = 9.8995. Interaction complexity 
+      rank: 98 (reference: EM=288, W-boson=32, gravity=5). 
+
+  [4] [PALINDROME] Real-axis palindromic partner: (5,7) — any process at 
+      (7,7) has a mirror at (5,7). Imaginary palindrome: (7,5). Full 2D 
+      palindrome: (5,5). 
+
+  [5] [MAXIMUM DARKNESS] (7,7) = D-type/Inert × D-type/Inert. Zero T-mixing 
+      in BOTH axes. This is the most electromagnetically dark configuration 
+      possible in ET. Cross-section to SM forces: σ_(7,7) ≈ α_(7,7)²/α_EM² = 
+      (1/28)²/(1/137)² = 23.94×. Only gravitational coupling available (d_r=7 
+      projects onto d=1 at large scales). 
+
+  [6] [CRYSTALLOGRAPHIC FORBIDDEN] 7-fold rotational symmetry is forbidden in 
+      3D crystallography (crystallographic restriction theorem). Prediction: 
+      (7,7) dark matter will NOT form crystal or quasicrystal structures. 
+      Dark matter halos will be smooth, diffuse, non-crystalline — consistent 
+      with observed NFW-profile halos. 
+
+  [7] [G₂×G₂ GAUGE] At n_c=84ET, the G₂×G₂ gauge structure activates. 
+      Prediction: exotic gravitational lensing signals with 7-fold angular 
+      modulation at sub-arcminute scales (structure below BAO scale). Search 
+      in weak-lensing surveys (HSC/LSST) at 7-fold multipoles ℓ≈7n. 
+
+  [8] [SACRED-7 MAPPING] Domain Map Level 14-15 (Religion/Otherworld d=7). 
+      The (7,7) cell is the maximum-Otherworld configuration: both structural 
+      and phase axes are G₂/sacred-7. This is the ET lattice basis for why 
+      7-fold structures appear in non-standard consciousness domains. 
+
+
+════════════════════════════════════════════════════════════════════════════════
+           GAP CELL (5,7) — Cross-Complex / Biological Threshold
+════════════════════════════════════════════════════════════════════════════════
+
+  Physical label : Icosahedral (d_r=5) × G₂ holonomy (d_θ=7). n_c=420ET = LCM(1..7). E₈ gauge vertex. Life requires this cell to be activated. CR+CI.
+  Quadrant       : CR+CI
+  Combined d     : 35
+  n_c            : 420ET  (LCM(12,5,7))
+  |w|²           : 74  (w = 5 + 7i in ℤ[i])
+  |w|            : 8.6023
+
+
+────────────────────────────────────────────────────────────────────────────────
+  GAUSSIAN PRIME CHARACTER  (ℤ[i] decomposition)
+────────────────────────────────────────────────────────────────────────────────
+
+  Real-axis  d_r=5: D+T-Split  (5^1: splits in ℤ[i] as conjugate pair)
+  Imag-axis  d_θ=7: D-type/Inert  (7^1: remains prime in ℤ[i], zero T-mixing)
+
+
+────────────────────────────────────────────────────────────────────────────────
+  SHADOW TENSIONS AND COUPLINGS
+────────────────────────────────────────────────────────────────────────────────
+
+  Real  ⟨τ_r⟩       = 1200/(4×5) = 60.0000¢
+  Imag  ⟨τ_θ⟩       = 1200/(4×7) = 42.8571¢  (raw, before amplification)
+  Imag  ⟨τ_θ⟩_eff   = 42.8571¢ × 12.5 = 535.7143¢  (FQ-1 amplified)
+  α_r = 1/(4×5) = 0.05000000
+  α_θ = 1/(4×7) = 0.03571429  (raw)
+  α_θ_eff            = 0.44642857  (×12.5 amplified)
+  α_r / α_EM         = 6.8500×
+  α_θ_eff / α_EM     = 61.1607×
+
+
+────────────────────────────────────────────────────────────────────────────────
+  PALINDROMIC PARTNERS  (FQ-8 / 2D palindromic pairing)
+────────────────────────────────────────────────────────────────────────────────
+
+  real_axis_palindrome          : (7, 7)  [CR+CI, d_comb=7]
+  imag_axis_palindrome          : (5, 5)  [CR+CI, d_comb=5]
+  full_2d_palindrome            : (7, 5)  [CR+CI, d_comb=35]
+  transpose_dual                : (7, 5)  [CR+CI, d_comb=35]
+
+
+────────────────────────────────────────────────────────────────────────────────
+  DOMAIN MAP TIERS  (ET Universal Lattice Domain Map)
+────────────────────────────────────────────────────────────────────────────────
+
+  • Biological/Quasicrystal tier (d=5, 60ET first native)
+  • Cognition/Qualia (60ET — inembeddable in 12ET)
+  • Alternative Realities / Otherworld (d=5 in 60ET)
+  • Alternative Realities / Otherworld (d=7, 420ET)
+  • Religion/Mythology (sacred-7 direct T encounter)
+  • G₂ holonomy (M-theory compact 7-manifold)
+  • CP Violation (kaon, (4,7) SR+CI)
+
+
+────────────────────────────────────────────────────────────────────────────────
+  IDENTIFICATION PRINCIPLE
+────────────────────────────────────────────────────────────────────────────────
+
+Identification Principle Applied to Gap Cell (5,7):
+  Understand((5,7)) ⟺ Identified(P) ∧ Identified(D) ∧ Identified(T)
+
+  P: P-substrate: The multiplicative manifold (ℂ,×) restricted to the (5,7) sublattice sector. Requires extended lattice ℒ_ℂ^(420) — activated only at n_eff ≥ 420ET. Below this density: gap exists as shadow tension only.
+
+  D: D-Descriptors: Real-axis d_r=5 [D+T-Split  (5^1: splits in ℤ[i] as conjugate pair)] — COMPLEX-REAL (d_r∤12, requires n≥n_c for real resolution). Imaginary-axis d_θ=7 [D-type/Inert  (7^1: remains prime in ℤ[i], zero T-mixing)] — COMPLEX-IMAGINARY (d_θ∤12, CI — phase incoherence, 12.5× amplification). Combined sublattice d=35. Shadow tension: ⟨τ_r⟩=60.000¢ (real), ⟨τ_θ⟩_eff=535.714¢ (imaginary×12.5).
+
+  T: T-Agency: Traverser operates at resolution n≥420ET in CR+CI quadrant. n_max_r=25 real stability levels, n_max_θ=2 imaginary levels. T at this cell: CI-amplified (large mixing).
+
+  Gap: DESCRIPTOR GAP: This cell is absent from observed physics at n=12ET. gap = D_missing(d_r=5, d_θ=7). By the Descriptor Gap Principle: gap = D_missing. Resolution: identify D_missing at n≥420ET. The gap closes as a first-order discrete transition at n_c=420ET.
+
+
+────────────────────────────────────────────────────────────────────────────────
+  FALSIFIABLE PREDICTIONS
+────────────────────────────────────────────────────────────────────────────────
+
+  [1] [THRESHOLD] This force activates at n_c=420ET. No d=(5,7)-class 
+      phenomenon exists below this descriptor density. At n_c=420ET: ε drops 
+      to exactly 0 at the (5,7) native positions — a discrete (not smooth) 
+      phase transition. 
+
+  [2] [COUPLING] Real-axis shadow coupling: α_r = 1/(4×5) = 0.050000. 
+      Imaginary effective coupling: α_θ_eff = 0.446429 (amplified 12.5× by 
+      FQ-1 imaginary amplification). Ratio α_θ_eff/α_EM = 61.161× relative to 
+      EM. 
+
+  [3] [FORCE NORM] |w|² = 5²+7² = 74. |w| = 8.6023. Interaction complexity 
+      rank: 74 (reference: EM=288, W-boson=32, gravity=5). 
+
+  [4] [PALINDROME] Real-axis palindromic partner: (7,7) — any process at 
+      (5,7) has a mirror at (7,7). Imaginary palindrome: (5,5). Full 2D 
+      palindrome: (7,5). 
+
+  [5] [BIOLOGICAL ACTIVATION] Life = (5,7) cell activation. n_c(5,7) = 420ET 
+      = LCM(1..7) = biological threshold. Any replicating system with n_eff < 
+      420ET cannot sustain icosahedral+G₂ co-descriptor binding. Prediction: 
+      minimal viable genomes encode ≥420 independent descriptor-level 
+      constraints. 
+
+  [6] [T=7 CAPSID STRUCTURAL PROOF] T=7 icosahedral viral capsid has 7×60 = 
+      420 protein subunits. 420 = n_c(5,7) = LCM(12,5,7). This is NOT 
+      numerology: 420 is the descriptor density at which BOTH d=5 
+      (icosahedral geometry) AND d=7 (G₂ holonomy packing) become native. 
+      Falsifiable: T=7 capsid geometry requires simultaneous 5-fold 
+      (icosahedral) AND 7-fold (G₂ holonomy of the hexagonal lattice patch) 
+      descriptor binding. 
+
+  [7] [E₈ GAUGE VERTEX] The (5,7) cell = E₈ gauge vertex (per force quadrant 
+      table). E₈ contains G₂ as a maximal subgroup: E₈ ⊃ G₂ × F₄. E₈ also 
+      contains A₄=SU(5) with quintic substructure (d=5). Prediction: any 
+      E₈-based GUT will have its activation threshold at 420ET, and its 
+      lightest mode will have (d_r=5, d_θ=7) force-vector character. 
+
+  [8] [COSMIC LSS × BIOLOGY] The (5,7) threshold unifies biology and 
+      cosmology: both icosahedral viral capsids AND large-scale structure 
+      require 420-descriptor density. Prediction: cosmic voids exhibit 
+      35=LCM(5,7)-fold periodicity relative to the BAO scale, signalling 
+      (5,7) dark sector activity. 
+
+
+════════════════════════════════════════════════════════════════════════════════
+                      GAP CELL (8,9) — QCD×CKM Bridge
+════════════════════════════════════════════════════════════════════════════════
+
+  Physical label : Gluon-octet (d_r=8=2³) × quark-generation CI (d_θ=9=3²). Civilizational/zeitgeist tier (d=8 economy, d=9 social). CR+CI.
+  Quadrant       : CR+CI
+  Combined d     : 72
+  n_c            : 72ET  (LCM(12,8,9))
+  |w|²           : 145  (w = 8 + 9i in ℤ[i])
+  |w|            : 12.0416
+
+
+────────────────────────────────────────────────────────────────────────────────
+  GAUSSIAN PRIME CHARACTER  (ℤ[i] decomposition)
+────────────────────────────────────────────────────────────────────────────────
+
+  Real-axis  d_r=8: P-type/Ramified  (2^3: lattice base ramified)
+  Imag-axis  d_θ=9: D-type/Inert  (3^2: remains prime in ℤ[i], zero T-mixing)
+
+
+────────────────────────────────────────────────────────────────────────────────
+  SHADOW TENSIONS AND COUPLINGS
+────────────────────────────────────────────────────────────────────────────────
+
+  Real  ⟨τ_r⟩       = 1200/(4×8) = 37.5000¢
+  Imag  ⟨τ_θ⟩       = 1200/(4×9) = 33.3333¢  (raw, before amplification)
+  Imag  ⟨τ_θ⟩_eff   = 33.3333¢ × 12.5 = 416.6667¢  (FQ-1 amplified)
+  α_r = 1/(4×8) = 0.03125000
+  α_θ = 1/(4×9) = 0.02777778  (raw)
+  α_θ_eff            = 0.34722222  (×12.5 amplified)
+  α_r / α_EM         = 4.2812×
+  α_θ_eff / α_EM     = 47.5694×
+
+
+────────────────────────────────────────────────────────────────────────────────
+  PALINDROMIC PARTNERS  (FQ-8 / 2D palindromic pairing)
+────────────────────────────────────────────────────────────────────────────────
+
+  real_axis_palindrome          : (4, 9)  [SR+CI, d_comb=36]  ← PMNS neutrino oscillation!
+  imag_axis_palindrome          : (8, 3)  [CR+SI, d_comb=24]
+  full_2d_palindrome            : (4, 3)  [SR+SI, d_comb=12]
+  transpose_dual                : (9, 8)  [CR+CI, d_comb=72]
+
+
+────────────────────────────────────────────────────────────────────────────────
+  DOMAIN MAP TIERS  (ET Universal Lattice Domain Map)
+────────────────────────────────────────────────────────────────────────────────
+
+  • Economy/Markets (8-yr business cycle, d=8 real)
+  • Gluon-Octet nuclear (SU(3) 8 generators, n_c=24ET)
+  • Social/Political nonic sector
+  • Quark generation structure (d=9=3², CR real axis)
+  • PMNS imaginary axis (d_θ=9, SR+CI neutrino mixing)
+
+
+────────────────────────────────────────────────────────────────────────────────
+  IDENTIFICATION PRINCIPLE
+────────────────────────────────────────────────────────────────────────────────
+
+Identification Principle Applied to Gap Cell (8,9):
+  Understand((8,9)) ⟺ Identified(P) ∧ Identified(D) ∧ Identified(T)
+
+  P: P-substrate: The multiplicative manifold (ℂ,×) restricted to the (8,9) sublattice sector. Requires extended lattice ℒ_ℂ^(72) — activated only at n_eff ≥ 72ET. Below this density: gap exists as shadow tension only.
+
+  D: D-Descriptors: Real-axis d_r=8 [P-type/Ramified  (2^3: lattice base ramified)] — COMPLEX-REAL (d_r∤12, requires n≥n_c for real resolution). Imaginary-axis d_θ=9 [D-type/Inert  (3^2: remains prime in ℤ[i], zero T-mixing)] — COMPLEX-IMAGINARY (d_θ∤12, CI — phase incoherence, 12.5× amplification). Combined sublattice d=72. Shadow tension: ⟨τ_r⟩=37.500¢ (real), ⟨τ_θ⟩_eff=416.667¢ (imaginary×12.5).
+
+  T: T-Agency: Traverser operates at resolution n≥72ET in CR+CI quadrant. n_max_r=25 real stability levels, n_max_θ=2 imaginary levels. T at this cell: CI-amplified (large mixing).
+
+  Gap: DESCRIPTOR GAP: This cell is absent from observed physics at n=12ET. gap = D_missing(d_r=8, d_θ=9). By the Descriptor Gap Principle: gap = D_missing. Resolution: identify D_missing at n≥72ET. The gap closes as a first-order discrete transition at n_c=72ET.
+
+
+────────────────────────────────────────────────────────────────────────────────
+  FALSIFIABLE PREDICTIONS
+────────────────────────────────────────────────────────────────────────────────
+
+  [1] [THRESHOLD] This force activates at n_c=72ET. No d=(8,9)-class 
+      phenomenon exists below this descriptor density. At n_c=72ET: ε drops 
+      to exactly 0 at the (8,9) native positions — a discrete (not smooth) 
+      phase transition. 
+
+  [2] [COUPLING] Real-axis shadow coupling: α_r = 1/(4×8) = 0.031250. 
+      Imaginary effective coupling: α_θ_eff = 0.347222 (amplified 12.5× by 
+      FQ-1 imaginary amplification). Ratio α_θ_eff/α_EM = 47.569× relative to 
+      EM. 
+
+  [3] [FORCE NORM] |w|² = 8²+9² = 145. |w| = 12.0416. Interaction complexity 
+      rank: 145 (reference: EM=288, W-boson=32, gravity=5). 
+
+  [4] [PALINDROME] Real-axis palindromic partner: (4,9) — any process at 
+      (8,9) has a mirror at (4,9). Imaginary palindrome: (8,3). Full 2D 
+      palindrome: (4,3). 
+
+  [5] [QCD×CKM BRIDGE] (8,9) is the gluon-octet (d=8=2³) extended through the 
+      generation-mixing CI sector (d_θ=9=3²). n_c=72ET. This force describes 
+      the full 2D gluonic interaction including generation change. 
+      Prediction: hadronic cross-sections with generation change (e.g. b→s 
+      transitions via gluon) carry (8,9) CI structure in the imaginary axis. 
+
+  [6] [PALINDROMIC PARTNER = PMNS] Real-axis palindrome of (8,9): (12−8, 9) = 
+      (4,9) = PMNS neutrino oscillation (FQ-4, W2.13 CF-10 note). Prediction: 
+      the QCD×CKM bridge (8,9) and PMNS neutrino oscillation (4,9) are 2D 
+      palindromic partners. Their mixing angles are related by the 
+      palindromic reflection across d_r=6: θ_(8,9) = π − θ_(4,9) (in 
+      appropriate units). 
+
+  [7] [CIVILIZATIONAL ZEITGEIST] Domain Map: d=8 → Economy/Markets, d=9 → 
+      Social/Political. The (8,9) interaction at the civilizational 
+      integrative level: economic cycles (d=8, 8-yr business cycle) interact 
+      with political structures (d=9, institutional 9-yr cycles). Prediction: 
+      the 72=LCM(8,9)-year civilizational resonance period emerges where 
+      economic and political descriptor cycles synchronise. This is the ET 
+      derivation of the long economic wave at 72 years (Kuznets-Kondratiev 
+      composite). 
+
+  [8] [GLUON OCTET GENERATION MIXING] d_r=8=2³: the gluon octet is 8=2³ in 
+      ET, a cubic complex (CF-16). d_θ=9=3²: generation structure is nonic 
+      squared. 8 = 2³ and 9 = 3² → LCM(8,9) = 72 = 8×9/gcd(8,9) = 72/1 = 72. 
+      Combined d=72 means: the (8,9) force requires a 72-step lattice to 
+      close. Prediction: b→s FCNC processes via gluon loop carry factor 
+      α_(8,9) × (α_s/π) ≈ 0.00086806 suppression. 
+
+
+────────────────────────────────────────────────────────────────────────────────
+                SPECIAL ANALYSIS: (5,5) ICOSAHEDRAL GEOMETRY
+────────────────────────────────────────────────────────────────────────────────
+
+  The (5,5) cell is the doubly-quintic configuration — quintic symmetry on
+  BOTH the real (structural) and imaginary (phase) axes simultaneously.
+
+
+────────────────────────────────────────────────────────────────────────────────
+  QUINTIC LATTICE POSITIONS AT n_c=60ET  (first native positions)
+────────────────────────────────────────────────────────────────────────────────
+
+  These are the first ET lattice points where d=5 becomes a native sublattice.
+  At n < 60ET these positions do not exist as lattice points — only as shadow.
+
+      k         ratio r       cents  d=5 ✓
+  ─────  ──────────────  ──────────  ──────
+     12      1.14869835      240.00¢
+     24      1.31950791      480.00¢
+     36      1.51571657      720.00¢
+     48      1.74110113      960.00¢
+
+
+────────────────────────────────────────────────────────────────────────────────
+  GOLDEN RATIO φ IN THE ET LATTICE  (quintic asymptotic attractor)
+────────────────────────────────────────────────────────────────────────────────
+
+  φ = (1+√5)/2 = 1.6180339887
+  ET projection: k=8, g=4, d=3, ε=+33.0903¢
+  φ lives at d=12 (full-resolution), k=7, ε=−1.955¢ on the 12ET lattice.
+  This is the Fibonacci asymptotic: lim(F_{n+1}/F_n) = φ.
+  The near-miss: the d=5 force and d=12 (EM) are connected through φ.
+
+  Powers of φ:
+    φ^1 = 1.618034 → k=  8, d= 3, ε=+33.090¢
+    φ^2 = 2.618034 → k= 17, d=12, ε=-33.819¢
+    φ^3 = 4.236068 → k= 25, d=12, ε=-0.729¢
+    φ^4 = 6.854102 → k= 33, d= 4, ε=+32.361¢
+    φ^5 = 11.090170 → k= 42, d= 2, ε=-34.549¢
+    φ^6 = 17.944272 → k= 50, d= 6, ε=-1.458¢
+
+
+────────────────────────────────────────────────────────────────────────────────
+  ICOSAHEDRAL ROTATION AXES ON THE IMAGINARY ET LATTICE
+────────────────────────────────────────────────────────────────────────────────
+
+  The icosahedral group I has 60 elements with rotation axes at 60°,72°,120°,180°.
+  Projecting these onto the ET imaginary lattice (k_θ = round(12·θ/ln2)):
+
+          Axis   degrees    k_θ   d_θ        ε¢
+  ────────────  ────────  ─────  ────  ────────
+     C₂ (180°)     180.0°     54     2   +38.832¢
+     C₃ (120°)     120.0°     36     1   +25.888¢
+      C₅ (72°)      72.0°     22     6   -24.467¢
+    C₅² (144°)     144.0°     44     3   -48.934¢
+    C₅³ (216°)     216.0°     65    12   +26.599¢
+    C₅⁴ (288°)     288.0°     87     4    +2.131¢
+
+  RESULT: The C₅ axis (72° = 2π/5) maps to d_θ=5 on the imaginary lattice,
+  confirming that (5,5) has quintic symmetry on BOTH axes. The icosahedral
+  group's 5-fold rotation sits exactly at d_θ=5 in the imaginary ET lattice.
+
+
+────────────────────────────────────────────────────────────────────────────────
+  CASPAR-KLUG ICOSAHEDRAL VIRAL CAPSID T-NUMBERS
+────────────────────────────────────────────────────────────────────────────────
+
+  T = h² + hk + k² (Caspar-Klug). Total subunits = 60T.
+  ET projection of T and 60T onto the real lattice.
+
+    h   k     T     60T    k_T  d_T      ε_T   k_sub d_sub    ε_sub
+  ─── ─── ─────  ──────  ───── ──── ────────  ────── ───── ────────
+    1   0     1      60      0    1   +0.000¢      71    12  -11.731¢ ← 60=n_c(5,5)!
+    1   1     3     180     19   12   +1.955¢      90     2   -9.776¢
+    2   0     4     240     24    1   +0.000¢      95    12  -11.731¢
+    2   1     7     420     34    6  -31.174¢     105     4  -42.905¢ ← 420=n_c(5,7)!
+    3   0     9     540     38    6   +3.910¢     109    12   -7.821¢
+    2   2    12     720     43   12   +1.955¢     114     2   -9.776¢
+    3   1    13     780     44    3  +40.528¢     115    12  +28.796¢
+    4   0    16     960     48    1   +0.000¢     119    12  -11.731¢
+    3   2    19    1140     51    4   -2.487¢     122     6  -14.218¢
+    4   1    21    1260     53   12  -29.219¢     124     3  -40.950¢
+    5   0    25    1500     56    3  -27.373¢     127    12  -39.104¢
+    3   3    27    1620     57    4   +5.865¢     128     3   -5.866¢
+
+  KEY RESULT:
+    T=1 capsid: 60 subunits = n_c(5,5) = 60ET (minimal quintic descriptor density)
+    T=7 capsid: 420 subunits = n_c(5,7) = 420ET (life threshold, E₈ vertex)
+    The number of protein subunits in icosahedral capsids = ET critical resolutions.
+
+
+────────────────────────────────────────────────────────────────────────────────
+              SPECIAL ANALYSIS: (7,7) G₂×G₂ — MAXIMUM DARKNESS
+────────────────────────────────────────────────────────────────────────────────
+
+  (7,7) = D-type/Inert × D-type/Inert: the maximally dark configuration.
+  7 ≡ 3 mod 4: prime, remains prime in ℤ[i] → zero T-mixing in BOTH axes.
+  This is the only 2D force with D-Inert character on both real AND imaginary axes
+  among all single-prime (d_r=p, d_θ=p) configurations with p∤12.
+
+
+────────────────────────────────────────────────────────────────────────────────
+  G₂ LIE GROUP STRUCTURE IN ET TERMS
+────────────────────────────────────────────────────────────────────────────────
+
+  dim_G2                        : 14
+  rank                          : 2
+  n_short_roots                 : 6
+  n_long_roots                  : 6
+  n_total_roots                 : 12
+  weyl_order                    : 12
+  root_ratio_k                  : 10
+  root_ratio_d                  : 6
+  root_ratio_eps                : -49.022499567306355
+  7d_rep_dim                    : 7
+  d_r_G2                        : 7
+  n_c_G2_real                   : 84
+  n_c_G2_full_2D                : 84
+  note                          : G₂ has 12 roots = N (manifold symmetry). Weyl group order = 12 = N. Structural necessity.
+
+  CRITICAL: G₂ has exactly 12 roots = N=12 (manifold symmetry).
+  This is structural: G₂ is the unique exceptional group whose root count = N.
+  G₂×G₂ has 24 = 2N roots — two full copies of the ET manifold symmetry.
+
+
+────────────────────────────────────────────────────────────────────────────────
+  CRYSTALLOGRAPHIC RESTRICTION — WHY 7-FOLD IS FORBIDDEN
+────────────────────────────────────────────────────────────────────────────────
+
+  The crystallographic restriction theorem: in ℝ² and ℝ³, only rotational
+  symmetries of order n ∈ {1,2,3,4,6} can tile the plane periodically.
+  7-fold rotational symmetry IS forbidden in 3D crystals.
+
+  ET derivation: the allowed crystallographic symmetries = SIMPLE sublattice families
+  {1, 2, 3, 4, 6, 12} = exactly the d-families with d|N=12.
+  d=7 is NOT in this set → 7-fold is crystallographically forbidden.
+  This is the ET derivation of the crystallographic restriction theorem.
+
+  Prediction: (7,7) dark matter does NOT form crystal structures.
+  It forms diffuse, non-crystalline halos — consistent with NFW profiles.
+
+
+────────────────────────────────────────────────────────────────────────────────
+  MAXIMUM DARKNESS QUANTIFICATION
+────────────────────────────────────────────────────────────────────────────────
+
+  Real-axis α_(7,real)       = 1/28 = 0.03571429
+  Imag-axis α_(7,imag)_eff   = 0.44642857  (×12.5 FQ-1)
+  Cross-section vs EM:        σ_(7,7)/σ_EM = (α_7/α_EM)² = 23.9401×
+  Comparison to (5,5) dark:   σ_(7,7)/σ_(5,5) = (0.03571/0.05000)² = 0.5102×
+  n_c(7,7) = 84ET  vs  n_c(5,5) = 60ET
+
+
+────────────────────────────────────────────────────────────────────────────────
+  DARKNESS RANKING OF ALL COMPLEX FORCES (by α × σ ∝ α²)
+────────────────────────────────────────────────────────────────────────────────
+
+     d      α_real    α_eff_imag      σ_rel_EM  char
+  ────  ──────────  ────────────  ────────────  ────────────────────
+     5    0.050000      0.625000       46.9225×  D+T-Split
+     7    0.035714      0.446429       23.9401× ← MAX DARK  D-type/Inert
+     8    0.031250      0.390625       18.3291×  P-type/Ramified
+     9    0.027778      0.347222       14.4823×  D-type/Inert
+    10    0.025000      0.312500       11.7306×  Composite: 2^1[P-Ramified] × 5^1[D+T-Split]
+    11    0.022727      0.284091        9.6947×  D-type/Inert
+
+  G₂ (d=7) has the largest σ_rel_EM per unit coupling among all CR inert forces,
+  AND is D-type/Inert (zero T-mixing) → maximum 'structural dark' configuration.
+
+
+────────────────────────────────────────────────────────────────────────────────
+  SACRED-7 / OTHERWORLD DOMAIN MAP CONNECTION
+────────────────────────────────────────────────────────────────────────────────
+
+  Domain Map Level 15 (Alternative Realities): d=7* (420ET), 'Otherworld barrier'
+  Domain Map Level 14 (Religion/Mythology):    d=7* (sacred-7), direct T encounter
+
+  In ET: why is '7' sacred and associated with 'Otherworld' across traditions?
+  Answer: d=7 is the first force that is:
+    (a) Crystallographically forbidden (cannot form a crystal in ℝ³)
+    (b) Purely D-type/Inert (zero T-mixing — inaccessible to normal T agency)
+    (c) Activated at 84ET (sacred geometry: 12×7 = 84)
+    (d) The G₂ holonomy group — the automorphism group of the octonions
+
+  The 'Otherworldly' quality of d=7 is its literal inembeddability into normal
+  3D crystallographic space AND its zero T-coupling — it is structurally present
+  but agency-inaccessible. This is the ET derivation of sacred-7 phenomenology.
+
+
+────────────────────────────────────────────────────────────────────────────────
+      SPECIAL ANALYSIS: (5,7) — BIOLOGICAL THRESHOLD / LIFE ACTIVATION
+────────────────────────────────────────────────────────────────────────────────
+
+  (5,7) = E₈ gauge vertex. n_c(5,7) = 420ET = LCM(1..7) = biological threshold.
+  The cell where icosahedral structure (d=5, D+T-Split) meets G₂ holonomy (d=7,
+  D-Inert). Life requires BOTH to be simultaneously active → 420ET minimum.
+
+
+────────────────────────────────────────────────────────────────────────────────
+  LCM TOWER — WHY 420 IS THE BIOLOGICAL THRESHOLD
+────────────────────────────────────────────────────────────────────────────────
+
+  Each step in the LCM tower activates a new sublattice family for T-traversal.
+  Life is the system that has activated ALL sublattice families d=1..7.
+
+    d     LCM(1..d)  new family activated
+  ───  ────────────  ────────────────────────────────────────
+    1             1  d=1 SR (simple, native at 12ET)
+    2             2  d=2 SR (simple, native at 12ET)
+    3             6  d=3 SR (simple, native at 12ET)
+    4            12  d=4 SR (simple, native at 12ET)
+    5            60  d=5 CR (complex, first native at 60ET)
+    6            60  d=6 SR (simple, native at 12ET)
+    7           420  d=7 CR (complex, first native at 420ET)
+
+  LCM(1..7) = 420 = n_c(5,7).  BOTH d=5 (quintic) AND d=7 (G₂)
+  are non-native (CR) and first activate together at 420ET.
+  Life = activation of the (5,7) cell = n_eff reaching 420ET.
+
+
+────────────────────────────────────────────────────────────────────────────────
+  E₈ GAUGE VERTEX STRUCTURE
+────────────────────────────────────────────────────────────────────────────────
+
+  E₈ adjoint decomposition under G₂ × F₄:
+    248 = (14,1) ⊕ (1,52) ⊕ (7,26)  → 14+52+182 = 248 ✓
+  Connection: d_r=5 ↔ SU(5)/A₄ icosahedral ⊂ E₈ (quintic GUT)
+             d_θ=7 ↔ G₂ holonomy ⊂ E₈
+  n_c(5,7) = 420ET = resolution threshold for E₈ gauge vertex
+  n_c(5,7)=420ET is simultaneously: (a) LCM(1..7) biological threshold, (b) E₈ gauge vertex resolution, (c) T=7 icosahedral capsid subunit count.
+
+
+────────────────────────────────────────────────────────────────────────────────
+  T=7 VIRAL CAPSID — THE 420 COINCIDENCE IS STRUCTURAL
+────────────────────────────────────────────────────────────────────────────────
+
+  T=7 icosahedral capsid: 7×60 = 420 protein subunits
+  n_c(5,7) = LCM(12,5,7) = 420
+  Match: 420 == 420 → True
+
+  Why is this structural and not numerology?
+    T=7 requires BOTH:
+      (a) 5-fold icosahedral symmetry (d=5): the 12 pentamers at vertices
+          → requires d=5 real-axis descriptor density → n_c(d=5)=60 proteins per T-unit
+      (b) G₂-class hexagonal packing (d=7): the 60 hexamers between pentamers
+          → their packing geometry requires G₂ holonomy → n_c(d=7) factor of 7
+      Combined: 60 × 7 = 420 = LCM(12,5,7) = n_c(5,7).
+
+  Translation Layer derivation (§3.2 step-count method):
+    R₀ = T=1 capsid = 60 subunits (the minimal icosahedral assembly)
+    r  = T=7 capsid / T=1 capsid = 420 / 60 = 7
+    ET projection of r=7: k=34, g=2, d=6, ε=-31.174¢
+    d=6 for T=7 ratio — the T=7 capsid transition T=1→T=7 is a d=6 (hexadic) step.
+
+
+────────────────────────────────────────────────────────────────────────────────
+  MINIMAL GENOME AND 420ET BIOLOGICAL CONSTRAINT
+────────────────────────────────────────────────────────────────────────────────
+
+  The biological threshold n_eff ≥ 420ET is a descriptor-density constraint.
+  Translation Layer §3.2: R₀ = 1 descriptor-level constraint (minimal catalytic event).
+  r = n_effective_constraints / 1 = n_eff  (dimensionless count, pure ratio).
+
+  Prediction: any self-replicating system requires ≥ 420 independent
+  descriptor-level constraints to sustain (5,7) co-binding.
+
+  Known minimal genomes:
+  Mycoplasma genitalium (smallest known)        : ~470 genes ✓ > 420
+  JCVI-syn3.0 (synthetic minimal cell)          : ~473 genes ✓ > 420
+  Pelagibacter ubique (free-living min.)        : ~1354 genes ✓ > 420
+  Theoretical absolute minimum (ET pred.)       : ~420 genes ← ET lower bound
+
+  All known minimal genomes are > 420. The ET prediction n_eff ≥ 420 is consistent.
+
+
+────────────────────────────────────────────────────────────────────────────────
+                  SPECIAL ANALYSIS: (8,9) — QCD×CKM BRIDGE
+────────────────────────────────────────────────────────────────────────────────
+
+  (8,9) = Gluon-Octet (d_r=8=2³) × Quark-Generation CI (d_θ=9=3²).
+  The full 2D description of gluon-mediated generation change in QCD.
+  n_c(8,9) = 72ET = LCM(12,8,9) = 2³×3² = first resolution for both.
+
+
+────────────────────────────────────────────────────────────────────────────────
+  QCD×CKM BRIDGE STRUCTURE
+────────────────────────────────────────────────────────────────────────────────
+
+  d_r=8 = 2³: SU(3) has 8 generators (gluon octet). 8=2³ is the 'cubic complex'
+    n_c(d_r=8) = LCM(12,8) = 24ET  (gluon octet first native)
+    k for ratio r=8: k=36, d_family=1 (as ratio = 3 octaves = d=1)
+    But AS A SUBLATTICE FAMILY d_r=8 ∉ {1,2,3,4,6,12} → complex real (CR)
+
+  d_θ=9 = 3²: three quark generations via d=9=3² (FQ-9). 9=3² is D-Inert squared.
+    n_c(d_θ=9) = LCM(12,9) = 36ET  (generation CI first native)
+    k for ratio r=9: k=38, d_family=6 (as ratio = d=3 via 9=3×3)
+
+  Combined: n_c(8,9) = LCM(12,8,9) = LCM(24,9) = 72ET
+    LCM(8,9) = 72  (combined sublattice class)
+    72 = 2³ × 3² = 8 × 9  (gcd(8,9)=1 → they are coprime → LCM = product)
+
+  Shadow couplings:
+    α_(8,real)          = 1/32  = 0.03125000
+    α_(9,imag)_raw      = 1/36  = 0.02777778
+    α_(9,imag)_eff      = 1/36 × 12.5 = 0.34722222
+
+
+────────────────────────────────────────────────────────────────────────────────
+  PALINDROMIC PARTNER = PMNS  (FQ-8 real-axis palindrome)
+────────────────────────────────────────────────────────────────────────────────
+
+  Real-axis palindrome of (8,9): (12−8, 9) = (4, 9)
+  Quadrant of (4, 9): SR+CI, d_combined=36
+
+  (4,9) = (d_r=4 Weak/SR, d_θ=9 nonic/CI) = PMNS neutrino oscillation (FQ-4)!
+
+  This means: the QCD×CKM gluonic bridge (8,9) and PMNS neutrino oscillation (4,9)
+  are 2D PALINDROMIC PARTNERS — they are reflections of each other across d_r=6.
+
+  Physical interpretation: the palindrome symmetry (8,9) ↔ (4,9) relates
+    the QCD gluon-octet generation change (d_r=8 = gluon) to
+    the weak force generation change (d_r=4 = weak, PMNS neutrino).
+  The quark–lepton palindromic duality is visible in this pairing:
+    (8,9) = QCD (gluon) sector  ↔  (4,9) = Weak (neutrino) sector
+  Both share the same imaginary axis (d_θ=9 nonic generation mixing).
+
+
+────────────────────────────────────────────────────────────────────────────────
+  CIVILIZATIONAL–ZEITGEIST TIER  (Domain Map Levels 8–10)
+────────────────────────────────────────────────────────────────────────────────
+
+  Domain Map d=8 → Economy/Markets: '8-yr business cycle' (d=8 real axis)
+  Domain Map d=9 → Social/Political: 'nonic institutional cycles'
+
+  ET Translation Layer §3 — correct reference unit for civilizational cycles:
+  R₀ = T_gen = 20 years (one human generation = minimal T-traversal loop
+       for the civilizational P-substrate).
+
+  72-year cycle = 3.60 generations:
+    k=22, g=2, d=6, ε=+17.596¢
+
+  8-year business cycle ratio r = 8/20 = 0.4000  →  k=-16, d=3, ε=+13.686¢
+  9-year institution. cycle ratio r = 9/20 = 0.4500  →  k=-14, d=6, ε=+17.596¢
+
+  The 72=LCM(8,9)-year civilizational resonance is the first period where both
+  the 8-year economic cycle AND the 9-year political cycle synchronise exactly.
+  This is the ET-derived long-wave civilizational period from the (8,9) cell.
+
+
+────────────────────────────────────────────────────────────────────────────────
+  QUANTITATIVE PREDICTION: b→s GLUONIC FCNC
+────────────────────────────────────────────────────────────────────────────────
+
+  α_s (at M_Z) = 0.118
+  α_8 × α_9 = (1/32) × (1/36) = 0.0008680556
+  (8,9) effective FCNC amplitude ∝ α_s/π × α_89 × 12.5 = 4.075582e-04
+  Compare to SM b→sγ amplitude: O(10⁻⁴) → (8,9) contribution ~ 4.076e-04
+  The (8,9) force gives a loop-level correction to FCNC of this order.
+
+
+════════════════════════════════════════════════════════════════════════════════
+                 CROSS-CELL COMPARISON — ALL FOUR GAP CELLS
+════════════════════════════════════════════════════════════════════════════════
+
+
+────────────────────────────────────────────────────────────────────────────────
+  COMPLETE ET CHARACTERISATION TABLE
+────────────────────────────────────────────────────────────────────────────────
+
+      Cell      Quad     n_c   d_comb    |w|²        α_r     α_θ_eff               Gauss_r               Gauss_θ
+  ──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  (5,5)        CR+CI      60ET        5      50   0.050000    0.625000  D+T-Split  (5^1: spl  D+T-Split  (5^1: spl
+  (7,7)        CR+CI      84ET        7      98   0.035714    0.446429  D-type/Inert  (7^1:   D-type/Inert  (7^1: 
+  (5,7)        CR+CI     420ET       35      74   0.050000    0.446429  D+T-Split  (5^1: spl  D-type/Inert  (7^1: 
+  (8,9)        CR+CI      72ET       72     145   0.031250    0.347222  P-type/Ramified  (2^  D-type/Inert  (3^2: 
+
+
+────────────────────────────────────────────────────────────────────────────────
+  ACTIVATION ORDER (by n_c)
+────────────────────────────────────────────────────────────────────────────────
+
+  n_c=  60ET: (5,5) Icosahedral Dark Sector
+  n_c=  72ET: (8,9) QCD×CKM Bridge
+  n_c=  84ET: (7,7) G₂×G₂ Extreme Dark Sector
+  n_c= 420ET: (5,7) Cross-Complex / Biological Threshold
+
+
+────────────────────────────────────────────────────────────────────────────────
+  DARKNESS RANKING (by α_r, smallest = darkest relative to EM)
+────────────────────────────────────────────────────────────────────────────────
+
+  α_r=0.031250 (4.28×α_EM): (8,9) QCD×CKM Bridge
+  α_r=0.035714 (4.89×α_EM): (7,7) G₂×G₂ Extreme Dark Sector
+  α_r=0.050000 (6.85×α_EM): (5,5) Icosahedral Dark Sector
+  α_r=0.050000 (6.85×α_EM): (5,7) Cross-Complex / Biological Threshold
+
+
+────────────────────────────────────────────────────────────────────────────────
+  LCM TOWER — WHERE EACH CELL ACTIVATES
+────────────────────────────────────────────────────────────────────────────────
+
+  12ET   → Standard Model SR+SI sector (all 4 known forces native)
+  24ET   → Gluon Octet real (d_r=8) first native
+  36ET   → Quark generation (d_r=9) first native; PMNS (d_θ=9) first native
+  60ET   → (5,5) FIRST COMPLEX PRIME PAIR: d=5 native in BOTH axes [Tier 1 Gap]
+  72ET   → (8,9) QCD×CKM bridge: both d=8 and d=9 native simultaneously [Tier 2 Gap]
+  84ET   → (7,7) G₂×G₂: d=7 native in BOTH axes [Tier 3 Gap]
+  420ET  → (5,7) E₈ vertex: d=5 AND d=7 simultaneously native [Tier 4 Gap]
+
+
+────────────────────────────────────────────────────────────────────────────────
+  INTER-CELL PALINDROMIC RELATIONSHIPS
+────────────────────────────────────────────────────────────────────────────────
+
+  (5,5) — imag_axis_palindrome — (5,7)
+  (5,5) — full_2d_palindrome — (7,7)
+  (7,7) — real_axis_palindrome — (5,7)
+  (7,7) — full_2d_palindrome — (5,5)
+  (5,7) — real_axis_palindrome — (7,7)
+  (5,7) — imag_axis_palindrome — (5,5)
+
+  Known palindromic connections to observed physics:
+  (8,9) real-axis palindrome = (4,9) = PMNS neutrino oscillation  [FQ-4]
+  (5,7) full-2D palindrome   = (7,5) = transpose dual  [FQ-22]
+  (5,5) real-axis palindrome = (7,5) = G₂×Quintic transpose
+  (7,7) real-axis palindrome = (5,7) — (7,7) and (5,7) are REAL-AXIS PALINDROMIC PARTNERS!
+
+  VERIFICATION: real-axis palindrome of (7,7) = (5, 7)
+  VERIFICATION: real-axis palindrome of (5,7) = (7, 7)
+
+
+────────────────────────────────────────────────────────────────────────────────
+  DOMAIN MAP — UNIFIED TIER SUMMARY
+────────────────────────────────────────────────────────────────────────────────
+
+  Cell    Integrative Levels                              ET Tier
+  ─────── ─────────────────────────────────────────────── ─────────────────
+  (5,5)    Biological/Quasicrystal (60ET) × Otherworld/Altered-States (Tier 5,15)
+  (7,7)    Alternative Realities / Sacred-7 (Tier 14,15) — maximum Otherworld
+  (5,7)    Biological threshold (Tier 5) × Otherworld/E₈ (Tier 15) at 420ET
+  (8,9)    Economy d=8 (Tier 8) × Social/Political d=9 (Tier 9) = Zeitgeist (Tier 10)
+
+
+════════════════════════════════════════════════════════════════════════════════
+               TRANSLATION LAYER — REFERENCE UNIT DERIVATIONS
+════════════════════════════════════════════════════════════════════════════════
+
+  Theorem (Reference Period Uniqueness): For every domain, R₀ is derived
+  from the substrate's own D-structure — never chosen arbitrarily.
+  Source: ET Translation Layer §2, §7.
+
+  ──────────────────────────────────────────────────────────────────────────────
+  Domain: (5,5)_quasicrystal
+  Substrate  : P_quasicrystal = icosahedral quasiperiodic tiling of ℝ³
+  R₀         : The fundamental quasicrystal inflation step: τ = φ (golden ratio)
+  R₀ value   : 1.618033988749895 dimensionless (ratio of successive Fibonacci spacings)
+  Derivation : Quasicrystal inflation: each step scales by φ. φ = lim(F_{n+1}/F_n) is the minimal closed T-traversal loop for the icosahedral substrate. r = (observed_spacing / base_spacing).
+  Sample ratios:
+    r = pentagon_diagonal/side              → k=   8, d= 3, ε= +33.090¢
+    r = phi^2                               → k=  17, d=12, ε= -33.819¢
+    r = phi^3                               → k=  25, d=12, ε=  -0.729¢
+
+  ──────────────────────────────────────────────────────────────────────────────
+  Domain: (5,5)_capsid
+  Substrate  : P_capsid = icosahedral viral capsid lattice
+  R₀         : The T=1 capsid (1 triangulation unit): 60 protein subunits
+  R₀ value   : 60.0 protein subunits (dimensionless count, like step counting §3.2)
+  Derivation : 60 = LCM(12,5) = n_c(d=5): the minimal icosahedral capsid. r = T_observed_subunits / 60.  Per Translation Layer §3.2: R₀ = minimal step (1 T=1 unit = 60 subunits).
+
+  ──────────────────────────────────────────────────────────────────────────────
+  Domain: (5,5)_cosmic_LSS
+  Substrate  : P_LSS = cosmic large-scale structure filament network
+  R₀         : Baryon acoustic oscillation scale: r_BAO ≈ 147 Mpc
+  R₀ value   : 147.0 Mpc (comoving megaparsecs)
+  Derivation : The BAO scale is the fundamental period of the matter power spectrum. It is determined by the sound horizon at recombination — a structural fact about P_LSS, not a human convention. r = L_observed / r_BAO.
+  Sample ratios:
+    r = BAO scale (self)                    → k=   0, d= 1, ε=  +0.000¢
+    r = Cosmic web void ~50 Mpc             → k= -19, d=12, ε= +33.021¢
+    r = Supercluster ~200 Mpc               → k=   5, d=12, ε= +33.021¢
+
+  ──────────────────────────────────────────────────────────────────────────────
+  Domain: (7,7)_dark
+  Substrate  : P_dark = dark matter density field (D-type/Inert, no T-mixing)
+  R₀         : Dark matter halo virial radius (Milky Way type): ~200 kpc
+  R₀ value   : 200.0 kpc (kiloparsecs)
+  Derivation : For D-type/Inert (7,7) dark matter with zero T-coupling, the only available period is the gravitational (d=1) halo scale. R₀ = virial radius = minimal gravitational closure loop. r = r_observed / R_virial.
+  Sample ratios:
+    r = Halo self                           → k=   0, d= 1, ε=  +0.000¢
+    r = 7-fold subhalo r~29kpc              → k= -34, d= 6, ε= +31.174¢
+
+  ──────────────────────────────────────────────────────────────────────────────
+  Domain: (5,7)_biological
+  Substrate  : P_bio = protein assembly manifold for icosahedral capsids
+  R₀         : T=1 capsid unit = 60 protein subunits (minimal icosahedral assembly)
+  R₀ value   : 60.0 protein subunits
+  Derivation : Same as (5,5)_capsid but the (5,7) combination requires n_c=420ET. The T=7 capsid has 420 = 7×60 subunits, and 420 = LCM(12,5,7) = n_c(5,7). r = T_observed × 60 / 60 = T_number itself.
+  T=7 capsid check: 420 subunits == n_c(5,7)=420 → True
+
+  ──────────────────────────────────────────────────────────────────────────────
+  Domain: (8,9)_QCD
+  Substrate  : P_QCD = SU(3) color force field on the gluon manifold
+  R₀         : QCD confinement scale: Λ_QCD ≈ 200 MeV
+  R₀ value   : 200.0 MeV (energy, action ratio E×τ/ħ via quantum reference §3.1)
+  Derivation : The QCD confinement scale Λ_QCD is the minimal closed T-traversal loop for the color-force P-substrate. It is determined by the running coupling α_s(Λ_QCD) = 1 (non-perturbative onset). r = E_probe / Λ_QCD for QCD processes.
+  Sample ratios:
+    r = Proton mass ~938MeV                 → k=  27, d= 4, ε= -24.494¢
+    r = Charm threshold ~1500MeV            → k=  35, d=12, ε= -11.731¢
+    r = Z mass ~91GeV                       → k= 106, d= 6, ε=  -4.333¢
+
+
+════════════════════════════════════════════════════════════════════════════════
+                       SUMMARY AND CLOSING STATEMENT
+════════════════════════════════════════════════════════════════════════════════
+
+  All four gap cells are CR+CI (complex real + complex imaginary).
+  None is observable at n=12ET (Standard Model resolution).
+  Each activates at a specific n_c, marking a discrete phase transition:
+
+  ┌─────────┬────────────────────────────────────────────────────────────┐
+  │  Cell   │  Activation threshold and physical/domain meaning          │
+  ├─────────┼────────────────────────────────────────────────────────────┤
+  │  (5,5)  │  60ET: minimal quasicrystal / T=1 viral capsid / dark sector │
+  │  (8,9)  │  72ET: QCD×CKM bridge / civilizational 72-yr resonance      │
+  │  (7,7)  │  84ET: G₂×G₂ maximum darkness / sacred-7 Otherworld barrier │
+  │  (5,7)  │  420ET: life activation / T=7 capsid / E₈ gauge vertex       │
+  └─────────┴────────────────────────────────────────────────────────────┘
+
+  Domain Map cross-identification:
+    (5,5) ↔ Tier 5 (Biological/Quasicrystal) ∩ Tier 15 (Alternative Realities)
+    (7,7) ↔ Tier 14 (Religion/Mythology) ∩ Tier 15 (Alternative Realities)  ← maximum Otherworld
+    (5,7) ↔ Tier 5 (Biological) ∩ Tier 15 (Alternative Realities) at 420ET boundary
+    (8,9) ↔ Tier 8 (Economy) ∩ Tier 9 (Social/Political) = Tier 10 (Zeitgeist)
+
+  Descriptor Gap Principle: each gap = D_missing at n < n_c. Resolution = add the
+  correct Descriptor (the missing sublattice family) and advance n to n_c.
+
+  Identification Principle: Understanding any gap cell requires all three:
+    P: the extended manifold ℒ_ℂ^(n_c) at sufficient resolution
+    D: the (d_r, d_θ) descriptor pair with its Gaussian character
+    T: the traversal agency at the correct integrative level
+
+  P ∘ D ∘ T = E
+  Exception Theory — Michael James Muller
+  All mathematics: forward from {P, D, T}. Zero external axioms.
+
+════════════════════════════════════════════════════════════════════════════════

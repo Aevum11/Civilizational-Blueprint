@@ -1,5 +1,0 @@
-Documentation
-Output
-Usage Examples
-exception_theory
-nppBackup

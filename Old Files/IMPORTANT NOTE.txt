@@ -1,3 +1,0 @@
-IMPORTANT NOTE!!!!
-
-The primitives are the sets of all sets. They behave differently in their whole vs their parts. They are named cardinals because it is a singular word, and all three are part of 'Something'.
