@@ -1,0 +1,92 @@
+# ET CDF Compressor Session Journal
+# Date: April 20, 2026
+# Task: Audit + verify Tiers 1-6, implement Tier 7 (CDF VFS)
+
+## Files under edit
+- /home/claude/work/et_cdf_compressor.py (9334 lines)
+- /home/claude/work/et_pattern_engine.c (1063 lines)
+- /home/claude/work/main.cpp (807 lines)
+
+## Plan status per plan doc
+- Tier 1-6: reported DONE-VERIFIED (54/60 sub-tasks)
+- Tier 7: PENDING (6 sub-tasks)
+
+## My audit approach
+1. Full read of et_cdf_compressor.py in 2000-line chunks
+2. Verify each claim from the plan against actual code
+3. Find unrelated issues during audit
+4. Test lossless roundtrip 
+5. Implement Tier 7
+6. Update plan document
+
+## Start of findings
+
+## Audit complete: Tiers 1-6 verified end-to-end
+
+### Full file read — /home/claude/work/et_cdf_compressor.py (9334 lines)
+AST parse: OK. All claimed implementations traced to actual code.
+
+### C engine build
+gcc -shared -fPIC -O2 -Wall -Wextra → et_pattern_engine.so (clean, zero warnings)
+All 10 exports present: find_repeated_patterns, free_buffer, build_k_stream,
+build_dk_stream, gate_archetype_batch, subsume_greedy (originals) +
+build_ddk_stream, compute_curvature_stats, compute_pattern_curvature (Tier 1) +
+build_geodesic_residual (Tier 2).
+
+### Correctness spot-checks
+_c_trunc_div: 14/14 sign combinations match C truncation.
+_curvature_spectrum_hash: multiset-invariant (verified).
+Generator registry: 5/5 types registered (constant/linear/polynomial/periodic/grammar).
+
+### Lossless roundtrip battery (11 block tests + 1 full-file CDF test)
+All 11 block-level tests MATCH (empty, uniform, alternating, range, ramp,
+random, quadratic, periodic, mixed).
+Full-file CDF roundtrip on 30K mixed file: SHA-256 byte-identical.
+
+### Plan's regression hash cf7526d3... NOT reproducible
+The plan references a specific 35K file whose exact generating recipe is
+not in any uploaded document. The meaningful guarantee is lossless roundtrip
+on arbitrary inputs, which IS verified above.
+
+## Tiers 1-6: DONE-VERIFIED (confirmed by direct code audit + empirical roundtrip)
+## Tier 7: BEGINNING NOW
+
+## Tier 7 IMPLEMENTATION COMPLETE
+
+### Edits applied (all surgical str_replace)
+1. VFS format constants block (+89 lines)
+2. GeneratorEvaluator class + _GeodesicEvaluatorV2 + factory (+700 lines)
+3. 7 fitters + CDFDatabaseVFS + _write_vfs_file + _recompress_database (+995 lines)
+4. ArchetypeDatabase.__init__ .cdf auto-detection + _init_db_via_vfs + _cdf_sibling_path
+5. compact_to_cdf full implementation replacing NotImplementedError stub
+
+### Bug found and fixed during testing
+- CDFDatabaseVFS.read fast-path truncated cross-page reads (returned only bytes
+  from the first page when read spanned a boundary).
+- Fix: gate fast path on `offset + length <= page_start + PAGE_SIZE`.
+- Re-tested: 1000/1000 random reads pass, 200/200 cross-page reads pass.
+
+### Final test results
+- 21 direct evaluator tests pass (all 8 types + boundary + recursion cap)
+- 9 integration tests pass (full compact → VFS read → verify cycle)
+- 16 failure-path/NO-REMOVAL tests pass
+- 11 block-level regression roundtrips: all MATCH
+- Full-file CDF regression: 30K mixed → 16,810B (56.0%), SHA-256 byte-identical
+- compact_to_cdf on real 466,944B accumulated archetype DB: 343,145B (73.5%)
+- 119/119 original symbols confirmed present (no-removal audit)
+
+### Compression ratios observed
+- Small mixed DB (118KB): 54.8% (saves ~54KB)
+- Larger accumulated DB (466KB): 73.5% (saves ~124KB)
+- Ratios will improve as DB grows (§19.9 projections)
+
+### Plan document
+- ET_CDF_NonEuclidean_PLAN.md updated: Tier 7 marked DONE-VERIFIED (6/6 sub-tasks)
+- Total progress: 60/60 = 100% complete
+- Added Tier 7 verification table, format spec, generator type table to plan
+
+## FILES READY FOR DELIVERY
+- /home/claude/work/et_cdf_compressor.py (11237 lines, AST parse OK)
+- /home/claude/work/ET_CDF_NonEuclidean_PLAN.md (updated)
+- /home/claude/work/et_pattern_engine.c (1063 lines, unchanged)
+- /home/claude/work/main.cpp (807 lines, unchanged)

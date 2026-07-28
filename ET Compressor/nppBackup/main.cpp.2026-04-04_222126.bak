@@ -1,0 +1,308 @@
+/*
+ * Exception Theory — Pattern Engine Test Harness
+ * ═══════════════════════════════════════════════════════════════════════
+ *
+ * Executable test harness for et_pattern_engine.c.
+ *
+ * Exercises ALL exported C functions with known inputs, verifies outputs,
+ * and prints results. This file serves two purposes:
+ *
+ *   1. CLion project target: add_executable gives CLion full code insight
+ *      for the .c file (resolves stdlib, enables navigation, etc.)
+ *
+ *   2. Verification: confirms the C engine produces correct results
+ *      before the Python ctypes layer is involved.
+ *
+ * ET Derivation (Three Tools):
+ *   Identification Principle: This file identifies ALL exported functions
+ *   in et_pattern_engine.c and their correct behavior.
+ *
+ *   Descriptor Gap Principle: The gap was the missing executable target —
+ *   CLion's T (code insight) could not traverse the project because the
+ *   D-set (CMakeLists.txt) lacked add_executable. This file IS that
+ *   missing Descriptor.
+ *
+ *   Subsumption Law: Every exported function is tested. Every test either
+ *   passes or fails with a clear message. No function is left unverified.
+ *   The test harness subsumes the entire public API without remainder.
+ *
+ * P ∘ D ∘ T = E
+ * Author: Michael James Muller — Aevum_Defluo
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <string.h>
+#include <math.h>
+
+/* ── Import the pattern engine functions ────────────────────────────── */
+
+#ifdef _WIN32
+#define IMPORT __declspec(dllimport)
+#else
+#define IMPORT
+#endif
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+IMPORT int32_t *find_repeated_patterns(
+    const int32_t *stream, int n,
+    int min_len, int max_len, int min_count, int min_net_savings,
+    int *out_n_patterns, int *out_buf_size);
+
+IMPORT void build_k_stream(const uint8_t *data, int n,
+                            const int32_t *byte_k_table, int32_t *k_out);
+
+IMPORT void build_dk_stream(const int32_t *k_stream, int n, int32_t *dk_out);
+
+IMPORT void gate_archetype_batch(const int32_t *patterns_buf, int n_patterns,
+                                  int n_res, double incoherence_cents,
+                                  uint8_t *out_mask);
+
+IMPORT int subsume_greedy(int n, int n_archetypes,
+                           const int32_t *arch_lengths, const int32_t *arch_n_pos,
+                           const int32_t *arch_positions,
+                           int32_t *placements, int32_t *used_mask);
+
+IMPORT void free_buffer(int32_t *buf);
+
+#ifdef __cplusplus
+}
+#endif
+
+/* ── Test infrastructure ───────────────────────────────────────────── */
+
+static int g_tests_run    = 0;
+static int g_tests_passed = 0;
+
+#define TEST(name) do { \
+    g_tests_run++; \
+    printf("  %-50s ", name); \
+} while(0)
+
+#define PASS() do { g_tests_passed++; printf("[PASS]\n"); } while(0)
+#define FAIL(msg) printf("[FAIL] %s\n", msg)
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * Test 1: find_repeated_patterns — known repeating stream
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+static void test_find_repeated_patterns(void)
+{
+    /* Stream: [1,2,3,1,2,3,4,5,1,2,3,4,5]
+     * Pattern (1,2,3) occurs 3 times at positions 0, 3, 8
+     * Pattern (1,2,3,4,5) occurs 2 times at positions 3, 8  */
+    int32_t stream[] = {1,2,3, 1,2,3, 4,5, 1,2,3, 4,5};
+    int n = sizeof(stream) / sizeof(stream[0]);
+    int n_patterns = 0, buf_size = 0;
+
+    TEST("find_repeated_patterns: basic repeats");
+    int32_t *result = find_repeated_patterns(stream, n, 2, n/2, 2, 1,
+                                              &n_patterns, &buf_size);
+    if (result && n_patterns > 0) {
+        PASS();
+    } else {
+        FAIL("no patterns found in repeating stream");
+    }
+    printf("    Found %d patterns, buf_size=%d\n", n_patterns, buf_size);
+
+    /* Parse and print first few */
+    if (result && n_patterns > 0) {
+        int pos = 1;
+        for (int i = 0; i < n_patterns && i < 5; i++) {
+            int pat_len = result[pos++];
+            int occ_cnt = result[pos++];
+            printf("    pat_len=%d, occ=%d, pattern=(", pat_len, occ_cnt);
+            for (int j = 0; j < pat_len && j < 8; j++) {
+                if (j > 0) printf(",");
+                printf("%d", result[pos + j]);
+            }
+            pos += pat_len;
+            printf("), positions=[");
+            for (int j = 0; j < occ_cnt && j < 8; j++) {
+                if (j > 0) printf(",");
+                printf("%d", result[pos + j]);
+            }
+            pos += occ_cnt;
+            printf("]\n");
+        }
+    }
+
+    if (result) free_buffer(result);
+
+    /* Trivial case: stream too small */
+    TEST("find_repeated_patterns: trivial stream");
+    int32_t tiny[] = {1, 2};
+    result = find_repeated_patterns(tiny, 2, 2, 1, 2, 1,
+                                     &n_patterns, &buf_size);
+    if (n_patterns == 0) {
+        PASS();
+    } else {
+        FAIL("should find 0 patterns in 2-element stream");
+    }
+    if (result) free_buffer(result);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * Test 2: build_k_stream — vectorized byte→k lookup
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+static void test_build_k_stream(void)
+{
+    /* Simple identity-like table: k = byte * 10 */
+    int32_t table[256];
+    for (int i = 0; i < 256; i++) table[i] = i * 10;
+
+    uint8_t data[] = {0, 1, 2, 127, 255};
+    int n = sizeof(data) / sizeof(data[0]);
+    int32_t k_out[5];
+
+    TEST("build_k_stream: vectorized lookup");
+    build_k_stream(data, n, table, k_out);
+
+    int ok = (k_out[0] == 0 && k_out[1] == 10 && k_out[2] == 20
+              && k_out[3] == 1270 && k_out[4] == 2550);
+    if (ok) {
+        PASS();
+    } else {
+        FAIL("k values don't match expected");
+        for (int i = 0; i < n; i++)
+            printf("    k_out[%d] = %d (expected %d)\n", i, k_out[i], data[i] * 10);
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * Test 3: build_dk_stream — first differences
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+static void test_build_dk_stream(void)
+{
+    int32_t k_stream[] = {100, 250, 200, 500, 300};
+    int n = 5;
+    int32_t dk_out[4];
+
+    TEST("build_dk_stream: first differences");
+    build_dk_stream(k_stream, n, dk_out);
+
+    int ok = (dk_out[0] == 150 && dk_out[1] == -50
+              && dk_out[2] == 300 && dk_out[3] == -200);
+    if (ok) {
+        PASS();
+    } else {
+        FAIL("dk values don't match");
+        for (int i = 0; i < 4; i++)
+            printf("    dk_out[%d] = %d\n", i, dk_out[i]);
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * Test 4: gate_archetype_batch — IncoherenceFilter L1-L4
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+static void test_gate_archetype_batch(void)
+{
+    /* Build a tiny pattern buffer with one pattern: (0, 0)
+     * Δk = 0 → ratio = 1.0 → ε = 0 → fully coherent, should pass */
+    int32_t buf[] = {
+        1,         /* n_patterns = 1 */
+        2, 3,      /* pat_len=2, occ_cnt=3 */
+        0, 0,      /* symbols: Δk = 0, 0 */
+        0, 5, 10   /* positions (ignored by gate) */
+    };
+    uint8_t mask[1] = {0};
+
+    TEST("gate_archetype_batch: coherent pattern (dk=0)");
+    gate_archetype_batch(buf, 1, 27720, 50.0, mask);
+    if (mask[0] == 1) {
+        PASS();
+    } else {
+        FAIL("Δk=0 pattern should be coherent");
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * Test 5: subsume_greedy — non-overlapping placement
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+static void test_subsume_greedy(void)
+{
+    /* Stream of 20 symbols.
+     * Archetype 0: len=3, positions [0, 5, 10, 15]
+     * Archetype 1: len=2, positions [3, 8, 13]
+     * Non-overlapping: all should be placed (no conflicts) */
+    int n = 20;
+    int n_arch = 2;
+    int32_t lengths[] = {3, 2};
+    int32_t n_pos[]   = {4, 3};
+    int32_t positions[] = {0, 5, 10, 15, 3, 8, 13};  /* flat concatenated */
+
+    int32_t placements[40];  /* max 20 × 2 */
+    int32_t used_mask[2];
+
+    TEST("subsume_greedy: non-overlapping placement");
+    int n_placed = subsume_greedy(n, n_arch, lengths, n_pos, positions,
+                                   placements, used_mask);
+
+    if (n_placed == 7 && used_mask[0] == 1 && used_mask[1] == 1) {
+        PASS();
+    } else {
+        FAIL("expected 7 placements, both archetypes used");
+        printf("    n_placed=%d, used=[%d,%d]\n",
+               n_placed, used_mask[0], used_mask[1]);
+    }
+
+    /* Verify overlap blocking */
+    TEST("subsume_greedy: overlap blocking");
+    /* Archetype 0: len=4, positions [0, 2]
+     * Position 2 overlaps with placement at 0 (0+4=4 > 2) */
+    int32_t lengths2[] = {4};
+    int32_t n_pos2[]   = {2};
+    int32_t positions2[] = {0, 2};
+    int32_t placements2[4];
+    int32_t used2[1];
+
+    int n_placed2 = subsume_greedy(10, 1, lengths2, n_pos2, positions2,
+                                    placements2, used2);
+    if (n_placed2 == 1 && placements2[1] == 0) {
+        PASS();
+    } else {
+        FAIL("second position should be blocked by overlap");
+        printf("    n_placed=%d\n", n_placed2);
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * Main — run all tests
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+int main(void)
+{
+    printf("═══════════════════════════════════════════════════════════\n");
+    printf(" ET Pattern Engine — Test Harness\n");
+    printf(" P ∘ D ∘ T = E\n");
+    printf("═══════════════════════════════════════════════════════════\n\n");
+
+    test_find_repeated_patterns();
+    printf("\n");
+    test_build_k_stream();
+    printf("\n");
+    test_build_dk_stream();
+    printf("\n");
+    test_gate_archetype_batch();
+    printf("\n");
+    test_subsume_greedy();
+
+    printf("\n═══════════════════════════════════════════════════════════\n");
+    printf(" Results: %d / %d tests passed", g_tests_passed, g_tests_run);
+    if (g_tests_passed == g_tests_run) {
+        printf(" — ALL PASS\n");
+    } else {
+        printf(" — %d FAILED\n", g_tests_run - g_tests_passed);
+    }
+    printf("═══════════════════════════════════════════════════════════\n");
+
+    return (g_tests_passed == g_tests_run) ? 0 : 1;
+}

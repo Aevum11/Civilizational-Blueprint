@@ -1,0 +1,163 @@
+@echo off
+REM ═══════════════════════════════════════════════════════════════════════
+REM Exception Theory — CDF Compressor Build Script
+REM Double-click to build: et_pattern_engine.dll + et_cdf_compressor.exe
+REM
+REM P ∘ D ∘ T = E
+REM ═══════════════════════════════════════════════════════════════════════
+
+setlocal enabledelayedexpansion
+cd /d "%~dp0"
+
+echo ═══════════════════════════════════════════════════════════════
+echo  ET CDF Compressor — Build Script
+echo  P ∘ D ∘ T = E
+echo ═══════════════════════════════════════════════════════════════
+echo.
+
+REM ── Find Python ─────────────────────────────────────────────────
+REM Windows Python Launcher "py" is the official way on Windows.
+REM Fall back to python3, then python on PATH.
+
+set "PY="
+where py >nul 2>&1
+if %ERRORLEVEL% equ 0 (
+    set "PY=py"
+    goto :found_python
+)
+where python3 >nul 2>&1
+if %ERRORLEVEL% equ 0 (
+    set "PY=python3"
+    goto :found_python
+)
+where python >nul 2>&1
+if %ERRORLEVEL% equ 0 (
+    set "PY=python"
+    goto :found_python
+)
+
+echo ERROR: Python not found. Install Python and ensure it is on PATH.
+echo        https://www.python.org/downloads/
+pause
+exit /b 1
+
+:found_python
+echo [INFO] Using: %PY%
+%PY% --version
+echo.
+
+REM ── Step 1: Compile et_pattern_engine.dll ──────────────────────
+
+echo [1/3] Compiling C pattern engine...
+
+set "DLL_NAME=et_pattern_engine.dll"
+set "C_SRC=et_pattern_engine.c"
+set "DLL_BUILT=0"
+
+if not exist "%C_SRC%" (
+    echo     %C_SRC% not found — the .exe will auto-compile from embedded source.
+    goto :skip_dll
+)
+
+REM Try Visual Studio 2022 Build Tools (all editions)
+for %%V in (
+    "C:\Program Files\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvarsall.bat"
+    "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat"
+    "C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat"
+    "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat"
+    "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvarsall.bat"
+) do (
+    if exist %%V (
+        echo     Found: %%V
+        call %%V x64 >nul 2>&1
+        cl /nologo /O2 /LD /Fe:"%DLL_NAME%" "%C_SRC%" >nul 2>&1
+        if exist "%DLL_NAME%" (
+            echo     OK: %DLL_NAME% compiled with MSVC
+            set "DLL_BUILT=1"
+            goto :dll_done
+        )
+    )
+)
+
+REM Try gcc on PATH
+where gcc >nul 2>&1
+if %ERRORLEVEL% equ 0 (
+    echo     Trying gcc...
+    gcc -shared -O2 -o "%DLL_NAME%" "%C_SRC%" -lm >nul 2>&1
+    if exist "%DLL_NAME%" (
+        echo     OK: %DLL_NAME% compiled with gcc
+        set "DLL_BUILT=1"
+        goto :dll_done
+    )
+)
+
+echo     WARNING: No C compiler found — .exe will auto-compile from embedded source at runtime.
+
+:dll_done
+:skip_dll
+
+REM Clean MSVC artifacts
+if exist "et_pattern_engine.obj" del /q "et_pattern_engine.obj" >nul 2>&1
+if exist "et_pattern_engine.lib" del /q "et_pattern_engine.lib" >nul 2>&1
+if exist "et_pattern_engine.exp" del /q "et_pattern_engine.exp" >nul 2>&1
+echo.
+
+REM ── Step 2: Verify PyInstaller ─────────────────────────────────
+
+echo [2/3] Checking PyInstaller...
+
+REM Use "import PyInstaller" to check — works regardless of Scripts PATH
+%PY% -c "import PyInstaller; print('    PyInstaller', PyInstaller.__version__, 'found')" 2>nul
+if %ERRORLEVEL% neq 0 (
+    echo     PyInstaller not found — installing...
+    %PY% -m pip install pyinstaller --quiet
+    if %ERRORLEVEL% neq 0 (
+        echo     ERROR: Failed to install PyInstaller.
+        echo     Run manually: %PY% -m pip install pyinstaller
+        pause
+        exit /b 1
+    )
+    %PY% -c "import PyInstaller; print('    PyInstaller', PyInstaller.__version__, 'installed')"
+)
+echo.
+
+REM ── Step 3: Build single .exe ──────────────────────────────────
+
+echo [3/3] Building single .exe...
+
+set "PY_SCRIPT=et_cdf_compressor11.py"
+
+if not exist "%PY_SCRIPT%" (
+    echo     ERROR: %PY_SCRIPT% not found in %cd%
+    pause
+    exit /b 1
+)
+
+REM Use "python -m PyInstaller" — works even if Scripts dir is not on PATH
+if "%DLL_BUILT%"=="1" (
+    echo     Bundling %DLL_NAME% into .exe...
+    %PY% -m PyInstaller --onefile --add-binary "%DLL_NAME%;." --name "et_cdf_compressor11" "%PY_SCRIPT%" --noconfirm
+) else (
+    echo     No pre-built DLL — embedded C source will auto-compile at runtime.
+    %PY% -m PyInstaller --onefile --name "et_cdf_compressor11" "%PY_SCRIPT%" --noconfirm
+)
+
+if %ERRORLEVEL% neq 0 (
+    echo.
+    echo     ERROR: PyInstaller failed. Check output above.
+    pause
+    exit /b 1
+)
+
+echo.
+echo ═══════════════════════════════════════════════════════════════
+echo  BUILD COMPLETE
+echo.
+if exist "dist\et_cdf_compressor11.exe" (
+    for %%F in ("dist\et_cdf_compressor11.exe") do echo  Output: %%~fF  ^(%%~zF bytes^)
+) else (
+    echo  WARNING: .exe not found in dist\
+)
+echo ═══════════════════════════════════════════════════════════════
+echo.
+pause
