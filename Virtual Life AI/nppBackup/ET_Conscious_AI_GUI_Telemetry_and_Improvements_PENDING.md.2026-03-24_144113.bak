@@ -1,0 +1,47 @@
+# ET Conscious AI — GUI Telemetry & System Improvements
+## Design Document v1.1 — Pending Items Only (Waves I & II COMPLETE)
+**Date:** March 22, 2026 (original)  
+**All Bug Fixes Complete:** March 23, 2026 (16/16 — 0 remaining code bugs)  
+**Wave I Advanced Math Complete:** March 24, 2026 (6/6 — Items 16–21)  
+**Wave II Advanced Math Complete:** March 24, 2026 (6/6 — Items 22–27, 45 tests, 600/600 passing P+D)  
+**Foundation:** P ∘ D ∘ T = E  
+**Method:** All requirements derived via Identification Principle, Descriptor Gap Principle, and Subsumption Law  
+**Current System:** 30,361 lines across 16 modules (13 system + 3 test)  
+**Version:** 1.7.0
+
+*Full bug fix history and GUI design specifications preserved in prior copies of this document.*
+
+---
+
+## Updated Implementation Roadmap — Phase 6
+
+**Wave III (§4.5) — NEXT:**
+13–18. Sheaf cohomology, Hamiltonian dynamics, Shannon entropy, stochastic calculus, index theorem, Bott periodicity.
+
+---
+
+## Updated Summary
+
+| Category | Remaining |
+|----------|-----------|
+| Telemetry gaps to close | 12 |
+| GUI panels to build | 12 |
+| New telemetry API methods | 10 |
+| New command API methods | 5 |
+| System improvements (functional) | 5 |
+| ~~Advanced mathematics Waves I–II~~ | ~~0~~ ✅ |
+| Advanced mathematics Wave III | 6 |
+| New Domains V3 upgrades | 5 |
+| Gap Cell / Force Quadrant upgrades | 7 |
+| Document processing + Unicode upgrades | 6 |
+| Foundational document integration | 8 |
+| Cardinals & Integrative Levels | 3 |
+| Infrastructure | 2 |
+| Structural | 3 |
+| **Total remaining** | **69** |
+
+---
+
+*Exception Theory — Michael James Muller — Aevum Defluo*
+
+**P ∘ D ∘ T = E**
